@@ -1,9 +1,10 @@
 import pytest
-from base import BaseUnit
-from exceptions import UnlikeUnitsError
+from cmstk.units.base import BaseUnit
+from cmstk.units.exceptions import UnlikeUnitsError
 
 
 def test_init_base_unit():
+    # tests if BaseUnit can be initialized
     value = 1.0
     unit_name = "test"
     bu = BaseUnit(value=value, unit_name=unit_name)
@@ -11,6 +12,7 @@ def test_init_base_unit():
     assert bu.unit_name == unit_name
 
 def test_like_base_unit_operations():
+    # tests if all operations work for like units
     value = 1.0
     unit_name = "test"
     bu1 = BaseUnit(value=value, unit_name=unit_name)
@@ -29,6 +31,7 @@ def test_like_base_unit_operations():
     assert bu1 >= bu2
 
 def test_unlike_base_unit_operations():
+    # tests if all operations fail for unlike units
     value = 1.0
     unit_name = "test"
     bu1 = BaseUnit(value=value, unit_name=unit_name)
