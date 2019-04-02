@@ -31,7 +31,7 @@ class BaseSimulation(object):
     @description.setter
     def description(self, desc):
         if type(desc) != str:
-            raise TypeError("`desc` must be type str")
+            raise TypeError("`description` must be type str")
         else:
             self._description = desc
 
@@ -42,7 +42,7 @@ class BaseSimulation(object):
     @mpi_settings.setter
     def mpi_settings(self, settings):
         if type(settings) is not MPISettings:
-            raise TypeError("`settings` must be type MPISettings")
+            raise TypeError("`mpi_settings` must be type MPISettings")
         else:
             self._mpi_settings = settings
 
@@ -61,7 +61,7 @@ class BaseSimulation(object):
     @lammps_bin.setter
     def lammps_bin(self, path):
         if type(path) is not str:
-            raise TypeError("`path` must be type str")
+            raise TypeError("`lammps_bin` must be type str")
         else:
             self._lammps_bin = path
  
@@ -120,7 +120,7 @@ class MPISettings(object):
     @n_procs.setter
     def n_procs(self, n):
         if type(n) is not int:
-            raise TypeError("`n` must be type int")
+            raise TypeError("`n_procs` must be type int")
         else:
             self._n_procs = n
 
@@ -131,7 +131,7 @@ class MPISettings(object):
     @verbose.setter
     def verbose(self, v):
         if type(value) is not bool:
-            raise TypeError("`v` must be type bool")
+            raise TypeError("`verbose` must be type bool")
         else:
             self._verbose = v
 
@@ -148,6 +148,6 @@ class MPISettings(object):
     @mpi_bin.setter
     def mpi_bin(self, path):
         if type(path) is not str:
-            raise TypeError("`path` must be type str")
+            raise TypeError("`mpi_bin` must be type str")
         else:
             self._mpi_bin = path
