@@ -1,4 +1,4 @@
-from base_simulation import BaseSimulation
+from base import BaseSimulation
 
 
 class UniaxialTension(BaseSimulation):

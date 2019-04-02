@@ -1,20 +1,16 @@
-from base_simulation import BaseSimulation
+from base import BaseSimulation
 
 
 class StructuralMinimization(BaseSimulation):
 
-    def __init__(self, element, lattice_type, pair_style, pair_coeff, 
-                 filename=None, description=None, mpi_settings=None, 
-                 lammps_bin=None, units=None, min_style=None, neighbor=None, 
+    def __init__(self, input_filename, structure_filename, potential_filename,
+                 description=None, mpi_settings=None, lammps_bin=None, 
+                 units=None, min_style=None, neighbor=None, 
                  neigh_modify=None, thermo=None, thermo_style=None):
         
-        super().__init__(filename=filename, description=description
+        super().__init__(input_filename=input_filename, structure_filename=structure_filename, 
+                         potential_filename=potential_filename, description=description, 
                          mpi_settings=mpi_settings, lammps_bin=lammps_bin)
-        
-        self.element = element
-        self.lattice_type = lattice_type
-        self.pair_style = pair_style
-        self.pair_coeff = pair_coeff
 
         self._units = units
         self._min_style = min_style
