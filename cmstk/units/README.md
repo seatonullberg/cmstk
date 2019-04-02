@@ -1,0 +1,1 @@
+Utility classes which act as a safety feature to prevent bugs due to unit conversion.
