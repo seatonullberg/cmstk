@@ -19,7 +19,7 @@ class BaseUnit(object):
         self.unit_name = unit_name
 
     def __add__(self, other):
-        # override the additiona operator
+        # override the addition operator
         if self.unit_name is not other.unit_name:
             raise UnlikeUnitsError(operation="add", a=self.unit_name, b=other.unit_name)
         else:

@@ -1,7 +1,11 @@
 from cmstk.units.base import BaseUnit
 
 
-class Angstrom(BaseUnit, float):
+class Length(object): pass
+"""Abstract representation of a length unit."""
+
+
+class Angstrom(BaseUnit, Length, float):
     """Representation of the angstrom length unit.
 
     Args:
@@ -19,6 +23,17 @@ class Angstrom(BaseUnit, float):
         self.value = value        
         self.unit_name = "angstrom"
         super().__init__(value=self.value, unit_name=self.unit_name)
+
+    def to_angstrom(self):
+        """Converts angstrom to angstrom.
+        
+        Notes:
+            Self conversion removes need for type checking elsewhere.
+
+        Returns:
+            Angstrom
+        """
+        return self
         
     def to_nanometer(self):
         """Converts angstrom to nanometer.
@@ -39,7 +54,7 @@ class Angstrom(BaseUnit, float):
         return Picometer(new_value)
 
 
-class Nanometer(BaseUnit, float):
+class Nanometer(BaseUnit, Length, float):
     """Representation of the nanometer length unit.
 
     Args:
@@ -67,6 +82,17 @@ class Nanometer(BaseUnit, float):
         new_value = self.value * 10.0
         return Angstrom(new_value)
 
+    def to_nanometer(self):
+        """Converts nanometer to nanometer.
+        
+        Notes:
+            Self conversion removes need for type checking elsewhere.
+
+        Returns:
+            Nanometer
+        """
+        return self
+
     def to_picometer(self):
         """Converts nanometer to picometer.
         
@@ -77,7 +103,7 @@ class Nanometer(BaseUnit, float):
         return Picometer(new_value)
 
 
-class Picometer(BaseUnit, float):
+class Picometer(BaseUnit, Length, float):
     """Representation of the picometer length unit.
 
     Args:
@@ -114,3 +140,13 @@ class Picometer(BaseUnit, float):
         new_value = self.value * 0.001
         return Nanometer(new_value)
 
+    def to_picometer(self):
+        """Converts picometer to picometer.
+        
+        Notes:
+            Self conversion removes need for type checking elsewhere.
+
+        Returns:
+            Picometer
+        """
+        return self
