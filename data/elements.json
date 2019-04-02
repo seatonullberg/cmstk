@@ -1,0 +1,144 @@
+{
+    "H": {},
+    "He": {},
+    "Li": {},
+    "Be": {},
+    "B": {},
+    "C": {
+        "atomic_radius": 67,
+        "crystal_structure": "sh",
+        "lattice_constants": [246.4, 246.4, 671.1]
+    },
+    "N": {},
+    "O": {
+        "atomic_radius": 48
+    },
+    "F": {},
+    "Ne": {},
+    "Na": {},
+    "Mg": {
+        "atomic_radius": 145,
+        "crystal_structure": "sh",
+        "lattice_constants": [320.94, 302.94, 521.08]
+    },
+    "Al": {
+        "atomic_radius": 118,
+        "crystal_structure": "fcc",
+        "lattice_constants": [404.95, 404.95, 404.95]
+    },
+    "Si": {},
+    "P": {},
+    "S": {},
+    "Cl": {},
+    "Ar": {},
+    "K": {},
+    "Ca": {},
+    "Sc": {},
+    "Ti": {
+        "atomic_radius": 176,
+        "crystal_structure": "sh",
+        "lattice_constants": [295.08, 295.08, 468.55]
+    },
+    "V": {
+        "atomic_radius": 171,
+        "crystal_structure": "bcc",
+        "lattice_constants": [303.0, 303.0, 303.0]
+    },
+    "Cr": {
+        "atomic_radius": 166,
+        "crystal_structure": "bcc",
+        "lattice_constants": [291.0, 291.0, 291.0]
+    },
+    "Mn": {
+        "atomic_radius": 161,
+        "crystal_structure": "bcc",
+        "lattice_constants": [891.25, 891.25, 891.25]
+    },
+    "Fe": {
+        "atomic_radius": 156,
+        "crystal_structure": "bcc",
+        "lattice_constants": [286.65, 286.65, 286.65]
+    },
+    "Co": {
+        "atomic_radius": 152,
+        "crystal_structure": "sh",
+        "lattice_constants": [250.71, 250.71, 406.95]
+    },
+    "Ni": {
+        "atomic_radius": 149,
+        "crystal_structure": "fcc",
+        "lattice_constants": [352.4, 352.4, 352.4]
+    },
+    "Cu": {},
+    "Zn": {},
+    "Ga": {},
+    "Ge": {},
+    "As": {},
+    "Se": {},
+    "Br": {},
+    "Kr": {},
+    "Rb": {},
+    "Sr": {},
+    "Y": {},
+    "Zr": {},
+    "Nb": {},
+    "Mo": {
+        "atomic_radius": 190,
+        "crystal_structure": "bcc",
+        "lattice_constants": [314.7, 314.7, 314.7]
+    },
+    "Tc": {},
+    "Ru": {},
+    "Rh": {},
+    "Pd": {
+        "atomic_radius": 169,
+        "crystal_structure": "fcc",
+        "lattice_constants": [389.07, 389.07, 389.07]
+    },
+    "Ag": {},
+    "Cd": {},
+    "In": {},
+    "Sn": {},
+    "Sb": {},
+    "Te": {},
+    "I": {},
+    "Xe": {},
+    "Cs": {},
+    "Ba": {},
+    "La": {},
+    "Ce": {},
+    "Pr": {},
+    "Nd": {},
+    "Pm": {},
+    "Sm": {},
+    "Eu": {},
+    "Gd": {},
+    "Tb": {},
+    "Dy": {},
+    "Ho": {},
+    "Er": {},
+    "Tm": {},
+    "Yb": {},
+    "Lu": {},
+    "Hf": {},
+    "Ta": {},
+    "W": {},
+    "Re": {},
+    "Os": {},
+    "Ir": {},
+    "Pt": {},
+    "Au": {},
+    "Hg": {},
+    "Tl": {},
+    "Pb": {},
+    "Bi": {},
+    "Po": {},
+    "At": {},
+    "Rn": {},
+    "Fr": {},
+    "Ra": {},
+    "Ac": {},
+    "Th": {},
+    "Pa": {},
+    "U": {}
+}

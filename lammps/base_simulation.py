@@ -5,8 +5,13 @@ import shutil
 
 class BaseSimulation(object):
 
-    def __init__(self, filename=None, description=None, mpi_settings=None, lammps_bin=None):
-        self._filename = filename
+    def __init__(self, input_filename, structure_filename, potential_filename, 
+                 description=None, mpi_settings=None, lammps_bin=None):
+        
+        self.input_filename = input_filename
+        self.structure_filename = structure_filename
+        self.potential_filename = potential_filename
+
         self._description = description
         self._mpi_settings = mpi_settings
         self._lammps_bin = lammps_bin
@@ -15,20 +20,6 @@ class BaseSimulation(object):
     ################
     #  Properties  #
     ################
-
-    @property
-    def filename(self):
-        if self._filename is None:
-            return "lammps.in"
-        else:
-            return self._filename
-
-    @filename.setter
-    def filename(self, fn):
-        if type(fn) != str:
-            raise TypeError("`fn` must be type str")
-        else:
-            self._filename = fn
 
     @property
     def description(self):
