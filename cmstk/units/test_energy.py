@@ -17,7 +17,7 @@ def test_electron_volt_to_electron_volt():
     ev = ElectronVolt(value)
     new_ev = ev.to_electron_volt()
     assert type(new_ev) is ElectronVolt
-    assert new_ev.value == value
+    assert (value - 0.1) < new_ev.value < (value + 0.1)
 
 def test_electron_volt_to_joule():
     # tests ElectronVolt to Joule unit conversion

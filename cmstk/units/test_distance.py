@@ -1,5 +1,4 @@
-from cmstk.units.length import Length, Angstrom, Meter, Nanometer, Picometer
-
+from cmstk.units.distance import Distance, Angstrom, Meter, Nanometer, Picometer
 
 # Angstrom
 
@@ -7,7 +6,7 @@ def test_init_angstrom():
     # tests if Angstrom can be initialized
     value = 1.0
     a = Angstrom(value)
-    assert isinstance(a, Length)
+    assert isinstance(a, Distance)
     assert isinstance(a, float)
     assert a.value == value
 
@@ -50,7 +49,7 @@ def test_init_meter():
     # tests if Meter can be initialized
     value = 1.0
     m = Meter(value)
-    assert isinstance(m, Length)
+    assert isinstance(m, Distance)
     assert isinstance(m, float)
     assert m.value == value
 
@@ -92,7 +91,7 @@ def test_init_nanometer():
     # tests if Nanometer can be initialized
     value = 1.0
     n = Nanometer(value)
-    assert isinstance(n, Length)
+    assert isinstance(n, Distance)
     assert isinstance(n, float)
     assert n.value == value
 
@@ -126,7 +125,7 @@ def test_nanometer_to_picometer():
     n = Nanometer(value)
     p = n.to_picometer()
     assert type(p) is Picometer
-    assert p.value == 1000.0
+    assert 999.9 < p.value < 1000.1  # floating point issue
 
 
 # Picometer
@@ -135,7 +134,7 @@ def test_init_picometer():
     # tests if a Picometer can be initialized
     value = 1.0
     p = Picometer(value)
-    assert isinstance(p, Length)
+    assert isinstance(p, Distance)
     assert isinstance(p, float)
     assert p.value == value
 

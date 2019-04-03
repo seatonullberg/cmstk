@@ -1,11 +1,49 @@
 from cmstk.units.base import BaseUnit
 
 
-class Energy(object): pass
-"""Abstract representation of an energy unit."""
+################
+#  Base Class  #
+################
+
+class Energy(BaseUnit, float):
+    """Representation of an energy unit.
+    
+    The Base unit of energy is Joule.
+
+    Args:
+        base_value (float): Starting value to initialize the unit with.
+        - Must be in terms of the base unit.
+
+    Attributes:
+        base_value (float): Value in terms of the base unit.
+    """
+
+    def __init__(self, base_value):
+        if type(base_value) is not float:
+            raise TypeError("`base_value` must be of type float")
+        self.base_value = base_value
+
+    def to_electron_volt(self):
+        """Converts base unit to ElectronVolt.
+        
+        Returns:
+            ElectronVolt
+        """
+        new_value = self.base_value * 6.242e+18
+        return ElectronVolt(new_value)
+
+    def to_joule(self):
+        """Converts base unit to Joule.
+
+        Joule is the base unit of energy.
+
+        Returns:
+            Joule
+        """
+        return Joule(self.base_value)
 
 
-class ElectronVolt(BaseUnit, Energy, float):
+class ElectronVolt(Energy):
     """Representation of the electron volt energy unit.
 
     Args:
@@ -16,34 +54,13 @@ class ElectronVolt(BaseUnit, Energy, float):
     """
 
     def __init__(self, value):
-        if type(value) is not float:
-            raise TypeError("`value` must be of type float")
-        
+        conversion_factor = 1.60218e-19
+        _value = value * conversion_factor
+        super().__init__(base_value=_value)
         self.value = value
-        super().__init__(value=self.value)
-
-    def to_electron_volt(self):
-        """Converts ElectronVolt to ElectronVolt.
-
-        Notes:
-            Self conversion removes the need for type checking elsewhere.
-
-        Returns:
-            ElectronVolt
-        """
-        return self
-
-    def to_joule(self):
-        """Converts ElectronVolt to Joule.
-
-        Returns:
-            Joule
-        """
-        new_value = self.value * 1.60218e-19
-        return Joule(new_value)
 
 
-class Joule(BaseUnit, Energy, float):
+class Joule(Energy):
     """Representation of the Joule energy unit.
 
     Args:
@@ -54,28 +71,7 @@ class Joule(BaseUnit, Energy, float):
     """
 
     def __init__(self, value):
-        if type(value) is not float:
-            raise TypeError("`value` must be of type float")
-        
+        conversion_factor = 1.0
+        _value = value * conversion_factor
+        super().__init__(base_value=_value)
         self.value = value
-        super().__init__(value=self.value)
-
-    def to_electron_volt(self):
-        """Converts Joule to ElectronVolt.
-
-        Returns:
-            ElectronVolt
-        """
-        new_value = self.value * 6.242e18
-        return ElectronVolt(new_value)
-
-    def to_joule(self):
-        """Converts Joule to Joule.
-
-        Notes:
-            Self conversion removes the need for type checking elsewhere.
-        
-        Returns:
-            Joule
-        """
-        return self

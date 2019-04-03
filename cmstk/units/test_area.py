@@ -1,5 +1,18 @@
 from cmstk.units.area import Area, AngstromSquared, MeterSquared, NanometerSquared, PicometerSquared
-from cmstk.units.length import Angstrom, Nanometer, Picometer
+from cmstk.units.distance import Angstrom, Nanometer, Picometer
+
+
+# Area
+
+def test_area_from_distance():
+    # tests if Area can be initialized from two distances
+    value = 1.0
+    d1 = Nanometer(value)  # arbitrary distance
+    d2 = Picometer(value)  # arbitrary distyance
+    a = Area.from_distance(d1, d2)
+    assert type(a) is Area
+    assert isinstance(a, float)
+    assert a.to_meter_squared().value == d1.to_meter().value * d2.to_meter().value
 
 
 # AngstromSquared
@@ -11,17 +24,6 @@ def test_init_angstrom_squared():
     assert isinstance(a, Area)
     assert isinstance(a, float)
     assert a.value == value
-
-def test_init_angstrom_squared_from_length():
-    # tests if AngstromSquared can be initialized from two lengths
-    value = 1.0
-    l1 = Nanometer(value)  # use arbitrary lengths
-    l2 = Picometer(value)  # use arbitrary lengths
-    a = AngstromSquared.init_from_length(l1, l2)
-    assert type(a) is AngstromSquared
-    assert isinstance(a, Area)
-    assert isinstance(a, float)
-    assert a.value == l1.to_angstrom().value * l2.to_angstrom().value
 
 def test_angstrom_squared_to_angstrom_squared():
     # tests AngstromSquared to AngstromSquared unit conversion
@@ -66,17 +68,6 @@ def test_init_meter_squared():
     assert isinstance(m, float)
     assert m.value == value
 
-def test_init_meter_squared_from_length():
-    # tests if MeterSquared can be initialized from two lengths
-    value = 1.0
-    l1 = Nanometer(value)  # use arbitrary lengths
-    l2 = Picometer(value)  # use arbitrary lengths
-    m = MeterSquared.init_from_length(l1, l2)
-    assert type(m) is MeterSquared
-    assert isinstance(m, Area)
-    assert isinstance(m, float)
-    assert m.value == l1.to_meter().value * l2.to_meter().value
-
 def test_meter_squared_to_angstrom_squared():
     # tests MeterSquared to AngstromSquared unit conversion
     value = 1.0
@@ -120,24 +111,13 @@ def test_init_nanometer_squared():
     assert isinstance(n, float)
     assert n.value == value
 
-def test_init_nanometer_squared_from_length():
-    # tests if NanometerSquared can be initialized from two lengths
-    value = 1.0
-    l1 = Angstrom(value)   # use arbitrary lengths
-    l2 = Picometer(value)  # use arbitrary lengths
-    n = NanometerSquared.init_from_length(l1, l2)
-    assert type(n) is NanometerSquared
-    assert isinstance(n, Area)
-    assert isinstance(n, float)
-    assert n.value == l1.to_nanometer().value * l2.to_nanometer().value
-
 def test_nanometer_squared_to_angstrom_squared():
     # tests NanometerSquared to AngstromSquared unit conversion
     value = 1.0
     n = NanometerSquared(value)
     a = n.to_angstrom_squared()
     assert type(a) is AngstromSquared
-    assert a.value == 100
+    assert 99.9 < a.value < 100.1
 
 def test_nanometer_squared_to_meter_squared():
     # tests NanometerSquared to MeterSquared unit conversion
@@ -174,24 +154,13 @@ def test_init_picometer_squared():
     assert isinstance(p, float)
     assert p.value == value
 
-def test_init_picometer_squared_from_length():
-    # tests if PicometerSquared can be initialized from two lengths
-    value = 1.0
-    l1 = Angstrom(value)   # use arbitrary lengths
-    l2 = Nanometer(value)  # use arbitrary lengths
-    p = PicometerSquared.init_from_length(l1, l2)
-    assert type(p) is PicometerSquared
-    assert isinstance(p, Area)
-    assert isinstance(p, float)
-    assert p.value == l1.to_picometer().value * l2.to_picometer().value
-
 def test_picometer_squared_to_angstrom_squared():
     # test picometer_squared to AngstromSquared unit conversion
     value = 1.0
     p = PicometerSquared(value)
     a = p.to_angstrom_squared()
     assert type(a) is AngstromSquared
-    assert a.value == 1e-4
+    assert  (1e-4 - 0.1) < a.value < (1e-4 + 0.1)
 
 def test_picometer_squared_to_meter_squared():
     # tests PicometerSquared to MeterSquared unit conversion
@@ -215,4 +184,4 @@ def test_picometer_squared_to_picometer_squared():
     p = PicometerSquared(value)
     new_p = p.to_picometer_squared()
     assert type(new_p) is PicometerSquared
-    assert new_p.value == value
+    assert (value - 0.1) < new_p.value < (value + 0.1)

@@ -1,6 +1,6 @@
 import pytest
 from cmstk.units.base import BaseUnit
-from cmstk.units.length import Angstrom, Nanometer
+from cmstk.units.distance import Angstrom, Nanometer
 from cmstk.units.exceptions import UnsafeUnitOperationError
 
 

@@ -1,11 +1,45 @@
 from cmstk.units.base import BaseUnit
 
 
-class Pressure(object): pass
-"""Abstract representation of a pressure unit."""
+class Pressure(BaseUnit, float):
+    """Representation of a pressure unit.
+
+    The base unit of pressure is Pascal.
+
+    Args:
+        base_value (float): Starting value to initialize the unit with.
+        - Must be in terms of the base unit.
+
+    Attributes:
+        base_value (float): Value in therms of the base unit.
+    """
+
+    def __init__(self, base_value):
+        if type(base_value) is not float:
+            raise TypeError("`base_value` must be of type float")
+        self.base_value = base_value
+
+    def to_bar(self):
+        """Converts base unit to Bar.
+        
+        Returns:
+            Bar
+        """
+        new_value = self.base_value * 1e-5
+        return Bar(new_value)
+
+    def to_pascal(self):
+        """Converts base unit to Pascal.
+
+        Pascal is the base unit of pressure.
+
+        Returns:
+            Pascal
+        """
+        return Pascal(self.base_value)
 
 
-class Bar(BaseUnit, Pressure, float):
+class Bar(Pressure):
     """Representation of the Bar pressure unit.
     
     Args:
@@ -16,34 +50,14 @@ class Bar(BaseUnit, Pressure, float):
     """
 
     def __init__(self, value):
-        if type(value) is not float:
-            raise TypeError("`value` must be of type float")
-
+        conversion_factor = 100000
+        _value = value * conversion_factor
+        super().__init__(base_value=_value)
         self.value = value
-        super().__init__(value=self.value)
-
-    def to_bar(self):
-        """Converts Bar to Bar.
-
-        Notes:
-            Self conversion removes need for type checking elsewhere.
-
-        Returns:
-            Bar
-        """
-        return self
-
-    def to_pascal(self):
-        """Converts Bar to Pascal.
         
-        Returns:
-            Pascal
-        """
-        new_value = self.value * 100000
-        return Pascal(new_value)
 
 
-class Pascal(BaseUnit, Pressure, float):
+class Pascal(Pressure):
     """Representation of the Pascal pressure unit.
     
     Args:
@@ -54,28 +68,7 @@ class Pascal(BaseUnit, Pressure, float):
     """
 
     def __init__(self, value):
-        if type(value) is not float:
-            raise TypeError("`value` must be of type float")
-        
+        conversion_factor = 1.0
+        _value = value * conversion_factor
+        super().__init__(base_value=_value)
         self.value = value
-        super().__init__(value=self.value)
-
-    def to_bar(self):
-        """Converts Pascal to Bar.
-        
-        Returns:
-            Bar
-        """
-        new_value = self.value * 1e-5
-        return Bar(new_value)
-
-    def to_pascal(self):
-        """Converts Pascal to Pascal.
-
-        Notes:
-            Self conversion removes need for type checking elsewhere.
-
-        Returns:
-            Pascal
-        """
-        return self

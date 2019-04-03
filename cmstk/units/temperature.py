@@ -1,11 +1,54 @@
 from cmstk.units.base import BaseUnit
 
 
-class Temperature(object): pass
-"""Abstract representation of a temperature unit."""
+class Temperature(BaseUnit, float):
+    """Representation of a temperature unit.
+    
+    The base unit of Temperature is Celsius.
+
+    Args:
+        base_value (float): Starting value to initialize the unit with.
+        - Must be in terms of the base unit.
+
+    Attributes:
+        base_value (float): Value in terms of the base unit.
+    """
+
+    def __init__(self, base_value):
+        if type(base_value) is not float:
+            raise TypeError("`base_value` must be of type float")
+        self.base_value = base_value
+
+    def to_celsius(self):
+        """Converts base unit to Celsius.
+
+        Celsius is the base unit of temperature.
+
+        Returns:
+            Celsius
+        """
+        return Celsius(self.base_value)
+
+    def to_fahrenheit(self):
+        """Converts base unit to Fahrenheit.
+
+        Returns:
+            Fahrenheit
+        """
+        new_value = (self.base_value * (9/5)) + 32
+        return Fahrenheit(new_value)
+
+    def to_kelvin(self):
+        """Converts base unit to Kelvin.
+        
+        Returns:
+            Kelvin
+        """
+        new_value = self.base_value + 273.15
+        return Kelvin(new_value)
 
 
-class Celsius(BaseUnit, Temperature, float):
+class Celsius(Temperature):
     """Representation of the Celsius temperature unit.
     
     Args:
@@ -16,43 +59,13 @@ class Celsius(BaseUnit, Temperature, float):
     """
 
     def __init__(self, value):
-        if type(value) is not float:
-            raise TypeError("`values` must be of type float")
-
+        conversion_factor = 1.0
+        _value = value * conversion_factor
+        super().__init__(base_value=_value)
         self.value = value
-        super().__init__(value=self.value)
-
-    def to_celsius(self):
-        """Converts Celsius to Celsius.
-        
-        Notes:
-            Self conversion removes need for type checking elsewhere.
-
-        Returns:
-            Celsius
-        """
-        return self
-    
-    def to_fahrenheit(self):
-        """Converts Celsius to Fahrenheit.
-        
-        Returns:
-            Fahrenheit
-        """
-        new_value = (self.value * (9 / 5)) + 32.0
-        return Fahrenheit(new_value) 
-
-    def to_kelvin(self):
-        """Converts Celsius to Kelvin.
-        
-        Returns:
-            Kelvin
-        """
-        new_value = self.value + 273.15
-        return Kelvin(new_value)
 
 
-class Fahrenheit(BaseUnit, Temperature, float):
+class Fahrenheit(Temperature):
     """Representation of the Fahrenheit temperature unit.
     
     Args:
@@ -63,43 +76,12 @@ class Fahrenheit(BaseUnit, Temperature, float):
     """
 
     def __init__(self, value):
-        if type(value) is not float:
-            raise TypeError("`values` must be of type float")
-
+        _value = (value - 32) * (5/9)
+        super().__init__(base_value=_value)
         self.value = value
-        super().__init__(value=self.value)
-
-    def to_celsius(self):
-        """Converts Fahrenheit to Celsius.
-        
-        Returns:
-            Celsius
-        """
-        new_value = (self.value - 32.0) * (5 / 9)
-        return Celsius(new_value)
-    
-    def to_fahrenheit(self):
-        """Converts Fahrenheit to Fahrenheit.
-        
-        Notes:
-            Self conversion removes need for type checking elsewhere.
-
-        Returns:
-            Fahrenheit
-        """
-        return self
-
-    def to_kelvin(self):
-        """Converts Fahrenheit to Kelvin.
-        
-        Returns:
-            Kelvin
-        """
-        new_value = self.to_celsius().value + 273.15
-        return Kelvin(new_value)
 
 
-class Kelvin(BaseUnit, Temperature, float):
+class Kelvin(Temperature):
     """Representation of the Kelvin temperature unit.
     
     Args:
@@ -110,37 +92,6 @@ class Kelvin(BaseUnit, Temperature, float):
     """
 
     def __init__(self, value):
-        if type(value) is not float:
-            raise TypeError("`values` must be of type float")
-
+        _value = value - 273.15
+        super().__init__(base_value=_value)
         self.value = value
-        super().__init__(value=self.value)
-
-    def to_celsius(self):
-        """Converts Kelvin to Celsius.
-        
-        Returns:
-            Celsius
-        """
-        new_value = self.value - 273.15
-        return Celsius(new_value)
-    
-    def to_fahrenheit(self):
-        """Converts Kelvin to Fahrenheit.
-        
-        Returns:
-            Fahrenheit
-        """
-        new_value = (self.to_celsius().value * (9 / 5)) + 32.0
-        return Fahrenheit(new_value)
-
-    def to_kelvin(self):
-        """Converts Kelvin to Kelvin.
-        
-        Notes:
-            Self conversion removes need for type checking elsewhere.
-
-        Returns:
-            Kelvin
-        """
-        return self
