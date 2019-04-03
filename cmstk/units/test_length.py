@@ -1,4 +1,4 @@
-from cmstk.units.length import Length, Angstrom, Nanometer, Picometer
+from cmstk.units.length import Length, Angstrom, Meter, Nanometer, Picometer
 
 
 # Angstrom
@@ -19,6 +19,14 @@ def test_angstrom_to_angstrom():
     assert type(new_a) is Angstrom
     assert new_a.value == value
 
+def test_angstrom_to_meter():
+    # tests Angstrom to Meter unit conversion
+    value = 1.0
+    a = Angstrom(value)
+    m = a.to_meter()
+    assert type(m) is Meter
+    assert m.value == 1e-10
+
 def test_angstrom_to_nanometer():
     # tests Angstrom to Nanometer unit conversion
     value = 1.0
@@ -35,6 +43,48 @@ def test_angstrom_to_picometer():
     assert type(p) is Picometer
     assert p.value == 100
 
+
+# Meter
+
+def test_init_meter():
+    # tests if Meter can be initialized
+    value = 1.0
+    m = Meter(value)
+    assert isinstance(m, Length)
+    assert isinstance(m, float)
+    assert m.value == value
+
+def test_meter_to_angstrom():
+    # tests Meter to Angstrom unit conversion
+    value = 1.0
+    m = Meter(value)
+    a = m.to_angstrom()
+    assert type(a) is Angstrom
+    assert a.value == 1e10
+
+def test_meter_to_meter():
+    # tests Meter to Meter unit conversion
+    value = 1.0
+    m = Meter(value)
+    new_m = m.to_meter()
+    assert type(new_m) is Meter
+    assert new_m.value == value
+
+def test_meter_to_nanometer():
+    # tests Meter to Nanometer unit conversion
+    value = 1.0
+    m = Meter(value)
+    n = m.to_nanometer()
+    assert type(n) is Nanometer
+    assert n.value == 1e9
+
+def test_meter_to_picometer():
+    # tests Meter to Picometer unit conversion
+    value = 1.0
+    m = Meter(value)
+    p = m.to_picometer()
+    assert type(p) is Picometer
+    assert p.value == 1e12
 
 # Nanometer
 
@@ -53,6 +103,14 @@ def test_nanometer_to_angstrom():
     a = n.to_angstrom()
     assert type(a) is Angstrom
     assert a.value == 10.0
+
+def test_nanometer_to_meter():
+    # tests Nanometer to Meter unit conversion
+    value = 1.0
+    n = Nanometer(value)
+    m = n.to_meter()
+    assert type(m) is Meter
+    assert m.value == 1e-9
 
 def test_nanometer_to_nanometer():
     # tests Nanometer to Nanometer unit conversion
@@ -88,6 +146,14 @@ def test_picometer_to_angstrom():
     a = p.to_angstrom()
     assert type(a) is Angstrom
     assert a.value == 0.01
+
+def test_picometer_to_meter():
+    # tests Picometer to Meter unit conversion
+    value = 1.0
+    p = Picometer(value)
+    m = p.to_meter()
+    assert type(m) is Meter
+    assert m.value == 1e-12
 
 def test_picometer_to_nanometer():
     # tests Picometer to Nanometer unit conversion
