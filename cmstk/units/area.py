@@ -51,6 +51,15 @@ class AngstromSquared(BaseUnit, Area, float):
         """
         return self
 
+    def to_meter_squared(self):
+        """Converts AngstromSquared to MeterSquared.
+        
+        Returns:
+            MeterSquared
+        """
+        new_value = self.value * 1e-20
+        return MeterSquared(new_value)
+
     def to_nanometer_squared(self):
         """Converts AngstromSquared to NanometerSquared.
         
@@ -69,6 +78,78 @@ class AngstromSquared(BaseUnit, Area, float):
         new_value = self.value * 10000
         return PicometerSquared(new_value)
 
+
+class MeterSquared(BaseUnit, Area, float):
+    """Representation of the MeterSquared area unit.
+    
+    Args:
+        value (float): Starting value to initialize the unit with.
+
+    Attributes:
+        value (float): Value of the unit.
+    """
+
+    def __init__(self, value):
+        if type(value) is not float:
+            raise TypeError("`value` must be of type float")
+        
+        self.value = value
+        super().__init__(value=self.value)
+
+    @staticmethod
+    def init_from_length(l1, l2):
+        """Initialize MeterSquared from two length units.
+        
+        Args:
+            l1 (length): The first length.
+            l2 (length): The second length.
+        Returns:
+            MeterSquared
+        """
+        if not isinstance(l1, Length) or not isinstance(l2, Length):
+            raise TypeError("`l1` and 'l2' must be instances of type Length")
+        
+        area = l1.to_meter().value * l2.to_meter().value
+        return MeterSquared(area)
+
+
+    def to_angstrom_squared(self):
+        """Converts MeterSquared to AngstromSquared.
+        
+        Returns:
+            AngstromSquared
+        """
+        new_value = self.value * 1e20
+        return AngstromSquared(new_value)
+
+    def to_meter_squared(self):
+        """Converts MeterSquared to MeterSquared.
+        
+        Notes:
+            Self conversion removes need for type checking elsewhere.
+        Returns:
+            MeterSquared
+        """
+        return self
+
+    def to_nanometer_squared(self):
+        """Converts MeterSquared to NanometerSquared.
+        
+        Returns:
+            NanometerSquared
+        """
+        new_value = self.value * 1e18
+        return NanometerSquared(new_value)
+
+    def to_picometer_squared(self):
+        """Converts MeterSquared to PicometerSquared.
+        
+        Returns:
+            PicometerSquared
+        """
+        new_value = self.value * 1e24
+        return PicometerSquared(new_value)
+    
 
 class NanometerSquared(BaseUnit, Area, float):
     """Representation of the NanometerSquared area unit.
@@ -112,6 +193,15 @@ class NanometerSquared(BaseUnit, Area, float):
         """
         new_value = self.value * 100
         return AngstromSquared(new_value)
+
+    def to_meter_squared(self):
+        """Converts NanometerSquared to MeterSquared.
+        
+        Returns:
+            MeterSquared
+        """
+        new_value = self.value * 1e-18
+        return MeterSquared(new_value)
 
     def to_nanometer_squared(self):
         """Converts NanometerSquared to NanometerSquared.
@@ -176,6 +266,15 @@ class PicometerSquared(BaseUnit, Area, float):
         """
         new_value = self.value * 1e-4
         return AngstromSquared(new_value)
+
+    def to_meter_squared(self):
+        """Converts PicometerSquared to MeterSquared.
+        
+        Returns:
+            MeterSquared
+        """
+        new_value = self.value * 1e-24
+        return MeterSquared(new_value)
 
     def to_nanometer_squared(self):
         """Converts PicometerSquared to NanometerSquared.

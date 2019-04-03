@@ -200,7 +200,7 @@ class Picometer(BaseUnit, Length, float):
         return Angstrom(new_value)
 
     def to_meter(self):
-        """Converts Picometer to Meter.\
+        """Converts Picometer to Meter.
         
         Returns:
             Meter
