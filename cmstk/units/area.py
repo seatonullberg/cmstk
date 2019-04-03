@@ -7,14 +7,13 @@ class Area(object): pass
 
 
 class AngstromSquared(BaseUnit, Area, float):
-    """Representation of the angstrom_squared length unit
+    """Representation of the AngstromSquared length unit
     
     Args:
         value (float): Starting value to initialize the unit with.
 
     Attributes:
         value (float): Value of the unit.
-        unit_name (str): Name used when comparing against other units.
     """
 
     def __init__(self, value):
@@ -22,12 +21,11 @@ class AngstromSquared(BaseUnit, Area, float):
             raise TypeError("`value` must be of type float")
         
         self.value = value
-        self.unit_name = "angstrom_squared"
-        super().__init__(value=self.value, unit_name=self.unit_name)
+        super().__init__(value=self.value)
 
     @staticmethod
     def init_from_length(l1, l2):
-        """Initializes from two length units.
+        """Initializes AngstromSquared from two length units.
         
         Args:
             l1 (Length): The first length.
@@ -39,11 +37,11 @@ class AngstromSquared(BaseUnit, Area, float):
         if not isinstance(l1, Length) or not isinstance(l2, Length):
             raise TypeError("`l1` and `l2` must be instances of type Length")
 
-        area = l1.to_angstrom() * l2.to_angstrom()
+        area = l1.to_angstrom().value * l2.to_angstrom().value
         return AngstromSquared(area)
 
     def to_angstrom_squared(self):
-        """Converts angstrom_squared to angstrom_squared.
+        """Converts AngstromSquared to AngstromSquared.
         
         Notes:
             Self conversion removes need for type checking elsewhere.
@@ -54,7 +52,7 @@ class AngstromSquared(BaseUnit, Area, float):
         return self
 
     def to_nanometer_squared(self):
-        """Converts angstrom_squared to nanometer_squared.
+        """Converts AngstromSquared to NanometerSquared.
         
         Returns:
             NanometerSquared
@@ -63,7 +61,7 @@ class AngstromSquared(BaseUnit, Area, float):
         return NanometerSquared(new_value)
 
     def to_picometer_squared(self):
-        """Converts angstrom_squared to picometer_squared.
+        """Converts AngstromSquared to PicometerSquared.
 
         Returns:
             PicometerSquared
@@ -73,14 +71,13 @@ class AngstromSquared(BaseUnit, Area, float):
 
 
 class NanometerSquared(BaseUnit, Area, float):
-    """Representation of the nanometer_squared area unit.
+    """Representation of the NanometerSquared area unit.
 
     Args:
         value (float): Starting value to initialize the unit with.
 
     Attributes:
         value (float): Value of the unit.
-        unit_name (str): Name used when comparing against other units.
     """
 
     def __init__(self, value):
@@ -88,12 +85,11 @@ class NanometerSquared(BaseUnit, Area, float):
             raise TypeError("`value` must be of type float")
 
         self.value = value
-        self.unit_name = "nanometer_squared"
-        super().__init__(value=self.value, unit_name=self.unit_name)
+        super().__init__(value=self.value)
 
     @staticmethod
     def init_from_length(l1, l2):
-        """Initializes from two length units.
+        """Initializes NanometerSquared from two length units.
         
         Args:
             l1 (Length): The first length.
@@ -105,11 +101,11 @@ class NanometerSquared(BaseUnit, Area, float):
         if not isinstance(l1, Length) or not isinstance(l2, Length):
             raise TypeError("`l1` and `l2` must be instances of type Length")
 
-        area = l1.to_nanometer() * l2.to_nanometer()
+        area = l1.to_nanometer().value * l2.to_nanometer().value
         return NanometerSquared(area)
 
     def to_angstrom_squared(self):
-        """Converts nanometer_squared to angstrom_squared.
+        """Converts NanometerSquared to AngstromSquared.
         
         Returns:
             AngstromSquared
@@ -118,7 +114,7 @@ class NanometerSquared(BaseUnit, Area, float):
         return AngstromSquared(new_value)
 
     def to_nanometer_squared(self):
-        """Converts nanometer_squared to nanometer_squared.
+        """Converts NanometerSquared to NanometerSquared.
         
         Notes:
             Self conversion removes need for type checking elsewhere.
@@ -129,7 +125,7 @@ class NanometerSquared(BaseUnit, Area, float):
         return self
 
     def to_picometer_squared(self):
-        """Converts nanometer_squared to picometer_squared.
+        """Converts NanometerSquared to PicometerSquared.
 
         Returns:
             PicometerSquared
@@ -139,14 +135,13 @@ class NanometerSquared(BaseUnit, Area, float):
 
 
 class PicometerSquared(BaseUnit, Area, float):
-    """Representation of the picometer_squared area unit.
+    """Representation of the PicometerSquared area unit.
 
     Args:
         value (float): Starting value to initialize the unit with.
 
     Attributes:
         value (float): Value of the unit.
-        unit_name (str): Name used when comparing against other units.
     """
 
     def __init__(self, value):
@@ -154,12 +149,11 @@ class PicometerSquared(BaseUnit, Area, float):
             raise TypeError("`value` must be of type float")
 
         self.value = value
-        self.unit_name = "picometer_squared"
-        super().__init__(value=self.value, unit_name=self.unit_name)
+        super().__init__(value=self.value)
 
     @staticmethod
     def init_from_length(l1, l2):
-        """Initializes from two length units.
+        """Initializes PicometerSquared from two length units.
         
         Args:
             l1 (Length): The first length.
@@ -171,11 +165,11 @@ class PicometerSquared(BaseUnit, Area, float):
         if not isinstance(l1, Length) or not isinstance(l2, Length):
             raise TypeError("`l1` and `l2` must be instances of type Length")
 
-        area = l1.to_picometer() * l2.to_picometer()
+        area = l1.to_picometer().value * l2.to_picometer().value
         return PicometerSquared(area)
 
     def to_angstrom_squared(self):
-        """Converts picometer_squared to angstrom_squared.
+        """Converts PicometerSquared to AngstromSquared.
         
         Returns:
             AngstromSquared
@@ -184,7 +178,7 @@ class PicometerSquared(BaseUnit, Area, float):
         return AngstromSquared(new_value)
 
     def to_nanometer_squared(self):
-        """Converts picometer_squared to nanometer_squared.
+        """Converts PicometerSquared to NanometerSquared.
         
         Returns:
             NanometerSquared
@@ -193,7 +187,7 @@ class PicometerSquared(BaseUnit, Area, float):
         return NanometerSquared(new_value)
 
     def to_picometer_squared(self):
-        """Converts picometer_squared to picometer_squared.
+        """Converts PicometerSquared to PicometerSquared.
 
         Notes:
             Self conversion removes need for type checking elsewhere.

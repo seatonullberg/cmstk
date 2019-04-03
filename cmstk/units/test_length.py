@@ -10,7 +10,6 @@ def test_init_angstrom():
     assert isinstance(a, Length)
     assert isinstance(a, float)
     assert a.value == value
-    assert a.unit_name == "angstrom"
 
 def test_angstrom_to_angstrom():
     # tests angstrom to angstrom unit conversion
@@ -46,7 +45,6 @@ def test_init_nanometer():
     assert isinstance(n, Length)
     assert isinstance(n, float)
     assert n.value == value
-    assert n.unit_name == "nanometer"
 
 def test_nanometer_to_angstrom():
     # tests nanometer to angstrom unit conversion
@@ -82,7 +80,6 @@ def test_init_picometer():
     assert isinstance(p, Length)
     assert isinstance(p, float)
     assert p.value == value
-    assert p.unit_name == "picometer"
 
 def test_picometer_to_angstrom():
     # tests picometer to angstrom unit conversion

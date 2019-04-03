@@ -11,7 +11,6 @@ def test_init_angstrom_squared():
     assert isinstance(a, Area)
     assert isinstance(a, float)
     assert a.value == value
-    assert a.unit_name == "angstrom_squared"
 
 def test_init_angstrom_squared_from_length():
     # tests if AngstromSquared can be initialized from two lengths
@@ -22,8 +21,7 @@ def test_init_angstrom_squared_from_length():
     assert type(a) is AngstromSquared
     assert isinstance(a, Area)
     assert isinstance(a, float)
-    assert a.value == l1.to_angstrom() * l2.to_angstrom()
-    assert a.unit_name == "angstrom_squared"
+    assert a.value == l1.to_angstrom().value * l2.to_angstrom().value
 
 def test_angstrom_squared_to_angstrom_squared():
     # tests angstrom_squared to angstrom_squared unit conversion
@@ -60,7 +58,6 @@ def test_init_nanometer_squared():
     assert isinstance(n, Area)
     assert isinstance(n, float)
     assert n.value == value
-    assert n.unit_name == "nanometer_squared"
 
 def test_init_nanometer_squared_from_length():
     # tests if NanometerSquared can be initialized from two lengths
@@ -71,8 +68,7 @@ def test_init_nanometer_squared_from_length():
     assert type(n) is NanometerSquared
     assert isinstance(n, Area)
     assert isinstance(n, float)
-    assert n.value == l1.to_nanometer() * l2.to_nanometer()
-    assert n.unit_name == "nanometer_squared"
+    assert n.value == l1.to_nanometer().value * l2.to_nanometer().value
 
 def test_nanometer_squared_to_angstrom_squared():
     # tests nanometer_squared to angstrom_squared unit conversion
@@ -108,7 +104,6 @@ def test_init_picometer_squared():
     assert isinstance(p, Area)
     assert isinstance(p, float)
     assert p.value == value
-    assert p.unit_name == "picometer_squared"
 
 def test_init_picometer_squared_from_length():
     # tests if PicometerSquared can be initialized from two lengths
@@ -119,8 +114,7 @@ def test_init_picometer_squared_from_length():
     assert type(p) is PicometerSquared
     assert isinstance(p, Area)
     assert isinstance(p, float)
-    assert p.value == l1.to_picometer() * l2.to_picometer()
-    assert p.unit_name == "picometer_squared"
+    assert p.value == l1.to_picometer().value * l2.to_picometer().value
 
 def test_picometer_squared_to_angstrom_squared():
     # test picometer_squared to angstrom_squared unit conversion

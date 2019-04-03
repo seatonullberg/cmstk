@@ -13,7 +13,6 @@ class Angstrom(BaseUnit, Length, float):
 
     Attributes:
         value (float): Value of the unit.
-        unit_name (str): Name used when comparing against other units
     """
 
     def __init__(self, value):
@@ -21,8 +20,7 @@ class Angstrom(BaseUnit, Length, float):
             raise TypeError("`value` must be of type float")
         
         self.value = value        
-        self.unit_name = "angstrom"
-        super().__init__(value=self.value, unit_name=self.unit_name)
+        super().__init__(value=self.value)
 
     def to_angstrom(self):
         """Converts angstrom to angstrom.
@@ -62,7 +60,6 @@ class Nanometer(BaseUnit, Length, float):
     
     Attributes:
         value (float): Value of the unit.
-        unit_name (str): Name used when comparing against other units
     """
 
     def __init__(self, value):
@@ -70,8 +67,7 @@ class Nanometer(BaseUnit, Length, float):
             raise TypeError("`value` must be of type float")
         
         self.value = value        
-        self.unit_name = "nanometer"
-        super().__init__(value=self.value, unit_name=self.unit_name)
+        super().__init__(value=self.value)
         
     def to_angstrom(self):
         """Converts nanometer to angstrom.
@@ -111,7 +107,6 @@ class Picometer(BaseUnit, Length, float):
 
     Attributes:
         value (float): Value of the unit.
-        unit_name (str): Name used when comparing against other units.
     """
 
     def __init__(self, value):
@@ -119,8 +114,7 @@ class Picometer(BaseUnit, Length, float):
             raise TypeError("`value` must be of type float")
         
         self.value = value        
-        self.unit_name = "picometer"
-        super().__init__(value=self.value, unit_name=self.unit_name)
+        super().__init__(value=self.value)
         
     def to_angstrom(self):
         """Converts picometer to angstrom.
