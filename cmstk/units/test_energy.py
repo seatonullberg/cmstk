@@ -44,7 +44,7 @@ def test_joule_to_electron_volt():
     j = Joule(value)
     ev = j.to_electron_volt()
     assert type(ev) is ElectronVolt
-    assert ev.value == 6.242e18
+    assert 6.241e18 < ev.value < 6.243e18
 
 def test_joule_to_joule():
     # test Joule to Joule unit conversion

@@ -7,16 +7,17 @@ class Time(BaseUnit, float):
     The base unit of time is Second.
 
     Args:
-        base_value (float): Starting value to initialize the unit with.
-        - Must be in terms of the base unit.
+        value (float): Starting value to initialize the unit with.
+        conversion_factor (float): Factor used to convert value to base unit.
 
     Attributes:
         base_value (float): Value in terms of the base unit.
     """
 
-    def __init__(self, base_value):
-        if type(base_value) is not float:
+    def __init__(self, value, conversion_factor):
+        if type(value) is not float:
             raise TypeError("`base_value` must be of type float")
+        base_value = value * conversion_factor
         self.base_value = base_value
 
     def to_picosecond(self):
@@ -25,7 +26,7 @@ class Time(BaseUnit, float):
         Returns:
             Picosecond
         """
-        new_value = self.base_value * 1e12
+        new_value = self.base_value * 1/Picosecond.conversion_factor
         return Picosecond(new_value)
 
     def to_second(self):
@@ -49,10 +50,10 @@ class Picosecond(Time):
         value (float): Value of the unit.
     """
     
+    conversion_factor = 1e-12
+
     def __init__(self, value):
-        conversion_factor = 1e-12
-        _value = value * conversion_factor
-        super().__init__(base_value=_value)
+        super().__init__(value=value, conversion_factor=self.conversion_factor)
         self.value = value
 
 
@@ -66,8 +67,8 @@ class Second(Time):
         value (float): Value of the unit.
     """
 
+    conversion_factor = 1.0
+
     def __init__(self, value):
-        conversion_factor = 1.0
-        _value = value * conversion_factor
-        super().__init__(base_value=_value)
+        super().__init__(value=value, conversion_factor=self.conversion_factor)
         self.value = value

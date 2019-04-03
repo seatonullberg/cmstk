@@ -13,16 +13,17 @@ class Area(BaseUnit, float):
     The base unit of Area is MeterSquared.
     
     Args:
-        base_value (float): Starting value to initialize the unit with.
-        - Must be in terms of the base unit.
+        value (float): Starting value to initialize the unit with.
+        conversion_factor (float): Factor used to convert value to base unit.
 
     Attributes:
         base_value (float): Value in terms of the base unit.
     """
 
-    def __init__(self, base_value):
-        if type(base_value) is not float:
+    def __init__(self, value, conversion_factor):
+        if type(value) is not float:
             raise TypeError("`base_value` must be of type float")
+        base_value = value * conversion_factor
         self.base_value = base_value
 
     @staticmethod
@@ -40,7 +41,7 @@ class Area(BaseUnit, float):
             raise TypeError("`d1` and `d2` must be instances of type Distance")
 
         area = d1.to_meter().value * d2.to_meter().value
-        return Area(area)
+        return Area(value=area, conversion_factor=1.0) # TODO: should not use constant
 
     def to_angstrom_squared(self):
         """Converts base unit to AngstromSquared.
@@ -48,7 +49,7 @@ class Area(BaseUnit, float):
         Returns:
             AngstromSquared
         """
-        new_value = self.base_value * 1e20
+        new_value = self.base_value * 1/AngstromSquared.conversion_factor
         return AngstromSquared(new_value)
 
     def to_meter_squared(self):
@@ -67,7 +68,7 @@ class Area(BaseUnit, float):
         Returns:
             NanometerSquared
         """
-        new_value = self.base_value * 1e18
+        new_value = self.base_value * 1/NanometerSquared.conversion_factor
         return NanometerSquared(new_value)
 
     def to_picometer_squared(self):
@@ -76,7 +77,7 @@ class Area(BaseUnit, float):
         Retuerns:
             PicometerSquared
         """
-        new_value = self.base_value * 1e24
+        new_value = self.base_value * 1/PicometerSquared.conversion_factor
         return PicometerSquared(new_value)
 
 
@@ -90,10 +91,10 @@ class AngstromSquared(Area):
         value (float): Value of the unit.
     """
 
+    conversion_factor = 1e-20
+
     def __init__(self, value):
-        conversion_factor = 1e-20
-        _value = value * conversion_factor
-        super().__init__(base_value=_value)
+        super().__init__(value=value, conversion_factor=self.conversion_factor)
         self.value = value
 
 
@@ -107,10 +108,10 @@ class MeterSquared(Area):
         value (float): Value of the unit.
     """
 
+    conversion_factor = 1.0
+
     def __init__(self, value):
-        conversion_factor = 1.0
-        _value = value * conversion_factor
-        super().__init__(base_value=_value)
+        super().__init__(value=value, conversion_factor=self.conversion_factor)
         self.value = value
     
 
@@ -124,10 +125,10 @@ class NanometerSquared(Area):
         value (float): Value of the unit.
     """
 
+    conversion_factor = 1e-18
+
     def __init__(self, value):
-        conversion_factor = 1e-18
-        _value = value * conversion_factor
-        super().__init__(base_value=_value)
+        super().__init__(value=value, conversion_factor=self.conversion_factor)
         self.value = value
 
 
@@ -141,8 +142,8 @@ class PicometerSquared(Area):
         value (float): Value of the unit.
     """
 
+    conversion_factor = 1e-24
+
     def __init__(self, value):
-        conversion_factor = 1e-24
-        _value = value * conversion_factor
-        super().__init__(base_value=_value)
+        super().__init__(value=value, conversion_factor=self.conversion_factor)
         self.value = value

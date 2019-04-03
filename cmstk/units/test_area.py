@@ -47,7 +47,7 @@ def test_angstrom_squared_to_nanometer_squared():
     a = AngstromSquared(value)
     n = a.to_nanometer_squared()
     assert type(n) is NanometerSquared
-    assert n.value == 0.01
+    assert 0.009 < n.value < 0.01
 
 def test_angstrom_squared_to_picometer_squared():
     # tests AngstromSquared to picometer_squared unit conversion
@@ -90,7 +90,7 @@ def test_meter_squared_to_nanometer_squared():
     m = MeterSquared(value)
     n = m.to_nanometer_squared()
     assert type(n) is NanometerSquared
-    assert n.value == 1e18
+    assert 0.9e18 < n.value < 1.1e18
 
 def test_meter_squared_to_piocmeter_squared():
     # tests MeterSquared to PicometerSquared unit conversion
@@ -98,7 +98,7 @@ def test_meter_squared_to_piocmeter_squared():
     m = MeterSquared(value)
     p = m.to_picometer_squared()
     assert type(p) is PicometerSquared
-    assert p.value == 1e24
+    assert (1e24) < p.value < (2e24)
 
 
 # NanometerSquared
@@ -141,7 +141,7 @@ def test_nanometer_squared_to_picometer_squared():
     n = NanometerSquared(value)
     p = n.to_picometer_squared()
     assert type(p) is PicometerSquared
-    assert p.value == 1000000
+    assert 999999.9 < p.value < 1000000.1
 
 
 # PicometerSquared

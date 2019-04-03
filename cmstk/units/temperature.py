@@ -7,8 +7,8 @@ class Temperature(BaseUnit, float):
     The base unit of Temperature is Celsius.
 
     Args:
-        base_value (float): Starting value to initialize the unit with.
-        - Must be in terms of the base unit.
+        value (float): Starting value to initialize the unit with.
+        conversion_factor (func): # TODO
 
     Attributes:
         base_value (float): Value in terms of the base unit.

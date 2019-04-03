@@ -32,7 +32,7 @@ def test_angstrom_to_nanometer():
     a = Angstrom(value)
     n = a.to_nanometer()
     assert type(n) is Nanometer
-    assert n.value == 0.1
+    assert 0.09 < n.value < 0.1
 
 def test_angstrom_to_picometer():
     # tests Angstrom to Picometer unit conversion
@@ -75,7 +75,7 @@ def test_meter_to_nanometer():
     m = Meter(value)
     n = m.to_nanometer()
     assert type(n) is Nanometer
-    assert n.value == 1e9
+    assert 0.9e9 < n.value < 1.1e9
 
 def test_meter_to_picometer():
     # tests Meter to Picometer unit conversion

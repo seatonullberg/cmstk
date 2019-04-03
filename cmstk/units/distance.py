@@ -12,16 +12,17 @@ class Distance(BaseUnit, float):
     The base unit of Distance is Meter.
     
     Args:
-        base_value (float): Starting value to initialize the unit with.
-        - Must be in terms of the base unit.
+        value (float): Starting value to initialize the unit with.
+        conversion_factor (float): Factor used to convert value to base unit.
 
     Attributes:
         base_value (float): Value in terms of the base unit.
     """
 
-    def __init__(self, base_value):
-        if type(base_value) is not float:
+    def __init__(self, value, conversion_factor):
+        if type(value) is not float:
             raise TypeError("`base_value` must be of type float")
+        base_value = value * conversion_factor
         self.base_value = base_value
 
     def to_angstrom(self):
@@ -30,7 +31,7 @@ class Distance(BaseUnit, float):
         Returns:
             Angstrom
         """
-        new_value = self.base_value * 1e10
+        new_value = self.base_value * 1/Angstrom.conversion_factor
         return Angstrom(new_value)
 
     def to_meter(self):
@@ -49,7 +50,7 @@ class Distance(BaseUnit, float):
         Returns:
             Nanometer
         """
-        new_value = self.base_value * 1e9
+        new_value = self.base_value * 1/Nanometer.conversion_factor
         return Nanometer(new_value)
 
     def to_picometer(self):
@@ -58,7 +59,7 @@ class Distance(BaseUnit, float):
         Returns:
             Picometer
         """
-        new_value = self.base_value * 1e12
+        new_value = self.base_value * 1/Picometer.conversion_factor
         return Picometer(new_value)
 
 
@@ -77,10 +78,10 @@ class Angstrom(Distance):
         value (float): Value of the unit.
     """
 
+    conversion_factor = 1e-10
+
     def __init__(self, value):
-        conversion_factor = 1e-10
-        _value = value * conversion_factor
-        super().__init__(base_value=_value)
+        super().__init__(value=value, conversion_factor=self.conversion_factor)
         self.value = value
 
 
@@ -94,10 +95,10 @@ class Meter(Distance):
         value (float): Value of the unit.
     """
 
+    conversion_factor = 1.0
+
     def __init__(self, value):
-        conversion_factor = 1.0
-        _value = value * conversion_factor
-        super().__init__(base_value=_value)
+        super().__init__(value=value, conversion_factor=self.conversion_factor)
         self.value = value
 
 
@@ -111,10 +112,10 @@ class Nanometer(Distance):
         value (float): Value of the unit.
     """
 
+    conversion_factor = 1e-9
+
     def __init__(self, value):
-        conversion_factor = 1e-9
-        _value = value * conversion_factor
-        super().__init__(base_value=_value)
+        super().__init__(value=value, conversion_factor=self.conversion_factor)
         self.value = value
 
 class Picometer(Distance):
@@ -127,8 +128,8 @@ class Picometer(Distance):
         value (float): Value of the unit.
     """
 
+    conversion_factor = 1e-12
+
     def __init__(self, value):
-        conversion_factor = 1e-12
-        _value = value * conversion_factor
-        super().__init__(base_value=_value)
+        super().__init__(value=value, conversion_factor=self.conversion_factor)
         self.value = value
