@@ -1,7 +1,7 @@
 from cmstk.units.length import Length, Angstrom, Nanometer, Picometer
 
 
-# ANGSTROM
+# Angstrom
 
 def test_init_angstrom():
     # tests if Angstrom can be initialized
@@ -9,8 +9,8 @@ def test_init_angstrom():
     a = Angstrom(value)
     assert isinstance(a, Length)
     assert isinstance(a, float)
-    assert a.value is value
-    assert a.unit_name is "angstrom"
+    assert a.value == value
+    assert a.unit_name == "angstrom"
 
 def test_angstrom_to_angstrom():
     # tests angstrom to angstrom unit conversion
@@ -37,7 +37,7 @@ def test_angstrom_to_picometer():
     assert p.value == 100
 
 
-# NANOMETER
+# Nanometer
 
 def test_init_nanometer():
     # tests if Nanometer can be initialized
@@ -45,8 +45,8 @@ def test_init_nanometer():
     n = Nanometer(value)
     assert isinstance(n, Length)
     assert isinstance(n, float)
-    assert n.value is value
-    assert n.unit_name is "nanometer"
+    assert n.value == value
+    assert n.unit_name == "nanometer"
 
 def test_nanometer_to_angstrom():
     # tests nanometer to angstrom unit conversion
@@ -73,7 +73,7 @@ def test_nanometer_to_picometer():
     assert p.value == 1000.0
 
 
-# PICOMETER
+# Picometer
 
 def test_init_picometer():
     # tests if a Picometer can be initialized
@@ -81,8 +81,8 @@ def test_init_picometer():
     p = Picometer(value)
     assert isinstance(p, Length)
     assert isinstance(p, float)
-    assert p.value is value
-    assert p.unit_name is "picometer"
+    assert p.value == value
+    assert p.unit_name == "picometer"
 
 def test_picometer_to_angstrom():
     # tests picometer to angstrom unit conversion

@@ -9,7 +9,7 @@ class Angstrom(BaseUnit, Length, float):
     """Representation of the angstrom length unit.
 
     Args:
-        value (float): Starting value to initialize the unit with
+        value (float): Starting value to initialize the unit with.
 
     Attributes:
         value (float): Value of the unit.
