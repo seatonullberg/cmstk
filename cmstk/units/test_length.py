@@ -12,7 +12,7 @@ def test_init_angstrom():
     assert a.value == value
 
 def test_angstrom_to_angstrom():
-    # tests angstrom to angstrom unit conversion
+    # tests Angstrom to Angstrom unit conversion
     value = 1.0
     a = Angstrom(value)
     new_a = a.to_angstrom()
@@ -20,7 +20,7 @@ def test_angstrom_to_angstrom():
     assert new_a.value == value
 
 def test_angstrom_to_nanometer():
-    # tests angstrom to nanometer unit conversion
+    # tests Angstrom to Nanometer unit conversion
     value = 1.0
     a = Angstrom(value)
     n = a.to_nanometer()
@@ -28,7 +28,7 @@ def test_angstrom_to_nanometer():
     assert n.value == 0.1
 
 def test_angstrom_to_picometer():
-    # tests angstrom to picometer unit conversion
+    # tests Angstrom to Picometer unit conversion
     value = 1.0
     a = Angstrom(value)
     p = a.to_picometer()
@@ -47,7 +47,7 @@ def test_init_nanometer():
     assert n.value == value
 
 def test_nanometer_to_angstrom():
-    # tests nanometer to angstrom unit conversion
+    # tests Nanometer to Angstrom unit conversion
     value = 1.0
     n = Nanometer(value)
     a = n.to_angstrom()
@@ -55,7 +55,7 @@ def test_nanometer_to_angstrom():
     assert a.value == 10.0
 
 def test_nanometer_to_nanometer():
-    # tests nanometer to nanometer unit conversion
+    # tests Nanometer to Nanometer unit conversion
     value = 1.0
     n = Nanometer(value)
     new_n = n.to_nanometer()
@@ -63,7 +63,7 @@ def test_nanometer_to_nanometer():
     assert new_n.value == value
 
 def test_nanometer_to_picometer():
-    # tests nanometer to picometer unit conversion
+    # tests Nanometer to Picometer unit conversion
     value = 1.0
     n = Nanometer(value)
     p = n.to_picometer()
@@ -82,7 +82,7 @@ def test_init_picometer():
     assert p.value == value
 
 def test_picometer_to_angstrom():
-    # tests picometer to angstrom unit conversion
+    # tests Picometer to Angstrom unit conversion
     value = 1.0
     p = Picometer(value)
     a = p.to_angstrom()
@@ -90,7 +90,7 @@ def test_picometer_to_angstrom():
     assert a.value == 0.01
 
 def test_picometer_to_nanometer():
-    # tests picometer to nanometer unit conversion
+    # tests Picometer to Nanometer unit conversion
     value = 1.0
     p = Picometer(value)
     n = p.to_nanometer()
@@ -98,7 +98,7 @@ def test_picometer_to_nanometer():
     assert n.value == 0.001
 
 def test_picometer_to_picometer():
-    # tests picometer to picometer unit conversion
+    # tests Picometer to Picometer unit conversion
     value = 1.0
     p = Picometer(value)
     new_p = p.to_picometer()

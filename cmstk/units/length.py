@@ -6,7 +6,7 @@ class Length(object): pass
 
 
 class Angstrom(BaseUnit, Length, float):
-    """Representation of the angstrom length unit.
+    """Representation of the Angstrom length unit.
 
     Args:
         value (float): Starting value to initialize the unit with.
@@ -23,7 +23,7 @@ class Angstrom(BaseUnit, Length, float):
         super().__init__(value=self.value)
 
     def to_angstrom(self):
-        """Converts angstrom to angstrom.
+        """Converts Angstrom to Angstrom.
         
         Notes:
             Self conversion removes need for type checking elsewhere.
@@ -34,7 +34,7 @@ class Angstrom(BaseUnit, Length, float):
         return self
         
     def to_nanometer(self):
-        """Converts angstrom to nanometer.
+        """Converts Angstrom to Nanometer.
         
         Returns:
             Nanometer
@@ -43,7 +43,7 @@ class Angstrom(BaseUnit, Length, float):
         return Nanometer(new_value)
 
     def to_picometer(self):
-        """Converts angstrom to picometer.
+        """Converts Angstrom to Picometer.
         
         Returns:
             Picometer
@@ -53,7 +53,7 @@ class Angstrom(BaseUnit, Length, float):
 
 
 class Nanometer(BaseUnit, Length, float):
-    """Representation of the nanometer length unit.
+    """Representation of the Nanometer length unit.
 
     Args:
         value (float): Starting value to initialize the unit with.
@@ -70,7 +70,7 @@ class Nanometer(BaseUnit, Length, float):
         super().__init__(value=self.value)
         
     def to_angstrom(self):
-        """Converts nanometer to angstrom.
+        """Converts Nanometer to Angstrom.
         
         Returns:
             Angstrom
@@ -79,7 +79,7 @@ class Nanometer(BaseUnit, Length, float):
         return Angstrom(new_value)
 
     def to_nanometer(self):
-        """Converts nanometer to nanometer.
+        """Converts Nanometer to Nanometer.
         
         Notes:
             Self conversion removes need for type checking elsewhere.
@@ -90,7 +90,7 @@ class Nanometer(BaseUnit, Length, float):
         return self
 
     def to_picometer(self):
-        """Converts nanometer to picometer.
+        """Converts Nanometer to Picometer.
         
         Returns:
             Picometer
@@ -100,7 +100,7 @@ class Nanometer(BaseUnit, Length, float):
 
 
 class Picometer(BaseUnit, Length, float):
-    """Representation of the picometer length unit.
+    """Representation of the Picometer length unit.
 
     Args:
         value (float): Starting value to initialize the unit with.
@@ -117,7 +117,7 @@ class Picometer(BaseUnit, Length, float):
         super().__init__(value=self.value)
         
     def to_angstrom(self):
-        """Converts picometer to angstrom.
+        """Converts Picometer to Angstrom.
 
         Returns:
             Angstrom
@@ -126,7 +126,7 @@ class Picometer(BaseUnit, Length, float):
         return Angstrom(new_value)
 
     def to_nanometer(self):
-        """Converts picometer to nanometer.
+        """Converts Picometer to Nanometer.
 
         Returns:
             Nanometer
@@ -135,7 +135,7 @@ class Picometer(BaseUnit, Length, float):
         return Nanometer(new_value)
 
     def to_picometer(self):
-        """Converts picometer to picometer.
+        """Converts Picometer to Picometer.
         
         Notes:
             Self conversion removes need for type checking elsewhere.
