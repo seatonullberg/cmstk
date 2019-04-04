@@ -1,14 +1,15 @@
 from cmstk.units.base import BaseUnit
 
+# TODO: Temperature does not follow the same inversion rules as other quantities
 
-class Temperature(BaseUnit, float):
+class TemperatureUnit(BaseUnit, float):
     """Representation of a temperature unit.
-    
-    The base unit of Temperature is Celsius.
 
+    The base unit of temperature is Celsius.
+    
     Args:
-        value (float): Starting value to initialize the unit with.
-        conversion_factor (func): # TODO
+        base_value (float): Starting value to initialize the unit with.
+        - Must be in terms of the base unit.
 
     Attributes:
         base_value (float): Value in terms of the base unit.
@@ -17,38 +18,29 @@ class Temperature(BaseUnit, float):
     def __init__(self, base_value):
         if type(base_value) is not float:
             raise TypeError("`base_value` must be of type float")
+        super().__init__(base_value)
         self.base_value = base_value
 
-    def to_celsius(self):
-        """Converts base unit to Celsius.
-
-        Celsius is the base unit of temperature.
-
-        Returns:
-            Celsius
-        """
-        return Celsius(self.base_value)
-
-    def to_fahrenheit(self):
-        """Converts base unit to Fahrenheit.
-
-        Returns:
-            Fahrenheit
-        """
-        new_value = (self.base_value * (9/5)) + 32
-        return Fahrenheit(new_value)
-
-    def to_kelvin(self):
-        """Converts base unit to Kelvin.
+    def to(self, t):
+        """Converts one arbitrary TemperatureUnit to another.
         
+        Args:
+            t (type): The type to convert to.
+            - Must be a subclass of TemperatureUnit
         Returns:
-            Kelvin
+            An instance of type(t)
         """
-        new_value = self.base_value + 273.15
-        return Kelvin(new_value)
+
+        if not issubclass(t, TemperatureUnit):
+            raise TypeError("`t` must be a subclass of TemperatureUnit") # TODO: custom error
+        # invert the base unit conversion
+        # Temperature is a special case where this does not work well
+
+        new_value = 1/t.convert(1/self.base_value)
+        return t(new_value)
 
 
-class Celsius(Temperature):
+class Celsius(TemperatureUnit):
     """Representation of the Celsius temperature unit.
     
     Args:
@@ -59,13 +51,15 @@ class Celsius(Temperature):
     """
 
     def __init__(self, value):
-        conversion_factor = 1.0
-        _value = value * conversion_factor
-        super().__init__(base_value=_value)
+        super().__init__(self.convert(value))
         self.value = value
 
+    @staticmethod
+    def convert(x):
+        return x
 
-class Fahrenheit(Temperature):
+
+class Fahrenheit(TemperatureUnit):
     """Representation of the Fahrenheit temperature unit.
     
     Args:
@@ -76,12 +70,15 @@ class Fahrenheit(Temperature):
     """
 
     def __init__(self, value):
-        _value = (value - 32) * (5/9)
-        super().__init__(base_value=_value)
+        super().__init__(self.convert(value))
         self.value = value
 
+    @staticmethod
+    def convert(x):
+        return (x - 32) * (5 / 9)
 
-class Kelvin(Temperature):
+
+class Kelvin(TemperatureUnit):
     """Representation of the Kelvin temperature unit.
     
     Args:
@@ -92,6 +89,9 @@ class Kelvin(Temperature):
     """
 
     def __init__(self, value):
-        _value = value - 273.15
-        super().__init__(base_value=_value)
+        super().__init__(self.convert(value))
         self.value = value
+
+    @staticmethod
+    def convert(x):
+        return x - 273.15

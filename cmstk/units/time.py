@@ -1,46 +1,43 @@
 from cmstk.units.base import BaseUnit
 
 
-class Time(BaseUnit, float):
+class TimeUnit(BaseUnit, float):
     """Representation of a time unit.
-    
-    The base unit of time is Second.
 
+    The base unit of time is Second.
+    
     Args:
-        value (float): Starting value to initialize the unit with.
-        conversion_factor (float): Factor used to convert value to base unit.
+        base_value (float): Starting value to initialize the unit with.
+        - Must be in terms of the base unit.
 
     Attributes:
         base_value (float): Value in terms of the base unit.
     """
 
-    def __init__(self, value, conversion_factor):
-        if type(value) is not float:
+    def __init__(self, base_value):
+        if type(base_value) is not float:
             raise TypeError("`base_value` must be of type float")
-        base_value = value * conversion_factor
+        super().__init__(base_value)
         self.base_value = base_value
 
-    def to_picosecond(self):
-        """Converts base unit to Picosecond.
+    def to(self, t):
+        """Converts one arbitrary TimeUnit to another.
         
+        Args:
+            t (type): The type to convert to.
+            - Must be a subclass of TimeUnit
         Returns:
-            Picosecond
+            An instance of type(t)
         """
-        new_value = self.base_value * 1/Picosecond.conversion_factor
-        return Picosecond(new_value)
 
-    def to_second(self):
-        """Converts base unit to Second.
-
-        Second is the base unit of time.
-
-        Returns:
-            Second
-        """
-        return Second(self.base_value)
+        if not issubclass(t, TimeUnit):
+            raise TypeError("`t` must be a subclass of TimeUnit") # TODO: custom error
+        # invert the base unit conversion
+        new_value = 1/t.convert(1/self.base_value)
+        return t(new_value)
 
 
-class Picosecond(Time):
+class Picosecond(TimeUnit):
     """Representation of the Picosecond time unit.
     
     Args:
@@ -50,14 +47,16 @@ class Picosecond(Time):
         value (float): Value of the unit.
     """
     
-    conversion_factor = 1e-12
-
     def __init__(self, value):
-        super().__init__(value=value, conversion_factor=self.conversion_factor)
+        super().__init__(self.convert(value))
         self.value = value
 
+    @staticmethod
+    def convert(x):
+        return x * 1e-12
 
-class Second(Time):
+
+class Second(TimeUnit):
     """Representation of the Second time unit.
     
     Args:
@@ -67,8 +66,10 @@ class Second(Time):
         value (float): Value of the unit.
     """
 
-    conversion_factor = 1.0
-
     def __init__(self, value):
-        super().__init__(value=value, conversion_factor=self.conversion_factor)
+        super().__init__(self.convert(value))
         self.value = value
+
+    @staticmethod
+    def convert(x):
+        return x

@@ -6,70 +6,49 @@ from cmstk.units.base import BaseUnit
 ################
 
 
-class Distance(BaseUnit, float): 
+class DistanceUnit(BaseUnit, float): 
     """Representation of a distance unit.
 
-    The base unit of Distance is Meter.
+    The base unit of distance is Meter.
     
     Args:
-        value (float): Starting value to initialize the unit with.
-        conversion_factor (float): Factor used to convert value to base unit.
+        base_value (float): Starting value to initialize the unit with.
+        - Must be in terms of the base unit.
 
     Attributes:
         base_value (float): Value in terms of the base unit.
     """
 
-    def __init__(self, value, conversion_factor):
-        if type(value) is not float:
+    def __init__(self, base_value):
+        if type(base_value) is not float:
             raise TypeError("`base_value` must be of type float")
-        base_value = value * conversion_factor
+        super().__init__(base_value)
         self.base_value = base_value
 
-    def to_angstrom(self):
-        """Converts base unit to Angstrom.
+    def to(self, t):
+        """Converts one arbitrary DistanceUnit to another.
         
+        Args:
+            t (type): The type to convert to.
+            - Must be a subclass of DistanceUnit
         Returns:
-            Angstrom
+            An instance of type(t)
         """
-        new_value = self.base_value * 1/Angstrom.conversion_factor
-        return Angstrom(new_value)
 
-    def to_meter(self):
-        """Converts base unit to Meter.
-        
-        Meter is the base unit of distance.
-
-        Returns:
-            Meter
-        """
-        return Meter(self.base_value)
-
-    def to_nanometer(self):
-        """Converts base unit to Nanometer.
-
-        Returns:
-            Nanometer
-        """
-        new_value = self.base_value * 1/Nanometer.conversion_factor
-        return Nanometer(new_value)
-
-    def to_picometer(self):
-        """Converts base unit to Picometer.
-
-        Returns:
-            Picometer
-        """
-        new_value = self.base_value * 1/Picometer.conversion_factor
-        return Picometer(new_value)
+        if not issubclass(t, DistanceUnit):
+            raise TypeError("`t` must be a subclass of DistanceUnit") # TODO: custom error
+        # invert the base unit conversion
+        new_value = 1/t.convert(1/self.base_value)
+        return t(new_value)
 
 
-##############################
-#  Distance Implementations  #
-##############################
+##################################
+#  DistanceUnit Implementations  #
+##################################
 
 
-class Angstrom(Distance):
-    """Representation of the Angstrom length unit.
+class Angstrom(DistanceUnit):
+    """Representation of the Angstrom distance unit.
     
     Args:
         value (float): Starting value to initialize the unit with.
@@ -78,15 +57,17 @@ class Angstrom(Distance):
         value (float): Value of the unit.
     """
 
-    conversion_factor = 1e-10
-
     def __init__(self, value):
-        super().__init__(value=value, conversion_factor=self.conversion_factor)
+        super().__init__(self.convert(value))
         self.value = value
 
+    @staticmethod
+    def convert(x):
+        return x * 1e-10
 
-class Meter(Distance):
-    """Represents the Meter length unit.
+
+class Meter(DistanceUnit):
+    """Represents the Meter distance unit.
     
     Args:
         value (float): Starting value to initialize the unit with.
@@ -95,14 +76,16 @@ class Meter(Distance):
         value (float): Value of the unit.
     """
 
-    conversion_factor = 1.0
-
     def __init__(self, value):
-        super().__init__(value=value, conversion_factor=self.conversion_factor)
+        super().__init__(self.convert(value))
         self.value = value
 
+    @staticmethod
+    def convert(x):
+        return x
 
-class Nanometer(Distance):
+
+class Nanometer(DistanceUnit):
     """Representation of the Nanometer distance unit.
     
     Args:
@@ -112,13 +95,15 @@ class Nanometer(Distance):
         value (float): Value of the unit.
     """
 
-    conversion_factor = 1e-9
-
     def __init__(self, value):
-        super().__init__(value=value, conversion_factor=self.conversion_factor)
+        super().__init__(self.convert(value))
         self.value = value
 
-class Picometer(Distance):
+    @staticmethod
+    def convert(x):
+        return x * 1e-9
+
+class Picometer(DistanceUnit):
     """Representation of the Picometer distance unit.
 
     Args:
@@ -128,8 +113,10 @@ class Picometer(Distance):
         value (float): Value of the unit.
     """
 
-    conversion_factor = 1e-12
-
     def __init__(self, value):
-        super().__init__(value=value, conversion_factor=self.conversion_factor)
+        super().__init__(self.convert(value))
         self.value = value
+
+    @staticmethod
+    def convert(x):
+        return x * 1e-12

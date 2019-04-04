@@ -5,7 +5,7 @@ from cmstk.units.base import BaseUnit
 #  Base Class  #
 ################
 
-class Energy(BaseUnit, float):
+class EnergyUnit(BaseUnit, float):
     """Representation of an energy unit.
     
     The Base unit of energy is Joule.
@@ -18,33 +18,30 @@ class Energy(BaseUnit, float):
         base_value (float): Value in terms of the base unit.
     """
 
-    def __init__(self, value, conversion_factor):
-        if type(value) is not float:
+    def __init__(self, base_value):
+        if type(base_value) is not float:
             raise TypeError("`base_value` must be of type float")
-        base_value = value * conversion_factor
+        super().__init__(base_value)
         self.base_value = base_value
 
-    def to_electron_volt(self):
-        """Converts base unit to ElectronVolt.
+    def to(self, t):
+        """Converts one arbitrary EnergyUnit to another.
         
+        Args:
+            t (type): The type to convert to.
+            - Must be a subclass of EnergyUnit
         Returns:
-            ElectronVolt
+            An instance of type(t)
         """
-        new_value = self.base_value * 1/ElectronVolt.conversion_factor
-        return ElectronVolt(new_value)
 
-    def to_joule(self):
-        """Converts base unit to Joule.
-
-        Joule is the base unit of energy.
-
-        Returns:
-            Joule
-        """
-        return Joule(self.base_value)
+        if not issubclass(t, EnergyUnit):
+            raise TypeError("`t` must be a subclass of EnergyUnit") # TODO: custom error
+        # invert the base unit conversion
+        new_value = 1/t.convert(1/self.base_value)
+        return t(new_value)
 
 
-class ElectronVolt(Energy):
+class ElectronVolt(EnergyUnit):
     """Representation of the electron volt energy unit.
 
     Args:
@@ -54,14 +51,16 @@ class ElectronVolt(Energy):
         value (float): Value of the unit.
     """
 
-    conversion_factor = 1.60218e-19
-
     def __init__(self, value):
-        super().__init__(value=value, conversion_factor=self.conversion_factor)
+        super().__init__(self.convert(value))
         self.value = value
 
+    @staticmethod
+    def convert(x):
+        return x * 1.60218e-19
 
-class Joule(Energy):
+
+class Joule(EnergyUnit):
     """Representation of the Joule energy unit.
 
     Args:
@@ -71,8 +70,10 @@ class Joule(Energy):
         value (float): Value of the unit.
     """
 
-    conversion_factor = 1.0
-
     def __init__(self, value):
-        super().__init__(value=value, conversion_factor=self.conversion_factor)
+        super().__init__(self.convert(value))
         self.value = value
+
+    @staticmethod
+    def convert(x):
+        return x

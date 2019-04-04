@@ -1,87 +1,66 @@
 from cmstk.units.base import BaseUnit
-from cmstk.units.distance import Distance
-
+from cmstk.units.distance import DistanceUnit
+from cmstk.units.distance import Meter
 
 ################
 #  Base Class  #
 ################
 
 
-class Area(BaseUnit, float): 
-    """Representation of an area unit.
+class AreaUnit(BaseUnit, float): 
+    """Representation of a distance unit.
 
-    The base unit of Area is MeterSquared.
+    The base unit of area is MeterSquared.
     
     Args:
-        value (float): Starting value to initialize the unit with.
-        conversion_factor (float): Factor used to convert value to base unit.
+        base_value (float): Starting value to initialize the unit with.
+        - Must be in terms of the base unit.
 
     Attributes:
         base_value (float): Value in terms of the base unit.
     """
 
-    def __init__(self, value, conversion_factor):
-        if type(value) is not float:
+    def __init__(self, base_value):
+        if type(base_value) is not float:
             raise TypeError("`base_value` must be of type float")
-        base_value = value * conversion_factor
+        super().__init__(base_value)
         self.base_value = base_value
 
-    @staticmethod
-    def from_distance(d1, d2):
-        """Initializes Area from two distance units.
+    def to(self, t):
+        """Converts one arbitrary AreaUnit to another.
         
         Args:
-            d1 (Distance): The first distance.
-            d2 (Distance): The second distance.
+            t (type): The type to convert to.
+            - Must be a subclass of AreaUnit
+        Returns:
+            An instance of type(t)
+        """
+
+        if not issubclass(t, AreaUnit):
+            raise TypeError("`t` must be a subclass of DistanceUnit") # TODO: custom error
+        # invert the base unit conversion
+        new_value = 1/t.convert(1/self.base_value)
+        return t(new_value)
+
+    @classmethod
+    def from_distance(cls, d1, d2):
+        """Initializes AreaUnit from two arbitrary distance units.
+        
+        Args:
+            d1 (DistanceUnit): The first distance.
+            d2 (DistanceUnit): The second distance.
         
         Returns:
-            Area
+            AreaUnit
         """
-        if not isinstance(d1, Distance) or not isinstance(d2, Distance):
-            raise TypeError("`d1` and `d2` must be instances of type Distance")
-
-        area = d1.to_meter().value * d2.to_meter().value
-        return Area(value=area, conversion_factor=1.0) # TODO: should not use constant
-
-    def to_angstrom_squared(self):
-        """Converts base unit to AngstromSquared.
+        if not isinstance(d1, DistanceUnit) or not isinstance(d2, DistanceUnit):
+            raise TypeError("`d1` and `d2` must be instances of type DistanceUnit")
         
-        Returns:
-            AngstromSquared
-        """
-        new_value = self.base_value * 1/AngstromSquared.conversion_factor
-        return AngstromSquared(new_value)
-
-    def to_meter_squared(self):
-        """Converts base unit to MeterSquared.
-        
-        MeterSquared is the base unit of area.
-
-        Returns:
-            MeterSquared
-        """
-        return MeterSquared(self.base_value)
-
-    def to_nanometer_squared(self):
-        """Converts base unit to NanometerSquared.
-        
-        Returns:
-            NanometerSquared
-        """
-        new_value = self.base_value * 1/NanometerSquared.conversion_factor
-        return NanometerSquared(new_value)
-
-    def to_picometer_squared(self):
-        """Converts base unit to PicometerSquared.
-        
-        Retuerns:
-            PicometerSquared
-        """
-        new_value = self.base_value * 1/PicometerSquared.conversion_factor
-        return PicometerSquared(new_value)
+        new_area = d1.to(Meter).value * d2.to(Meter).value
+        return cls(new_area)
 
 
-class AngstromSquared(Area):
+class AngstromSquared(AreaUnit):
     """Representation of the AngstromSquared area unit
     
     Args:
@@ -91,14 +70,16 @@ class AngstromSquared(Area):
         value (float): Value of the unit.
     """
 
-    conversion_factor = 1e-20
-
     def __init__(self, value):
-        super().__init__(value=value, conversion_factor=self.conversion_factor)
+        super().__init__(self.convert(value))
         self.value = value
 
+    @staticmethod
+    def convert(x):
+        return x * 1e-20
 
-class MeterSquared(Area):
+
+class MeterSquared(AreaUnit):
     """Representation of the MeterSquared area unit.
     
     Args:
@@ -108,14 +89,17 @@ class MeterSquared(Area):
         value (float): Value of the unit.
     """
 
-    conversion_factor = 1.0
-
     def __init__(self, value):
-        super().__init__(value=value, conversion_factor=self.conversion_factor)
+        super().__init__(self.convert(value))
         self.value = value
+
+    @staticmethod
+    def convert(x):
+        return x
+
     
 
-class NanometerSquared(Area):
+class NanometerSquared(AreaUnit):
     """Representation of the NanometerSquared area unit.
 
     Args:
@@ -125,14 +109,16 @@ class NanometerSquared(Area):
         value (float): Value of the unit.
     """
 
-    conversion_factor = 1e-18
-
     def __init__(self, value):
-        super().__init__(value=value, conversion_factor=self.conversion_factor)
+        super().__init__(self.convert(value))
         self.value = value
 
+    @staticmethod
+    def convert(x):
+        return x * 1e-18
 
-class PicometerSquared(Area):
+
+class PicometerSquared(AreaUnit):
     """Representation of the PicometerSquared area unit.
 
     Args:
@@ -142,8 +128,10 @@ class PicometerSquared(Area):
         value (float): Value of the unit.
     """
 
-    conversion_factor = 1e-24
-
     def __init__(self, value):
-        super().__init__(value=value, conversion_factor=self.conversion_factor)
+        super().__init__(self.convert(value))
         self.value = value
+
+    @staticmethod
+    def convert(x):
+        return x * 1e-24

@@ -14,6 +14,14 @@ class BaseUnit(object):
     def __init__(self, value):
         self.value = value
 
+    def __float__(self):
+        # override float special method
+        return self.value
+
+    def __int__(self):
+        # override int special method
+        return int(self.value)
+
     def __add__(self, other):
         # override the addition operator
         if type(self) is type(other):

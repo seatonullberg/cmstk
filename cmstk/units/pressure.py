@@ -1,46 +1,43 @@
 from cmstk.units.base import BaseUnit
 
 
-class Pressure(BaseUnit, float):
+class PressureUnit(BaseUnit, float):
     """Representation of a pressure unit.
 
     The base unit of pressure is Pascal.
-
+    
     Args:
-        value (float): Starting value to initialize the unit with.
-        conversion_factor (float): Factor used to convert value to base unit.
+        base_value (float): Starting value to initialize the unit with.
+        - Must be in terms of the base unit.
 
     Attributes:
         base_value (float): Value in terms of the base unit.
     """
 
-    def __init__(self, value, conversion_factor):
-        if type(value) is not float:
+    def __init__(self, base_value):
+        if type(base_value) is not float:
             raise TypeError("`base_value` must be of type float")
-        base_value = value * conversion_factor
+        super().__init__(base_value)
         self.base_value = base_value
 
-    def to_bar(self):
-        """Converts base unit to Bar.
+    def to(self, t):
+        """Converts one arbitrary PressureUnit to another.
         
+        Args:
+            t (type): The type to convert to.
+            - Must be a subclass of PressureUnit
         Returns:
-            Bar
+            An instance of type(t)
         """
-        new_value = self.base_value * 1/Bar.conversion_factor
-        return Bar(new_value)
 
-    def to_pascal(self):
-        """Converts base unit to Pascal.
-
-        Pascal is the base unit of pressure.
-
-        Returns:
-            Pascal
-        """
-        return Pascal(self.base_value)
+        if not issubclass(t, PressureUnit):
+            raise TypeError("`t` must be a subclass of PressureUnit") # TODO: custom error
+        # invert the base unit conversion
+        new_value = 1/t.convert(1/self.base_value)
+        return t(new_value)
 
 
-class Bar(Pressure):
+class Bar(PressureUnit):
     """Representation of the Bar pressure unit.
     
     Args:
@@ -53,12 +50,16 @@ class Bar(Pressure):
     conversion_factor = 100000
 
     def __init__(self, value):
-        super().__init__(value=value, conversion_factor=self.conversion_factor)
+        super().__init__(self.convert(value))
         self.value = value
+
+    @staticmethod
+    def convert(x):
+        return x * 100000
         
 
 
-class Pascal(Pressure):
+class Pascal(PressureUnit):
     """Representation of the Pascal pressure unit.
     
     Args:
@@ -71,5 +72,9 @@ class Pascal(Pressure):
     conversion_factor = 1.0
 
     def __init__(self, value):
-        super().__init__(value=value, conversion_factor=self.conversion_factor)
+        super().__init__(self.convert(value))
         self.value = value
+
+    @staticmethod
+    def convert(x):
+        return x
