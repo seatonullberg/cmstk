@@ -6,6 +6,10 @@ class TemperatureUnit(BaseUnit, float):
     """Representation of a temperature unit.
 
     The base unit of temperature is Celsius.
+
+    Temperature is unique in that it requires its implementations to
+    have a special `convert_inverse` method due to the nature of the 
+    conversion formula.
     
     Args:
         base_value (float): Starting value to initialize the unit with.
@@ -34,9 +38,9 @@ class TemperatureUnit(BaseUnit, float):
         if not issubclass(t, TemperatureUnit):
             raise TypeError("`t` must be a subclass of TemperatureUnit") # TODO: custom error
         # invert the base unit conversion
-        # Temperature is a special case where this does not work well
-
-        new_value = 1/t.convert(1/self.base_value)
+        # Temperature is a special case where this does not 
+        # work without manually constructing the function.
+        new_value = t.convert_inverse(self.base_value)
         return t(new_value)
 
 
@@ -58,6 +62,10 @@ class Celsius(TemperatureUnit):
     def convert(x):
         return x
 
+    @staticmethod
+    def convert_inverse(x):
+        return x
+
 
 class Fahrenheit(TemperatureUnit):
     """Representation of the Fahrenheit temperature unit.
@@ -77,6 +85,10 @@ class Fahrenheit(TemperatureUnit):
     def convert(x):
         return (x - 32) * (5 / 9)
 
+    @staticmethod
+    def convert_inverse(x):
+        return (x * (9 / 5)) + 32
+
 
 class Kelvin(TemperatureUnit):
     """Representation of the Kelvin temperature unit.
@@ -95,3 +107,7 @@ class Kelvin(TemperatureUnit):
     @staticmethod
     def convert(x):
         return x - 273.15
+
+    @staticmethod
+    def convert_inverse(x):
+        return x + 273.15

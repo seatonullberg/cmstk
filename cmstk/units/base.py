@@ -39,22 +39,34 @@ class BaseUnit(object):
     def __mul__(self, other):
         # override the multiplication operator
         # this could have a different error about type conversion
-        raise UnsafeUnitOperationError(operation="multiply", a=self.__class__.__name__, b=other.__class__.__name__)
+        if isinstance(other, BaseUnit):
+            raise UnsafeUnitOperationError(operation="multiply", a=self.__class__.__name__, b=other.__class__.__name__)
+        # multiplication by a constant is ok
+        return self.value * other
 
     def __truediv__(self, other):
         # override the true division operator
         # this could have a different error about type conversion
-        raise UnsafeUnitOperationError(operation="true divide", a=self.__class__.__name__, b=other.__class__.__name__)
+        if isinstance(other, BaseUnit):
+            raise UnsafeUnitOperationError(operation="true divide", a=self.__class__.__name__, b=other.__class__.__name__)
+        # division by a constant is ok
+        return self.value / other
 
     def __floordiv__(self, other):
         # override the floor division operator
         # this could have a different error about type conversion
-        raise UnsafeUnitOperationError(operation="floor divide", a=self.__class__.__name__, b=other.__class__.__name__)
+        if isinstance(other, BaseUnit):
+            raise UnsafeUnitOperationError(operation="floor divide", a=self.__class__.__name__, b=other.__class__.__name__)
+        # division by a constant is ok
+        return self.value // other
 
     def __mod__(self, other):
         # override the modulus operator
         # this could have a different error about type conversion
-        raise UnsafeUnitOperationError(operation="take remainder of", a=self.__class__.__name__, b=other.__class__.__name__)
+        if isinstance(other, BaseUnit):
+            raise UnsafeUnitOperationError(operation="take remainder of", a=self.__class__.__name__, b=other.__class__.__name__)
+        # modulus by constant is ok
+        return self.value % other
 
     def __lt__(self, other):
         # override the less than operator

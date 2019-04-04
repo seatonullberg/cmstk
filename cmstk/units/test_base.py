@@ -61,3 +61,28 @@ def test_unlike_base_unit_operations():
         _ = not bu1 > bu2
     with pytest.raises(UnsafeUnitOperationError):
         _ = bu1 >= bu2
+
+def test_constant_base_unit_operations():
+    # tests if valid operations for units and constants pass
+    value = 1.0
+    bu1 = Angstrom(value)
+    with pytest.raises(UnsafeUnitOperationError):
+        _ = bu1 + value
+    with pytest.raises(UnsafeUnitOperationError):
+        _ = bu1 - value
+    assert bu1 * value == 1.0
+    assert bu1 / value == 1.0
+    assert bu1 // value == 1
+    assert bu1 % value == 0.0
+    with pytest.raises(UnsafeUnitOperationError):
+        _ = not bu1 < value
+    with pytest.raises(UnsafeUnitOperationError):
+        _ = bu1 <= value
+    with pytest.raises(UnsafeUnitOperationError):
+        _ = bu1 == value
+    with pytest.raises(UnsafeUnitOperationError):
+        _ = not bu1 != value
+    with pytest.raises(UnsafeUnitOperationError):
+        _ = not bu1 > value
+    with pytest.raises(UnsafeUnitOperationError):
+        _ = bu1 >= value

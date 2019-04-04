@@ -2,11 +2,11 @@ from cmstk.units.base import BaseUnit
 import numpy as np
 
 
-class Velocity(BaseUnit, np.ndarray):
+class VelocityUnit(BaseUnit, np.ndarray):
     """Representation of a velocity unit.
     
     The base unit of velocity is MeterPerSecond.
-    Velocity units are treated as vectors (the way physicists intended).
+    VelocityUnit units are treated as vectors (the way physicists intended).
 
     Args:
         base_value (numpy.ndarray): Starting value to initialize the unit with.
@@ -19,29 +19,27 @@ class Velocity(BaseUnit, np.ndarray):
     def __init__(self, base_value):
         if type(base_value) is not np.ndarray:
             raise TypeError("`base_error` must be of type numpy.ndarray")
+        super().__init__(base_value)
         self.base_value = base_value
 
-    def to_angstrom_per_picosecond(self):
-        """Converts the base unit to AngstromPerPicosecond.
+    def to(self, t):
+        """Converts one arbitrary VelocityUnit to another.
         
+        Args:
+            t (type): The type to convert to.
+            - Must be a subclass of VelocityUnit
         Returns:
-            AngstromPerPicosecond
+            An instance of type(t)
         """
-        new_value = self.base_value * 0.01
-        return AngstromPerPicosecond(new_value)
 
-    def to_meter_per_second(self):
-        """Converts the base unit to MeterPerSecond.
-
-        MeterPerSecond is the base unit of velocity.
-
-        Returns:
-            MeterPerSecond
-        """
-        return MeterPerSecond(self.base_value)
+        if not issubclass(t, VelocityUnit):
+            raise TypeError("`t` must be a subclass of VelocityUnit") # TODO: custom error
+        # invert the base unit conversion
+        new_value = 1/t.convert(1/self.base_value)
+        return t(new_value)
 
     
-class AngstromPerPicosecond(Velocity):
+class AngstromPerPicosecond(VelocityUnit):
     """Representation of the AngstromPerPicosecond velocity unit.
     
     Args:
@@ -52,13 +50,15 @@ class AngstromPerPicosecond(Velocity):
     """
 
     def __init__(self, value):
-        conversion_factor = 100.0
-        _value = value * conversion_factor
-        super().__init__(base_value=_value)
+        super().__init__(self.convert(value))
         self.value = value
 
+    @staticmethod
+    def convert(x):
+        return x * 100.0
 
-class MeterPerSecond(Velocity):
+
+class MeterPerSecond(VelocityUnit):
     """Representation of the MeterPerSecond velocity unit.
     
     Args:
@@ -69,7 +69,9 @@ class MeterPerSecond(Velocity):
     """
 
     def __init__(self, value):
-        conversion_factor = 1.0
-        _value = value * conversion_factor
-        super().__init__(base_value=_value)
+        super().__init__(self.convert(value))
         self.value = value
+
+    @staticmethod
+    def convert(x):
+        return x
