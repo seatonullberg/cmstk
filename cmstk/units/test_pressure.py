@@ -11,18 +11,13 @@ def test_init_bar():
     assert isinstance(b, float)
     assert b.value == value
 
-def test_bar_to_bar():
-    # tests Bar to Bar unit conversion
+def test_bar_to_all():
+    # tests Bar unit conversion
     value = 1.0
     b = Bar(value)
     new_b = b.to(Bar)
     assert type(new_b) is Bar
     assert within_one_percent(value, new_b.value)
-
-def test_bar_to_pascal():
-    # tests Bar to Pascal unit conversion
-    value = 1.0
-    b = Bar(value)
     p = b.to(Pascal)
     assert type(p) is Pascal
     assert within_one_percent(100000, p.value)
@@ -38,18 +33,14 @@ def test_init_pascal():
     assert isinstance(p, float)
     assert p.value == value
 
-def test_pascal_to_bar():
-    # tests Pascal to Bar unit conversion
+def test_pascal_to_all():
+    # tests Pascal unit conversion
     value = 1.0
     p = Pascal(value)
     b = p.to(Bar)
     assert type(b) is Bar
     assert within_one_percent(1e-5, b.value)
-
-def test_pascal_to_pascal():
-    # tests Pascal to PAscal unit conversion
-    value = 1.0
-    p = Pascal(value)
     new_p = p.to(Pascal)
     assert type(new_p) is Pascal
     assert within_one_percent(value, new_p.value)
+    

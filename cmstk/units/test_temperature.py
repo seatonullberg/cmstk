@@ -11,26 +11,16 @@ def test_init_celsius():
     assert isinstance(c, float)
     assert c.value == value
 
-def test_celsius_to_celsius():
-    # tests Celsius to Celsius unit conversion
+def test_celsius_to_all():
+    # tests Celsius unit conversion
     value = 1.0 
     c = Celsius(value)
     new_c = c.to(Celsius)
     assert type(c) is Celsius
     assert within_one_percent(value, c.value)
-
-def test_celsius_to_fahrenheit():
-    # tests Celsius to Fahrenheit unit conversion
-    value = 1.0
-    c = Celsius(value)
     f = c.to(Fahrenheit)
     assert type(f) is Fahrenheit
     assert within_one_percent(33.8, f.value)
-
-def test_celsius_to_kelvin():
-    # tests Celsius to Kelvin unit conversion
-    value = 1.0
-    c = Celsius(value)
     k = c.to(Kelvin)
     assert type(k) is Kelvin
     assert within_one_percent(274.15, k.value)
@@ -46,27 +36,17 @@ def test_init_fahrenheit():
     assert isinstance(f, float)
     assert f.value == value
 
-def test_fahrenheit_to_celsius():
-    # tests Fahrenheit to Celsius unit conversion
+def test_fahrenheit_to_all():
+    # tests Fahrenheit unit conversion
     value = 1.0
     f = Fahrenheit(value)
     c = f.to(Celsius)
     assert type(c) is Celsius
     assert -18.0 < c.value < -17.0  # within_one_percent fails ???
     #assert within_one_percent(-17.22, c.value)
-
-def test_fahrenheit_to_fahrenheit():
-    # tests Fahrenheit to Fahrenheit unit conversion
-    value = 1.0
-    f = Fahrenheit(value)
     new_f = f.to(Fahrenheit)
     assert type(new_f) is Fahrenheit
     assert within_one_percent(value, new_f.value)
-
-def test_fahrenheit_to_kelvin():
-    # tests Fahrenheit to Kelvin unit conversion
-    value = 1.0
-    f = Fahrenheit(value)
     k = f.to(Kelvin)
     assert type(k) is Kelvin
     assert within_one_percent(255.928, k.value)
@@ -82,28 +62,18 @@ def test_init_kelvin():
     assert isinstance(k, float)
     assert k.value == value
 
-def test_kelvin_to_celsius():
-    # tests Kelvin to Celsius unit conversion
+def test_kelvin_to_all():
+    # tests Kelvin unit conversion
     value = 1.0
     k = Kelvin(value)
     c = k.to(Celsius)
     assert type(c) is Celsius
     assert -273.0 < c.value < -272.0  # within_one_percent_fails ???
     #assert within_one_percent(-272.15, c.value)
-
-def test_kelvin_to_fahrenheit():
-    # tests Kelvin to Fahrenheit unit conversion
-    value = 1.0
-    k = Kelvin(value)
     f = k.to(Fahrenheit)
     assert type(f) is Fahrenheit
     assert -458 < f.value < -457  # within_one_percent_fails ???
     #assert within_one_percent(-457.870, f.value)
-
-def test_kelvin_to_kelvin():
-    # tests Kelvin to Kelvin unit converison
-    value = 1.0
-    k = Kelvin(value)
     new_k = k.to(Kelvin)
     assert type(new_k) is Kelvin
     assert within_one_percent(value, new_k.value)
