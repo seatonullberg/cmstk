@@ -23,6 +23,7 @@ if __name__ == "__main__":
     lattice.to_file(path=path, t=ProtoLatticeFile)
     end = datetime.now()
     print("Finished writing {}.".format(path))
-    print("Total time: {}".format(end-start))
+    total_time = (end-start).total_seconds()
+    print("Total time: {} seconds".format(total_time))
     size = os.path.getsize(path)
     print("{} contains {} atoms and has size: {} bytes".format(path, lattice.n_atoms, size))
