@@ -1,7 +1,7 @@
 syntax = "proto3";
 package lattice;
 
-message Atom {
+message ProtoAtom {
     float x = 1;
     float y = 2;
     float z = 3;
@@ -9,7 +9,6 @@ message Atom {
     string symbol = 5;
 }
 
-message Lattice {
-    repeated Atom atoms = 1;
-    map<string, string> colors = 2;
+message ProtoLattice {
+    repeated ProtoAtom atoms = 1;
 }

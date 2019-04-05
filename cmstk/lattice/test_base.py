@@ -1,7 +1,10 @@
-from cmstk.lattice.base import Atom, AtomicPosition, Lattice, LatticeFile, separation_distance
+from cmstk.lattice.base import Atom, AtomicPosition, Lattice, BaseLatticeFile, separation_distance
+from cmstk.lattice.file_types import ProtoLatticeFile
 from cmstk.lattice.exceptions import AtomicPositionError
 from cmstk.units.distance import Picometer
 import pytest
+import os
+
 
 def test_separation_distance():
     # tests result of the separation_distance function
@@ -63,7 +66,18 @@ def test_lattice_remove_atom():
     l.remove_atom(p)
     assert l.n_atoms == 0
 
+def test_lattice_to_file_proto():
+    # tests if Lattice can write itself to protobuf format
+    l = Lattice([])
+    p = (Picometer(1.0), Picometer(1.0), Picometer(1.0))
+    p = AtomicPosition(p)
+    a = Atom(symbol="C", position=p)
+    l.add_atom(a)
+    l.to_file("test.lattice", ProtoLatticeFile)
+    assert os.path.exists("test.lattice")
+    os.remove("test.lattice")
+
 
 #def test_init_lattice_file():
-#    # tests if a LatticeFile can be initialized
+#    # tests if a BaseLatticeFile can be initialized
 #    pass
