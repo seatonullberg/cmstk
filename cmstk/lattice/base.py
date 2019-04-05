@@ -63,7 +63,10 @@ class Lattice(object):
         """Adds an atom to the lattice if the position is not already occupied.
 
         Args:
-            atom (Atom): The atom to add
+            atom (Atom): The atom to add.
+        
+        Raises:
+            AtomicPositionError - If an atom already exists in the given position.
         """
         if type(atom) is not Atom:
             raise TypeError("`atom` must be of type Atom")
@@ -75,7 +78,10 @@ class Lattice(object):
         """Removes an atom if position is within the radius of an existing atom.
         
         Args:
-            position (tuple of float): (x, y, z) spatial coordinates. 
+            position (tuple of float): (x, y, z) spatial coordinates.
+        
+        Raises:
+            AtomicPositionError - If an atom does not exist in the given position.
         """
         if type(position) is not tuple:
             raise TypeError("`position` must be of type tuple")

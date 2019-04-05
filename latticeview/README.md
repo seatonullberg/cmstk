@@ -1,1 +1,1 @@
-A lattice visualizer written in Go. Rendering functionality is provided by the g3n game engine. This program is designed to interact specifically with the cmstk.lattice package and the `.lattice` filetype it produces. 
+A lattice visualizer written in Go. Rendering functionality is provided by the [g3n game engine](https://github.com/g3n/engine). This program is designed to interact specifically with the cmstk.lattice package and the `.lattice` filetype it produces. 

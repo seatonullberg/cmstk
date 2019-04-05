@@ -48,25 +48,6 @@ class ForceUnit(BaseUnit, float):
 ###############################
 
 
-class Newton(ForceUnit):
-    """Representation of the Newton unit of force.
-
-    Args:
-        value (float): Starting value to initialize the unit with.
-
-    Attributes:
-        value (float): Value of the unit.
-    """
-
-    def __init__(self, value):
-        super().__init__(self.convert(value))
-        self.value = value
-
-    @staticmethod
-    def convert(x):
-        return x
-
-
 class Dyne(ForceUnit):
     """Representation of the Dyne unit of force.
 
@@ -84,3 +65,22 @@ class Dyne(ForceUnit):
     @staticmethod
     def convert(x):
         return x * 1e-5
+
+
+class Newton(ForceUnit):
+    """Representation of the Newton unit of force.
+
+    Args:
+        value (float): Starting value to initialize the unit with.
+
+    Attributes:
+        value (float): Value of the unit.
+    """
+
+    def __init__(self, value):
+        super().__init__(self.convert(value))
+        self.value = value
+
+    @staticmethod
+    def convert(x):
+        return x
