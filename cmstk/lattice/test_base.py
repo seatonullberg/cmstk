@@ -39,11 +39,12 @@ def test_init_atom():
 
 def test_init_lattice():
     # tests if a Lattice can be initialized
-    l = Lattice([])
+    l = Lattice()
+    assert l.n_atoms == 0
 
 def test_lattice_add_atom():
     # tests  proper atom addition behavior
-    l = Lattice([])
+    l = Lattice()
     p = (Picometer(1.0), Picometer(1.0), Picometer(1.0))
     p = AtomicPosition(p)
     a = Atom(symbol="C", position=p)

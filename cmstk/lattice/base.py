@@ -114,12 +114,15 @@ class Lattice(object):
         atoms (list of Atom): Collection of atoms in the lattice.
     """
 
-    def __init__(self, atoms):
+    def __init__(self, atoms=None):
+        if atoms is None:
+            atoms = []
         if type(atoms) is not list:
             raise TypeError("`atoms` must be of type list")
         for a in atoms:
             if type(a) is not Atom:
                 raise TypeError("all members of list `atoms` must be of type Atom")
+
         self._atoms = atoms
 
     @property
@@ -180,7 +183,14 @@ class Lattice(object):
             t (type): Type to interpret the file as
             - Must be a subclass of `BaseLatticeFile`
         """
-        # TODO
+        if type(path) is not str:
+            raise TypeError("`path` must be of type str")
+        if not issubclass(t, BaseLatticeFile):
+            raise TypeError("`t` must be a subclass of type BaseLatticeFile")
+        
+        obj = t(path=path)
+        atoms = obj.read()
+        return cls(atoms=atoms)
 
     def to_file(self, path, t):
         """Writes a lattice to a supported file type.
