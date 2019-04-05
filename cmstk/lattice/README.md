@@ -1,1 +1,1 @@
-Platform agnostic lattice structures which can be written to various formats.
+Lattice structures which can be written to various platform agnostic file formats or manipulated in code.
