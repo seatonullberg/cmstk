@@ -1,3 +1,61 @@
+import math
+from cmstk.data import ElementsReader
+from cmstk.lattice.exceptions import AtomicPositionError
+from cmstk.units.distance import DistanceUnit, Picometer
+
+
+def separation_distance(p1, p2):
+    """Returns the separation distance between two positions.
+
+    Args:
+        p1 (AtomicPosition): The first position.
+        p2 (AtomicPosition): the second position.
+
+    Returns:
+        tuple of Picometers (x, y, z)
+    """
+    distances = []
+    for i in range(3):
+        pico_p1 = p1[i].to(Picometer)
+        pico_p2 = p2[i].to(Picometer)
+        dist = math.sqrt((pico_p1-pico_p2).value**2)  # use .value because squaring would throw conversion error
+        dist = Picometer(dist)
+        distances.append(dist)
+    return tuple(distances)
+
+
+class AtomicPosition(object):
+    """Representation of 3D coordinates.
+
+    Notes:
+        Overrides __getitem__ and __setitem__ to access underlying position value directly.
+        Provides a means of data integrity without constant manual verification.
+    
+    Args:
+        position (tuple of DistanceUnit): (x, y, z) spatial coordinates 
+    """
+
+    def __init__(self, position):
+        if type(position) is not tuple:
+            raise TypeError("`position` must be of type tuple")
+        for p in position:
+            if not isinstance(p, DistanceUnit):
+                raise TypeError("all members of `position` must be an instance of type DistanceUnit")
+        if len(position) != 3:
+            raise ValueError("`position` must have length 3")
+        
+        self._position = position
+
+    def __iter__(self):
+        return self._position.__iter__()
+
+    def __getitem__(self, key):
+        return self._position.__getitem__(key)
+
+    def __setitem__(self, key, value):
+        if not isinstance(value, DistanceUnit):
+            raise TypeError("AtomicPosition only accepts instances of type DistanceUnit")
+        return self._position.__setitem__(key, value)
 
 
 class Atom(object):
@@ -5,11 +63,11 @@ class Atom(object):
     
     Args:
         symbol (str): IUPAC chemical symbol.
-        position (tuple): (x, y, z) spatial coordinates.
+        position (AtomicPosition): Verified (x, y, z) spatial coordinates.
 
     Attributes:
         symbol (str): IUPAC chemical symbol.
-        position (tuple of float): (x, y, z) spatial coordinates.
+        position (AtomicPosition): Verified (x, y, z) spatial coordinates.
     """
 
     def __init__(self, symbol, position):
@@ -17,14 +75,38 @@ class Atom(object):
             raise TypeError("`symbol` must be of type str")
         self.symbol = symbol
 
-        if type(position) is not tuple:
-            raise TypeError("`position` must be of type tuple")
-        if len(position) != 3:
-            raise ValueError("`position` must have length 3")
-        for p in position:
-            if type(p) is not float:
-                raise TypeError("all members of tuple `position` must be of type float")
+        if type(position) is not AtomicPosition:
+            raise TypeError("`position` must be of type AtomicPosition")
         self.position = position
+
+        self._elements_reader = ElementsReader() # store this for easy access in properties
+
+    @property
+    def atomic_radius(self):
+        """Returns the Atom's radius as described in elements.json.
+        
+        Returns:
+            Picometer
+        """
+        return self._elements_reader.atomic_radius(self.symbol)
+
+    @property
+    def crystal_structure(self):
+        """Returns the Atom's crystal structure as described in elements.json.
+        
+        Returns:
+            str
+        """
+        return self._elements_reader.crystal_structure(self.symbol)
+
+    @property
+    def lattice_constants(self):
+        """Returns the Atom's lattice constants as described in elements.json.
+        
+        Returns:
+            tuple of Picometer
+        """
+        return self._elements_reader.lattice_constants(self.symbol)
 
 
 class Lattice(object):
@@ -53,11 +135,17 @@ class Lattice(object):
         """
         # TODO
 
-    # TODO: not sure if this works
     @property
     def atoms(self):
+        """Returns a generator of all atoms."""
         for a in self._atoms:
             yield a
+
+    @property
+    def n_atoms(self):
+        """Returns the number of atoms."""
+        return len(self._atoms)
+    
 
     def add_atom(self, atom):
         """Adds an atom to the lattice if the position is not already occupied.
@@ -70,29 +158,35 @@ class Lattice(object):
         """
         if type(atom) is not Atom:
             raise TypeError("`atom` must be of type Atom")
-        # TODO: check for availability of the space
-        # use the atomic radii as the tolerance for addition
+
+        for a in self.atoms:
+            minimum_separation = a.atomic_radius + atom.atomic_radius
+            actual_separations = separation_distance(a.position, atom.position)
+            for sep_dist in actual_separations:
+                if sep_dist < minimum_separation:
+                    raise AtomicPositionError(position=atom.position, exists=True)
         self._atoms.append(atom)
 
     def remove_atom(self, position):
-        """Removes an atom if position is within the radius of an existing atom.
+        """Removes an atom if the position is occupied.
         
         Args:
-            position (tuple of float): (x, y, z) spatial coordinates.
+            position (AtomicPosition): Verified (x, y, z) spatial coordinates.
         
         Raises:
             AtomicPositionError - If an atom does not exist in the given position.
         """
-        if type(position) is not tuple:
-            raise TypeError("`position` must be of type tuple")
-        if len(position) != 3:
-            raise ValueError("`position` must have length 3")
-        for p in position:
-            if type(p) is not float:
-                raise TypeError("all members of tuple `position` must be of type float")
-        
-        # TODO: check for atom in this space and remove if exists
-        # del self._atoms[index]
+        if type(position) is not AtomicPosition:
+            raise TypeError("`position` must be of type AtomicPosition")
+
+        for i, a in enumerate(self._atoms):  # iterate over the actual list because it may be modified intermediately
+            separations = separation_distance(position, a.position)
+            for sep_dist in separations:
+                if sep_dist < a.atomic_radius:
+                    del self._atoms[i]
+                    return
+        raise AtomicPositionError(position=position, exists=False)
+
 
     def write(self, t):
         """Writes a lattice to a supported file type.
@@ -106,4 +200,4 @@ class Lattice(object):
 
 class LatticeFile(object):
     """Representation of a file type which a lattice can be written into."""
-        
+    # TODO        

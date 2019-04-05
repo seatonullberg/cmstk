@@ -3,6 +3,9 @@ from cmstk.units.exceptions import UnsafeUnitOperationError
 
 class BaseUnit(object):
     """Base class which overrides mathematical operators to ensure unit safety.
+
+    Notes:
+        All safe operations return an instance of the unit initialized with the result of the operation.
     
     Args:
         value (obj): Starting value to initialize the unit with.
@@ -25,14 +28,16 @@ class BaseUnit(object):
     def __add__(self, other):
         # override the addition operator
         if type(self) is type(other):
-            return self.value + other.value
+            new_value = self.value + other.value
+            return self.__class__(new_value)
         else:
             raise UnsafeUnitOperationError(operation="add", a=self.__class__.__name__, b=other.__class__.__name__)
 
     def __sub__(self, other):
         # override the subtraction operator
         if type(self) is type(other):
-            return self.value - other.value
+            new_value = self.value - other.value
+            return self.__class__(new_value)
         else:
             raise UnsafeUnitOperationError(operation="subtract", a=self.__class__.__name__, b=other.__class__.__name__)
 
@@ -42,7 +47,8 @@ class BaseUnit(object):
         if isinstance(other, BaseUnit):
             raise UnsafeUnitOperationError(operation="multiply", a=self.__class__.__name__, b=other.__class__.__name__)
         # multiplication by a constant is ok
-        return self.value * other
+        new_value = self.value * other
+        return self.__class__(new_value)
 
     def __truediv__(self, other):
         # override the true division operator
@@ -50,7 +56,8 @@ class BaseUnit(object):
         if isinstance(other, BaseUnit):
             raise UnsafeUnitOperationError(operation="true divide", a=self.__class__.__name__, b=other.__class__.__name__)
         # division by a constant is ok
-        return self.value / other
+        new_value = self.value / other
+        return self.__class__(new_value)
 
     def __floordiv__(self, other):
         # override the floor division operator
@@ -58,7 +65,8 @@ class BaseUnit(object):
         if isinstance(other, BaseUnit):
             raise UnsafeUnitOperationError(operation="floor divide", a=self.__class__.__name__, b=other.__class__.__name__)
         # division by a constant is ok
-        return self.value // other
+        new_value = self.value // other
+        return self.__class__(new_value)
 
     def __mod__(self, other):
         # override the modulus operator
@@ -66,7 +74,8 @@ class BaseUnit(object):
         if isinstance(other, BaseUnit):
             raise UnsafeUnitOperationError(operation="take remainder of", a=self.__class__.__name__, b=other.__class__.__name__)
         # modulus by constant is ok
-        return self.value % other
+        new_value = self.value % other
+        return self.__class__(new_value)
 
     def __lt__(self, other):
         # override the less than operator

@@ -28,7 +28,7 @@ def test_elements_reader_lattice_constants():
     er = ElementsReader()
     symbol = "C"
     lattice_constants = er.lattice_constants(symbol)
-    assert type(lattice_constants) is list
+    assert type(lattice_constants) is tuple
     for constant in lattice_constants:
         assert type(constant) is Picometer
     assert lattice_constants[0].value == 246.4

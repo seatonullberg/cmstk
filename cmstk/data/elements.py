@@ -1,9 +1,6 @@
 from cmstk.data.base import BaseDataReader
 from cmstk.units.distance import Picometer
 
-# TODO: (maybe) alter such that units are returned 
-# - provide methods to access elemental properties and return the value wrapped in the proper unit
-
 
 class ElementsReader(BaseDataReader):
     """Represents access the the elements.json file in the top level data directory."""
@@ -42,8 +39,8 @@ class ElementsReader(BaseDataReader):
             symbol (str): IUPAC chemical symbol.
         
         Returns:
-            list of Picometer
+            tuple of Picometer
         """
         constants = self[symbol]["lattice_constants"]
         typed_constants = [Picometer(c) for c in constants]
-        return typed_constants
+        return tuple(typed_constants)
