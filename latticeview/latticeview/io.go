@@ -19,3 +19,12 @@ func ReadProtoFile(path string) (*ProtoLattice, error) {
 	}
 	return protoLattice, nil
 }
+
+// WriteProtoFile writes a ProtoLattice to a protobuf file.
+func WriteProtoFile(path string, lattice *ProtoLattice) error {
+	bytes, err := proto.Marshal(lattice)
+	if err != nil {
+		return err
+	}
+	return ioutil.WriteFile(path, bytes, 0644)
+}
