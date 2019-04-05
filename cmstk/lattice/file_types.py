@@ -27,14 +27,17 @@ class ProtoLatticeFile(BaseLatticeFile):
 
     def write(self):
         proto_atoms = []
+        # convert atoms to ProtoAtoms
         for a in self._lattice.atoms:
-            p_atom = ProtoAtom()
-            p_atom.x = a.position[0]
-            p_atom.y = a.position[1]
-            p_atom.z = a.position[2]
-            p_atom.radius = a.atomic_radius
-            p_atom.symbol = a.symbol
+            p_atom = ProtoAtom(
+                x=a.position[0],
+                y=a.position[1],
+                z=a.position[2],
+                radius=a.atomic_radius,
+                symbol=a.symbol,
+            )
             proto_atoms.append(p_atom)
+        # convert lattice to ProtoLattice
         proto_lattice = ProtoLattice(
             atoms=proto_atoms
         )

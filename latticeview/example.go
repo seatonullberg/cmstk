@@ -14,7 +14,7 @@ func main() {
 	app, _ := application.Create(application.Options{
 		Title:  "Hello G3N",
 		Width:  800,
-		Height: 600,
+		Height: 800,
 	})
 
 	// Create a blue torus and add it to the scene

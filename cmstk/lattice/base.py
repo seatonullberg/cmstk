@@ -12,16 +12,14 @@ def separation_distance(p1, p2):
         p2 (AtomicPosition): the second position.
 
     Returns:
-        tuple of Picometers (x, y, z)
+        Picometer
     """
-    distances = []
-    for i in range(3):
-        pico_p1 = p1[i].to(Picometer)
-        pico_p2 = p2[i].to(Picometer)
-        dist = math.sqrt((pico_p1-pico_p2).value**2)  # use .value because squaring would throw conversion error
-        dist = Picometer(dist)
-        distances.append(dist)
-    return tuple(distances)
+    pico_x1, pico_x2 = p1[0].to(Picometer), p2[0].to(Picometer)
+    pico_y1, pico_y2 = p1[1].to(Picometer), p2[1].to(Picometer)
+    pico_z1, pico_z2 = p1[2].to(Picometer), p2[2].to(Picometer)
+    # use .value because squaring would throw conversion error
+    distance = math.sqrt((pico_x1-pico_x2).value**2 + (pico_y1-pico_y2).value**2 + (pico_z1-pico_z2).value**2)
+    return Picometer(distance)
 
 
 class AtomicPosition(object):
@@ -149,10 +147,9 @@ class Lattice(object):
 
         for a in self.atoms:
             minimum_separation = a.atomic_radius + atom.atomic_radius
-            actual_separations = separation_distance(a.position, atom.position)
-            for sep_dist in actual_separations:
-                if sep_dist < minimum_separation:
-                    raise AtomicPositionError(position=atom.position, exists=True)
+            actual_separation = separation_distance(a.position, atom.position)
+            if actual_separation < minimum_separation:
+                raise AtomicPositionError(position=atom.position, exists=True)
         self._atoms.append(atom)
 
     def remove_atom(self, position):
@@ -168,11 +165,10 @@ class Lattice(object):
             raise TypeError("`position` must be of type AtomicPosition")
 
         for i, a in enumerate(self._atoms):  # iterate over the actual list because it may be modified intermediately
-            separations = separation_distance(position, a.position)
-            for sep_dist in separations:
-                if sep_dist < a.atomic_radius:
-                    del self._atoms[i]
-                    return
+            separation = separation_distance(position, a.position)
+            if separation < a.atomic_radius:
+                del self._atoms[i]
+                return
         raise AtomicPositionError(position=position, exists=False)
 
     @classmethod
