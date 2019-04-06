@@ -30,7 +30,7 @@ def test_elements_reader_crystal_structure():
     er = ElementsReader()
     symbol = "C"
     crystal_structure = er.crystal_structure(symbol)
-    assert crystal_structure == "sh"
+    assert crystal_structure == "hcp"
 
 def test_elements_reader_lattice_constants():
     # tests ElementsReader lattice constants access

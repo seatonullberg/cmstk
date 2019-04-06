@@ -7,7 +7,7 @@
     "C": {
         "atomic_radius": 67,
         "covalent_radius": 76,
-        "crystal_structure": "sh",
+        "crystal_structure": "hcp",
         "lattice_constants": [246.4, 246.4, 671.1]
     },
     "N": {},
@@ -21,7 +21,7 @@
     "Mg": {
         "atomic_radius": 145,
         "covalent_radius": 141,
-        "crystal_structure": "sh",
+        "crystal_structure": "hcp",
         "lattice_constants": [320.94, 302.94, 521.08]
     },
     "Al": {
@@ -41,7 +41,7 @@
     "Ti": {
         "atomic_radius": 176,
         "covalent_radius": 160,
-        "crystal_structure": "sh",
+        "crystal_structure": "hcp",
         "lattice_constants": [295.08, 295.08, 468.55]
     },
     "V": {
@@ -71,7 +71,7 @@
     "Co": {
         "atomic_radius": 152,
         "covalent_radius": 126,
-        "crystal_structure": "sh",
+        "crystal_structure": "hcp",
         "lattice_constants": [250.71, 250.71, 406.95]
     },
     "Ni": {

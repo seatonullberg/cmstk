@@ -38,10 +38,13 @@ func main() {
 		app.Scene().Add(sphereMesh)
 	}
 
-	// Add light to the scene
-	color := math32.NewColor("White")
-	ambientLight := light.NewAmbient(color, 1.0)
+	// Add lights to the scene
+	lightColor := math32.NewColor("White")
+	ambientLight := light.NewAmbient(lightColor, 0.8)
 	app.Scene().Add(ambientLight)
+	pointLight := light.NewPoint(lightColor, 5.0)
+	pointLight.SetPosition(-2, -2, -2)
+	app.Scene().Add(pointLight)
 
 	// Add an axis helper to the scene
 	axis := graphic.NewAxisHelper(1.0)
