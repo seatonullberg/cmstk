@@ -33,7 +33,10 @@ class PressureUnit(BaseUnit, float):
         if not issubclass(t, PressureUnit):
             raise TypeError("`t` must be a subclass of PressureUnit") # TODO: custom error
         # invert the base unit conversion
-        new_value = 1/t.convert(1/self.base_value)
+        try:
+            new_value = 1/t.convert(1/self.base_value)
+        except ZeroDivisionError:
+            new_value = 0.0
         return t(new_value)
 
 
