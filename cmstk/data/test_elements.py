@@ -16,6 +16,15 @@ def test_elements_reader_atomic_radius():
     assert type(atomic_radius) is Picometer
     assert atomic_radius.value == float(67)
 
+def test_elements_Reader_covalent_radius():
+    # tests ElementsReader covalent radius access
+    er = ElementsReader()
+    symbol = "C"
+    covalent_radius = er.covalent_radius(symbol)
+    assert type(covalent_radius) is Picometer
+    assert covalent_radius.value == float(76)
+
+
 def test_elements_reader_crystal_structure():
     # tests ElementsReader crystal structure access
     er = ElementsReader()

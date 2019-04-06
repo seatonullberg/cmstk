@@ -89,6 +89,15 @@ class Atom(object):
         return self._elements_reader.atomic_radius(self.symbol)
 
     @property
+    def covalent_radius(self):
+        """Returns the Atom's covalent radius as described in elements.json.
+        
+        Returns:
+            Picometer
+        """
+        return self._elements_reader.covalent_radius(self.symbol)
+
+    @property
     def crystal_structure(self):
         """Returns the Atom's crystal structure as described in elements.json.
         
@@ -136,40 +145,58 @@ class Lattice(object):
         """Returns the number of atoms."""
         return len(self._atoms)
 
-    def add_atom(self, atom):
+    def add_atom(self, atom, tolerance=None):
         """Adds an atom to the lattice if the position is not already occupied.
 
         Args:
             atom (Atom): The atom to add.
+            tolerance (optional) (DistanceUnit): Minimum separation distance for valid addition.
+            - `tolerance` defaults to the covalent radius of `atom` plus that of its nearest neighbor.
         
         Raises:
             AtomicPositionError - If an atom already exists in the given position.
         """
         if type(atom) is not Atom:
             raise TypeError("`atom` must be of type Atom")
+        if tolerance is not None:
+            if not isinstance(tolerance, DistanceUnit):
+                raise TypeError("`tolerance` must be an instance of DistanceUnit")
 
         for a in self.atoms:
-            minimum_separation = a.atomic_radius + atom.atomic_radius
+            if tolerance is None:
+                minimum_separation = a.covalent_radius + atom.covalent_radius
+            else:
+                minimum_separation = tolerance.to(Picometer)
             actual_separation = separation_distance(a.position, atom.position)
             if actual_separation < minimum_separation:
                 raise AtomicPositionError(position=atom.position, exists=True)
         self._atoms.append(atom)
 
-    def remove_atom(self, position):
+    def remove_atom(self, position, tolerance=None):
         """Removes an atom if the position is occupied.
         
         Args:
             position (AtomicPosition): Verified (x, y, z) spatial coordinates.
+            tolerance (optional) (DistanceUnit): Maximum separation distance from another atomic center for valid removal.
+            - `tolerance` defaults to the covalent radius of `atom`'s nearest neighbor.
         
         Raises:
             AtomicPositionError - If an atom does not exist in the given position.
         """
         if type(position) is not AtomicPosition:
             raise TypeError("`position` must be of type AtomicPosition")
+        if tolerance is not None:
+            if not isinstance(tolerance, DistanceUnit):
+                raise TypeError("`tolerance` must be an instance of DistanceUnit")
 
         for i, a in enumerate(self._atoms):  # iterate over the actual list because it may be modified intermediately
+            if tolerance is None:
+                maximum_separation = a.covalent_radius
+            else:
+                maximum_separation = tolerance.to(Picometer)
+
             separation = separation_distance(position, a.position)
-            if separation < a.atomic_radius:
+            if separation < maximum_separation:
                 del self._atoms[i]
                 return
         raise AtomicPositionError(position=position, exists=False)
@@ -207,7 +234,3 @@ class Lattice(object):
         
         obj = t(path=path, lattice=self)
         obj.write()
-
-
-class BaseLatticeFile(object):
-    """Abstract representation of a file into which a lattice can be written."""

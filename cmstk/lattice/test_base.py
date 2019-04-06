@@ -1,4 +1,4 @@
-from cmstk.lattice.base import Atom, AtomicPosition, Lattice, BaseLatticeFile, separation_distance
+from cmstk.lattice.base import Atom, AtomicPosition, Lattice, separation_distance
 from cmstk.lattice.exceptions import AtomicPositionError
 from cmstk.units.distance import Picometer
 from cmstk.units.test_testing_resources import within_one_percent

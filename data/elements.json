@@ -6,23 +6,27 @@
     "B": {},
     "C": {
         "atomic_radius": 67,
+        "covalent_radius": 76,
         "crystal_structure": "sh",
         "lattice_constants": [246.4, 246.4, 671.1]
     },
     "N": {},
     "O": {
-        "atomic_radius": 48
+        "atomic_radius": 48,
+        "covalent_radius": 66
     },
     "F": {},
     "Ne": {},
     "Na": {},
     "Mg": {
         "atomic_radius": 145,
+        "covalent_radius": 141,
         "crystal_structure": "sh",
         "lattice_constants": [320.94, 302.94, 521.08]
     },
     "Al": {
         "atomic_radius": 118,
+        "covalent_radius": 121,
         "crystal_structure": "fcc",
         "lattice_constants": [404.95, 404.95, 404.95]
     },
@@ -36,36 +40,43 @@
     "Sc": {},
     "Ti": {
         "atomic_radius": 176,
+        "covalent_radius": 160,
         "crystal_structure": "sh",
         "lattice_constants": [295.08, 295.08, 468.55]
     },
     "V": {
         "atomic_radius": 171,
+        "covalent_radius": 153,
         "crystal_structure": "bcc",
         "lattice_constants": [303.0, 303.0, 303.0]
     },
     "Cr": {
         "atomic_radius": 166,
+        "covalent_radius": 139,
         "crystal_structure": "bcc",
         "lattice_constants": [291.0, 291.0, 291.0]
     },
     "Mn": {
         "atomic_radius": 161,
+        "covalent_radius": 139,
         "crystal_structure": "bcc",
         "lattice_constants": [891.25, 891.25, 891.25]
     },
     "Fe": {
         "atomic_radius": 156,
+        "covalent_radius": 132,
         "crystal_structure": "bcc",
         "lattice_constants": [286.65, 286.65, 286.65]
     },
     "Co": {
         "atomic_radius": 152,
+        "covalent_radius": 126,
         "crystal_structure": "sh",
         "lattice_constants": [250.71, 250.71, 406.95]
     },
     "Ni": {
         "atomic_radius": 149,
+        "covalent_radius": 124,
         "crystal_structure": "fcc",
         "lattice_constants": [352.4, 352.4, 352.4]
     },
@@ -84,6 +95,7 @@
     "Nb": {},
     "Mo": {
         "atomic_radius": 190,
+        "covalent_radius": 154,
         "crystal_structure": "bcc",
         "lattice_constants": [314.7, 314.7, 314.7]
     },
@@ -92,6 +104,7 @@
     "Rh": {},
     "Pd": {
         "atomic_radius": 169,
+        "covalent_radius": 139,
         "crystal_structure": "fcc",
         "lattice_constants": [389.07, 389.07, 389.07]
     },

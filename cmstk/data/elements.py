@@ -20,6 +20,18 @@ class ElementsReader(BaseDataReader):
         r = self[symbol]["atomic_radius"]
         return Picometer(r)
 
+    def covalent_radius(self, symbol):
+        """Returns covalent radius of `symbol` in Picometer units.
+        
+        Args:
+            symbol (str): IUPAC chemical symbol.
+
+        Returns:
+            Picometer
+        """
+        r = self[symbol]["covalent_radius"]
+        return Picometer(r)
+
     def crystal_structure(self, symbol):
         """Returns crystal structure of `symbol`.
         

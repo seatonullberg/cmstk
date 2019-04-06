@@ -9,9 +9,7 @@ from datetime import datetime
 if __name__ == "__main__":
     print("Generating unit cell...")
     start = datetime.now()
-    #a0 = Picometer(352.4)
-    # this is wrong
-    a0 = Picometer(500)
+    a0 = Picometer(352.4)
     lattice = unit_cell_fcc(a0=a0, symbol="Ni")
     print("Writing lattice to file...")
     filename = "Ni_fcc_unit_cell.lattice"
