@@ -1,18 +1,21 @@
 from cmstk.lattice import Atom, AtomicPosition, Lattice
 from cmstk.lattice.io import write_lattice_to_proto_file
-from cmstk.lattice.unit_cell import unit_cell_fcc
+from cmstk.lattice.unit_cell import unit_cell_bcc
 from cmstk.units import Picometer
 import os
 from datetime import datetime
 
 
 if __name__ == "__main__":
-    print("Generating FCC unit cell...")
+    print("Generating BCC unit cell...")
     start = datetime.now()
-    a0 = Picometer(352.4)  # physically accurate
-    lattice = unit_cell_fcc(a0=a0, symbol="Ni")
+    a0 = Picometer(286.65)  # physically accurate
+    # requires a custom tolerance because covalent radius is too large to pack BCC in Fe
+    # default tolerance would be 264.0
+    tol = Picometer(248.0)
+    lattice = unit_cell_bcc(a0=a0, symbol="Fe", tolerance=tol)
     print("Writing lattice to file...")
-    filename = "Ni_fcc_unit_cell.lattice"
+    filename = "Fe_bcc_unit_cell.lattice"
     write_lattice_to_proto_file(path=filename, lattice=lattice)
     end = datetime.now()
     print("Finished writing {}.".format(filename))

@@ -2,12 +2,14 @@ from cmstk.lattice import Atom, AtomicPosition, Lattice
 from cmstk.units.distance import DistanceUnit, Picometer
 
 
-def unit_cell_sc(a0, symbol):
+def unit_cell_sc(a0, symbol, tolerance=None):
     """Creates a single species Simple-Cubic unit cell.
     
     Args:
         a0 (DistanceUnit): Lattice parameter as an arbitrary distance.
         symbol (str): IUPAC chemical symbol.
+        tolerance (optional) (DistanceUnit): Minimum separation distance for valid addition.
+        - `tolerance` defaults to the covalent radius of `atom` plus that of its nearest neighbor.
     
     Returns:
         Lattice
@@ -25,46 +27,48 @@ def unit_cell_sc(a0, symbol):
     p = AtomicPosition(p)
     a0 = a0.to(Picometer).value
     atom = Atom(symbol, p)
-    lattice.add_atom(atom)
+    lattice.add_atom(atom, tolerance)
 
     # make all the other atoms
     p = (Picometer(a0), Picometer(0.0), Picometer(0.0))
     p = AtomicPosition(p)
     atom = Atom(symbol, p)
-    lattice.add_atom(atom)
+    lattice.add_atom(atom, tolerance)
     p = (Picometer(0.0), Picometer(0.0), Picometer(a0))
     p = AtomicPosition(p)
     atom = Atom(symbol, p)
-    lattice.add_atom(atom)
+    lattice.add_atom(atom, tolerance)
     p = (Picometer(a0), Picometer(0.0), Picometer(a0))
     p = AtomicPosition(p)
     atom = Atom(symbol, p)
-    lattice.add_atom(atom)
+    lattice.add_atom(atom, tolerance)
     p = (Picometer(0.0), Picometer(a0), Picometer(0.0))
     p = AtomicPosition(p)
     atom = Atom(symbol, p)
-    lattice.add_atom(atom)
+    lattice.add_atom(atom, tolerance)
     p = (Picometer(a0), Picometer(a0), Picometer(0.0))
     p = AtomicPosition(p)
     atom = Atom(symbol, p)
-    lattice.add_atom(atom)
+    lattice.add_atom(atom, tolerance)
     p = (Picometer(0.0), Picometer(a0), Picometer(a0))
     p = AtomicPosition(p)
     atom = Atom(symbol, p)
-    lattice.add_atom(atom)
+    lattice.add_atom(atom, tolerance)
     p = (Picometer(a0), Picometer(a0), Picometer(a0))
     p = AtomicPosition(p)
     atom = Atom(symbol, p)
-    lattice.add_atom(atom)
+    lattice.add_atom(atom, tolerance)
 
     return lattice
 
-def unit_cell_bcc(a0, symbol):
+def unit_cell_bcc(a0, symbol, tolerance=None):
     """Creates a single species Body-Centered-Cubic unit cell.
     
     Args:
         a0 (DistanceUnit): Lattice parameter as an arbitrary distance.
         symbol (str): IUPAC chemical symbol.
+        tolerance (optional) (DistanceUnit): Minimum separation distance for valid addition.
+        - `tolerance` defaults to the covalent radius of `atom` plus that of its nearest neighbor.
     
     Returns:
         Lattice
@@ -80,16 +84,18 @@ def unit_cell_bcc(a0, symbol):
     p = (Picometer(a0/2), Picometer(a0/2), Picometer(a0/2))
     p = AtomicPosition(p)
     atom = Atom(symbol, p)
-    lattice.add_atom(atom)
+    lattice.add_atom(atom, tolerance)
 
     return lattice
 
-def unit_cell_fcc(a0, symbol):
+def unit_cell_fcc(a0, symbol, tolerance=None):
     """Creates a single species Face-Centered-Cubic unit cell.
     
     Args:
         a0 (DistanceUnit): Lattice parameter as an arbitrary distance.
         symbol (str): IUPAC chemical symbol.
+        tolerance (optional) (DistanceUnit): Minimum separation distance for valid addition.
+        - `tolerance` defaults to the covalent radius of `atom` plus that of its nearest neighbor.
     
     Returns:
         Lattice
@@ -105,27 +111,27 @@ def unit_cell_fcc(a0, symbol):
     p = (Picometer(a0/2), Picometer(a0/2), Picometer(0.0))
     p = AtomicPosition(p)
     atom = Atom(symbol, p)
-    lattice.add_atom(atom)
+    lattice.add_atom(atom, tolerance)
     p = (Picometer(0.0), Picometer(a0/2), Picometer(a0/2))
     p = AtomicPosition(p)
     atom = Atom(symbol, p)
-    lattice.add_atom(atom)
+    lattice.add_atom(atom, tolerance)
     p = (Picometer(a0/2), Picometer(a0/2), Picometer(a0))
     p = AtomicPosition(p)
     atom = Atom(symbol, p)
-    lattice.add_atom(atom)
+    lattice.add_atom(atom, tolerance)
     p = (Picometer(a0), Picometer(a0/2), Picometer(a0/2))
     p = AtomicPosition(p)
     atom = Atom(symbol, p)
-    lattice.add_atom(atom)
+    lattice.add_atom(atom, tolerance)
     p = (Picometer(a0/2), Picometer(a0), Picometer(a0/2))
     p = AtomicPosition(p)
     atom = Atom(symbol, p)
-    lattice.add_atom(atom)
+    lattice.add_atom(atom, tolerance)
     p = (Picometer(a0/2), Picometer(0.0), Picometer(a0/2))
     p = AtomicPosition(p)
     atom = Atom(symbol, p)
-    lattice.add_atom(atom)
+    lattice.add_atom(atom, tolerance)
 
     return lattice
     

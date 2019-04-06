@@ -17,5 +17,6 @@ def test_lattice_to_from_proto():
     write_lattice_to_proto_file(path=filename, lattice=l)
     assert os.path.exists("test.lattice")
     new_l = read_lattice_from_proto_file(path=filename)
+    assert type(new_l) is Lattice
     assert new_l.n_atoms == 1
     os.remove("test.lattice")

@@ -200,37 +200,3 @@ class Lattice(object):
                 del self._atoms[i]
                 return
         raise AtomicPositionError(position=position, exists=False)
-
-    @classmethod
-    def from_file(cls, path, t):
-        """Initializes a Lattice struct from a supported file type.
-        
-        Args:
-            path (str): Path to the file.
-            t (type): Type to interpret the file as
-            - Must be a subclass of `BaseLatticeFile`
-        """
-        if type(path) is not str:
-            raise TypeError("`path` must be of type str")
-        if not issubclass(t, BaseLatticeFile):
-            raise TypeError("`t` must be a subclass of type BaseLatticeFile")
-        
-        obj = t(path=path)
-        atoms = obj.read()
-        return cls(atoms=atoms)
-
-    def to_file(self, path, t):
-        """Writes a lattice to a supported file type.
-        
-        Args:
-            path (str): File path to write the lattice to.
-            t (type): The class representation of a supported file type
-            - Must be a subclass of `BaseLatticeFile`
-        """
-        if type(path) is not str:
-            raise TypeError("`path` must be of type str")
-        if not issubclass(t, BaseLatticeFile):
-            raise TypeError("`t` must be a subclass of type BaseLatticeFile")
-        
-        obj = t(path=path, lattice=self)
-        obj.write()

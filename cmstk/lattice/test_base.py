@@ -31,11 +31,29 @@ def test_atomic_position_setitem():
     with pytest.raises(TypeError):
         position[0] = 0.0
 
+def test_atomic_position_getitem():
+    # tests if an AtomicPosition coordinate is directly accessible
+    position = (Picometer(1.0), Picometer(1.0), Picometer(1.0))
+    position = AtomicPosition(position)
+    coord_x = position[0]
+    assert type(coord_x) is Picometer
+    assert coord_x.value == 1.0
+
+def test_atomic_position_iter():
+    # tests if an AtomicPosition coordinate can be directly iterated over
+    position = (Picometer(1.0), Picometer(1.0), Picometer(1.0))
+    position = AtomicPosition(position)
+    for coord in position:
+        assert type(coord) is Picometer
+        assert coord.value == 1.0
+
 def test_init_atom():
     # tests if an Atom can be initialized
     p = (Picometer(1.0), Picometer(1.0), Picometer(1.0))
     p = AtomicPosition(p)
     a = Atom("C", p)
+    assert a.symbol == "C"
+    assert type(a.position) is AtomicPosition
 
 def test_init_lattice():
     # tests if a Lattice can be initialized
@@ -53,6 +71,21 @@ def test_lattice_add_atom():
     with pytest.raises(AtomicPositionError):
         l.add_atom(a)
 
+def test_lattice_add_atom_with_tolerance():
+    # tests proper atom addition behavior with custom tolerance
+    l = Lattice()
+    p = (Picometer(1.0), Picometer(1.0), Picometer(1.0))
+    p = AtomicPosition(p)
+    a = Atom(symbol="C", position=p)
+    l.add_atom(a)
+    p = (Picometer(5.0), Picometer(5.0), Picometer(5.0))
+    p = AtomicPosition(p)
+    a = Atom(symbol="C", position=p)
+    with pytest.raises(AtomicPositionError):
+        l.add_atom(a)
+    tol = Picometer(1.0)
+    l.add_atom(a, tolerance=tol)
+
 def test_lattice_remove_atom():
     # tests proper atom removal behavior
     l = Lattice([])
@@ -66,9 +99,18 @@ def test_lattice_remove_atom():
     l.remove_atom(p)
     assert l.n_atoms == 0
 
-
-
-
-#def test_init_lattice_file():
-#    # tests if a BaseLatticeFile can be initialized
-#    pass
+def test_lattice_remove_atom_with_tolerance():
+    # tests proper atom removal behavior with custom tolerance
+    l = Lattice([])
+    p = (Picometer(1.0), Picometer(1.0), Picometer(1.0))
+    p = AtomicPosition(p)
+    a = Atom(symbol="C", position=p)
+    with pytest.raises(AtomicPositionError):
+        l.remove_atom(p)
+    l.add_atom(a)
+    new_p = (Picometer(100.0), Picometer(100.0), Picometer(100.0))
+    new_p = AtomicPosition(new_p)
+    with pytest.raises(AtomicPositionError):
+        l.remove_atom(new_p)
+    tol = Picometer(175.0)
+    l.remove_atom(new_p, tol)

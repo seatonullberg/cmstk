@@ -10,6 +10,8 @@ def test_serialize_proto():
         radius=67,
         symbol="C"
     )
+    result = p_atom.SerializeToString()
+    assert type(result) is bytes
 
     p_lattice = ProtoLattice(
         atoms=[p_atom]
