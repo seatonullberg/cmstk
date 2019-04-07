@@ -55,6 +55,10 @@ class AtomicPosition(object):
             raise TypeError("AtomicPosition only accepts instances of type DistanceUnit")
         return self._position.__setitem__(key, value)
 
+    def __str__(self):
+        s = "AtomicPosition: x: {}, y: {}, z: {}".format(self._position[0], self._position[1], self._position[2])
+        return s
+
 
 class Atom(object):
     """Representation of an atom in space.
