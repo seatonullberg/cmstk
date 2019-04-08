@@ -1,1 +1,1 @@
-Lattice structures which can be written to various platform agnostic file formats or manipulated in code.
+Tools to generate lattice structures which can be written to various platform agnostic file formats or manipulated in code.

@@ -1,1 +1,1 @@
-A selection of commonly used equations which apply unit safety from the units package.
+A selection of commonly used equations which apply unit safety from the `cmstk.units` package.

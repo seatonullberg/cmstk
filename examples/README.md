@@ -1,1 +1,1 @@
-Some helpful snippets to get started using cmstk.
+Some helpful snippets to get started using `cmstk`.

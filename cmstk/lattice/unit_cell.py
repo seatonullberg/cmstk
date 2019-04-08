@@ -20,44 +20,19 @@ def unit_cell_sc(a0, symbol, tolerance=None):
         raise TypeError("`symbol` must be of type str")
 
     lattice = Lattice()
-
-    # TODO: there has to be a better way but im too dumb to think of it right now
-
-    p = (Picometer(0.0), Picometer(0.0), Picometer(0.0))
-    p = AtomicPosition(p)
     a0 = a0.to(Picometer).value
-    atom = Atom(symbol, p)
-    lattice.add_atom(atom, tolerance)
-
-    # make all the other atoms
-    p = (Picometer(a0), Picometer(0.0), Picometer(0.0))
-    p = AtomicPosition(p)
-    atom = Atom(symbol, p)
-    lattice.add_atom(atom, tolerance)
-    p = (Picometer(0.0), Picometer(0.0), Picometer(a0))
-    p = AtomicPosition(p)
-    atom = Atom(symbol, p)
-    lattice.add_atom(atom, tolerance)
-    p = (Picometer(a0), Picometer(0.0), Picometer(a0))
-    p = AtomicPosition(p)
-    atom = Atom(symbol, p)
-    lattice.add_atom(atom, tolerance)
-    p = (Picometer(0.0), Picometer(a0), Picometer(0.0))
-    p = AtomicPosition(p)
-    atom = Atom(symbol, p)
-    lattice.add_atom(atom, tolerance)
-    p = (Picometer(a0), Picometer(a0), Picometer(0.0))
-    p = AtomicPosition(p)
-    atom = Atom(symbol, p)
-    lattice.add_atom(atom, tolerance)
-    p = (Picometer(0.0), Picometer(a0), Picometer(a0))
-    p = AtomicPosition(p)
-    atom = Atom(symbol, p)
-    lattice.add_atom(atom, tolerance)
-    p = (Picometer(a0), Picometer(a0), Picometer(a0))
-    p = AtomicPosition(p)
-    atom = Atom(symbol, p)
-    lattice.add_atom(atom, tolerance)
+    positions = [(Picometer(0.0), Picometer(0.0), Picometer(0.0)), 
+                 (Picometer(a0), Picometer(0.0), Picometer(0.0)),
+                 (Picometer(0.0), Picometer(0.0), Picometer(a0)),
+                 (Picometer(a0), Picometer(0.0), Picometer(a0)),
+                 (Picometer(0.0), Picometer(a0), Picometer(0.0)),
+                 (Picometer(a0), Picometer(a0), Picometer(0.0)),
+                 (Picometer(0.0), Picometer(a0), Picometer(a0)), 
+                 (Picometer(a0), Picometer(a0), Picometer(a0))]
+    for p in positions:
+        p = AtomicPosition(p)
+        atom = Atom(symbol, p)
+        lattice.add_atom(atom, tolerance)
 
     return lattice
 
@@ -80,7 +55,7 @@ def unit_cell_bcc(a0, symbol, tolerance=None):
 
     lattice = unit_cell_sc(a0, symbol)  # start with the corners
     a0 = a0.to(Picometer).value
-
+    # add central atom 
     p = (Picometer(a0/2), Picometer(a0/2), Picometer(a0/2))
     p = AtomicPosition(p)
     atom = Atom(symbol, p)
@@ -107,32 +82,44 @@ def unit_cell_fcc(a0, symbol, tolerance=None):
 
     lattice = unit_cell_sc(a0, symbol)  # start with the corners
     a0 = a0.to(Picometer).value
-
-    p = (Picometer(a0/2), Picometer(a0/2), Picometer(0.0))
-    p = AtomicPosition(p)
-    atom = Atom(symbol, p)
-    lattice.add_atom(atom, tolerance)
-    p = (Picometer(0.0), Picometer(a0/2), Picometer(a0/2))
-    p = AtomicPosition(p)
-    atom = Atom(symbol, p)
-    lattice.add_atom(atom, tolerance)
-    p = (Picometer(a0/2), Picometer(a0/2), Picometer(a0))
-    p = AtomicPosition(p)
-    atom = Atom(symbol, p)
-    lattice.add_atom(atom, tolerance)
-    p = (Picometer(a0), Picometer(a0/2), Picometer(a0/2))
-    p = AtomicPosition(p)
-    atom = Atom(symbol, p)
-    lattice.add_atom(atom, tolerance)
-    p = (Picometer(a0/2), Picometer(a0), Picometer(a0/2))
-    p = AtomicPosition(p)
-    atom = Atom(symbol, p)
-    lattice.add_atom(atom, tolerance)
-    p = (Picometer(a0/2), Picometer(0.0), Picometer(a0/2))
-    p = AtomicPosition(p)
-    atom = Atom(symbol, p)
-    lattice.add_atom(atom, tolerance)
+    # add face atoms
+    positions = [(Picometer(a0/2), Picometer(a0/2), Picometer(0.0)),
+                 (Picometer(0.0), Picometer(a0/2), Picometer(a0/2)),
+                 (Picometer(a0/2), Picometer(a0/2), Picometer(a0)),
+                 (Picometer(a0), Picometer(a0/2), Picometer(a0/2)),
+                 (Picometer(a0/2), Picometer(a0), Picometer(a0/2)),
+                 (Picometer(a0/2), Picometer(0.0), Picometer(a0/2)),
+                 ]
+    for p in positions:
+        p = AtomicPosition(p)
+        atom = Atom(symbol, p)
+        lattice.add_atom(atom, tolerance)
 
     return lattice
     
+
+# TODO: figure out how I want to set up the coordinates
+def unit_cell_hcp(a, c, symbol, tolerance=None):
+    """Creates a single species Hexagonal-Close-Packed unit cell.
+    
+    Args:
+        a (DistanceUnit): The a lattice dimension.
+        c (DistanceUnit): The c lattice dimension.
+        symbol (str): IUPAC chemical symbol.
+        tolerance (optional) (DistanceUnit): Minimum separation distance for valid addition.
+        - `tolerance` defaults to the covalent radius of `atom` plus that of its nearest neighbor.
+
+    Returns:
+        Lattice
+    """
+    if not isinstance(a, DistanceUnit):
+        raise TypeError("`a` must be an instance of type DistanceUnit")
+    if not isinstance(c, DistanceUnit):
+        raise TypeError("`c` must be an instance of type DistanceUnit")
+    if type(symbol) is not str:
+        raise TypeError("`symbol` must be of type str")
+
+    lattice = Lattice()
+    a = a.to(Picometer).value
+    c = c.to(Picometer).value
 
