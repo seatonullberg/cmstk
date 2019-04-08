@@ -1,4 +1,6 @@
 from cmstk.units.base import BaseUnit
+from cmstk.units.area import AreaUnit, MeterSquared
+from cmstk.units.force import ForceUnit, Newton
 
 
 class PressureUnit(BaseUnit, float):
@@ -38,6 +40,25 @@ class PressureUnit(BaseUnit, float):
         except ZeroDivisionError:
             new_value = 0.0
         return t(new_value)
+
+    @classmethod
+    def from_area_force(cls, a, f):
+        """Initializes PressureUnit from an arbitrary AreaUnit and ForceUnit.
+        
+        Args:
+            a (AreaUnit): The area.
+            f (ForceUnit): The force.
+
+        Returns:
+            PressureUnit
+        """
+        if not isinstance(a, AreaUnit):
+            raise TypeError("`a` must be an instance of type AreaUnit")
+        if not isinstance(f, ForceUnit):
+            raise TypeError("`f` must be an instance of type ForceUnit")
+
+        new_pressure = f.to(Newton).value / a.to(MeterSquared).value
+        return cls(new_pressure)
 
 
 class Bar(PressureUnit):

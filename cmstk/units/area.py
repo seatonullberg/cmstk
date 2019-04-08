@@ -47,7 +47,7 @@ class AreaUnit(BaseUnit, float):
 
     @classmethod
     def from_distance(cls, d1, d2):
-        """Initializes AreaUnit from two arbitrary distance units.
+        """Initializes AreaUnit from two arbitrary DistanceUnits.
         
         Args:
             d1 (DistanceUnit): The first distance.

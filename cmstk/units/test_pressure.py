@@ -1,5 +1,20 @@
 from cmstk.units.pressure import PressureUnit, Bar, Pascal
 from cmstk.units.testing_resources import within_one_percent
+from cmstk.units.area import AngstromSquared, MeterSquared
+from cmstk.units.force import Dyne, Newton
+
+# PressureUnit
+
+def test_pressure_from_area_force():
+    # tests if PressureUnit can be initialized from AreaUnit and ForceUnit
+    value = 1.0
+    a = AngstromSquared(value)
+    f = Dyne(value)
+    p = PressureUnit.from_area_force(a, f)
+    assert type(p) is PressureUnit
+    assert isinstance(p, float)
+    assert p.to(Pascal).value == f.to(Newton).value / a.to(MeterSquared).value
+
 
 # Bar
 
