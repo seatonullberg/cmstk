@@ -8,7 +8,7 @@ def test_area_from_distance():
     # tests if AreaUnit can be initialized from two distances
     value = 1.0
     d1 = Nanometer(value)  # arbitrary distance
-    d2 = Picometer(value)  # arbitrary distyance
+    d2 = Picometer(value)  # arbitrary distance
     a = AreaUnit.from_distance(d1, d2)
     assert type(a) is AreaUnit
     assert isinstance(a, float)

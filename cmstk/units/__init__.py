@@ -5,4 +5,4 @@ from cmstk.units.mass import MassUnit, AtomicMassUnit, Gram, Kilogram, Picogram
 from cmstk.units.pressure import PressureUnit, Bar, Pascal
 from cmstk.units.temperature import TemperatureUnit, Celsius, Fahrenheit, Kelvin
 from cmstk.units.time import TimeUnit, Picosecond, Second
-from cmstk.units.velocity import VelocityUnit, AngstromPerPicosecond, MeterPerSecond
+from cmstk.units.speed import SpeedUnit, AngstromPerPicosecond, MeterPerSecond
