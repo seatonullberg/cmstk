@@ -28,6 +28,21 @@ class SetflReader(BaseDataReader):
         return tuple(self[3].split()[1:])
 
     @property
+    def element_pairs(self):
+        """Elemental pairs specified in the file.
+
+        Returns:
+            list of str
+        """
+        pair_names = []
+        for i, e1 in enumerate(self.elements):
+            for j, e2 in enumerate(self.elements):
+                if i <= j:
+                    pair_names.append("{}{}".format(e1, e2))
+        return pair_names
+
+
+    @property
     def n_rho(self):
         """Number of points at which electron density is evaluated.
 
@@ -86,6 +101,23 @@ class SetflReader(BaseDataReader):
         """
         return self._body["embedding_function"][symbol]
 
+    def r_normalized_embedding_function(self, symbol):
+        """Embedding function divided by distance from 0.
+        
+        Args:
+            symbol (str): IUPAC chemical symbol
+
+        Returns:
+            list of floats
+        """
+        embedding = self.embedding_function(symbol)
+        normalized_embedding = []
+        for i, e in enumerate(embedding):
+            i += 1  # no division by zero
+            e = e / (self.d_rho*i)
+            normalized_embedding.append(e)
+        return normalized_embedding
+
     def density_function(self, symbol):
         """Tabulated values of the density function.
 
@@ -97,19 +129,53 @@ class SetflReader(BaseDataReader):
         """
         return self._body["density_function"][symbol]
 
-    def interatomic_potential(self, symbol1, symbol2):
-        """Interatomic potential of symbol1 interacting with symbol2.
+    def r_normalized_density_function(self, symbol):
+        """Density function of symbol divided by distance from 0.
         
         Args:
-            symbol1 (str): IUPAC chemical symbol.
-            symbol2 (str): IUPAC chemical symbol.
+            symbol (str): IUPAC chemical symbol
 
         Returns:
             list of floats
         """
-        pair_name = "{}{}".format(symbol1, symbol2)
-        return self._body["interatomic_potential"][pair_name]
-    
+        density = self.density_function(symbol)
+        normalized_density = []
+        for i, d in enumerate(density):
+            i += 1  # no division by zero
+            d = d / (self.d_r*i)
+            normalized_density.append(d)
+        return normalized_density
+
+    def interatomic_potential(self, symbol_pair):
+        """Interatomic potential of symbol1 interacting with symbol2.
+        
+        Args:
+            symbol_pair (str): Pair of IUPAC chemical symbols.
+            - Formatted as "{}{}".format(symbol1, symbol2).
+
+        Returns:
+            list of floats
+        """
+        return self._body["interatomic_potential"][symbol_pair]
+
+    def r_normalized_interatomic_potential(self, symbol_pair):
+        """Interatomic potential divided by distance from zero.
+        
+        Args:
+            symbol_pair (str): Pair of IUPAC chemical symbols.
+            - Formatted as "{}{}".format(symbol1, symbol2).
+
+        Returns:
+            list of floats
+        """
+        potential = self.interatomic_potential(symbol_pair)
+        normalized_potential = []
+        for i, p in enumerate(potential):
+            i += 1  # no division by zero
+            p = p / (self.d_r*i)
+            normalized_potential.append(p)
+        return normalized_potential
+            
     def _read_body(self):
         body = {
             "embedding_function": {},
@@ -130,18 +196,12 @@ class SetflReader(BaseDataReader):
             start += self.n_r + 1 # skip the atomic description upon element change
 
         start -= 1 # there is no atomic description at the switch to the potential section
-        
-        pair_names = []
-        for i, e1 in enumerate(self.elements):
-            for j, e2 in enumerate(self.elements):
-                if i <= j:
-                    pair_names.append("{}{}".format(e1, e2))
 
-        for pn in pair_names:
-            body["interatomic_potential"][pn] = []
+        for ep in self.element_pairs:
+            body["interatomic_potential"][ep] = []
             for i in range(self.n_r):
                 float_val = float(self[start+i])
-                body["interatomic_potential"][pn].append(float_val)
+                body["interatomic_potential"][ep].append(float_val)
             start += self.n_r
 
         return body

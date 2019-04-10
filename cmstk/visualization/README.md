@@ -1,0 +1,1 @@
+A colection of objects which generate plots.

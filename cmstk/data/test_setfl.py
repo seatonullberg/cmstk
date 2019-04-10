@@ -84,16 +84,16 @@ def test_setfl_reader_interatomic_potential():
     # tests SetflReader interatomic_potential access
     filename = os.path.join("potentials", "Mishin-Ni-Al-2004.eam.alloy")
     sr = SetflReader(filename)
-    assert len(sr.interatomic_potential("Ni", "Ni")) == sr.n_r
-    assert sr.interatomic_potential("Ni", "Ni")[0] == 0.0
-    assert sr.interatomic_potential("Ni", "Ni")[-1] == 0.0
-    assert len(sr.interatomic_potential("Ni", "Al")) == sr.n_r
-    assert sr.interatomic_potential("Ni", "Al")[0] == 0.0
-    assert sr.interatomic_potential("Ni", "Al")[-1] == 2.271146915325446e-12
-    assert len(sr.interatomic_potential("Al", "Al")) == sr.n_r
-    assert sr.interatomic_potential("Al", "Al")[0] == 0.0
-    assert sr.interatomic_potential("Al", "Al")[-1] == 2.094408263365527e-12
+    assert len(sr.interatomic_potential("NiNi")) == sr.n_r
+    assert sr.interatomic_potential("NiNi")[0] == 0.0
+    assert sr.interatomic_potential("NiNi")[-1] == 0.0
+    assert len(sr.interatomic_potential("NiAl")) == sr.n_r
+    assert sr.interatomic_potential("NiAl")[0] == 0.0
+    assert sr.interatomic_potential("NiAl")[-1] == 2.271146915325446e-12
+    assert len(sr.interatomic_potential("AlAl")) == sr.n_r
+    assert sr.interatomic_potential("AlAl")[0] == 0.0
+    assert sr.interatomic_potential("AlAl")[-1] == 2.094408263365527e-12
     # ensure the pairs are formed correctly
     with pytest.raises(KeyError):
-        _ = sr.interatomic_potential("Al", "Ni")
+        _ = sr.interatomic_potential("AlNi")
 
