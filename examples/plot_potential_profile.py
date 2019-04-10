@@ -5,10 +5,19 @@ from datetime import datetime
 
 
 if __name__ == "__main__":
-    print("Generating cohesive energy plot...")
+    print("Generating setfl plot...")
     start = datetime.now()
     # read a potential file
     filename = os.path.join("potentials", "Mishin-Ni-Al-2004.eam.alloy")
     setfl_reader = SetflReader(filename)
     setfl_plot = SetflProfilePlot(setfl_reader)
-    setfl_plot.generate_plot()
+    print("Writing plot to file...")
+    # generate the plot
+    filename = "Mishin-Ni-Al-2004.eam.png"
+    setfl_plot.generate_plot(filename)
+    end = datetime.now()
+    print("Finished writing {}".format(filename))
+    total_time = (end-start).total_seconds()
+    print("Total time: {} seconds".format(total_time))
+    size = os.path.getsize(filename)
+    print("{} has size: {} bytes".format(filename, size))
