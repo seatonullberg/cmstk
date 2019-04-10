@@ -18,14 +18,21 @@ def test_base_data_reader_path():
 def test_base_data_reader_read_json():
     # tests BaseDataReader read_json method
     bdr = BaseDataReader()
-    json_data = bdr.read_json("elements.json")
-    assert json_data["C"]["atomic_radius"] == 67
+    bdr.read_json("elements.json")
+    assert bdr["C"]["atomic_radius"] == 67
+
+def test_base_data_reader_read_text():
+    # tests BaseDataReader read_text method
+    bdr = BaseDataReader()
+    filename = os.path.join("potentials", "Mishin-Ni-Al-2004.eam.alloy")
+    bdr.read_text(filename)
+    assert bdr[4][:5] == "10000"
 
 def test_base_data_reader_access():
     # tests if BaseDataReader provides read access.
     # tests if BaseDataReader denies write/delete access.
     bdr = BaseDataReader()
-    bdr._data = bdr.read_json("elements.json")
+    bdr.read_json("elements.json")
     # read access
     assert bdr["C"]["atomic_radius"] == 67
     # write access

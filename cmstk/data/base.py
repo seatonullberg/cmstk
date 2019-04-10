@@ -5,18 +5,21 @@ from cmstk.data.exceptions import ReadOnlyError
 
 class BaseDataReader(object):
     """Representation of an access point to the top level data directory.
+    Provides read-only protections to the underlying data.
     
     Args:
         path (optional) (str): A replacement path if the default data directory is not desired.
-        filename (optional) (str): A specific file to read on init.
     """
 
-    def __init__(self, path=None, filename=None):
+    def __init__(self, path=None):
+        if type(path) not in [str, type(None)]:
+            raise TypeError("`path` must be of type str")
         self._path = path
-        if filename is not None:
-            self._data = self.read_json(filename)
-        else:
-            self._data = None
+        self._data = None
+
+    ################
+    #  Properties  #
+    ################
 
     @property
     def path(self):
@@ -35,14 +38,17 @@ class BaseDataReader(object):
         path = os.path.join(path, "data")  # final result (cmstk/data)
         return path
 
+    ##################
+    #  Read Methods  #
+    ##################
+
     def read_json(self, filename):
         """
-        Reads JSON files.
+        Reads a JSON file into a dict.
+        Sets self._data.
 
         Args:
             filename (str): Name of a JSON file in the data directory.
-        Returns:
-            (dict): Parsed content from filename.
         """
         if type(filename) is not str:
             raise TypeError("`filename` must be of type str")
@@ -51,7 +57,26 @@ class BaseDataReader(object):
         with open(json_path) as f:
             json_data = json.load(f)
 
-        return json_data
+        self._data = json_data
+
+    def read_text(self, filename):
+        """Reads a generic text file into a list of \n separated lines.
+        
+        Args:
+            filename (str): Name of the text file in the data directory.
+        """
+        if type(filename) is not str:
+            raise TypeError("`filename` must be of type str")
+
+        text_path = os.path.join(self.path, filename)
+        with open(text_path) as f:
+            text_data = f.readlines()
+
+        self._data = text_data
+
+    #######################
+    #  Method Overriding  #
+    #######################
 
     def __getitem__(self, key):
         if self._data is None:
@@ -83,5 +108,3 @@ class BaseDataReader(object):
 
     def __delitem__(self, key):
         raise ReadOnlyError(name=self.__class__.__name__, operation="__delitem__") 
-
-    

@@ -6,7 +6,8 @@ class ElementsReader(BaseDataReader):
     """Represents access the the elements.json file in the top level data directory."""
 
     def __init__(self):
-        super().__init__(filename="elements.json")
+        super().__init__()
+        self.read_json("elements.json")
 
     def atomic_radius(self, symbol):
         """Returns atomic radius of `symbol` in Picometer units.
