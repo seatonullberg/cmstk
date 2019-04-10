@@ -2,6 +2,7 @@ import math
 from cmstk.data import ElementsReader
 from cmstk.lattice.exceptions import AtomicPositionError
 from cmstk.units.distance import DistanceUnit, Picometer
+from cmstk.units.angle import AngleUnit, Radian
 
 
 def separation_distance(p1, p2):
@@ -138,6 +139,10 @@ class Lattice(object):
 
         self._atoms = atoms
 
+    ################
+    #  Properties  #
+    ################
+
     @property
     def atoms(self):
         """Returns a generator of all atoms."""
@@ -148,6 +153,10 @@ class Lattice(object):
     def n_atoms(self):
         """Returns the number of atoms."""
         return len(self._atoms)
+
+    #######################
+    #  Atomic Operations  #
+    #######################
 
     def add_atom(self, atom, tolerance=None):
         """Adds an atom to the lattice if the position is not already occupied.
@@ -204,3 +213,50 @@ class Lattice(object):
                 del self._atoms[i]
                 return
         raise AtomicPositionError(position=position, exists=False)
+
+    # TODO
+    ########################
+    #  Lattice Operations  #
+    ########################
+
+    def repeat(self, dims):
+        """Repeat the lattice in 3 dimensions.
+    
+        Args:
+            dims (tuple of ints): The number of times to repeat in each direction (x, y, z).
+        """
+        if type(dims) is not tuple:
+            raise TypeError("`dims` must be of type tuple")
+        if len(dims) != 3:
+            raise ValueError("`dims` must have length 3")
+        for d in dims:
+            if type(d) is not int:
+                raise TypeError("all members of `dims` must be of type int")
+
+    def rotate(self, angles):
+        """Rotate the lattice in 3 dimensions.
+    
+        Args:
+            angles (tuple of AngleUnits): Angles to rotate the lattice by in (x, y, z).
+        """
+        if type(angles) is not tuple:
+            raise TypeError("`angles` must be of type tuple")
+        if len(angles) != 3:
+            raise ValueError("`angles` must have length 3")
+        for a in angles:
+            if not isinstance(a, AngleUnit):
+                raise TypeError("all members of `angles` must be an instance of type AngleUnit")
+
+    def translate(self, dims):
+        """Translate the lattice in 3 dimensions.
+
+        Args:
+            dims (tuple of DistanceUnits): The distance to translate the lattice by in (x, y, z).
+        """
+        if type(dims) is not tuple:
+            raise TypeError("`dims` must be of type tuple")
+        if len(dims) != 3:
+            raise ValueError("`dims` must have length 3")
+        for d in dims:
+            if not isinstance(d, DistanceUnit):
+                raise TypeError("all members of `dims` must be an instance of type DistanceUnit")
