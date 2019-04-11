@@ -18,8 +18,7 @@ if __name__ == "__main__":
     filename = "Fe_bcc_unit_cell.lattice"
     write_lattice_to_proto_file(path=filename, lattice=lattice)
     end = datetime.now()
-    print("Finished writing {}".format(filename))
     total_time = (end-start).total_seconds()
     print("Total time: {} seconds".format(total_time))
     size = os.path.getsize(filename)
-    print("{} contains {} atoms and has size: {} bytes".format(filename, lattice.n_atoms, size))
+    print("Generated {} ({} bytes)".format(filename, size))

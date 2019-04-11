@@ -16,8 +16,7 @@ if __name__ == "__main__":
     filename = "Mishin-Ni-Al-2004.eam.png"
     setfl_plot.generate_plot(filename)
     end = datetime.now()
-    print("Finished writing {}".format(filename))
     total_time = (end-start).total_seconds()
     print("Total time: {} seconds".format(total_time))
     size = os.path.getsize(filename)
-    print("{} has size: {} bytes".format(filename, size))
+    print("Generated {} ({} bytes)".format(filename, size))
