@@ -25,11 +25,11 @@ if __name__ == "__main__":
     setfl_plot.generate_plot(filename2)
 
     # Triple symbol plot
-    filename = os.path.join("potentials", "Pun-Ni-Al-Co-2015.eam.alloy")
+    filename = os.path.join("potentials", "Bonny-Fe-Ni-Cr-2011.eam.alloy")
     setfl_reader = SetflReader(filename)
     setfl_plot = SetflProfilePlot(setfl_reader)
     print("Writing triple symbol plot to file...")
-    filename3 = "Pun-Ni-Al-Co-2015.eam.png"
+    filename3 = "Bonny-Fe-Ni-Cr-2011.eam.png"
     setfl_plot.generate_plot(filename3)
 
     end = datetime.now()

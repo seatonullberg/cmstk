@@ -182,27 +182,37 @@ class SetflReader(BaseDataReader):
             "density_function": {},
             "pair_function": {}
         }
-        start = 6 # beginning of the body section
+        start = 6  # beginning line number of body section
+        values = []  # separate lines by spaces for multi-column setfl formats
+        for line in self[start:]:
+            split_line = line.split()
+            for s in split_line:
+                values.append(s)
+
+        start = 0  # now start is in reference to individual values not lines
         for e in self.elements:
             body["embedding_function"][e] = []
             body["density_function"][e] = []
             for i in range(self.n_rho):
-                float_val = float(self[start+i])
+                try:
+                    float_val = float(values[start+i])
+                except:
+                    print(e)
+                    print(i)
                 body["embedding_function"][e].append(float_val)
             start += self.n_rho
             for i in range(self.n_r):
-                float_val = float(self[start+i])
+                float_val = float(values[start+i])
                 body["density_function"][e].append(float_val)
-            start += self.n_r + 1 # skip the atomic description upon element change
+            start += self.n_r + 4  # skip the description line between elements
 
-        start -= 1 # there is no atomic description at the switch to the potential section
+        start -= 4  # no description to skip between atomic and potential sections
 
         for ep in self.element_pairs:
             body["pair_function"][ep] = []
             for i in range(self.n_r):
-                float_val = float(self[start+i])
+                float_val = float(values[start+i])
                 body["pair_function"][ep].append(float_val)
             start += self.n_r
 
         return body
-
