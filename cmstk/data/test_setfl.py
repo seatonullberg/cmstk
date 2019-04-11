@@ -80,20 +80,20 @@ def test_setfl_reader_density_function():
     assert sr.density_function("Al")[0] == 0.07796851416742136
     assert sr.density_function("Al")[-1] == 5.768820510391516e-15
 
-def test_setfl_reader_interatomic_potential():
-    # tests SetflReader interatomic_potential access
+def test_setfl_reader_pair_function():
+    # tests SetflReader pair_function access
     filename = os.path.join("potentials", "Mishin-Ni-Al-2004.eam.alloy")
     sr = SetflReader(filename)
-    assert len(sr.interatomic_potential("NiNi")) == sr.n_r
-    assert sr.interatomic_potential("NiNi")[0] == 0.0
-    assert sr.interatomic_potential("NiNi")[-1] == 0.0
-    assert len(sr.interatomic_potential("NiAl")) == sr.n_r
-    assert sr.interatomic_potential("NiAl")[0] == 0.0
-    assert sr.interatomic_potential("NiAl")[-1] == 2.271146915325446e-12
-    assert len(sr.interatomic_potential("AlAl")) == sr.n_r
-    assert sr.interatomic_potential("AlAl")[0] == 0.0
-    assert sr.interatomic_potential("AlAl")[-1] == 2.094408263365527e-12
+    assert len(sr.pair_function("NiNi")) == sr.n_r
+    assert sr.pair_function("NiNi")[0] == 0.0
+    assert sr.pair_function("NiNi")[-1] == 0.0
+    assert len(sr.pair_function("NiAl")) == sr.n_r
+    assert sr.pair_function("NiAl")[0] == 0.0
+    assert sr.pair_function("NiAl")[-1] == 2.271146915325446e-12
+    assert len(sr.pair_function("AlAl")) == sr.n_r
+    assert sr.pair_function("AlAl")[0] == 0.0
+    assert sr.pair_function("AlAl")[-1] == 2.094408263365527e-12
     # ensure the pairs are formed correctly
     with pytest.raises(KeyError):
-        _ = sr.interatomic_potential("AlNi")
+        _ = sr.pair_function("AlNi")
 

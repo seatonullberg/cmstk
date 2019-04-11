@@ -146,7 +146,7 @@ class SetflReader(BaseDataReader):
             normalized_density.append(d)
         return normalized_density
 
-    def interatomic_potential(self, symbol_pair):
+    def pair_function(self, symbol_pair):
         """Interatomic potential of symbol1 interacting with symbol2.
         
         Args:
@@ -156,9 +156,9 @@ class SetflReader(BaseDataReader):
         Returns:
             list of floats
         """
-        return self._body["interatomic_potential"][symbol_pair]
+        return self._body["pair_function"][symbol_pair]
 
-    def r_normalized_interatomic_potential(self, symbol_pair):
+    def r_normalized_pair_function(self, symbol_pair):
         """Interatomic potential divided by distance from zero.
         
         Args:
@@ -168,7 +168,7 @@ class SetflReader(BaseDataReader):
         Returns:
             list of floats
         """
-        potential = self.interatomic_potential(symbol_pair)
+        potential = self.pair_function(symbol_pair)
         normalized_potential = []
         for i, p in enumerate(potential):
             i += 1  # no division by zero
@@ -180,7 +180,7 @@ class SetflReader(BaseDataReader):
         body = {
             "embedding_function": {},
             "density_function": {},
-            "interatomic_potential": {}
+            "pair_function": {}
         }
         start = 6 # beginning of the body section
         for e in self.elements:
@@ -198,10 +198,10 @@ class SetflReader(BaseDataReader):
         start -= 1 # there is no atomic description at the switch to the potential section
 
         for ep in self.element_pairs:
-            body["interatomic_potential"][ep] = []
+            body["pair_function"][ep] = []
             for i in range(self.n_r):
                 float_val = float(self[start+i])
-                body["interatomic_potential"][ep].append(float_val)
+                body["pair_function"][ep].append(float_val)
             start += self.n_r
 
         return body
