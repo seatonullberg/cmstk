@@ -35,6 +35,13 @@ class BaseUnit(object):
 #        new_value = t.convert_inverse(self.value)
 #        return t(new_value)
 
+#    def to_base(self):
+#        """Converts units to their base unit.
+#        
+#        Returns:
+#            instance of base unit of self.kind
+#        """
+
     def add(self, other):
         """Returns the sum in terms of the self unit.
         

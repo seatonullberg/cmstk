@@ -1,6 +1,7 @@
 from cmstk.units.vector import Vector, Vector2D, Vector3D
 from cmstk.units.distance import Angstrom, Nanometer
 from cmstk.units.angle import AngleUnit, Radian, Degree
+from cmstk.units.test_testing_resources import within_one_percent
 import pytest
 
 
@@ -13,6 +14,17 @@ def test_init_vector():
     with pytest.raises(ValueError):
         values = (Radian(value), Radian(value), Angstrom(value))
         v = Vector(values)
+
+def test_vector_magnitude():
+    # tests proper behavior of magnitude()
+    value = 1.0
+    values = (Angstrom(value), Angstrom(value), Angstrom(value))
+    v = Vector(values)
+    mag = v.magnitude(Nanometer)
+    assert type(mag) is Nanometer
+    assert within_one_percent(0.3, mag.value)
+    with pytest.raises(TypeError):
+        mag = v.magnitude(Radian)
 
 def test_vector_iter():
     # tests proper behavior of __iter__()

@@ -64,8 +64,8 @@ if __name__ == "__main__":
     # use custom viewport
     custom = {"embedding_xlim": (0.0, 3.0),
               "embedding_ylim": (-4.0, 12.0),
-              "density_xlim": (0.0, 5.0),
-              "density_ylim": (0.0, 3.0),
+              "density_xlim": (3.25, 5.0),
+              "density_ylim": (0.0, 0.01),
               "pair_xlim": (1.0, 5.0),
               "pair_ylim": (-0.75, 0.75)}
     filename = os.path.join("potentials", "Bonny-Fe-Ni-Cr-2011.eam.alloy")

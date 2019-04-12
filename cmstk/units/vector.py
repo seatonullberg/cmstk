@@ -1,4 +1,5 @@
 from cmstk.units.base import BaseUnit
+import math
 
 
 class Vector(object):
@@ -28,21 +29,35 @@ class Vector(object):
         self._values = values
 
     # TODO: vector operations
-    def rotate(self, rotation):
-        pass
-
-    def translate(self, translation):
-        pass
-
     def cross(self, vec):
-        pass
-    
+        if not isinstance(vec, Vector):
+            raise TypeError("`vec` must be an instance of type Vector")
+        raise NotImplementedError
+        
     def dot(self, vec):
-        pass
+        if not isinstance(vec, Vector):
+            raise TypeError("`vec` must be an instance of type Vector")
+        raise NotImplementedError
 
-    @property
-    def magnitude(self):
-        pass
+    def magnitude(self, t):
+        """Return the magnitude in terms of type t.
+        
+        Args:
+            t (type): Type to return the magnitude as.
+            - must be a subclass of self.unit_kind
+        
+        Returns:
+            instance of type(t)
+        """
+        if not issubclass(t, self.unit_kind):
+            raise TypeError("`t` must be a subclass of {}".format(self.unit_kind))
+
+        summation = t(0.0)
+        for v in self._values:
+            summation += v.to(t)
+        root = math.sqrt(summation.value)
+        square = root**2
+        return t(square)
 
     def __iter__(self):
         return self._values.__iter__()

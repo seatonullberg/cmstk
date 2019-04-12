@@ -199,6 +199,7 @@ class Lattice(object):
         for d in dims:
             if type(d) is not int:
                 raise TypeError("all members of `dims` must be of type int")
+        raise NotImplementedError
 
     def rotate(self, angles):
         """Rotate the lattice in 3 dimensions.
@@ -210,6 +211,7 @@ class Lattice(object):
             raise TypeError("`angles` must be of type Vector3D")
         if angles.unit_kind is not AngleUnit:
             raise TypeError("`angles` must contain units of kind AngleUnits")
+        raise NotImplementedError
 
     def translate(self, dims):
         """Translate the lattice in 3 dimensions.
