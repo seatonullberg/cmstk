@@ -1,6 +1,7 @@
-from cmstk.lattice.base import Atom, AtomicPosition, Lattice
+from cmstk.lattice.base import Atom, Lattice
 from cmstk.lattice.io import write_lattice_to_proto_file, read_lattice_from_proto_file
 from cmstk.units.distance import Picometer
+from cmstk.units.vector import Vector3D
 import os
 
 
@@ -9,7 +10,7 @@ def test_lattice_to_from_proto():
     # tests if Lattice can be initialized from protobuf file
     l = Lattice()
     p = (Picometer(1.0), Picometer(1.0), Picometer(1.0))
-    p = AtomicPosition(p)
+    p = Vector3D(p)
     a = Atom(symbol="C", position=p)
     l.add_atom(a)
     assert l.n_atoms == 1

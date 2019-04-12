@@ -1,5 +1,6 @@
-from cmstk.lattice import Atom, AtomicPosition, Lattice
+from cmstk.lattice import Atom, Lattice
 from cmstk.units.distance import DistanceUnit, Picometer
+from cmstk.units.vector import Vector3D
 
 
 def unit_cell_sc(a0, symbol, tolerance=None):
@@ -30,7 +31,7 @@ def unit_cell_sc(a0, symbol, tolerance=None):
                  (Picometer(0.0), Picometer(a0), Picometer(a0)), 
                  (Picometer(a0), Picometer(a0), Picometer(a0))]
     for p in positions:
-        p = AtomicPosition(p)
+        p = Vector3D(p)
         atom = Atom(symbol, p)
         lattice.add_atom(atom, tolerance)
 
@@ -57,7 +58,7 @@ def unit_cell_bcc(a0, symbol, tolerance=None):
     a0 = a0.to(Picometer).value
     # add central atom 
     p = (Picometer(a0/2), Picometer(a0/2), Picometer(a0/2))
-    p = AtomicPosition(p)
+    p = Vector3D(p)
     atom = Atom(symbol, p)
     lattice.add_atom(atom, tolerance)
 
@@ -91,7 +92,7 @@ def unit_cell_fcc(a0, symbol, tolerance=None):
                  (Picometer(a0/2), Picometer(0.0), Picometer(a0/2)),
                  ]
     for p in positions:
-        p = AtomicPosition(p)
+        p = Vector3D(p)
         atom = Atom(symbol, p)
         lattice.add_atom(atom, tolerance)
 
@@ -122,4 +123,3 @@ def unit_cell_hcp(a, c, symbol, tolerance=None):
     lattice = Lattice()
     a = a.to(Picometer).value
     c = c.to(Picometer).value
-

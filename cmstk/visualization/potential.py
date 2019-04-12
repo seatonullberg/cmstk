@@ -32,7 +32,8 @@ class SetflProfilePlot(object):
         if type(filename) is not str:
             raise TypeError("`filename` must be of type str")
         
-        fig, axes = plt.subplots(nrows=1, ncols=3, sharex=True, sharey=False, figsize=(10,5))
+        fig, axes = plt.subplots(nrows=1, ncols=3, figsize=(10,5))
+        
         # plot the embedding function for each symbol
         for e in self._reader.elements:
             embedding_y = self._reader.embedding_function(e)
@@ -42,10 +43,11 @@ class SetflProfilePlot(object):
             if self.custom["embedding_ylim"] is not None:
                 axes[0].set_ylim(self.custom["embedding_ylim"])
             axes[0].plot(embedding_x, embedding_y, label=e)
-            axes[0].set_xlabel("Distance (Angstroms)")
+            axes[0].set_xlabel("Electron Density")
             axes[0].set_ylabel("Energy (eV)")
             axes[0].set_title("Embedding Function")
             axes[0].legend()
+        
         # plot the density function for each symbol
         for e in self._reader.elements:
             density_y = self._reader.density_function(e)
@@ -59,9 +61,10 @@ class SetflProfilePlot(object):
             axes[1].set_ylabel("Electron Density")
             axes[1].set_title("Density Function")
             axes[1].legend()
+        
         # plot the pair function for each pair
         for ep in self._reader.element_pairs:
-            potential_y = self._reader.pair_function(ep)
+            potential_y = self._reader.r_normalized_pair_function(ep)
             potential_x = [self._reader.d_r*(i+1) for i in range(self._reader.n_r)]
             if self.custom["pair_xlim"] is not None:
                 axes[2].set_xlim(self.custom["pair_xlim"])

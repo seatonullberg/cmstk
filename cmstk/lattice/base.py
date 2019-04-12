@@ -3,14 +3,15 @@ from cmstk.data import ElementsReader
 from cmstk.lattice.exceptions import AtomicPositionError
 from cmstk.units.distance import DistanceUnit, Picometer
 from cmstk.units.angle import AngleUnit, Radian
+from cmstk.units.vector import Vector3D
 
 
 def separation_distance(p1, p2):
     """Returns the separation distance between two positions.
 
     Args:
-        p1 (AtomicPosition): The first position.
-        p2 (AtomicPosition): the second position.
+        p1 (Vector3D): The first position.
+        p2 (Vector3D): the second position.
 
     Returns:
         Picometer
@@ -23,57 +24,16 @@ def separation_distance(p1, p2):
     return Picometer(distance)
 
 
-class AtomicPosition(object):
-    """Representation of 3D coordinates.
-
-    Notes:
-        Overrides __getitem__ and __setitem__ to access underlying position value directly.
-        Provides a means of data integrity without constant manual verification.
-        Can also be used as a translation factor in the Lattice.translate() method.
-    
-    Args:
-        position (tuple of DistanceUnit): (x, y, z) spatial coordinates 
-    """
-
-    def __init__(self, position):
-        if type(position) is not tuple:
-            raise TypeError("`position` must be of type tuple")
-        for p in position:
-            if not isinstance(p, DistanceUnit):
-                raise TypeError("all members of `position` must be an instance of type DistanceUnit")
-        if len(position) != 3:
-            raise ValueError("`position` must have length 3")
-        
-        self._position = position
-
-    def __iter__(self):
-        return self._position.__iter__()
-
-    def __getitem__(self, key):
-        return self._position.__getitem__(key)
-
-    def __setitem__(self, key, value):
-        if not isinstance(value, DistanceUnit):
-            raise TypeError("AtomicPosition only accepts instances of type DistanceUnit")
-        return self._position.__setitem__(key, value)
-
-    def __str__(self):
-        s = "AtomicPosition: x: {} {}, y: {} {}, z: {} {}".format(self._position[0], type(self._position[0]), 
-                                                                  self._position[1], type(self._position[1]),
-                                                                  self._position[2], type(self._position[2]))
-        return s
-
-
 class Atom(object):
     """Representation of an atom in space.
     
     Args:
         symbol (str): IUPAC chemical symbol.
-        position (AtomicPosition): Verified (x, y, z) spatial coordinates.
+        position (Vector3D): Verified (x, y, z) spatial coordinates.
 
     Attributes:
         symbol (str): IUPAC chemical symbol.
-        position (AtomicPosition): Verified (x, y, z) spatial coordinates.
+        position (Vector3D): Verified (x, y, z) spatial coordinates.
     """
 
     def __init__(self, symbol, position):
@@ -81,10 +41,12 @@ class Atom(object):
             raise TypeError("`symbol` must be of type str")
         self.symbol = symbol
 
-        if type(position) is not AtomicPosition:
-            raise TypeError("`position` must be of type AtomicPosition")
+        if type(position) is not Vector3D:
+            raise TypeError("`position` must be of type Vector3D")
+        if position.unit_kind is not DistanceUnit:
+            raise TypeError("`position` must contain units of kind DistanceUnit")
+        
         self.position = position
-
         self._elements_reader = ElementsReader() # store this for easy access in properties
 
     @property
@@ -192,15 +154,17 @@ class Lattice(object):
         """Removes an atom if the position is occupied.
         
         Args:
-            position (AtomicPosition): Verified (x, y, z) spatial coordinates.
+            position (Vector3D): Verified (x, y, z) spatial coordinates.
             tolerance (optional) (DistanceUnit): Maximum separation distance from another atomic center for valid removal.
             - `tolerance` defaults to the covalent radius of `atom`'s nearest neighbor.
         
         Raises:
             AtomicPositionError - If an atom does not exist in the given position.
         """
-        if type(position) is not AtomicPosition:
-            raise TypeError("`position` must be of type AtomicPosition")
+        if type(position) is not Vector3D:
+            raise TypeError("`position` must be of type Vector3D")
+        if position.unit_kind is not DistanceUnit:
+            raise TypeError("`position` must contain units of kind DistanceUnit")
         if tolerance is not None:
             if not isinstance(tolerance, DistanceUnit):
                 raise TypeError("`tolerance` must be an instance of DistanceUnit")
@@ -254,16 +218,18 @@ class Lattice(object):
         """Translate the lattice in 3 dimensions.
 
         Args:
-            dims (AtomicPosition): The distance to translate the lattice by in (x, y, z).
-            - Here the AtomicPosition functions not as a point in space but a translation factor to move all atoms by.
-            - This prevents having to do the type checking on a tuple of DistanceUnits which is already handled by AtomicPosition.
+            dims (Vector3D): The distance to translate the lattice by in (x, y, z).
+            - Here the Vector3D functions not as a point in space but a translation factor to move all atoms by.
+            - This prevents having to do the type checking on a tuple of DistanceUnits which is already handled by Vector3D.
         """
-        if type(dims) is not AtomicPosition:
-            raise TypeError("`dims` must be of type AtomicPosition")
+        if type(dims) is not Vector3D:
+            raise TypeError("`dims` must be of type Vector3D")
+        if dims.unit_kind is not DistanceUnit:
+            raise TypeError("`position` must contain units of kind DistanceUnit")
 
         for a in self.atoms:
             new_position_x = dims[0].to(Picometer) + a.position[0].to(Picometer)
             new_position_y = dims[1].to(Picometer) + a.position[1].to(Picometer)
             new_position_z = dims[2].to(Picometer) + a.position[2].to(Picometer)
-            new_position = AtomicPosition((new_position_x, new_position_y, new_position_z))            
+            new_position = Vector3D((new_position_x, new_position_y, new_position_z))            
             a.position = new_position

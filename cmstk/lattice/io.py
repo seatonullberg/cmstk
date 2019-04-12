@@ -1,4 +1,5 @@
-from cmstk.lattice import Atom, AtomicPosition, Lattice
+from cmstk.lattice import Atom, Lattice
+from cmstk.units.vector import Vector3D
 from cmstk.units.distance import Picometer
 from cmstk.lattice.test_types_pb2 import ProtoAtom, ProtoLattice
 
@@ -51,7 +52,7 @@ def read_lattice_from_proto_file(path):
     atoms = []
     for a in proto_lattice.atoms:
         p = (Picometer(a.x), Picometer(a.y), Picometer(a.z))
-        p = AtomicPosition(p)
+        p = Vector3D(p)
         atom = Atom(symbol=a.symbol, position=p)
         atoms.append(atom)
     return Lattice(atoms)
