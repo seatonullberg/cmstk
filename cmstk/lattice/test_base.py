@@ -1,5 +1,6 @@
 from cmstk.lattice.base import Atom, AtomicPosition, Lattice, separation_distance
 from cmstk.lattice.exceptions import AtomicPositionError
+from cmstk.lattice.unit_cell import unit_cell_sc
 from cmstk.units.distance import Picometer
 from cmstk.units.test_testing_resources import within_one_percent
 import pytest
@@ -114,3 +115,26 @@ def test_lattice_remove_atom_with_tolerance():
         l.remove_atom(new_p)
     tol = Picometer(175.0)
     l.remove_atom(new_p, tol)
+
+def test_lattice_repeat():
+    # tests lattice repetition
+    raise NotImplementedError
+
+def test_lattice_rotate():
+    # tests lattice rotation
+    raise NotImplementedError
+
+def test_lattice_translate():
+    # tests lattice translation
+    position = (Picometer(1.0), Picometer(1.0), Picometer(1.0))
+    position = AtomicPosition(position)
+    atom = Atom(symbol="C", position=position)  # use AtomicPosition as a coordinate
+    l = Lattice([atom])
+    l.translate(position)  # use AtomicPosition as a translation factor
+    for a in l.atoms:
+        assert type(a.position[0]) is Picometer
+        assert a.position[0].value == 2.0
+        assert type(a.position[1]) is Picometer
+        assert a.position[1].value == 2.0
+        assert type(a.position[2]) is Picometer
+        assert a.position[2].value == 2.0

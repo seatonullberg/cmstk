@@ -10,6 +10,7 @@ def test_init_electron_volt():
     assert isinstance(ev, EnergyUnit)
     assert isinstance(ev, float)
     assert ev.value == value
+    assert ev.kind == EnergyUnit
 
 def test_electron_volt_to_all():
     # tests ElectronVolt unit conversion
@@ -32,6 +33,7 @@ def test_init_joule():
     assert isinstance(j, EnergyUnit)
     assert isinstance(j, float)
     assert j.value == value
+    assert j.kind == EnergyUnit
 
 def test_joule_to_all():
     # tests Joule unit conversion

@@ -11,6 +11,7 @@ def test_init_degree():
     assert isinstance(d, AngleUnit)
     assert isinstance(d, float)
     assert d.value == value
+    assert d.kind == AngleUnit
 
 def test_degree_to_all():
     # tests Degree unit conversion
@@ -33,6 +34,7 @@ def test_init_radian():
     assert isinstance(r, AngleUnit)
     assert isinstance(r, float)
     assert r.value == value
+    assert r.kind == AngleUnit
 
 def test_radian_to_all():
     # tests Radian unit conversion

@@ -11,6 +11,7 @@ def test_init_angstrom():
     assert isinstance(a, DistanceUnit)
     assert isinstance(a, float)
     assert a.value == value
+    assert a.kind == DistanceUnit
 
 def test_angstrom_to_all():
     # tests Angstrom unit conversion
@@ -39,6 +40,7 @@ def test_init_meter():
     assert isinstance(m, DistanceUnit)
     assert isinstance(m, float)
     assert m.value == value
+    assert m.kind == DistanceUnit
 
 def test_meter_to_all():
     # tests Meter unit conversion
@@ -67,6 +69,7 @@ def test_init_nanometer():
     assert isinstance(n, DistanceUnit)
     assert isinstance(n, float)
     assert n.value == value
+    assert n.kind == DistanceUnit
 
 def test_nanometer_to_all():
     # tests Nanometer unit conversion
@@ -95,6 +98,7 @@ def test_init_picometer():
     assert isinstance(p, DistanceUnit)
     assert isinstance(p, float)
     assert p.value == value
+    assert p.kind == DistanceUnit
 
 def test_picometer_to_all():
     # tests Picometer unit conversion

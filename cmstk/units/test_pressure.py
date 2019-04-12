@@ -25,6 +25,7 @@ def test_init_bar():
     assert isinstance(b, PressureUnit)
     assert isinstance(b, float)
     assert b.value == value
+    assert b.kind == PressureUnit
 
 def test_bar_to_all():
     # tests Bar unit conversion
@@ -47,6 +48,7 @@ def test_init_pascal():
     assert isinstance(p, PressureUnit)
     assert isinstance(p, float)
     assert p.value == value
+    assert p.kind == PressureUnit
 
 def test_pascal_to_all():
     # tests Pascal unit conversion

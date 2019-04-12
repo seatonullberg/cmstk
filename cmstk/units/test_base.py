@@ -1,14 +1,16 @@
 import pytest
 from cmstk.units.base import BaseUnit
 from cmstk.units.distance import Angstrom, Nanometer
+from cmstk.units.angle import Radian
 from cmstk.units.exceptions import UnsafeUnitOperationError
-
+from cmstk.units.testing_resources import within_one_percent
 
 def test_init_base_unit():
     # tests if BaseUnit can be initialized
     value = 1.0
-    bu = BaseUnit(value=value)
+    bu = BaseUnit(value=value, kind=BaseUnit)
     assert bu.value == value
+    assert bu.kind == BaseUnit
 
 def test_like_base_unit_operations():
     # tests if all operations work for like units
@@ -109,3 +111,31 @@ def test_unit_constant_operations_return_type():
     assert type(floordiv_result) is Angstrom
     modulus_result = a % value
     assert type(modulus_result) is Angstrom
+
+def test_custom_operation_methods():
+    value = 1.0
+    a = Angstrom(value)
+    n = Nanometer(value)
+    add_result = a.add(n)
+    assert type(add_result) is Angstrom
+    assert within_one_percent(11.0, add_result.value)
+    sub_result = add_result.sub(n)
+    assert type(sub_result) is Angstrom
+    assert within_one_percent(1.0, sub_result.value)
+    eq_result = a.compare_eq(n)
+    assert not eq_result
+    ge_result = a.compare_ge(n)
+    assert not ge_result
+    gt_result = a.compare_gt(n)
+    assert not gt_result
+    le_result = a.compare_le(n)
+    assert le_result
+    lt_result = a.compare_lt(n)
+    assert lt_result
+    ne_result = a.compare_ne(n)
+    assert ne_result
+    # test incompatible units fail
+    with pytest.raises(TypeError):
+        a = Angstrom(value)
+        r = Radian(value)
+        add_result = a.add(r)

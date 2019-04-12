@@ -11,6 +11,7 @@ def test_init_dyne():
     assert isinstance(d, ForceUnit)
     assert isinstance(d, float)
     assert d.value == value
+    assert d.kind == ForceUnit
 
 def test_dyne_to_all():
     # tests Dyne unit conversion
@@ -33,6 +34,7 @@ def test_init_newton():
     assert isinstance(n, ForceUnit)
     assert isinstance(n, float)
     assert n.value == value
+    assert n.kind == ForceUnit
 
 def test_newton_to_all():
     # tests Newton unit conversion

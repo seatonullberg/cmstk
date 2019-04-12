@@ -10,6 +10,7 @@ def test_init_celsius():
     assert isinstance(c, TemperatureUnit)
     assert isinstance(c, float)
     assert c.value == value
+    assert c.kind == TemperatureUnit
 
 def test_celsius_to_all():
     # tests Celsius unit conversion
@@ -35,6 +36,7 @@ def test_init_fahrenheit():
     assert isinstance(f, TemperatureUnit)
     assert isinstance(f, float)
     assert f.value == value
+    assert f.kind == TemperatureUnit
 
 def test_fahrenheit_to_all():
     # tests Fahrenheit unit conversion
@@ -61,6 +63,7 @@ def test_init_kelvin():
     assert isinstance(k, TemperatureUnit)
     assert isinstance(k, float)
     assert k.value == value
+    assert k.kind == TemperatureUnit
 
 def test_kelvin_to_all():
     # tests Kelvin unit conversion

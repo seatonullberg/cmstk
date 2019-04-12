@@ -18,7 +18,7 @@ class AngleUnit(BaseUnit, float):
     def __init__(self, base_value):
         if type(base_value) is not float:
             raise TypeError("`base_value` must be of type float")
-        super().__init__(base_value)
+        super().__init__(value=base_value, kind=AngleUnit)
         self.base_value = base_value
 
     def to(self, t):

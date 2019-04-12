@@ -29,6 +29,7 @@ class AtomicPosition(object):
     Notes:
         Overrides __getitem__ and __setitem__ to access underlying position value directly.
         Provides a means of data integrity without constant manual verification.
+        Can also be used as a translation factor in the Lattice.translate() method.
     
     Args:
         position (tuple of DistanceUnit): (x, y, z) spatial coordinates 
@@ -57,7 +58,9 @@ class AtomicPosition(object):
         return self._position.__setitem__(key, value)
 
     def __str__(self):
-        s = "AtomicPosition: x: {}, y: {}, z: {}".format(self._position[0], self._position[1], self._position[2])
+        s = "AtomicPosition: x: {} {}, y: {} {}, z: {} {}".format(self._position[0], type(self._position[0]), 
+                                                                  self._position[1], type(self._position[1]),
+                                                                  self._position[2], type(self._position[2]))
         return s
 
 
@@ -251,12 +254,16 @@ class Lattice(object):
         """Translate the lattice in 3 dimensions.
 
         Args:
-            dims (tuple of DistanceUnits): The distance to translate the lattice by in (x, y, z).
+            dims (AtomicPosition): The distance to translate the lattice by in (x, y, z).
+            - Here the AtomicPosition functions not as a point in space but a translation factor to move all atoms by.
+            - This prevents having to do the type checking on a tuple of DistanceUnits which is already handled by AtomicPosition.
         """
-        if type(dims) is not tuple:
-            raise TypeError("`dims` must be of type tuple")
-        if len(dims) != 3:
-            raise ValueError("`dims` must have length 3")
-        for d in dims:
-            if not isinstance(d, DistanceUnit):
-                raise TypeError("all members of `dims` must be an instance of type DistanceUnit")
+        if type(dims) is not AtomicPosition:
+            raise TypeError("`dims` must be of type AtomicPosition")
+
+        for a in self.atoms:
+            new_position_x = dims[0].to(Picometer) + a.position[0].to(Picometer)
+            new_position_y = dims[1].to(Picometer) + a.position[1].to(Picometer)
+            new_position_z = dims[2].to(Picometer) + a.position[2].to(Picometer)
+            new_position = AtomicPosition((new_position_x, new_position_y, new_position_z))            
+            a.position = new_position

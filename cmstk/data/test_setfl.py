@@ -4,8 +4,13 @@ import pytest
 
 
 def test_init_setfl_reader():
-    # tests is SetflReader can be initialized
+    # tests if SetflReader can be initialized
     filename = os.path.join("potentials", "Mishin-Ni-Al-2004.eam.alloy")
+    sr = SetflReader(filename)
+
+def test_init_multicolumn_setfl_reader():
+    # tests if SetflReader can be initialized with a mutlicolumn setfl file
+    filename = os.path.join("potentials", "Bonny-Fe-Ni-Cr-2011.eam.alloy")
     sr = SetflReader(filename)
 
 def test_setfl_reader_elements():

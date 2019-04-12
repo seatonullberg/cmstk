@@ -1,11 +1,6 @@
 from cmstk.units.base import BaseUnit
 
 
-################
-#  Base Class  #
-################
-
-
 class DistanceUnit(BaseUnit, float): 
     """Representation of a distance unit.
 
@@ -22,7 +17,7 @@ class DistanceUnit(BaseUnit, float):
     def __init__(self, base_value):
         if type(base_value) is not float:
             raise TypeError("`base_value` must be of type float")
-        super().__init__(base_value)
+        super().__init__(value=base_value, kind=DistanceUnit)
         self.base_value = base_value
 
     def to(self, t):

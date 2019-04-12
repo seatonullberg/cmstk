@@ -24,6 +24,7 @@ def test_init_angstrom_squared():
     assert isinstance(a, AreaUnit)
     assert isinstance(a, float)
     assert a.value == value
+    assert a.kind == AreaUnit
 
 def test_angstrom_squared_to_all():
     # tests AngstromSquared unit conversion
@@ -52,6 +53,7 @@ def test_init_meter_squared():
     assert isinstance(m, AreaUnit)
     assert isinstance(m, float)
     assert m.value == value
+    assert m.kind == AreaUnit
 
 def test_meter_squared_to_all():
     # tests MeterSquared unit conversion
@@ -80,6 +82,7 @@ def test_init_nanometer_squared():
     assert isinstance(n, AreaUnit)
     assert isinstance(n, float)
     assert n.value == value
+    assert n.kind == AreaUnit
 
 def test_nanometer_squared_to_all():
     # tests NanometerSquared unit conversion
@@ -109,6 +112,7 @@ def test_init_picometer_squared():
     assert isinstance(p, AreaUnit)
     assert isinstance(p, float)
     assert p.value == value
+    assert p.kind == AreaUnit
 
 def test_picometer_squared_to_all():
     # tests PicometerSquared unit conversion

@@ -1,11 +1,6 @@
 from cmstk.units.base import BaseUnit
 
 
-################
-#  Base Class  #
-################
-
-
 class ForceUnit(BaseUnit, float):
     """Representation of a force unit.
 
@@ -22,7 +17,7 @@ class ForceUnit(BaseUnit, float):
     def __init__(self, base_value):
         if type(base_value) is not float:
             raise TypeError("`base_value` must be of type float")
-        super().__init__(base_value)
+        super().__init__(value=base_value, kind=ForceUnit)
         self.base_value = base_value
 
     def to(self, t):
@@ -44,11 +39,6 @@ class ForceUnit(BaseUnit, float):
         except ZeroDivisionError:
             new_value = 0.0
         return t(new_value)
-
-
-###############################
-#  ForceUnit Implementations  #
-###############################
 
 
 class Dyne(ForceUnit):

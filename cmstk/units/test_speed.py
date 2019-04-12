@@ -26,6 +26,7 @@ def test_init_angstrom_per_picosecond():
     assert isinstance(a, SpeedUnit)
     assert isinstance(a, float)
     assert a.value == value
+    assert a.kind == SpeedUnit
 
 def test_angstrom_per_picosecond_to_all():
     # tests AngstromPerPicosecond unit conversion
@@ -48,6 +49,7 @@ def test_init_meter_per_second():
     assert isinstance(m, SpeedUnit)
     assert isinstance(m, float)
     assert m.value == value
+    assert m.kind == SpeedUnit
 
 def test_meter_per_second_to_all():
     # tests MeterPerSecond unit conversion
