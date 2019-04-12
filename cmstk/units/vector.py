@@ -27,6 +27,23 @@ class Vector(object):
         self.unit_kind = unit_kind
         self._values = values
 
+    # TODO: vector operations
+    def rotate(self, rotation):
+        pass
+
+    def translate(self, translation):
+        pass
+
+    def cross(self, vec):
+        pass
+    
+    def dot(self, vec):
+        pass
+
+    @property
+    def magnitude(self):
+        pass
+
     def __iter__(self):
         return self._values.__iter__()
 

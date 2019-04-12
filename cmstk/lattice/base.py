@@ -202,23 +202,20 @@ class Lattice(object):
 
     def rotate(self, angles):
         """Rotate the lattice in 3 dimensions.
-    
+
         Args:
-            angles (tuple of AngleUnits): Angles to rotate the lattice by in (x, y, z).
+            angles (Vector3D of AngleUnits): Angles to rotate the lattice by in (x, y, z).
         """
-        if type(angles) is not tuple:
-            raise TypeError("`angles` must be of type tuple")
-        if len(angles) != 3:
-            raise ValueError("`angles` must have length 3")
-        for a in angles:
-            if not isinstance(a, AngleUnit):
-                raise TypeError("all members of `angles` must be an instance of type AngleUnit")
+        if type(angles) is not Vector3D:
+            raise TypeError("`angles` must be of type Vector3D")
+        if angles.unit_kind is not AngleUnit:
+            raise TypeError("`angles` must contain units of kind AngleUnits")
 
     def translate(self, dims):
         """Translate the lattice in 3 dimensions.
 
         Args:
-            dims (Vector3D): The distance to translate the lattice by in (x, y, z).
+            dims (Vector3D of DistanceUnit): The distance to translate the lattice by in (x, y, z).
             - Here the Vector3D functions not as a point in space but a translation factor to move all atoms by.
             - This prevents having to do the type checking on a tuple of DistanceUnits which is already handled by Vector3D.
         """
