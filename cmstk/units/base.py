@@ -19,6 +19,22 @@ class BaseUnit(object):
         self.value = value
         self.kind = kind
 
+#    def to(self, t):
+#        """Converts units of the same kind.
+#        
+#        Args:
+#            t (type): The type to convert to.
+#            - Must be the same kind of unit as self
+#        
+#        Returns:
+#            An instance of type(t)
+#        """
+#        kind = t(0.0).kind
+#        if kind != self.kind:
+#            raise TypeError("`t` must be a subclass of {}".format(self.kind))
+#        new_value = t.convert_inverse(self.value)
+#        return t(new_value)
+
     def add(self, other):
         """Returns the sum in terms of the self unit.
         
@@ -251,3 +267,7 @@ class BaseUnit(object):
     def __int__(self):
         # override int special method
         return int(self.value)
+
+    def __str__(self):
+        # override str special method
+        return "{}: base value={}".format(self.__class__.__name__, self.value)

@@ -7,12 +7,21 @@ class SetflProfilePlot(object):
     
     Args:
         reader (SetflReader): The setfl format eam potential reader object.
+    
+    Attributes:
+        custom (dict): Stores custom settings to tweak the plot.
     """
 
     def __init__(self, reader):
         if type(reader) is not SetflReader:
             raise TypeError("`reader` must be of type SetflReader")
         self._reader = reader
+        self.custom = {"embedding_xlim": None,
+                       "embedding_ylim": None,
+                       "density_xlim": None,
+                       "density_ylim": None,
+                       "pair_xlim": None,
+                       "pair_ylim": None}
 
     def generate_plot(self, filename):
         """Generates and saves plot to file.
@@ -28,6 +37,10 @@ class SetflProfilePlot(object):
         for e in self._reader.elements:
             embedding_y = self._reader.embedding_function(e)
             embedding_x = [self._reader.d_rho*(i+1) for i in range(self._reader.n_rho)]
+            if self.custom["embedding_xlim"] is not None:
+                axes[0].set_xlim(self.custom["embedding_xlim"])
+            if self.custom["embedding_ylim"] is not None:
+                axes[0].set_ylim(self.custom["embedding_ylim"])
             axes[0].plot(embedding_x, embedding_y, label=e)
             axes[0].set_xlabel("Distance (Angstroms)")
             axes[0].set_ylabel("Energy (eV)")
@@ -37,6 +50,10 @@ class SetflProfilePlot(object):
         for e in self._reader.elements:
             density_y = self._reader.density_function(e)
             density_x = [self._reader.d_r*(i+1) for i in range(self._reader.n_r)]
+            if self.custom["density_xlim"] is not None:
+                axes[1].set_xlim(self.custom["density_xlim"])
+            if self.custom["density_ylim"] is not None:
+                axes[1].set_ylim(self.custom["density_ylim"])
             axes[1].plot(density_x, density_y, label=e)
             axes[1].set_xlabel("Distance (Angstroms)")
             axes[1].set_ylabel("Electron Density")
@@ -46,6 +63,10 @@ class SetflProfilePlot(object):
         for ep in self._reader.element_pairs:
             potential_y = self._reader.pair_function(ep)
             potential_x = [self._reader.d_r*(i+1) for i in range(self._reader.n_r)]
+            if self.custom["pair_xlim"] is not None:
+                axes[2].set_xlim(self.custom["pair_xlim"])
+            if self.custom["pair_ylim"] is not None:
+                axes[2].set_ylim(self.custom["pair_ylim"])
             axes[2].plot(potential_x, potential_y, label=ep)
             axes[2].set_xlabel("Distance (Angstroms)")
             axes[2].set_ylabel("Energy (eV)")

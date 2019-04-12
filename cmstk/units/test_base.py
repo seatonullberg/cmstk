@@ -12,6 +12,10 @@ def test_init_base_unit():
     assert bu.value == value
     assert bu.kind == BaseUnit
 
+def test_base_unit_to():
+    # tests unit conversion directly from the base method
+    raise NotImplementedError
+
 def test_like_base_unit_operations():
     # tests if all operations work for like units
     value = 1.0
