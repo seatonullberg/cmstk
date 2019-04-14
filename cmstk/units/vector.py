@@ -39,6 +39,12 @@ class Vector(object):
             raise TypeError("`vec` must be an instance of type Vector")
         raise NotImplementedError
 
+    def rotate(self, vec):
+        raise NotImplementedError
+
+    def translate(self, vec):
+        raise NotImplementedError
+
     def magnitude(self, t):
         """Return the magnitude in terms of type t.
         
@@ -55,9 +61,9 @@ class Vector(object):
         summation = t(0.0)
         for v in self._values:
             summation += v.to(t)
-        root = math.sqrt(summation.value)
-        square = root**2
-        return t(square)
+        square = summation.value**2
+        root = math.sqrt(square)
+        return t(root)
 
     def __iter__(self):
         return self._values.__iter__()
