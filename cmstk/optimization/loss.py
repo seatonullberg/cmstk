@@ -40,7 +40,7 @@ class LogCoshError(LossFunction):
     @staticmethod
     def _log_cosh_error(targets, actuals):
         loss = np.log(np.cosh(actuals - targets))
-        return np.sum(loss)
+        return np.sum(loss, axis=0)
 
 
 class MeanAbsoluteError(LossFunction):
