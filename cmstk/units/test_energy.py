@@ -22,6 +22,9 @@ def test_electron_volt_to_all():
     j = ev.to(Joule)
     assert type(j) is Joule
     assert within_one_percent(1.60218e-19, j.value)
+    base = ev.to_base()
+    assert type(base) is Joule
+    assert within_one_percent(1.60218e-19, base.value)
 
 
 # Joule
@@ -46,4 +49,7 @@ def test_joule_to_all():
     assert type(new_j) is Joule
     assert within_one_percent(value, new_j.value)
     assert new_j.value == value
+    base = j.to_base()
+    assert type(base) is Joule
+    assert within_one_percent(value, base.value)
     

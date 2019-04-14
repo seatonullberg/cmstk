@@ -12,6 +12,7 @@ class ForceUnit(BaseUnit, float):
 
     Attributes:
         base_value (float): Value of the unit in terms of the base unit.
+        base_unit (type): The base unit type.
     """
 
     def __init__(self, base_value):
@@ -19,26 +20,7 @@ class ForceUnit(BaseUnit, float):
             raise TypeError("`base_value` must be of type float")
         super().__init__(value=base_value, kind=ForceUnit)
         self.base_value = base_value
-
-    def to(self, t):
-        """Converts one arbitrary ForceUnit to another.
-
-        Args:
-            t (type): The type to convert to.
-            - Must be a subclass of ForceUnit
-        
-        Returns:
-            An instance of type(t)
-        """
-
-        if not issubclass(t, ForceUnit):
-            raise TypeError("`t` must be a subclass of ForceUnit") # TODO: custom error
-        # invert the base unit conversion
-        try:
-            new_value = 1/t.convert(1/self.base_value)
-        except ZeroDivisionError:
-            new_value = 0.0
-        return t(new_value)
+        self.base_unit = Newton
 
 
 class Dyne(ForceUnit):
@@ -59,6 +41,10 @@ class Dyne(ForceUnit):
     def convert(x):
         return x * 1e-5
 
+    @staticmethod
+    def convert_inverse(x):
+        return x / 1e-5
+
 
 class Newton(ForceUnit):
     """Representation of the Newton unit of force.
@@ -76,4 +62,8 @@ class Newton(ForceUnit):
 
     @staticmethod
     def convert(x):
+        return x
+
+    @staticmethod
+    def convert_inverse(x):
         return x

@@ -37,6 +37,9 @@ def test_bar_to_all():
     p = b.to(Pascal)
     assert type(p) is Pascal
     assert within_one_percent(100000, p.value)
+    base = b.to_base()
+    assert type(base) is Pascal
+    assert within_one_percent(100000, base.value)
 
 
 # Pascal
@@ -60,4 +63,7 @@ def test_pascal_to_all():
     new_p = p.to(Pascal)
     assert type(new_p) is Pascal
     assert within_one_percent(value, new_p.value)
+    base = p.to_base()
+    assert type(base) is Pascal
+    assert within_one_percent(value, base.value)
     

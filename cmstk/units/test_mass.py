@@ -29,6 +29,9 @@ def test_atomic_mass_unit_to_all():
     p = a.to(Picogram)
     assert type(p) is Picogram
     assert within_one_percent(1.66054e-12, p.value)
+    base = a.to_base()
+    assert type(base) is Kilogram
+    assert within_one_percent(1.66054e-27, base.value)
 
 
 # Gram
@@ -58,6 +61,9 @@ def test_gram_to_all():
     p = g.to(Picogram)
     assert type(p) is Picogram
     assert within_one_percent(1e12, p.value)
+    base = g.to_base()
+    assert type(base) is Kilogram
+    assert within_one_percent(0.001, base.value)
 
 
 # Kilogram
@@ -87,6 +93,9 @@ def test_kilogram_to_all():
     p = k.to(Picogram)
     assert type(p) is Picogram
     assert within_one_percent(1e15, p.value)
+    base = k.to_base()
+    assert type(base) is Kilogram
+    assert within_one_percent(value, base.value)
 
 
 # Picogram
@@ -116,3 +125,6 @@ def test_picogram_to_all():
     new_p = p.to(Picogram)
     assert type(new_p) is Picogram
     assert within_one_percent(value, new_p.value)
+    base = p.to_base()
+    assert type(base) is Kilogram
+    assert within_one_percent(1e-15, base.value)

@@ -38,6 +38,9 @@ def test_angstrom_per_picosecond_to_all():
     m = a.to(MeterPerSecond)
     assert type(m) is MeterPerSecond
     assert within_one_percent(100.0, m.value)
+    base = a.to_base()
+    assert type(base) is MeterPerSecond
+    assert within_one_percent(100.0, base.value)
 
 
 # MeterPerSecond
@@ -61,4 +64,7 @@ def test_meter_per_second_to_all():
     new_m = m.to(MeterPerSecond)
     assert type(new_m) is MeterPerSecond
     assert within_one_percent(value, new_m.value)
+    base = m.to_base()
+    assert type(base) is MeterPerSecond
+    assert within_one_percent(value, base.value)
 

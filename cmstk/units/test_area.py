@@ -42,6 +42,9 @@ def test_angstrom_squared_to_all():
     p = a.to(PicometerSquared)
     assert type(p) is PicometerSquared
     assert within_one_percent(10000, p.value)
+    base = a.to_base()
+    assert type(base) is MeterSquared
+    assert within_one_percent(1e-20, base.value)
 
 
 # MeterSquared
@@ -71,6 +74,9 @@ def test_meter_squared_to_all():
     p = m.to(PicometerSquared)
     assert type(p) is PicometerSquared
     assert within_one_percent(1e24, p.value)
+    base = m.to_base()
+    assert type(base) is MeterSquared
+    assert within_one_percent(value, base.value)
 
 
 # NanometerSquared
@@ -101,6 +107,9 @@ def test_nanometer_squared_to_all():
     p = n.to(PicometerSquared)
     assert type(p) is PicometerSquared
     assert within_one_percent(1000000, p.value)
+    base = n.to_base()
+    assert type(base) is MeterSquared
+    assert within_one_percent(1e-18, base.value)
 
 
 # PicometerSquared
@@ -130,3 +139,6 @@ def test_picometer_squared_to_all():
     new_p = p.to(PicometerSquared)
     assert type(new_p) is PicometerSquared
     assert within_one_percent(value, new_p.value)
+    base = p.to_base()
+    assert type(base) is MeterSquared
+    assert within_one_percent(1e-24, base.value)

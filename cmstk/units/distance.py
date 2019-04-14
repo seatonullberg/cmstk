@@ -12,6 +12,7 @@ class DistanceUnit(BaseUnit, float):
 
     Attributes:
         base_value (float): Value in terms of the base unit.
+        base_unit (type): The base unit type.
     """
 
     def __init__(self, base_value):
@@ -19,31 +20,7 @@ class DistanceUnit(BaseUnit, float):
             raise TypeError("`base_value` must be of type float")
         super().__init__(value=base_value, kind=DistanceUnit)
         self.base_value = base_value
-
-    def to(self, t):
-        """Converts one arbitrary DistanceUnit to another.
-        
-        Args:
-            t (type): The type to convert to.
-            - Must be a subclass of DistanceUnit
-        
-        Returns:
-            An instance of type(t)
-        """
-
-        if not issubclass(t, DistanceUnit):
-            raise TypeError("`t` must be a subclass of DistanceUnit") # TODO: custom error
-        # invert the base unit conversion
-        try:
-            new_value = 1/t.convert(1/self.base_value)
-        except ZeroDivisionError:
-            new_value = 0.0
-        return t(new_value)
-
-
-##################################
-#  DistanceUnit Implementations  #
-##################################
+        self.base_unit = Meter
 
 
 class Angstrom(DistanceUnit):
@@ -64,6 +41,10 @@ class Angstrom(DistanceUnit):
     def convert(x):
         return x * 1e-10
 
+    @staticmethod
+    def convert_inverse(x):
+        return x / 1e-10
+
 
 class Meter(DistanceUnit):
     """Represents the Meter distance unit.
@@ -81,6 +62,10 @@ class Meter(DistanceUnit):
 
     @staticmethod
     def convert(x):
+        return x
+
+    @staticmethod
+    def convert_inverse(x):
         return x
 
 
@@ -102,6 +87,10 @@ class Nanometer(DistanceUnit):
     def convert(x):
         return x * 1e-9
 
+    @staticmethod
+    def convert_inverse(x):
+        return x / 1e-9
+
 class Picometer(DistanceUnit):
     """Representation of the Picometer distance unit.
 
@@ -119,3 +108,7 @@ class Picometer(DistanceUnit):
     @staticmethod
     def convert(x):
         return x * 1e-12
+
+    @staticmethod
+    def convert_inverse(x):
+        return x / 1e-12

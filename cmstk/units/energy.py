@@ -12,6 +12,7 @@ class EnergyUnit(BaseUnit, float):
 
     Attributes:
         base_value (float): Value in terms of the base unit.
+        base_unit (type): The base unit type.
     """
 
     def __init__(self, base_value):
@@ -19,25 +20,7 @@ class EnergyUnit(BaseUnit, float):
             raise TypeError("`base_value` must be of type float")
         super().__init__(value=base_value, kind=EnergyUnit)
         self.base_value = base_value
-
-    def to(self, t):
-        """Converts one arbitrary EnergyUnit to another.
-        
-        Args:
-            t (type): The type to convert to.
-            - Must be a subclass of EnergyUnit
-        Returns:
-            An instance of type(t)
-        """
-
-        if not issubclass(t, EnergyUnit):
-            raise TypeError("`t` must be a subclass of EnergyUnit") # TODO: custom error
-        # invert the base unit conversion
-        try:
-            new_value = 1/t.convert(1/self.base_value)
-        except ZeroDivisionError:
-            new_value = 0.0
-        return t(new_value)
+        self.base_unit = Joule
 
 
 class ElectronVolt(EnergyUnit):
@@ -58,6 +41,10 @@ class ElectronVolt(EnergyUnit):
     def convert(x):
         return x * 1.60218e-19
 
+    @staticmethod
+    def convert_inverse(x):
+        return x / 1.60218e-19
+
 
 class Joule(EnergyUnit):
     """Representation of the Joule energy unit.
@@ -75,4 +62,8 @@ class Joule(EnergyUnit):
 
     @staticmethod
     def convert(x):
+        return x
+
+    @staticmethod
+    def convert_inverse(x):
         return x

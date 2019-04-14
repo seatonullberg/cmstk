@@ -23,6 +23,9 @@ def test_degree_to_all():
     r = d.to(Radian)
     assert type(r) is Radian
     assert within_one_percent(0.0174533, r.value)
+    base = d.to_base()
+    assert type(base) is Radian
+    assert within_one_percent(0.0174533, base.value)
 
 
 # Radian
@@ -46,3 +49,6 @@ def test_radian_to_all():
     new_r = r.to(Radian)
     assert type(new_r) is Radian
     assert within_one_percent(value, new_r.value)
+    base = r.to_base()
+    assert type(base) is Radian
+    assert within_one_percent(value, base.value)

@@ -23,6 +23,9 @@ def test_dyne_to_all():
     n = d.to(Newton)
     assert type(n) is Newton
     assert within_one_percent(1e-5, n.value)
+    base = d.to_base()
+    assert type(base) is Newton
+    assert within_one_percent(1e-5, base.value)
 
 
 # Newton
@@ -46,3 +49,6 @@ def test_newton_to_all():
     new_n = n.to(Newton)
     assert type(new_n) is Newton
     assert within_one_percent(value, new_n.value)
+    base = n.to_base()
+    assert type(base) is Newton
+    assert within_one_percent(value, base.value)

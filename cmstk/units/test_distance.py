@@ -29,6 +29,9 @@ def test_angstrom_to_all():
     p = a.to(Picometer)
     assert type(p) is Picometer
     assert within_one_percent(100.0, p.value)
+    base = a.to_base()
+    assert type(base) is Meter
+    assert within_one_percent(1e-10, base.value)
 
 
 # Meter
@@ -58,6 +61,9 @@ def test_meter_to_all():
     p = m.to(Picometer)
     assert type(p) is Picometer
     assert within_one_percent(1e12, p.value)
+    base = m.to_base()
+    assert type(base) is Meter
+    assert within_one_percent(value, base.value)
     
 
 # Nanometer
@@ -87,6 +93,9 @@ def test_nanometer_to_all():
     p = n.to(Picometer)
     assert type(p) is Picometer
     assert within_one_percent(1000.0, p.value)
+    base = n.to_base()
+    assert type(base) is Meter
+    assert within_one_percent(1e-9, base.value)
     
 
 # Picometer
@@ -116,4 +125,7 @@ def test_picometer_to_all():
     new_p = p.to(Picometer)
     assert type(new_p) is Picometer
     assert within_one_percent(value, new_p.value)
+    base = p.to_base()
+    assert type(base) is Meter
+    assert within_one_percent(1e-12, base.value)
 

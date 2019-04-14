@@ -15,6 +15,7 @@ class SpeedUnit(BaseUnit, float):
 
     Attributes:
         base_value (float): Value in terms of the base unit.
+        base_unit (type): The base unit type.
     """
 
     def __init__(self, base_value):
@@ -22,22 +23,7 @@ class SpeedUnit(BaseUnit, float):
             raise TypeError("`base_error` must be of type float")
         super().__init__(value=base_value, kind=SpeedUnit)
         self.base_value = base_value
-
-    def to(self, t):
-        """Converts one arbitrary SpeedUnit to another.
-        
-        Args:
-            t (type): The type to convert to.
-            - Must be a subclass of SpeedUnit
-        Returns:
-            An instance of type(t)
-        """
-
-        if not issubclass(t, SpeedUnit):
-            raise TypeError("`t` must be a subclass of SpeedUnit") # TODO: custom error
-        # invert the base unit conversion
-        new_value = 1/t.convert(1/self.base_value)
-        return t(new_value)
+        self.base_unit = MeterPerSecond
 
     @classmethod
     def from_distance_time(cls, d, t):
@@ -57,7 +43,6 @@ class SpeedUnit(BaseUnit, float):
 
         new_speed = d.to(Meter).value / t.to(Second).value
         return cls(new_speed)
-        
 
     
 class AngstromPerPicosecond(SpeedUnit):
@@ -78,6 +63,10 @@ class AngstromPerPicosecond(SpeedUnit):
     def convert(x):
         return x * 100.0
 
+    @staticmethod
+    def convert_inverse(x):
+        return x / 100.0
+
 
 class MeterPerSecond(SpeedUnit):
     """Representation of the MeterPerSecond Speed unit.
@@ -95,4 +84,8 @@ class MeterPerSecond(SpeedUnit):
 
     @staticmethod
     def convert(x):
+        return x
+
+    @staticmethod
+    def convert_inverse(x):
         return x

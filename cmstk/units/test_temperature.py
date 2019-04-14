@@ -25,6 +25,9 @@ def test_celsius_to_all():
     k = c.to(Kelvin)
     assert type(k) is Kelvin
     assert within_one_percent(274.15, k.value)
+    base = c.to_base()
+    assert type(base) is Celsius
+    assert within_one_percent(value, base.value)
 
 
 # Fahrenheit
@@ -52,6 +55,9 @@ def test_fahrenheit_to_all():
     k = f.to(Kelvin)
     assert type(k) is Kelvin
     assert within_one_percent(255.928, k.value)
+    base = f.to_base()
+    assert type(base) is Celsius
+    assert -18.0 < base.value < -17.0  # within_one_percent fails ???
 
 
 # Kelvin
@@ -80,4 +86,7 @@ def test_kelvin_to_all():
     new_k = k.to(Kelvin)
     assert type(new_k) is Kelvin
     assert within_one_percent(value, new_k.value)
+    base = k.to_base()
+    assert type(base) is Celsius
+    assert -273.0 < base.value < -272.0  # within_one_percent_fails ???
  
