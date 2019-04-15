@@ -12,7 +12,6 @@ def test_mean_absolute_error():
     for i in range(targets.shape[0]):
         assert loss[i] == 0.5
 
-
 def test_mean_square_error():
     targets = np.array([[1.5, 1.5, 1.5],
                        [1.5, 1.5, 1.5]])
@@ -31,5 +30,4 @@ def test_log_cosh_error():
     lce = LogCoshError()
     loss = lce.loss(targets, actuals)
     for i in range(targets.shape[0]):
-        print(loss[i])
         assert loss[i] == 0.2402290139165549
