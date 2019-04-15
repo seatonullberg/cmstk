@@ -15,19 +15,19 @@ class LossFunction(object):
         self._evaluation_function = evaluation_function
 
     def loss(self, targets, actuals):
-        """Calculates the loss as specified by self._evaluation_function.
+        """Returns the losses as specified by self._evaluation_function.
         
         Args:
-            targets (np.ndarray): Array of target values.
-            actuals (np.ndarray): Array of actual values.
+            targets (numpy.ndarray): Array of target values.
+            actuals (numpy.ndarray): Array of actual values.
 
         Returns:
-            np.ndarray
+            numpy.ndarray
         """
         if type(targets) is not np.ndarray:
-            raise TypeError("`targets` must be of type np.ndarray")
+            raise TypeError("`targets` must be of type numpy.ndarray")
         if type(actuals) is not np.ndarray:
-            raise TypeError("`actuals` must be of type np.ndarray")
+            raise TypeError("`actuals` must be of type numpy.ndarray")
         return self._evaluation_function(targets, actuals)
 
 
