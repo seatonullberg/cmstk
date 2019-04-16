@@ -11,7 +11,7 @@ class BaseFilter(object):
     def __init__(self, obj):
         if not isinstance(obj, BaseFilter):
             raise TypeError("`obj` must be an instance of BaseFilter")
-        obj_methods = [method_name for method_name in dir(object) if callable(getattr(obj, method_name))]
+        obj_methods = [method_name for method_name in dir(obj) if callable(getattr(obj, method_name))]
         if "filter" not in obj_methods:
             raise ValueError("`obj` must implement a method called `filter`")
 
@@ -106,7 +106,7 @@ class BaseFilterSet(object):
     """
 
     def __init__(self, obj):
-        obj_methods = [method_name for method_name in dir(object) if callable(getattr(obj, method_name))]
+        obj_methods = [method_name for method_name in dir(obj) if callable(getattr(obj, method_name))]
         if "apply" not in obj_methods:
             raise ValueError("`obj` must implement a method called `apply`")
         self._filters = []
