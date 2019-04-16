@@ -1,4 +1,6 @@
+from cmstk.optimization.loss import BaseLossFunction
 import numpy as np
+from sklearn.preprocessing import StandardScaler
 
 
 class BaseFilter(object):
@@ -14,6 +16,79 @@ class BaseFilter(object):
         obj_methods = [method_name for method_name in dir(obj) if callable(getattr(obj, method_name))]
         if "filter" not in obj_methods:
             raise ValueError("`obj` must implement a method called `filter`")
+        self._scaler = StandardScaler()  # store this for faster use
+
+    def normalize(self, arr):
+        """Normalize features by removing the mean and scaling to unit variance.
+        
+        Args:
+            arr (numpy.ndarray): Array to be normalized.
+
+        Returns:
+            numpy.ndarray
+        """
+        return self._scaler.fit_transform(arr)
+
+
+# TODO: may want to create a constraint object rather than use a general dictionary?
+# - qoi object keys with max and min value properties
+class ConstraintFilter(BaseFilter):
+    """Implementation of a quantity of interest based constraint filter.
+    
+    Args:
+        arr (numpy.ndarray): Array of costs.
+        constraints (dict): Dictionary of constraints by qoi.
+        normalize (optional) (bool): Normalize the array of costs if True.
+        - True by default
+    """
+
+    def __init__(self, arr, constraints, normalize=True):
+        super().__init__(self)
+        if type(arr) is not np.ndarray:
+            raise TypeError("`arr` must be of type numpy.ndarray")
+        if type(constraints) is not dict:
+            raise TypeError("`constraints` must be of type dict")
+        self._arr = arr
+        self._constraints = constraints
+        self._normalize = normalize
+
+
+    def filter(self):
+        """Returns a mask of points which satisfy the constraints.
+
+        Returns:
+            numpy.ndarray
+        """
+        raise NotImplementedError
+
+
+class LossFunctionFilter(BaseFilter):
+    """Implementation of a filter which takes an arbitrary loss function.
+    
+    Args:
+        arr (numpy.ndarray): Array of costs.
+        loss_function (instance of BaseLossFunction): The loss function to apply.
+        normalize (optional) (bool): Normalize the array of costs if True.
+        - True by default
+    """
+
+    def __init__(self, arr, loss_function, normalize=True):
+        super().__init__(self)
+        if type(arr) is not np.ndarray:
+            raise TypeError("`arr` must be of type numpy.ndarray")
+        if not isinstance(loss_function, BaseLossFunction):
+            raise TypeError("`loss_function` must be an instance of type BaseLossFunction")
+        self._arr = arr
+        self._loss_function = loss_function
+        self._normalize = normalize
+
+    def filter(self):
+        """Returns a mask of points with acceptable loss.
+        
+        Returns:
+            numpy.ndarray
+        """
+        raise NotImplementedError
 
 
 class ParetoFilter(BaseFilter):
@@ -21,13 +96,16 @@ class ParetoFilter(BaseFilter):
     
     Args:
         arr (numpy.ndarray): Array of costs.
+        normalize (optional) (bool): Normalize the array of costs if True.
+        - True by default
     """
 
-    def __init__(self, arr):
+    def __init__(self, arr, normalize=True):
         super().__init__(self)
         if type(arr) is not np.ndarray:
-            raise TypeError("`arr` must be of type np.ndarray")
+            raise TypeError("`arr` must be of type numpy.ndarray")
         self._arr = arr
+        self._normalize = normalize
 
     def filter(self):
         """Returns a mask of Pareto efficient points.
@@ -35,6 +113,9 @@ class ParetoFilter(BaseFilter):
         Returns:
             numpy.ndarray
         """
+        if self._normalize:
+            self._arr = self.normalize(self._arr)
+
         is_efficient = np.ones(self._arr.shape[0], dtype=bool)
         for i, cost in enumerate(arr):
             if is_efficient[i]:
@@ -49,9 +130,11 @@ class PercentileFilter(BaseFilter):
     Args:
         arr (numpy.ndarray): Array of costs.
         percentile (float): The percentile rank below which observations are excluded.
+        normalize (optional) (bool): Normalize the array of costs if True.
+        - True by default
     """
 
-    def __init__(self, arr, percentile):
+    def __init__(self, arr, percentile, normalize=True):
         super().__init__(self)
         if type(arr) is not np.ndarray:
             raise TypeError("`arr` must be of type numpy.ndarray")
@@ -59,39 +142,11 @@ class PercentileFilter(BaseFilter):
             raise TypeError("`percentile` must be of type float")
         self._arr = arr
         self._percentile = percentile
+        self._normalize = normalize
 
     def filter(self):
         """Returns a mask of points at or above the given percentile.
         
-        Returns:
-            numpy.ndarray
-        """
-        raise NotImplementedError
-
-
-# TODO: may want to create a constraint object rather than use a general dictionary?
-# - qoi object keys with max and min value properties
-class ConstraintFilter(BaseFilter):
-    """Implementation of a quantity of interest based constraint filter.
-    
-    Args:
-        arr (numpy.ndarray): Array of costs.
-        constraints (dict): Dictionary of constraints by qoi
-    """
-
-    def __init__(self, arr, constraints):
-        super().__init__(self)
-        if type(arr) is not np.ndarray:
-            raise TypeError("`arr` must be of type numpy.ndarray")
-        if type(constraints) is not dict:
-            raise TypeError("`constraints` must be of type dict")
-        self._arr = arr
-        self._constraints = constraints
-
-
-    def filter(self):
-        """Returns a mask of points which satisfy the constraints.
-
         Returns:
             numpy.ndarray
         """

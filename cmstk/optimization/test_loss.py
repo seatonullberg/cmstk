@@ -29,5 +29,6 @@ def test_log_cosh_error():
                        [1.0, 1.0, 1.0]])
     lce = LogCoshError()
     loss = lce.loss(targets, actuals)
+    print(loss)
     for i in range(targets.shape[0]):
-        assert loss[i] == 0.2402290139165549
+        assert loss[i] == 0.36034352087483235

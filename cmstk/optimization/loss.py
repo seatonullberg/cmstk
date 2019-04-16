@@ -1,8 +1,7 @@
 import numpy as np
 
-# TODO: double check which axis these operation should occur on
 
-class LossFunction(object):
+class BaseLossFunction(object):
     """Representation of generalized loss functions with single initialization and validation.
     
     Args:
@@ -28,10 +27,12 @@ class LossFunction(object):
             raise TypeError("`targets` must be of type numpy.ndarray")
         if type(actuals) is not np.ndarray:
             raise TypeError("`actuals` must be of type numpy.ndarray")
+        if targets.shape != actuals.shape:
+            raise ValueError("`targets` and `actuals` must have the same shape")
         return self._evaluation_function(targets, actuals)
 
 
-class LogCoshError(LossFunction):
+class LogCoshError(BaseLossFunction):
     """Implementation of the log cosh loss function."""
 
     def __init__(self):
@@ -40,10 +41,10 @@ class LogCoshError(LossFunction):
     @staticmethod
     def _log_cosh_error(targets, actuals):
         loss = np.log(np.cosh(actuals - targets))
-        return np.sum(loss, axis=0)
+        return np.sum(loss, axis=1)
 
 
-class MeanAbsoluteError(LossFunction):
+class MeanAbsoluteError(BaseLossFunction):
     """Implementation of the mean absolute error loss function."""
 
     def __init__(self):
@@ -51,10 +52,10 @@ class MeanAbsoluteError(LossFunction):
 
     @staticmethod
     def _mean_absolute_error(targets, actuals):
-        return (np.absolute(targets - actuals)).mean(axis=0)
+        return (np.absolute(targets - actuals)).mean(axis=1)
 
 
-class MeanSquareError(LossFunction):
+class MeanSquareError(BaseLossFunction):
     """Implementation of the mean square error loss function."""
 
     def __init__(self):
@@ -62,4 +63,4 @@ class MeanSquareError(LossFunction):
 
     @staticmethod
     def _mean_square_error(targets, actuals):
-        return (np.square(targets - actuals)).mean(axis=0)
+        return (np.square(targets - actuals)).mean(axis=1)

@@ -31,3 +31,5 @@ def test_uniform_sampler():
     assert type(samples) is np.ndarray
     assert samples.shape[0] == 10
     assert samples.shape[1] == 3
+    assert samples.min() >= 0
+    assert samples.max() <= 1
