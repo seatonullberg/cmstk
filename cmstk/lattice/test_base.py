@@ -2,10 +2,12 @@ from cmstk.lattice.base import Atom, Lattice, separation_distance
 from cmstk.lattice.exceptions import AtomicPositionError
 from cmstk.lattice.unit_cell import unit_cell_sc
 from cmstk.units.distance import Picometer
+from cmstk.units.angle import Radian
 from cmstk.units.test_testing_resources import within_one_percent
 from cmstk.units.vector import Vector3D
 import pytest
 import math
+import numpy as np
 
 
 def test_separation_distance():
@@ -123,7 +125,17 @@ def test_lattice_repeat():
 
 def test_lattice_rotate():
     # tests lattice rotation
-    raise NotImplementedError
+    rotation = (Radian(0.0), Radian(0.0), Radian(np.pi/4))
+    rotation = Vector3D(rotation)
+    position = (Picometer(1.0), Picometer(0.0), Picometer(0.0))
+    position = Vector3D(position)
+    atom = Atom(symbol="C", position=position)  # use Vector3D as a coordinate
+    l = Lattice([atom])
+    l.rotate(rotation)
+    for a in l.atoms:
+        assert within_one_percent(0.70710678e-12, a.position[0].value)
+        assert within_one_percent(0.70710678e-12, a.position[1].value)
+        assert a.position[2].value == 0.0
 
 def test_lattice_translate():
     # tests lattice translation

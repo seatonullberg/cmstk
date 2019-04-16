@@ -211,7 +211,8 @@ class Lattice(object):
             raise TypeError("`angles` must be of type Vector3D")
         if angles.unit_kind is not AngleUnit:
             raise TypeError("`angles` must contain units of kind AngleUnits")
-        raise NotImplementedError
+        for a in self.atoms:
+            a.position.rotate(angles)
 
     def translate(self, dims):
         """Translate the lattice in 3 dimensions.
@@ -225,10 +226,5 @@ class Lattice(object):
             raise TypeError("`dims` must be of type Vector3D")
         if dims.unit_kind is not DistanceUnit:
             raise TypeError("`position` must contain units of kind DistanceUnit")
-
         for a in self.atoms:
-            new_position_x = dims[0].to(Picometer) + a.position[0].to(Picometer)
-            new_position_y = dims[1].to(Picometer) + a.position[1].to(Picometer)
-            new_position_z = dims[2].to(Picometer) + a.position[2].to(Picometer)
-            new_position = Vector3D((new_position_x, new_position_y, new_position_z))            
-            a.position = new_position
+            a.position.translate(dims)
