@@ -8,6 +8,7 @@ Physical properties of the elements as convenient JSON.
 
     Units:
     Distance: Picometers
+    Mass: AtomicMassUnit
 
     References:
-    [1] http://periodictable.com/Elements/
+    [1] http://periodictable.com/<3_digit_atomic_number>/data.html
