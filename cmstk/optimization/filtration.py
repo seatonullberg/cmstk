@@ -198,10 +198,6 @@ class SequentialFilterSet(BaseFilterSet):
             numpy.ndarray
             - The same array, filtered.
         """
-        if len(self._filters) == 0:
-            return arr  # return the unfiltered array
-        if len(self._filters) == 1:
-            return arr[self._filters[0].filter(arr)]
         # apply masks in sequence
         for f in self._filters:
             mask = f.filter(arr)
