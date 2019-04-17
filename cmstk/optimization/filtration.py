@@ -42,19 +42,18 @@ class ConstraintFilter(BaseFilter):
         - True by default
     """
 
-    def __init__(self, arr, constraints, normalize=True):
+    def __init__(self, constraints, normalize=True):
         super().__init__(self)
-        if type(arr) is not np.ndarray:
-            raise TypeError("`arr` must be of type numpy.ndarray")
         if type(constraints) is not dict:
             raise TypeError("`constraints` must be of type dict")
-        self._arr = arr
         self._constraints = constraints
         self._normalize = normalize
 
-
-    def filter(self):
+    def filter(self, arr):
         """Returns a mask of points which satisfy the constraints.
+
+        Args:
+            arr (numpy.ndarray): Array of costs
 
         Returns:
             numpy.ndarray
@@ -66,37 +65,39 @@ class LossFunctionFilter(BaseFilter):
     """Implementation of a filter which takes an arbitrary loss function.
     
     Args:
-        arr (numpy.ndarray): Array of costs.
         loss_function (instance of BaseLossFunction): The loss function to apply.
         normalize (optional) (bool): Normalize the array of costs if True.
         - True by default
     """
 
-    def __init__(self, arr, loss_function, percentile, normalize=True):
+    def __init__(self, loss_function, percentile, normalize=True):
         super().__init__(self)
-        if type(arr) is not np.ndarray:
-            raise TypeError("`arr` must be of type numpy.ndarray")
         if not isinstance(loss_function, BaseLossFunction):
             raise TypeError("`loss_function` must be an instance of type BaseLossFunction")
         if type(percentile) is not float:
             raise TypeError("`percentile` must be of type float")
         if not 0.0 < percentile < 100.0:
             raise ValueError("`percentile` must be between 0.0 and 100.0")
-        self._arr = arr
         self._loss_function = loss_function
         self._percentile = percentile
         self._normalize = normalize
 
-    def filter(self):
+    def filter(self, arr):
         """Returns a mask of points with acceptable loss.
         
+        Args:
+            arr (numpy.ndarray): Array of costs.
+
         Returns:
             numpy.ndarray
         """
-        if self._normalize:
-            self._arr = self.normalize(self._arr)
+        if type(arr) is not np.ndarray:
+            raise TypeError("`arr` must be of type numpy.ndarray")
 
-        reduced_arr = self._loss_function.reduction(self._arr)  # use loss function to reduce each row to a scalar
+        if self._normalize:
+            arr = self.normalize(arr)
+
+        reduced_arr = self._loss_function.reduction(arr)  # use loss function to reduce each row to a scalar
         percentile_val = np.percentile(reduced_arr, self._percentile)
         efficient_indices = reduced_arr <= percentile_val
         return efficient_indices
@@ -106,31 +107,30 @@ class ParetoFilter(BaseFilter):
     """Implementation of a Pareto efficiency filter.
     
     Args:
-        arr (numpy.ndarray): Array of costs.
         normalize (optional) (bool): Normalize the array of costs if True.
         - True by default
     """
 
-    def __init__(self, arr, normalize=True):
+    def __init__(self, normalize=True):
         super().__init__(self)
-        if type(arr) is not np.ndarray:
-            raise TypeError("`arr` must be of type numpy.ndarray")
-        self._arr = arr
         self._normalize = normalize
 
-    def filter(self):
+    def filter(self, arr):
         """Returns a mask of Pareto efficient points.
+
+        Args:
+            arr (numpy.ndarray): Array of costs.
 
         Returns:
             numpy.ndarray
         """
         if self._normalize:
-            self._arr = self.normalize(self._arr)
+            arr = self.normalize(arr)
 
-        is_efficient = np.ones(self._arr.shape[0], dtype=bool)
-        for i, cost in enumerate(self._arr):
+        is_efficient = np.ones(arr.shape[0], dtype=bool)
+        for i, cost in enumerate(arr):
             if is_efficient[i]:
-                is_efficient[is_efficient] = np.any(self._arr[is_efficient] < cost, axis=1)  # Keep any point with a lower cost
+                is_efficient[is_efficient] = np.any(arr[is_efficient] < cost, axis=1)  # Keep any point with a lower cost
                 is_efficient[i] = True  # And keep self
         return is_efficient
 
@@ -170,7 +170,7 @@ class IntersectionalFilterSet(BaseFilterSet):
             numpy.ndarray
             - The same array, filtered.
         """
-        masks = [f.filter() for f in self._filters]
+        masks = [f.filter(arr) for f in self._filters]
         if len(masks) == 0:
             return arr  # return the unfiltered array
         if len(masks) == 1:
@@ -198,12 +198,12 @@ class SequentialFilterSet(BaseFilterSet):
             numpy.ndarray
             - The same array, filtered.
         """
-        masks = [f.filter() for f in self._filters]
-        if len(masks) == 0:
+        if len(self._filters) == 0:
             return arr  # return the unfiltered array
-        if len(masks) == 1:
-            return arr[masks[0]]
+        if len(self._filters) == 1:
+            return arr[self._filters[0].filter(arr)]
         # apply masks in sequence
-        for m in masks:
-            arr = arr[m]
+        for f in self._filters:
+            mask = f.filter(arr)
+            arr = arr[mask]
         return arr
