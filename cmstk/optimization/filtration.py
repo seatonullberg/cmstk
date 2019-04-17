@@ -117,7 +117,7 @@ class ParetoFilter(BaseFilter):
             self._arr = self.normalize(self._arr)
 
         is_efficient = np.ones(self._arr.shape[0], dtype=bool)
-        for i, cost in enumerate(arr):
+        for i, cost in enumerate(self._arr):
             if is_efficient[i]:
                 is_efficient[is_efficient] = np.any(self._arr[is_efficient] < cost, axis=1)  # Keep any point with a lower cost
                 is_efficient[i] = True  # And keep self
@@ -175,7 +175,7 @@ class BaseFilterSet(object):
 class IntersectionalFilterSet(BaseFilterSet):
     """Implementation of a filter set which applies the intersection of all filter masks simultaneously."""
 
-    def __init__(self)
+    def __init__(self):
         super().__init__(self)
 
     def apply(self, arr):

@@ -13,23 +13,30 @@ class BaseLossFunction(object):
             raise TypeError("`evaluation_function` must be callable")
         self._evaluation_function = evaluation_function
 
-    def loss(self, targets, actuals):
+    def loss(self, target, actual):
         """Returns the losses as specified by self._evaluation_function.
         
         Args:
-            targets (numpy.ndarray): Array of target values.
-            actuals (numpy.ndarray): Array of actual values.
+            target (numpy.ndarray or float): Array of target values or singular target value.
+            actual (numpy.ndarray or float): Array of actual values or singular actual value.
 
         Returns:
-            numpy.ndarray
+            numpy.ndarray or float
         """
-        if type(targets) is not np.ndarray:
-            raise TypeError("`targets` must be of type numpy.ndarray")
-        if type(actuals) is not np.ndarray:
-            raise TypeError("`actuals` must be of type numpy.ndarray")
-        if targets.shape != actuals.shape:
-            raise ValueError("`targets` and `actuals` must have the same shape")
-        return self._evaluation_function(targets, actuals)
+        if type(target) not in [np.ndarray, float]:
+            raise TypeError("`target` must be of type numpy.ndarray or float")
+        if type(actual) not in [np.ndarray, float]:
+            raise TypeError("`actual` must be of type numpy.ndarray or float")
+        if type(target) is not type(actual):
+            raise TypeError("`target` and `actual` must both be of type numpy.ndarray or float")
+        if type(target) is np.ndarray and type(actual) is np.ndarray:
+            if target.shape != actual.shape:
+                raise ValueError("`target` and `actual` must have the same shape")
+            is_array = True
+        else:
+            is_array = False
+
+        return self._evaluation_function(target, actual, is_array)
 
 
 class LogCoshError(BaseLossFunction):
@@ -39,9 +46,13 @@ class LogCoshError(BaseLossFunction):
         super().__init__(self._log_cosh_error)
 
     @staticmethod
-    def _log_cosh_error(targets, actuals):
-        loss = np.log(np.cosh(actuals - targets))
-        return np.sum(loss, axis=1)
+    def _log_cosh_error(target, actual, is_array):
+        loss = np.log(np.cosh(actual - target))
+        if is_array:
+            loss = np.sum(loss, axis=1)
+            return loss
+        else:
+            return float(loss)
 
 
 class MeanAbsoluteError(BaseLossFunction):
@@ -51,8 +62,13 @@ class MeanAbsoluteError(BaseLossFunction):
         super().__init__(self._mean_absolute_error)
 
     @staticmethod
-    def _mean_absolute_error(targets, actuals):
-        return (np.absolute(targets - actuals)).mean(axis=1)
+    def _mean_absolute_error(target, actual, is_array):
+        loss = np.absolute(target - actual)
+        if is_array:
+            loss = loss.mean(axis=1)
+            return loss
+        else:
+            return float(loss)
 
 
 class MeanSquareError(BaseLossFunction):
@@ -62,5 +78,10 @@ class MeanSquareError(BaseLossFunction):
         super().__init__(self._mean_square_error)
 
     @staticmethod
-    def _mean_square_error(targets, actuals):
-        return (np.square(targets - actuals)).mean(axis=1)
+    def _mean_square_error(target, actual, is_array):
+        loss = np.square(target - actual)
+        if is_array:
+            loss = loss.mean(axis=1)
+            return loss
+        else:
+            return float(loss)
