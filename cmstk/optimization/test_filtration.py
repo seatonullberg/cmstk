@@ -20,6 +20,10 @@ def test_pareto_filter():
     filtered_data = data[mask]
     assert filtered_data.shape[0] < data.shape[0]  # not sure how else to test this
 
-#def test_percentile_filter():
-#    # tests PercentileFilter individually
-#    raise NotImplementedError
+def test_percentile_filter():
+    # tests PercentileFilter individually
+    data = np.random.normal(size=(100, 3))
+    pf = PercentileFilter(data, 5.0)
+    mask = pf.filter()
+    filtered_data = data[mask]
+    assert 4 <= filtered_data.shape[0] <= 6  # because 5.0 percentile of 100 samples

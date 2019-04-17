@@ -150,7 +150,14 @@ class PercentileFilter(BaseFilter):
         Returns:
             numpy.ndarray
         """
-        raise NotImplementedError
+        if self._normalize:
+            self._arr = self.normalize(self._arr)
+
+        abs_arr = abs(self._arr)  # use absolutes for effective <= comparison
+        row_summations = np.sum(abs_arr, axis=1)
+        percentile_val = np.percentile(row_summations, self._percentile)
+        efficient_indices = row_summations <= percentile_val
+        return efficient_indices
 
 
 class BaseFilterSet(object):
