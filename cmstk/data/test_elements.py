@@ -1,6 +1,7 @@
 from cmstk.data.elements import ElementsReader
 from cmstk.data.exceptions import ReadOnlyError
 from cmstk.units.distance import Picometer
+from cmstk.units.mass import AtomicMassUnit
 import pytest
 
 
@@ -16,6 +17,14 @@ def test_elements_reader_atomic_radius():
     assert type(atomic_radius) is Picometer
     assert atomic_radius.value == float(67)
 
+def test_elements_reader_atomic_weight():
+    # tests ElementsReader atomic weight access
+    er = ElementsReader()
+    symbol = "C"
+    atomic_weight = er.atomic_weight(symbol)
+    assert type(atomic_weight) is AtomicMassUnit
+    assert atomic_weight.value == 12.001
+
 def test_elements_Reader_covalent_radius():
     # tests ElementsReader covalent radius access
     er = ElementsReader()
@@ -23,7 +32,6 @@ def test_elements_Reader_covalent_radius():
     covalent_radius = er.covalent_radius(symbol)
     assert type(covalent_radius) is Picometer
     assert covalent_radius.value == float(76)
-
 
 def test_elements_reader_crystal_structure():
     # tests ElementsReader crystal structure access

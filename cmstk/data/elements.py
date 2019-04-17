@@ -1,5 +1,6 @@
 from cmstk.data.base import BaseDataReader
 from cmstk.units.distance import Picometer
+from cmstk.units.mass import AtomicMassUnit
 
 
 class ElementsReader(BaseDataReader):
@@ -20,6 +21,18 @@ class ElementsReader(BaseDataReader):
         """
         r = self[symbol]["atomic_radius"]
         return Picometer(r)
+
+    def atomic_weight(self, symbol):
+        """Returns the atomic weight of `symbol` in AtomicMassUnit units.
+        
+        Args:
+            symbol (str): IUPAC chemical symbol.
+
+        Returns:
+            AtomicMassUnit
+        """
+        weight = self[symbol]["atomic_weight"]
+        return AtomicMassUnit(weight)
 
     def covalent_radius(self, symbol):
         """Returns covalent radius of `symbol` in Picometer units.
