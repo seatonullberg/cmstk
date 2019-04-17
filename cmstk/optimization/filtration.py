@@ -72,14 +72,19 @@ class LossFunctionFilter(BaseFilter):
         - True by default
     """
 
-    def __init__(self, arr, loss_function, normalize=True):
+    def __init__(self, arr, loss_function, percentile, normalize=True):
         super().__init__(self)
         if type(arr) is not np.ndarray:
             raise TypeError("`arr` must be of type numpy.ndarray")
         if not isinstance(loss_function, BaseLossFunction):
             raise TypeError("`loss_function` must be an instance of type BaseLossFunction")
+        if type(percentile) is not float:
+            raise TypeError("`percentile` must be of type float")
+        if not 0.0 < percentile < 100.0:
+            raise ValueError("`percentile` must be between 0.0 and 100.0")
         self._arr = arr
         self._loss_function = loss_function
+        self._percentile = percentile
         self._normalize = normalize
 
     def filter(self):
@@ -88,7 +93,13 @@ class LossFunctionFilter(BaseFilter):
         Returns:
             numpy.ndarray
         """
-        raise NotImplementedError
+        if self._normalize:
+            self._arr = self.normalize(self._arr)
+
+        reduced_arr = self._loss_function.reduction(self._arr)  # use loss function to reduce each row to a scalar
+        percentile_val = np.percentile(reduced_arr, self._percentile)
+        efficient_indices = reduced_arr <= percentile_val
+        return efficient_indices
 
 
 class ParetoFilter(BaseFilter):
@@ -122,42 +133,6 @@ class ParetoFilter(BaseFilter):
                 is_efficient[is_efficient] = np.any(self._arr[is_efficient] < cost, axis=1)  # Keep any point with a lower cost
                 is_efficient[i] = True  # And keep self
         return is_efficient
-
-
-class PercentileFilter(BaseFilter):
-    """Implementation of a percentile filter.
-    
-    Args:
-        arr (numpy.ndarray): Array of costs.
-        percentile (float): The percentile rank below which observations are excluded.
-        normalize (optional) (bool): Normalize the array of costs if True.
-        - True by default
-    """
-
-    def __init__(self, arr, percentile, normalize=True):
-        super().__init__(self)
-        if type(arr) is not np.ndarray:
-            raise TypeError("`arr` must be of type numpy.ndarray")
-        if type(percentile) is not float:
-            raise TypeError("`percentile` must be of type float")
-        self._arr = arr
-        self._percentile = percentile
-        self._normalize = normalize
-
-    def filter(self):
-        """Returns a mask of points at or above the given percentile.
-        
-        Returns:
-            numpy.ndarray
-        """
-        if self._normalize:
-            self._arr = self.normalize(self._arr)
-
-        abs_arr = abs(self._arr)  # use absolutes for effective <= comparison
-        row_summations = np.sum(abs_arr, axis=1)
-        percentile_val = np.percentile(row_summations, self._percentile)
-        efficient_indices = row_summations <= percentile_val
-        return efficient_indices
 
 
 class BaseFilterSet(object):

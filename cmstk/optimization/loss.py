@@ -57,28 +57,6 @@ class BaseLossFunction(object):
         return self._reduction_function(errors)
 
 
-class LogCoshError(BaseLossFunction):
-    """Implementation of the log cosh loss function."""
-
-    def __init__(self):
-        super().__init__(self._log_cosh_error, self._log_cosh_reduction)
-
-    @staticmethod
-    def _log_cosh_error(target, actual, is_array):
-        loss = np.log(np.cosh(actual - target))
-        if is_array:
-            loss = np.sum(loss, axis=1)
-            return loss
-        else:
-            return float(loss)
-
-    @staticmethod
-    def _log_cosh_reduction(errors):
-        reduc = np.log(errors)
-        reduc = np.sum(reduc, axis=1)
-        return reduc
-
-
 class MeanAbsoluteError(BaseLossFunction):
     """Implementation of the mean absolute error loss function."""
 

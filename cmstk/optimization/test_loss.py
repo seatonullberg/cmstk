@@ -1,5 +1,5 @@
 import numpy as np
-from cmstk.optimization.loss import MeanAbsoluteError, MeanSquareError, LogCoshError
+from cmstk.optimization.loss import MeanAbsoluteError, MeanSquareError
 
 
 def test_mean_absolute_error():
@@ -57,31 +57,3 @@ def test_mean_square_error_reduction():
     assert type(reduc) is np.ndarray
     for i in range(errors.shape[0]):
         assert reduc[i] == 1.1666666666666667
-
-def test_log_cosh_error():
-    targets = np.array([[1.5, 1.5, 1.5],
-                       [1.5, 1.5, 1.5]])
-    actuals = np.array([[1.0, 1.0, 1.0],
-                       [1.0, 1.0, 1.0]])
-    lce = LogCoshError()
-    loss = lce.loss(targets, actuals)
-    assert type(loss) is np.ndarray
-    for i in range(targets.shape[0]):
-        assert loss[i] == 0.36034352087483235
-
-def test_log_cosh_error_scalar():
-    target = 1.5
-    actual = 1.0
-    lce = LogCoshError()
-    loss = lce.loss(target, actual)
-    assert type(loss) is float
-    assert loss == 0.12011450695827745
-
-def test_log_cosh_error_reduction():
-    errors = np.array([[0.5, 1.0, 1.5],
-                       [0.5, 1.0, 1.5]])
-    lce = LogCoshError()
-    reduc = lce.reduction(errors)
-    assert type(reduc) is np.ndarray
-    for i in range(errors.shape[0]):
-        assert reduc[i] == -0.2876820724517809
