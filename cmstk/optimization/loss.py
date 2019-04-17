@@ -8,10 +8,13 @@ class BaseLossFunction(object):
         evaluation_function (function): The underlying loss function.
     """
 
-    def __init__(self, evaluation_function):
+    def __init__(self, evaluation_function, reduction_function):
         if not callable(evaluation_function):
             raise TypeError("`evaluation_function` must be callable")
+        if not callable(reduction_function):
+            raise TypeError("`reduction_function` must be callable")
         self._evaluation_function = evaluation_function
+        self._reduction_function = reduction_function
 
     def loss(self, target, actual):
         """Returns the losses as specified by self._evaluation_function.
@@ -38,12 +41,27 @@ class BaseLossFunction(object):
 
         return self._evaluation_function(target, actual, is_array)
 
+    def reduction(self, errors):
+        """Returns a 1d array of errors reduced row-wise from a 2d array of errors.
+        
+        Args:
+            errors (numpy.ndarray): 2d array of costs.
+        
+        Returns:
+            numpy.ndarray
+        """
+        if type(errors) is not np.ndarray:
+            raise TypeError("`errors` must be of type numpy.ndarray")
+        if len(errors.shape) != 2:
+            raise ValueError("`errors` must be a 2d array")
+        return self._reduction_function(errors)
+
 
 class LogCoshError(BaseLossFunction):
     """Implementation of the log cosh loss function."""
 
     def __init__(self):
-        super().__init__(self._log_cosh_error)
+        super().__init__(self._log_cosh_error, self._log_cosh_reduction)
 
     @staticmethod
     def _log_cosh_error(target, actual, is_array):
@@ -54,12 +72,18 @@ class LogCoshError(BaseLossFunction):
         else:
             return float(loss)
 
+    @staticmethod
+    def _log_cosh_reduction(errors):
+        reduc = np.log(errors)
+        reduc = np.sum(reduc, axis=1)
+        return reduc
+
 
 class MeanAbsoluteError(BaseLossFunction):
     """Implementation of the mean absolute error loss function."""
 
     def __init__(self):
-        super().__init__(self._mean_absolute_error)
+        super().__init__(self._mean_absolute_error, self._mean_absolute_reduction)
 
     @staticmethod
     def _mean_absolute_error(target, actual, is_array):
@@ -70,12 +94,18 @@ class MeanAbsoluteError(BaseLossFunction):
         else:
             return float(loss)
 
+    @staticmethod
+    def _mean_absolute_reduction(errors):
+        reduc = np.absolute(errors)
+        reduc = reduc.mean(axis=1)
+        return reduc
+
 
 class MeanSquareError(BaseLossFunction):
     """Implementation of the mean square error loss function."""
 
     def __init__(self):
-        super().__init__(self._mean_square_error)
+        super().__init__(self._mean_square_error, self._mean_square_reduce)
 
     @staticmethod
     def _mean_square_error(target, actual, is_array):
@@ -85,3 +115,9 @@ class MeanSquareError(BaseLossFunction):
             return loss
         else:
             return float(loss)
+
+    @staticmethod
+    def _mean_square_reduce(errors):
+        reduc = np.square(errors)
+        reduc = reduc.mean(axis=1)
+        return reduc
