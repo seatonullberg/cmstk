@@ -43,6 +43,31 @@ class LAMMPS(object):
         """True if LAMMPS compiled with C++ exceptions handling enabled."""
         return self._libc.lammps_config_has_exceptions() != 0
 
+    @property
+    def has_gzip_support(self):
+        # TODO
+        pass
+
+    @property
+    def has_png_support(self):
+        # TODO
+        pass
+
+    @property
+    def has_jpeg_support(self):
+        # TODO
+        pass
+
+    @property
+    def has_ffmpeg_support(self):
+        # TODO
+        pass
+
+    @property
+    def installed_packages(self):
+        # TODO
+        pass
+
 
     def close(self):
         """Close the LAMMPS instance."""
@@ -144,6 +169,127 @@ class LAMMPS(object):
         ptr = self._libc.lammps_extract_global(self._lammps_ptr, encoding)
         return ptr[0]  # not sure why only the zeroeth is returned
 
+    # this seems like it would need a name of the box to extract
+    def extract_box(self):
+        """Extract a LAMMPS box.
+        
+        Returns:
+            dict
+        """
+        boxlo = (3*ct.c_double)()
+        boxhi = (3*ct.c_double)()
+        xy = ct.c_double()
+        yz = ct.c_double()
+        xz = ct.c_double()
+        periodicity = (3*ct.c_int)()
+        box_change = ct.c_int()
+
+        self._libc.lammps_extract_box(self._lammps_ptr, boxlo, boxhi,
+                                      ct.byref(xy), ct.byref(yz), ct.byref(xz),
+                                      periodicity, ct.byref(box_change))
+        result = {
+            "boxlo": boxlo[:3],
+            "bokhi": boxhi[:3],
+            "xy": xy.value
+            "yz": yz.value
+            "xz": xz.value
+            "periodicity": periodicity[:3]
+            "box_change": box_change.value
+        }
+        return result
+
+    def extract_atoms(self, name, t):
+        """Extract per-atom LAMMPS information.
+        
+        Args:
+            name (str): Atom name.
+            t (int): Determines return type.
+            - 0 for pointer int, 1 for pointer pointer int, 2 for pointer double, 3 for pointer pointer double 
+        
+        Returns:
+            pointer
+        """
+        if type(name) is not str:
+            raise TypeError("`name` must be of type str")
+        if type(t) is not int:
+            raise TypeError("`t` must be of type int")    
+        encoding = name.encode()
+        if t == 0:
+            self._libc.lammps_extract_atom.restype = ct.POINTER(ct.c_int)
+        elif t == 1:
+            self._libc.lammps_extract_atom.restype = ct.POINTER(ct.POINTER(ct.c_int))
+        elif t == 2:
+            self._libc.lammps_extract_atom.restype = ct.POINTER(ct.c_double)
+        elif t == 3:
+            self._libc.lammps_extract_atom.restype = ct.POINTER(ct.POINTER(ct.c_double))
+        else:
+            raise ValueError("`t` must be 0, 1, 2, or 3")
+        ptr = self._libc.lammps_extract_atom(self._lammps_ptr, name)
+        return ptr
+
+    def extract_compute(self, id_, style, t):
+        """Extract the result of a LAMMPS compute.
+        
+        Args:
+            id_ (str): ID of the compute.
+            style (int): Determines format of the result
+            - <TODO>
+            t (int): Determines return type
+            - <TODO>
+        
+        Returns:
+            pointer
+        """
+        # TODO
+        pass
+
+    def extract_fix(self, id_, style, t, i=0, j=0):
+        # TODO
+        pass
+
+    def extract_variable(self, name, group, t):
+        # TODO
+        pass
+
+    def get_thermo(self, name):
+        # TODO
+        pass
+
+    def get_natoms(self):
+        # TODO
+        pass
+
+    def set_variable(self, name, value):
+        # TODO
+        pass
+
+    def reset_box(self, boxlo, boxhi, xy, yz, xz):
+        # TODO
+        pass
+
+    def gather_atoms(self, name, t, count):
+        # TODO
+        pass
+
+    def gather_atoms_concat(self, name, t, count):
+        # TODO
+        pass
+
+    def gather_atoms_subset(self, name, t, count, ndata, ids):
+        # TODO
+        pass
+
+    def scatter_atoms(self, name, t, count, data):
+        # TODO
+        pass
+
+    def scatter_atoms_subset(self, name, t, count, ndata, ids, data):
+        # TODO
+        pass
+
+    def create_atoms(self, n, id_, t, x, v, image=None, shrink_exceed=False):
+        # TODO
+        pass
 
 
 
