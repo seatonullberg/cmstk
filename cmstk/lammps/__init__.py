@@ -1,3 +1,0 @@
-from structural_minimization import StructuralMinimization
-from uniaxial_compression import UniaxialCompression
-from uniaxial_tension import UniaxialTension

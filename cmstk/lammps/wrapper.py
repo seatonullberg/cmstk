@@ -417,6 +417,35 @@ class LAMMPS(object):
         cboxhi = (3*ct.c_double)(*boxhi)
         self._libc.lammps_reset_box(self._lammps_ptr, cboxlo, cboxhi, xy, yz, xz)
 
+    def create_atoms(self, n, id_, t, x, v, image=None, shrink_exceed=False):
+        """Mimic the LAMMPS `create_atoms` command.
+        
+        Args:
+            n (int): Global number of atoms.
+            id_ (optional) (int): ID of each atom.
+            t (int): Type of each atom.
+            x (array): Coordinates of each atom.
+            v (optional) (array): Velocity of each atom.
+            image ???
+            shrink_exceed ???
+        """
+        # TODO type checks
+        if id_:
+            id_lmp = (ct.c_int * n)()
+            id_lmp[:] = id_
+        else:
+            id_lmp = id_
+
+        if image:
+            image_lmp = (ct.c_int * n)()
+            image_lmp[:] = image
+        else:
+            image_lmp = image
+
+        type_lmp = (ct.c_int * n)()
+        type_lmp[:] = t
+        self._libc.lammps_create_atoms(self._lammps_ptr, n, id_lmp, type_lmp, x, v, image_lmp, shrink_exceed)
+
     def gather_atoms(self, name, t, count):
         """Returns the properties of all atoms.
         
@@ -538,40 +567,3 @@ class LAMMPS(object):
         # TODO: docstring
         encoding = name.encode()
         self._libc.lammps_scatter_atoms_subset(self._lammps_ptr, encoding, t, count, ndata, ids, data)
-
-    def create_atoms(self, n, id_, t, x, v, image=None, shrink_exceed=False):
-        """Mimic the LAMMPS `create_atoms` command.
-        
-        Args:
-            n (int): Global number of atoms.
-            id_ (optional) (int): ID of each atom.
-            t (int): Type of each atom.
-            x (array): Coordinates of each atom.
-            v (optional) (array): Velocity of each atom.
-            image ???
-            shrink_exceed ???
-        """
-        # TODO type checks
-        if id_:
-            id_lmp = (ct.c_int * n)()
-            id_lmp[:] = id_
-        else:
-            id_lmp = id_
-
-        if image:
-            image_lmp = (ct.c_int * n)()
-            image_lmp[:] = image
-        else:
-            image_lmp = image
-
-        type_lmp = (ct.c_int * n)()
-        type_lmp[:] = t
-        self._libc.lammps_create_atoms(self._lammps_ptr, n, id_lmp, type_lmp, x, v, image_lmp, shrink_exceed)
-
-
-if __name__ == "__main__":
-    lammps = LAMMPS()
-    print(lammps.version())
-    print(lammps.has_exceptions)
-    lammps.close()
-    print("success")
