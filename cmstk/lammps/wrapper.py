@@ -140,13 +140,14 @@ class LAMMPS(object):
             raise TypeError("`multi_cmd` must be of type str")
 
         encoding = multi_cmd.encode()
-        self._libc.lammps_comand_string(self._lammps_ptr, ct.c_char_p(encoding))
+        self._libc.lammps_commands_string(self._lammps_ptr, ct.c_char_p(encoding))
 
-    def extract_settings(self, name):
-        """Extract LAMMPS settings.
+    def extract_setting(self, name):
+        """Extract size of certain LAMMPS data types.
         
         Args:
             name (str): Name of setting to extract.
+            - bigint, tagint, or imageint
         
         Returns:
             int
@@ -156,7 +157,7 @@ class LAMMPS(object):
 
         encoding = name.encode()
         self._libc.lammps_extract_setting.restype = ct.c_int
-        return int(self._libc.lammps_extract_settings(self._lammps_ptr, encoding))
+        return int(self._libc.lammps_extract_setting(self._lammps_ptr, encoding))
 
     def extract_global(self, name, t):
         """Extract global level LAMMPS info.
@@ -400,7 +401,7 @@ class LAMMPS(object):
         """
         name_encoding = name.encode()
         value_encoding = str(value).encode()
-        return self._libc.lamps_set_variable(self._lammps_ptr, name_encoding, value_encoding)
+        return self._libc.lammps_set_variable(self._lammps_ptr, name_encoding, value_encoding)
 
     def reset_box(self, boxlo, boxhi, xy, yz, xz):
         """Resets simulation box size.
