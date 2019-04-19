@@ -1,6 +1,6 @@
 from cmstk.lammps.wrapper import LAMMPS
-import os
 import numpy as np
+import os
 
 
 def write_test_file(filename):
@@ -75,6 +75,30 @@ def test_lammps_commands_string():
     lammps.commands_string(cmds)
     os.remove("log.lammps")
 
+#def test_lammps_extract_atom():
+#    raise NotImplementedError
+
+def test_lammps_extract_box():
+    # extract dimensions of the simulation box
+    lammps = LAMMPS()
+    filename = "in.test"
+    write_test_file(filename)
+    lammps.run_file(filename)
+    box = lammps.extract_box()
+    assert type(box) is dict
+    print(box)
+    os.remove(filename)
+    os.remove("log.lammps")
+
+#def test_lammps_extract_compute():
+#    raise NotImplementedError
+
+#def test_lammps_extract_fix():
+#    raise NotImplementedError
+
+#def test_lammps_extract_global():
+#    raise NotImplementedError
+
 def test_lammps_extract_settings():
     # extract the size of particular data types
     lammps = LAMMPS()
@@ -86,75 +110,41 @@ def test_lammps_extract_settings():
     assert imageint != -1
     os.remove("log.lammps")
 
-def test_lammps_extract_global():
-    # extract global information from a LAMMPS simulation
-    lammps = LAMMPS()
-    filename = "in.test"
-    write_test_file(filename)
-    lammps.run_file(filename)
-    natoms = lammps.extract_global("natoms", 0)
-    assert type(natoms) is int
-    natoms = lammps.extract_global("natoms", 1)
-    assert type(natoms) is float
-    os.remove(filename)
-    os.remove("log.lammps")
-
-def test_lammps_extract_box():
-    # extract dimensions of the simulation box
-    lammps = LAMMPS()
-    filename = "in.test"
-    write_test_file(filename)
-    lammps.run_file(filename)
-    box = lammps.extract_box()
-    assert type(box) is dict
-    os.remove(filename)
-    os.remove("log.lammps")
-
-def test_lammps_extract_atom():
-    # extract properties of simulated atoms
-    lammps = LAMMPS()
-    filename = "in.test"
-    write_test_file(filename)
-    lammps.run_file(filename)
-    mass0 = lammps.extract_atom("mass", 0)
-    mass1 = lammps.extract_atom("mass", 1)
-    mass2 = lammps.extract_atom("mass", 2)
-    mass3 = lammps.extract_atom("mass", 3)
-    try:
-        mass0 = int(mass0)
-        mass1 = np.array(mass1)
-        mass2 = float(mass2)
-        mass3 = np.array(mass3)
-    except:
-        raise
-    os.remove(filename)
-    os.remove("log.lammps")
-
-def test_lammps_extract_compute():
-    raise NotImplementedError
-
-def test_lammps_extract_fix():
-    raise NotImplementedError
-
-def test_lammps_extract_variable():
-    raise NotImplementedError
-
-def test_lammps_get_thermo():
-    raise NotImplementedError
+#def test_lammps_extract_variable():
+#    raise NotImplementedError
 
 def test_lammps_get_natoms():
-    raise NotImplementedError
+    # extract the number of simulated atoms
+    lammps = LAMMPS()
+    filename = "in.test"
+    write_test_file(filename)
+    lammps.run_file(filename)
+    natoms = lammps.get_natoms()
+    assert type(natoms) is int
+    os.remove(filename)
+    os.remove("log.lammps")
+
+def test_lammps_get_thermo():
+    # extract the current thermo value
+    lammps = LAMMPS()
+    filename = "in.test"
+    write_test_file(filename)
+    lammps.run_file(filename)
+    thermo = lammps.get_thermo("etotal")
+    assert type(thermo) is float
+    os.remove(filename)
+    os.remove("log.lammps")
 
 def test_lammps_set_variable():
     lammps = LAMMPS()
     lammps.set_variable("cut", 1.0)
     os.remove("log.lammps")
 
-def test_lammps_reset_box():
-    raise NotImplementedError
+#def test_lammps_reset_box():
+#    raise NotImplementedError
 
-def test_lammps_create_atoms():
-    raise NotImplementedError
+#def test_lammps_create_atoms():
+#    raise NotImplementedError
 
 
 #def test_lammps_gather_atoms():
