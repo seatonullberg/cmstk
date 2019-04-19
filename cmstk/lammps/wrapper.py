@@ -32,12 +32,6 @@ class LAMMPS(object):
         # indicate that the instance has been opened
         self.opened = True
 
-        # define ctypes argtypes for the LAMMPS methods
-        #self._libc.lammps_extract_box.argtypes = [ct.c_void_p, ct.POINTER(ct.c_double), ct.POINTER(ct.c_double),
-        #                                          ct.POINTER(ct.c_double), ct.POINTER(ct.c_double), ct.POINTER(ct.c_double),
-        #                                          ct.POINTER(ct.c_int), ct.POINTER(ct.c_int)]
-        #self._libc.lammps_extract_box.restype = None
-
     @property
     def has_exceptions(self):
         """True if LAMMPS compiled with C++ exceptions handling enabled."""
@@ -166,6 +160,9 @@ class LAMMPS(object):
             name (str): Name of global to extract.
             t (int): Defines type of result
             - 0 for int pointer and 1 for double pointer
+        
+        Returns:
+            <TODO>
         """
         if type(name) is not str:
             raise TypeError("`name` must be of type str")
@@ -210,15 +207,16 @@ class LAMMPS(object):
         }
         return result
 
-    def extract_atoms(self, name, t):
+    def extract_atom(self, name, t):
         """Extract per-atom LAMMPS information.
         
         Args:
-            name (str): Atom name.
+            name (str): Name of the desired quantity.
             t (int): Determines return type.
             - 0 for pointer int, 1 for pointer pointer int, 2 for pointer double, 3 for pointer pointer double 
         
         Returns:
+            <TODO>
             pointer
         """
         if type(name) is not str:
@@ -251,6 +249,7 @@ class LAMMPS(object):
             - <TODO>
         
         Returns:
+            <TODO>
             pointer
         """
         if type(id_) is not str:
@@ -296,6 +295,7 @@ class LAMMPS(object):
             j (optional) (int): <undocumented>
         
         Returns:
+            <TODO>
             pointer
         """
         if type(id_) is not str:
@@ -328,7 +328,6 @@ class LAMMPS(object):
         else:
             raise ValueError("`style` must be 0, 1, or 2")
 
-
     def extract_variable(self, name, group, t):
         """Extract a LAMMPS variable.
         
@@ -339,6 +338,7 @@ class LAMMPS(object):
             - <TODO>
         
         Returns:
+            <TODO>
             pointer
         """
         if type(name) is not str:
@@ -377,7 +377,7 @@ class LAMMPS(object):
             name (str): Thermo name to get.
 
         Returns:
-            <undocumented>
+            <TODO>
         """
         if type(name) is not str:
             raise TypeError("`name` must be of type str")
@@ -413,7 +413,7 @@ class LAMMPS(object):
             yz (float): Tilt of y in z.
             xz (float): Tilt of x in z.
         """
-        # TODO I'm lazy please just pass in floats
+        # TODO I'm lazy please just pass in floats please
         cboxlo = (3*ct.c_double)(*boxlo)
         cboxhi = (3*ct.c_double)(*boxhi)
         self._libc.lammps_reset_box(self._lammps_ptr, cboxlo, cboxhi, xy, yz, xz)
@@ -457,7 +457,7 @@ class LAMMPS(object):
             count (int): <undocumented>
         
         Returns:
-            <undocumented>
+            <TODO>
         """
         if type(name) is not str:
             raise TypeError("`name` must be of type str")
@@ -478,7 +478,6 @@ class LAMMPS(object):
             raise ValueError("`t` must be 0 or 1")
         return data
         
-
     def gather_atoms_concat(self, name, t, count):
         """Returns the properties of all atoms concatenated ???
         
@@ -489,7 +488,7 @@ class LAMMPS(object):
             count (int): <undocumented>
         
         Returns:
-            <undocumented>
+            <TODO>
         """
         if type(name) is not str:
             raise TypeError("`name` must be of type str")
@@ -519,6 +518,9 @@ class LAMMPS(object):
             count (int): <undocumented>
             ndata (int): <undocumented>
             ids: <undocumented> presumably the atom ids one is interested in.
+        
+        Returns:
+            <TODO>
         """
         if type(name) is not str:
             raise TypeError("`name` must be of type str")
