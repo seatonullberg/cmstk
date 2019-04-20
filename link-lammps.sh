@@ -3,6 +3,12 @@
 start_dir="$(pwd)"
 dst=$1
 
+if [[ $dst == "" ]]; then
+    echo "please provide a destination directory to clone LAMMPS into"
+    echo "install aborted"
+    exit 1
+fi
+
 cd $dst
 git clone -b stable https://github.com/lammps/lammps.git
 cd lammps

@@ -102,23 +102,23 @@ def test_lammps_extract_settings():
 
 
 def test_lammps_extract_atom():
-    # test extraction of all per-atom quantities
+    # test extraction of per-atom quantities
     lammps = LAMMPS()
     filename = "in.test"
     write_test_file(filename)
     lammps.run_file(filename)
     # extract id
-    id_ = lammps.extract_atom("id", (lammps.get_natoms(),), ct.c_int, np.int32)
+    id_ = lammps.extract_atom("id", 0, (lammps.get_natoms(),))
     assert type(id_) is np.ndarray
     assert id_.shape == (4000,)
-    type_ = lammps.extract_atom("type", (lammps.get_natoms(),), ct.c_int, np.int32)
+    type_ = lammps.extract_atom("type", 0, (lammps.get_natoms(),))
     assert type(type_) is np.ndarray
     assert type_.shape == (4000,)
-    mass = lammps.extract_atom("mass", (len(set(type_))+1,), ct.c_double, np.double)  # +1 for index 1
+    mass = lammps.extract_atom("mass", 2, (len(set(type_))+1,))  # +1 for index 1
     assert type(mass) is np.ndarray
     assert mass.shape == (2,)  # could be filtered out to one by iterating over indices
     # it seems like x actually represents x,y,z ???
-    x = lammps.extract_atom("x", (lammps.get_natoms(), 3), ct.c_double, np.double)
+    x = lammps.extract_atom("x", 3, (lammps.get_natoms(), 3))
     assert type(x) is np.ndarray
     assert x.shape == (4000, 3)
 
@@ -128,8 +128,20 @@ def test_lammps_extract_atom():
 #def test_lammps_extract_fix():
 #    raise NotImplementedError
 
-#def test_lammps_extract_global():
-#    raise NotImplementedError
+def test_lammps_extract_global():
+    # test extraction of global quantities
+    lammps = LAMMPS()
+    filename = "in.test"
+    write_test_file(filename)
+    lammps.run_file(filename)
+    # extract natoms
+    natoms = lammps.extract_global("natoms", 0)
+    assert type(natoms) is int
+    assert natoms == 4000
+    # extract boxhi
+    boxhi = lammps.extract_global("boxhi", 1)
+    assert type(boxhi) is float
+    assert boxhi == 16.795961913825074
 
 #def test_lammps_extract_variable():
 #    raise NotImplementedError
