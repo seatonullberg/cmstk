@@ -3,8 +3,8 @@
 start_dir="$(pwd)"
 dst=$1
 
-if [[ $dst == "" ]]; then
-    echo "please provide a destination directory to clone LAMMPS into"
+if [ -z "$dst" ]; then
+    echo "no destination directory specified"
     echo "install aborted"
     exit 1
 fi
@@ -19,10 +19,10 @@ make package-update
 make serial mode=shlib
 env_var="export LIBLAMMPS_SERIAL=${dst}lammps/src/liblammps_serial.so"
 
-if [[ "$SHELL" == "/bin/bash" ]]; then
+if [ "$SHELL" == "/bin/bash" ]; then
     echo $env_var >> ${HOME}.bashrc
     source ${HOME}.bashrc
-elif [[ "$SHELL" == "/bin/zsh" ]]; then
+elif [ "$SHELL" == "/bin/zsh" ]; then
     echo $env_var >> ${HOME}.zshrc
     source ${HOME}.zshrc
 else
