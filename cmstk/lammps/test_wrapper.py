@@ -100,7 +100,6 @@ def test_lammps_extract_settings():
     assert imageint != -1
     os.remove("log.lammps")
 
-
 def test_lammps_extract_atom():
     # test extraction of per-atom quantities
     lammps = LAMMPS()
@@ -121,6 +120,8 @@ def test_lammps_extract_atom():
     x = lammps.extract_atom("x", 3, (lammps.get_natoms(), 3))
     assert type(x) is np.ndarray
     assert x.shape == (4000, 3)
+    os.remove(filename)
+    os.remove("log.lammps")
 
 #def test_lammps_extract_compute():
 #    raise NotImplementedError
@@ -142,9 +143,23 @@ def test_lammps_extract_global():
     boxhi = lammps.extract_global("boxhi", 1)
     assert type(boxhi) is float
     assert boxhi == 16.795961913825074
+    os.remove(filename)
+    os.remove("log.lammps")
 
-#def test_lammps_extract_variable():
-#    raise NotImplementedError
+def test_lammps_extract_variable():
+    # test extraction of variables
+    lammps = LAMMPS()
+    filename = "in.test"
+    write_test_file(filename)
+    lammps.run_file(filename)
+    lammps.command("variable test0 equal 1.0")
+    lammps.command("variable test1 atom v_test0")
+    test0 = lammps.extract_variable("test0", 0)
+    assert type(test0) is float
+    assert test0 == 1.0
+    os.remove(filename)
+    os.remove("log.lammps")
+    # TODO: unable to set/ test an atom style variable ???????
 
 def test_lammps_get_natoms():
     # extract the number of simulated atoms

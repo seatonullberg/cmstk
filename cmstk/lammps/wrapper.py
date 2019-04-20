@@ -238,6 +238,7 @@ class LAMMPS(object):
         return arr
 
 
+
     # TODO
     def extract_compute(self):
         raise NotImplementedError
@@ -245,6 +246,8 @@ class LAMMPS(object):
     # TODO
     def extract_fix(self):
         raise NotImplementedError        
+
+
 
     def extract_global(self, name, t):
         """Extracts a global scalar quantity.
@@ -276,8 +279,51 @@ class LAMMPS(object):
             raise ValueError("`t` must be 0 or 1")
 
     # TODO
-    def extract_variable(self, name, group, t):
-        raise NotImplementedError
+    def extract_variable(self, name, t, group=None):
+        """Extract a LAMMPS variable.
+
+        Args:
+            name (str): Name of the variable to extract.
+            t (int): Determines type of the result.
+            - 0 for double, 1 for vector of doubles
+            group (optional) (str): Atom group for atom-type variables.
+            - None for equal-type variables
+
+        Returns:
+            float or numpy.ndarray
+        """
+        if type(name) is not str:
+            raise TypeError("`name` must be of type str")
+        if type(t) is not int:
+            raise TypeError("`t` must be of type int")
+        if type(group) not in [type(None), str]:
+            raise TypeError("`group` must be of type str")
+
+        name_encoding = name.encode()
+        if group:
+            group_encoding = group.encode()
+        else:
+            group_encoding = None
+
+        if t == 0:
+            self._libc.lammps_extract_variable.restype = ct.POINTER(ct.c_double)
+            ptr = self._libc.lammps_extract_variable(self._lammps_ptr, name_encoding, group_encoding)
+            result = ptr[0]
+            self._libc.lammps_free(ptr)
+            return float(result)
+        elif t == 1:
+            self._libc.lammps_extract_global.restype = ct.POINTER(ct.c_int)
+            nlocalptr = self._libc.lammps_extract_global(self._lammps_ptr, "nlocal".encode())
+            nlocal = nlocalptr[0]
+            result = (ct.c_double * nlocal)()
+            self._libc.lammps_extract_variable.restype = ct.POINTER(ct.c_double)
+            ptr = self._libc.lammps_extract_variable(self._lammps_ptr, name_encoding, group_encoding)
+            for i in range(nlocal):
+                result[i] = float(ptr[i])
+            self._libc.lammps_free(ptr)
+            return np.array(result)
+        else:
+            raise ValueError("`t` must be 0 or 1")
 
     def get_natoms(self):
         """Returns the total number of atoms in the system.
