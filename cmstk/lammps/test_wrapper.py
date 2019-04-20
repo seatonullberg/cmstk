@@ -1,5 +1,7 @@
 from cmstk.lammps.wrapper import LAMMPS
+import ctypes as ct
 import numpy as np
+import pytest
 import os
 
 
@@ -75,9 +77,6 @@ def test_lammps_commands_string():
     lammps.commands_string(cmds)
     os.remove("log.lammps")
 
-#def test_lammps_extract_atom():
-#    raise NotImplementedError
-
 def test_lammps_extract_box():
     # extract dimensions of the simulation box
     lammps = LAMMPS()
@@ -90,15 +89,6 @@ def test_lammps_extract_box():
     os.remove(filename)
     os.remove("log.lammps")
 
-#def test_lammps_extract_compute():
-#    raise NotImplementedError
-
-#def test_lammps_extract_fix():
-#    raise NotImplementedError
-
-#def test_lammps_extract_global():
-#    raise NotImplementedError
-
 def test_lammps_extract_settings():
     # extract the size of particular data types
     lammps = LAMMPS()
@@ -109,6 +99,37 @@ def test_lammps_extract_settings():
     imageint = lammps.extract_setting("imageint")
     assert imageint != -1
     os.remove("log.lammps")
+
+
+def test_lammps_extract_atom():
+    # test extraction of all per-atom quantities
+    lammps = LAMMPS()
+    filename = "in.test"
+    write_test_file(filename)
+    lammps.run_file(filename)
+    # extract id
+    id_ = lammps.extract_atom("id", (lammps.get_natoms(),), ct.c_int, np.int32)
+    assert type(id_) is np.ndarray
+    assert id_.shape == (4000,)
+    type_ = lammps.extract_atom("type", (lammps.get_natoms(),), ct.c_int, np.int32)
+    assert type(type_) is np.ndarray
+    assert type_.shape == (4000,)
+    mass = lammps.extract_atom("mass", (len(set(type_))+1,), ct.c_double, np.double)  # +1 for index 1
+    assert type(mass) is np.ndarray
+    assert mass.shape == (2,)  # could be filtered out to one by iterating over indices
+    # it seems like x actually represents x,y,z ???
+    x = lammps.extract_atom("x", (lammps.get_natoms(), 3), ct.c_double, np.double)
+    assert type(x) is np.ndarray
+    assert x.shape == (4000, 3)
+
+#def test_lammps_extract_compute():
+#    raise NotImplementedError
+
+#def test_lammps_extract_fix():
+#    raise NotImplementedError
+
+#def test_lammps_extract_global():
+#    raise NotImplementedError
 
 #def test_lammps_extract_variable():
 #    raise NotImplementedError

@@ -1,4 +1,5 @@
 import ctypes as ct
+import numpy as np
 import os
 
 
@@ -20,14 +21,14 @@ class LAMMPS(object):
     def __init__(self, libc_path=None):
         if type(libc_path) not in [type(None), str]:
             raise TypeError("`libc_path` must be of type str")
-        
+
         # load shared lib from environment variable
         if libc_path is None:
             libc_path = os.getenv("LIBLAMMPS_SERIAL")
         
         # load the shared library
         self._libc = ct.CDLL(libc_path, ct.RTLD_GLOBAL)
-        
+
         # open a LAMMPS instance
         self._lammps_ptr = ct.c_void_p()
         self._libc.lammps_open_no_mpi(0, None, ct.byref(self._lammps_ptr))
@@ -139,39 +140,6 @@ class LAMMPS(object):
         encoding = multi_cmd.encode()
         self._libc.lammps_commands_string(self._lammps_ptr, ct.c_char_p(encoding))
 
-    # TODO FIX POINTER STUFF
-    def extract_atom(self, name, t):
-        """Extract per-atom LAMMPS information.
-        
-        Args:
-            name (str): Name of the desired quantity.
-            t (int): Determines return type.
-            - 0 for int, 1 for array of int, 2 for float, 3 for array of float
-        
-        Returns:
-            <TODO>
-            pointer
-        """
-        if type(name) is not str:
-            raise TypeError("`name` must be of type str")
-        if type(t) is not int:
-            raise TypeError("`t` must be of type int")
-
-        encoding = name.encode()
-        if t == 0:
-            self._libc.lammps_extract_atom.restype = ct.POINTER(ct.c_int)
-        elif t == 1:
-            self._libc.lammps_extract_atom.restype = ct.POINTER(ct.POINTER(ct.c_int))
-        elif t == 2:
-            self._libc.lammps_extract_atom.restype = ct.POINTER(ct.c_double)
-        elif t == 3:
-            self._libc.lammps_extract_atom.restype = ct.POINTER(ct.POINTER(ct.c_double))
-        else:
-            raise ValueError("`t` must be 0, 1, 2, or 3")
-        ptr = self._libc.lammps_extract_atom(self._lammps_ptr, encoding)
-        # TODO: numpy conversion stuff
-        return ptr
-
     def extract_box(self):
         """Extract the LAMMPS simulation box.
         
@@ -200,126 +168,6 @@ class LAMMPS(object):
         }
         return result
 
-    # TODO FIX POINTER STUFF
-    def extract_compute(self, id_, style, t):
-        """Extract the result of a LAMMPS compute.
-        
-        Args:
-            id_ (str): ID of the compute.
-            style (int): Determines format of the result
-            - <TODO>
-            t (int): Determines return type
-            - <TODO>
-        
-        Returns:
-            <TODO>
-            pointer
-        """
-        if type(id_) is not str:
-            raise TypeError("`id_` must be of type str")
-        if type(style) is not int:
-            raise TypeError("`style` must be of type int")
-        if type(t) is not int:
-            raise TypeError("`t` must be of type int")
-        
-        if t == 0:
-            if style > 0:
-                raise ValueError("invalid `t` `style` combination: t={} style={}".format(t, style))
-            else:
-                self._libc.lammps_extract_compute.restype = ct.POINTER(ct.c_double)
-                ptr = self._libc.lammps_extract_compute(self._lammps_ptr, id_, style, t)
-                return ptr[0]
-        if t == 1:
-            self._libc.lammps_extract_compute.restype = POINTER(ct.c_double)
-            ptr = self._libc.lammps_extract_compute(self._lammps_ptr, id_, style, t)
-            return ptr
-        if t == 2:
-            if style == 0:
-                self._libc.lammps_extract_compute.restype = ct.POINTER(ct.c_int)
-                ptr = self._libc.lammps_extract_compute(self._lammps_ptr, id_, style, t)
-                return ptr[0]
-            else:
-                self._libc.lammps_extract_compute.restype = ct.POINTER(ct.POINTER(ct.c_double))
-                ptr = self._libc.lammps_extract_compute(self._lammps_ptr, id_, style, t)
-                return ptr
-        else:
-            raise ValueError("`t` must be 0, 1, or 2")
-
-    # TODO FIX POINTER STUFF
-    def extract_fix(self, id_, style, t, i=0, j=0):
-        """Extract the result of a LAMMPS fix.
-        
-        Args:
-            id_ (str): ID of the fix.
-            style (int): Determines style of output
-            - <TODO>
-            t (int): Determines the type of output.
-            - <TODO>
-            i (optional) (int): <undocumented>
-            j (optional) (int): <undocumented>
-        
-        Returns:
-            <TODO>
-            pointer
-        """
-        if type(id_) is not str:
-            raise TypeError("`id_` must be of type str")
-        if type(style) is not int:
-            raise TypeError("`style` must be of type int")
-        if type(t) is not int:
-            raise TypeError("`t` must be of type int")
-        if type(i) is not int:
-            raise TypeError("`i` must be of type int")
-        if type(j) is not int:
-            raise TypeError("`j` must be of type int")
-
-        encoding = id_.encode()
-        if style == 0:
-            self._libc.lammps_extract_fix.restype = ct.POINTER(ct.c_double)
-            ptr = self._libc.lammps_extract_fix(self._lammps_ptr, encoding, style, t, i, j)
-            result = ptr[0]
-            self._libc.lammps_free(ptr)  # free in case of global datum
-            return result
-        elif (style == 1) or (style == 2):
-            if t == 1:
-                self._libc.lammps_extract_fix.restype = ct.POINTER(ct.c_double)
-            elif t == 2:
-                self._libc.lammps_extract_fix.restype = ct.POINTER(ct.POINTER(ct.c_double))
-            else:
-                raise ValueError("invalid `style` `t` combination: style={} t={}".format(style, t))
-            ptr = self._libc.lammps_extract_fix(self._lammps_ptr, encoding, style, t, i, j)
-            return ptr
-        else:
-            raise ValueError("`style` must be 0, 1, or 2")
-
-    # TODO FIX POINTER STUFF
-    def extract_global(self, name, t):
-        """Extract global level LAMMPS info.
-        
-        Args:
-            name (str): Name of global to extract.
-            t (int): Defines type of result
-            - 0 for int pointer and 1 for double pointer
-        
-        Returns:
-            <TODO>
-            pointer
-        """
-        if type(name) is not str:
-            raise TypeError("`name` must be of type str")
-        if type(t) is not int:
-            raise TypeError("`t` must be of type int")
-
-        encoding = name.encode()
-        if t == 0:
-            self._libc.lammps_extract_global.restype = ct.POINTER(ct.c_int)
-        elif t == 1:
-            self._libc.lammps_extract_global.restype = ct.POINTER(ct.c_double)
-        else:
-            raise ValueError("`t` must be either 0 or 1")
-        ptr = self._libc.lammps_extract_global(self._lammps_ptr, encoding)
-        return ptr[0]
-
     def extract_setting(self, name):
         """Extract size of certain LAMMPS data types.
         
@@ -337,48 +185,57 @@ class LAMMPS(object):
         self._libc.lammps_extract_setting.restype = ct.c_int
         return int(self._libc.lammps_extract_setting(self._lammps_ptr, encoding))
 
-    # TODO FIX POINTER STUFF
-    def extract_variable(self, name, group, t):
-        """Extract a LAMMPS variable.
-        
+    def extract_atom(self, name, shape, c_type, numpy_type):
+        """Extract a per-atom quantity.
+
         Args:
-            name (str): Name of the variable to extract.
-            group (str): Group to extract from.
-            t (int): Determines type of result.
-            - <TODO>
-        
+            name (str): Name of the quantity to extract.
+            shape (tuple of ints): Shape of the return value.
+            c_type (type): ctypes numeric type of the result.
+            numpy_type (type): numpy numeric type of the result.
+
         Returns:
-            <TODO>
-            pointer
+            numpy.ndarray
         """
         if type(name) is not str:
             raise TypeError("`name` must be of type str")
-        if type(group) is not str:
-            raise TypeError("`group` must be of type str")
-        if type(t) is not int:
-            raise TypeError("`t` must be of type int")
+        if type(shape) is not tuple:
+            raise TypeError("`shape` must be of type tuple")
+        if len(shape) > 2:
+            raise ValueError("`shape` has a maximum dimensionality of 2")
+        # not sure how to check for c_type and numpy_type
 
-        name_encoding = name.encode()
-        group_encoding = group.encode()
-        if t == 0:
-            self._libc.lammps_extract_variable.restyle = ct.POINTER(ct.c_double)
-            ptr = self._libc.lammps_extract_variable(self._lammps_ptr, name_encoding, group_encoding)
-            result = ptr[0]
-            self._libc.lammps_free(ptr)
-            return result
-        elif t == 1:
-            self._libc.lammps_extract_global.restype = ct.POINTER(ct.c_int)
-            nlocalptr = self._libc.lammps_extract_global(self._lammps_ptr, "nlocal".encode())
-            nlocal = nlocalptr[0]
-            result = (ct.c_double*nlocal)()
-            self._libc.lammps_extract_variable.restype = ct.POINTER(ct.c_double)
-            ptr = self._libc.lammps_extract_variable(self._lammps_ptr, name_encoding, group_encoding)
-            for i in range(nlocal):
-                result[i] = ptr[i]
-            self._libc.lammps_free(ptr)
-            return result
+        encoding = name.encode()
+
+        if len(shape) == 1:
+            self._libc.lammps_extract_atom.restype = ct.POINTER(c_type)
+            ptr = self._libc.lammps_extract_atom(self._lammps_ptr, encoding)
+            ptr = ct.cast(ptr, ct.POINTER(c_type * shape[0]))
         else:
-            raise ValueError("`t` must be 0 or 1")
+            self._libc.lammps_extract_atom.restype = ct.POINTER(ct.POINTER(c_type))
+            ptr = self._libc.lammps_extract_atom(self._lammps_ptr, encoding)
+            ptr = ct.cast(ptr[0], ct.POINTER(c_type * shape[0] * shape[1]))
+
+        arr = np.frombuffer(ptr.contents, dtype=numpy_type)
+        if len(shape) > 1:
+            arr.shape = shape
+        return arr
+
+    # TODO
+    def extract_compute(self):
+        raise NotImplementedError
+
+    # TODO
+    def extract_fix(self):
+        raise NotImplementedError        
+
+    # TODO
+    def extract_global(self):
+        raise NotImplementedError
+
+    # TODO
+    def extract_variable(self, name, group, t):
+        raise NotImplementedError
 
     def get_natoms(self):
         """Returns the total number of atoms in the system.
