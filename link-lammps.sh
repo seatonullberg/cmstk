@@ -18,8 +18,12 @@ git clone -b stable https://github.com/lammps/lammps.git
 cd lammps
 git pull
 cd src
+
+# update the repo
 make purge
 make package-update
+
+# make the shared library
 make serial mode=shlib
 
 # set the LIBLAMMPS_SERIAL environment variable cmstk expects
