@@ -23,6 +23,18 @@ class StructuralMinimization(BaseLammpsSimulation):
         # init the base
         super().__init__(lammps, equal_vars, atom_vars)
 
+    @property
+    def total_energy(self):
+        return self._results["teng"]
+
+    @property
+    def length(self):
+        return self._results["length"]
+
+    @property
+    def cohesive_energy(self):
+        return self._results["ecoh"]
+
     def __str__(self):
         # https://icme.hpc.msstate.edu/mediawiki/index.php/LAMMPS_Tutorial_1
         # TODO: write the script here.

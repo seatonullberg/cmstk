@@ -2,8 +2,8 @@ from cmstk.lammps import LAMMPS
 from cmstk.lammps.simulations.base import BaseLammpsSimulation
 
 
-class IntrinsicStackingFaultEnergy(BaseLammpsSimulation):
-    """Implementation of a LAMMPS intrinsic stacking fault simulation.
+class VacancyFormationEnergy(BaseLammpsSimulation):
+    """Implementation of a LAMMPS simulation which extracts the energy of vacancy formation.
     
     Args:
         potential (obj): <TODO> eventually this will be an object not a str
@@ -16,25 +16,25 @@ class IntrinsicStackingFaultEnergy(BaseLammpsSimulation):
         self.structure = structure
         # init the lammps interface
         lammps = LAMMPS()
-        # extract stacking fault energy
-        equal_vars = ["SFE"]
-        # no atom style variables
+        # extract vacancy formation energy
+        equal_vars = ["Ev"]
+        # no atom style variables to extract
         atom_vars = []
         # init the base
         super().__init__(lammps, equal_vars, atom_vars)
 
     @property
     def energy(self):
-        return self._results["SFE"]
+        return self._results["Ev"]
 
     def __str__(self):
-        # https://icme.hpc.msstate.edu/mediawiki/index.php/LAMMPS_Intrinsic_Stacking-Fault_Energy
+        # https://icme.hpc.msstate.edu/mediawiki/index.php/LAMMPS_Vacancy_Formation_Energy
         # TODO: write the script here.
         pass
 
 
-class ExtrinsicStackingFaultEnergy(BaseLammpsSimulation):
-    """Implementation of a LAMMPS extrinsic stacking fault simulation.
+class InterstitialFormationEnergy(BaseLammpsSimulation):
+    """Implementation of a LAMMPS simulation which extracts the energy of interstitial formation.
     
     Args:
         potential (obj): <TODO> eventually this will be an object not a str
@@ -47,18 +47,18 @@ class ExtrinsicStackingFaultEnergy(BaseLammpsSimulation):
         self.structure = structure
         # init the lammps interface
         lammps = LAMMPS()
-        # extract stacking fault energy
-        equal_vars = ["SFE"]
-        # no atom style variables
+        # extract interstitial formation energy
+        equal_vars = ["Ei"]
+        # no atom style variables to extract
         atom_vars = []
         # init the base
         super().__init__(lammps, equal_vars, atom_vars)
 
     @property
     def energy(self):
-        return self._results["SFE"]
+        return self._results["Ei"]
 
     def __str__(self):
-        # https://icme.hpc.msstate.edu/mediawiki/index.php/LAMMPS_Extrinsic_Stacking-Fault_Energy
+        # https://icme.hpc.msstate.edu/mediawiki/index.php/LAMMPS_Interstitial_Formation_Energy
         # TODO: write the script here.
         pass

@@ -23,6 +23,26 @@ class ElasticProperties(BaseLammpsSimulation):
         # init the base
         super().__init__(lammps, equal_vars, atom_vars)
 
+    @property
+    def bulk_modulus(self):
+        return self._results["bulkmodulus"]
+
+    @property
+    def shear_modulus(self):
+        return self._results["shearmodulus1"]
+
+    @property
+    def c11(self):
+        return self._results["c11"]
+
+    @property
+    def c12(self):
+        return self._results["c12"]
+
+    @property
+    def c44(self):
+        return self._results["c44"]
+
     def __str__(self):
         # https://github.com/lammps/lammps/tree/master/examples/ELASTIC
         # TODO: write the script here.
