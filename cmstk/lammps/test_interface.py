@@ -1,4 +1,4 @@
-from cmstk.lammps.wrapper import LAMMPS
+from cmstk.lammps.interface import LAMMPS
 import ctypes as ct
 import numpy as np
 import pytest

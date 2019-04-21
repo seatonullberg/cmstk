@@ -23,25 +23,24 @@ cd src
 make purge
 make package-update
 
+# install extra packages
+for pkg in "yes-manybody"
+do
+    make $pkg
+done
+
 # make the shared library
 make serial mode=shlib
 
-# set the LIBLAMMPS_SERIAL environment variable cmstk expects
+# the LIBLAMMPS_SERIAL environment variable cmstk expects
 env_var="export LIBLAMMPS_SERIAL=${dst}/lammps/src/liblammps_serial.so"
-if [ "$SHELL" == "/bin/bash" ]; then
-    echo $env_var >> ${HOME}/.bashrc
-    source ${HOME}/.bashrc
-elif [ "$SHELL" == "/bin/zsh" ]; then
-    echo $env_var >> ${HOME}/.zshrc
-    source ${HOME}/.zshrc
-else
-    echo "unsupported shell type"
-    echo "install aborted"
-    exit 1
-fi
 
 cd $start_dir
 
 echo ""
-echo "LAMMPS has been linked to cmstk"
+echo "LAMMPS has been compiled as a shared library"
+echo "paste the following line into your shell's configuration file and 'source' it:"
+echo ""
+echo $env_var
+echo ""
 exit 0
