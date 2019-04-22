@@ -1,7 +1,6 @@
 #!/bin/bash
 
 set -e
-
 start_dir="$(pwd)"
 dst=$1
 
