@@ -3,8 +3,8 @@ import matplotlib.patches as mpatches
 import numpy as np
 
 
-class ParallelPlot(object):
-    """Represents a plotting object which produces a parallel plot across multiple dimensions.
+class ParallelCoordinatesPlot(object):
+    """Represents a plotting object which handles multidimensional coordinates.
 
     Args:
         title (str): Title of the plot.
@@ -31,7 +31,9 @@ class ParallelPlot(object):
         self._colors = []  # list of colors to use when plotting elements of self._data
         self._labels = []  # labels to refer to each dataset by
         self._ncols = None  # the number of columns set by first data addition
-        self.custom = {"ylim": None}
+        self.custom = {"ylim": None,
+                       "legend_loc": "upper right",
+                       "plot_origin_line": True}
 
     def add_data(self, data, color, label):
         """Add a dataset to be plotted in a unique color.
@@ -71,15 +73,24 @@ class ParallelPlot(object):
 
         x = range(self._ncols)
         patches = []
+        # iterate over the axes
         for i, ax in enumerate(axes):
+            # iterate over datasets and their corresponding colors/labels
             for dataset, color, label in zip(self._data, self._colors, self._labels):
+                # only add legend on the first axis
                 if i == 0:
                     patch = mpatches.Patch(color=color, label=label)
                     patches.append(patch)
+                # add data to plot
                 for d in dataset:
                     ax.plot(x, d, color=color)
+                # plot central reference line is desired
+                if self.custom["plot_origin_line"]:
+                    ax.plot(x, [0 for _ in x], color="black")
+            # set custom view port
             if self.custom["ylim"]:
                 ax.set_ylim(self.custom["ylim"])
+            # alter the xtick labels and style
             ax.set_xlim((x[i], x[i+1]))
             ax.set_xticks([x[i]], minor=False)
             ax.set_xticklabels([self._xlabels[i]])
@@ -89,7 +100,7 @@ class ParallelPlot(object):
         axes[-1].set_xticklabels(self._xlabels[-2:])
 
         axes[0].set_ylabel(self._ylabel)
-        plt.legend(handles=patches)
+        plt.legend(handles=patches, loc=self.custom["legend_loc"])
         fig.suptitle(self._title)
 
         plt.subplots_adjust(wspace=0)
