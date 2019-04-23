@@ -5,19 +5,20 @@ class BaseLossFunction(object):
     """Representation of generalized loss functions with single initialization and validation.
     
     Args:
-        evaluation_function (function): The underlying loss function.
+        loss_function (function): The underlying loss function.
+        reduction_function (function): The underlying reduction function.
     """
 
-    def __init__(self, evaluation_function, reduction_function):
-        if not callable(evaluation_function):
-            raise TypeError("`evaluation_function` must be callable")
+    def __init__(self, loss_function, reduction_function):
+        if not callable(loss_function):
+            raise TypeError("`loss_function` must be callable")
         if not callable(reduction_function):
             raise TypeError("`reduction_function` must be callable")
-        self._evaluation_function = evaluation_function
+        self._loss_function = loss_function
         self._reduction_function = reduction_function
 
     def loss(self, target, actual):
-        """Returns the losses as specified by self._evaluation_function.
+        """Returns the losses as specified by self._loss_function.
         
         Args:
             target (numpy.ndarray or float): Array of target values or singular target value.
@@ -39,7 +40,7 @@ class BaseLossFunction(object):
         else:
             is_array = False
 
-        return self._evaluation_function(target, actual, is_array)
+        return self._loss_function(target, actual, is_array)
 
     def reduction(self, errors):
         """Returns a 1d array of errors reduced row-wise from a 2d array of errors.
@@ -61,10 +62,10 @@ class MeanAbsoluteError(BaseLossFunction):
     """Implementation of the mean absolute error loss function."""
 
     def __init__(self):
-        super().__init__(self._mean_absolute_error, self._mean_absolute_reduction)
+        super().__init__(self._mean_absolute_loss, self._mean_absolute_reduction)
 
     @staticmethod
-    def _mean_absolute_error(target, actual, is_array):
+    def _mean_absolute_loss(target, actual, is_array):
         loss = np.absolute(target - actual)
         if is_array:
             loss = loss.mean(axis=1)
@@ -83,10 +84,10 @@ class MeanSquareError(BaseLossFunction):
     """Implementation of the mean square error loss function."""
 
     def __init__(self):
-        super().__init__(self._mean_square_error, self._mean_square_reduce)
+        super().__init__(self._mean_square_loss, self._mean_square_reduction)
 
     @staticmethod
-    def _mean_square_error(target, actual, is_array):
+    def _mean_square_loss(target, actual, is_array):
         loss = np.square(target - actual)
         if is_array:
             loss = loss.mean(axis=1)
@@ -95,7 +96,7 @@ class MeanSquareError(BaseLossFunction):
             return float(loss)
 
     @staticmethod
-    def _mean_square_reduce(errors):
+    def _mean_square_reduction(errors):
         reduc = np.square(errors)
         reduc = reduc.mean(axis=1)
         return reduc
