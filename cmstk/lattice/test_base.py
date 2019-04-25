@@ -121,7 +121,9 @@ def test_lattice_remove_atom_with_tolerance():
 
 def test_lattice_repeat():
     # tests lattice repetition
-    raise NotImplementedError
+    with pytest.raises(NotImplementedError):
+        l = Lattice()
+        l.repeat((1, 1, 1))
 
 def test_lattice_rotate():
     # tests lattice rotation

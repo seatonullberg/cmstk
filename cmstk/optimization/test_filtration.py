@@ -2,11 +2,15 @@ from cmstk.optimization.filtration import ConstraintFilter, LossFunctionFilter, 
 from cmstk.optimization.filtration import IntersectionalFilterSet, SequentialFilterSet
 from cmstk.optimization.loss import MeanAbsoluteError, MeanSquareError
 import numpy as np
+import pytest
 
 
 def test_constraint_filter():
     # tests the CosntraintFilter individually
-    raise NotImplementedError
+    data = np.random.normal(size=(100, 3))
+    with pytest.raises(NotImplementedError):
+        cf = ConstraintFilter({})
+        cf.filter(data)    
 
 def test_loss_function_filter_mae():
     # tests the LossFunctionFilter individually
