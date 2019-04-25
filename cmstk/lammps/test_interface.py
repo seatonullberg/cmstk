@@ -194,18 +194,32 @@ def test_lammps_set_variable():
 #def test_lammps_create_atoms():
 #    raise NotImplementedError
 
+def test_lammps_gather_atoms():
+    with pytest.raises(NotImplementedError):
+        lammps = LAMMPS()
+        lammps.gather_atoms()
+    os.remove("log.lammps")
 
-#def test_lammps_gather_atoms():
-#    raise NotImplementedError
+def test_lammps_gether_atoms_concat():
+    with pytest.raises(NotImplementedError):
+        lammps = LAMMPS()
+        lammps.gather_atoms_concat()
+    os.remove("log.lammps")
 
-#def test_lammps_gether_atoms_concat():
-#    raise NotImplementedError
+def test_lammps_gather_atoms_subset():
+    with pytest.raises(NotImplementedError):
+        lammps = LAMMPS()
+        lammps.gather_atoms_subset()
+    os.remove("log.lammps")
 
-#def test_lammps_gather_atoms_subset():
-#    raise NotImplementedError
+def test_lammps_scatter_atoms():
+    with pytest.raises(NotImplementedError):
+        lammps = LAMMPS()
+        lammps.scatter_atoms()
+    os.remove("log.lammps")
 
-#def test_lammps_scatter_atoms():
-#    raise NotImplementedError
-
-#def test_lammps_scatter_atoms_subset():
-#    raise NotImplementedError
+def test_lammps_scatter_atoms_subset():
+    with pytest.raises(NotImplementedError):
+        lammps = LAMMPS()
+        lammps.scatter_atoms_subset()
+    os.remove("log.lammps")
