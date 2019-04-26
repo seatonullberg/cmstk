@@ -23,6 +23,8 @@ def write_test_file(filename):
         f.write("neigh_modify every 20 delay 0 check no\n\n")
         f.write("fix 1 all nve\n\n")
         f.write("thermo 50\n")
+        f.write("variable test0 equal 1.0\n")
+        f.write("variable test1 atom v_test0\n")
         f.write("run 250\n")
 
 def test_lammps_properties():
@@ -152,14 +154,15 @@ def test_lammps_extract_variable():
     filename = "in.test"
     write_test_file(filename)
     lammps.run_file(filename)
-    lammps.command("variable test0 equal 1.0")
-    lammps.command("variable test1 atom v_test0")
     test0 = lammps.extract_variable("test0", 0)
     assert type(test0) is float
     assert test0 == 1.0
+    test1 = lammps.extract_variable("test1", 1, group="all")
+    assert type(test1) is np.ndarray
+    assert test1.shape == (4000,)
+    assert test1[0] == 1.0
     os.remove(filename)
     os.remove("log.lammps")
-    # TODO: unable to set/ test an atom style variable ???????
 
 def test_lammps_get_natoms():
     # extract the number of simulated atoms
@@ -185,7 +188,7 @@ def test_lammps_get_thermo():
 
 def test_lammps_set_variable():
     lammps = LAMMPS()
-    lammps.set_variable("cut", 1.0)
+    lammps.set_variable("test", "test_value")
     os.remove("log.lammps")
 
 #def test_lammps_reset_box():

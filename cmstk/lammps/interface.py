@@ -270,7 +270,6 @@ class LAMMPS(object):
         else:
             raise ValueError("`t` must be 0 or 1")
 
-    # TODO: Atom style vars don't work
     def extract_variable(self, name, t, group=None):
         """Extract a LAMMPS variable.
 
@@ -280,6 +279,7 @@ class LAMMPS(object):
             - 0 for double, 1 for vector of doubles
             group (optional) (str): Atom group for atom-type variables.
             - None for equal-type variables
+            - must be defined for atom style
 
         Returns:
             float or numpy.ndarray
@@ -342,17 +342,18 @@ class LAMMPS(object):
         return self._libc.lammps_get_thermo(self._lammps_ptr, encoding)
 
     def set_variable(self, name, value):
-        """Sets a LAMMPS variable.
-        
-        Notes:
-            `value` is converted to str.
+        """Sets a LAMMPS string variable.
 
         Args:
             name (str): Name of the variable to set.
-            value (obj): Value to assign.
+            value (str): Value to assign.
         """
+        if type(name) is not str:
+            raise TypeError("`name` must be of type str")
+        if type(value) is not str:
+            raise TypeError("`value` must be of type str")
         name_encoding = name.encode()
-        value_encoding = str(value).encode()
+        value_encoding = value.encode()
         return self._libc.lammps_set_variable(self._lammps_ptr, name_encoding, value_encoding)
 
     # TODO
