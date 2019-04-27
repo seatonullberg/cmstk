@@ -26,6 +26,7 @@ def write_test_file(filename):
         f.write("variable test0 equal 1.0\n")
         f.write("variable test1 atom v_test0\n")
         f.write("run 250\n")
+        f.write("compute test2 all ke/atom\n")
 
 def test_lammps_properties():
     # tests access to all LAMMPS properties
@@ -125,8 +126,19 @@ def test_lammps_extract_atom():
     os.remove(filename)
     os.remove("log.lammps")
 
-#def test_lammps_extract_compute():
-#    raise NotImplementedError
+# TODO: tests for other variants should be implemented
+def test_lammps_extract_compute():
+    # test extraction of compute quantities
+    lammps = LAMMPS()
+    filename = "in.test"
+    write_test_file(filename)
+    lammps.run_file(filename)
+    # extract a per-atom compute
+    test2 = lammps.extract_compute(id_="test2", style=1, t=1, shape=(4000,))
+    assert type(test2) is np.ndarray
+    assert test2.shape == (4000,)
+    os.remove(filename)
+    os.remove("log.lammps")
 
 #def test_lammps_extract_fix():
 #    raise NotImplementedError

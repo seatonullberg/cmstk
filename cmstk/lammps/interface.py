@@ -234,8 +234,72 @@ class LAMMPS(object):
         return arr
 
     # TODO
-    def extract_compute(self):
-        raise NotImplementedError
+    def extract_compute(self, id_, style, t, shape=None):
+        """Extract a compute-based entity.
+        
+        Notes:
+            style/t combinations:
+            style=0, t=0: float of global data
+            style=0, t=1: INVALID
+            style=0, t=2: INVALID
+            style=1, t=0: INVALID
+            style=1, t=1: vector of per-atom data
+            style=1, t=2: array of per-atom data
+            style=2, t=0: int which corresponds to the length of the number of rows of local data
+            style=2, t=1: vector of local data
+            style=2, t=2: array of local data
+
+        Args:
+            id_ (str): ID of the compute quantity.
+            style (int): Determines the data group to extract from.
+            - 0 for global, 1 for per-atom, 2 for local.
+            t (int): Determines the type to be returned.
+            - 0 for scalar, 1 for vector, 2 for array.
+            shape (optional) (tuple of int): Desired shape of the output.
+            - required for vectors and arrays
+
+        Returns:
+            int, float, or numpy.ndarray
+        """
+        encoding = id_.encode()
+        if style not in [0, 1, 2] or t not in [0, 1, 2]:
+            raise ValueError("`style` and `t` must be 0, 1, or 2")
+        
+        if style == 0:
+            if t == 0:
+                self._libc.lammps_extract_compute.restype = ct.POINTER(ct.c_double)
+                ptr = self._libc.lammps_extract_compute(self._lammps_ptr, encoding, style, t)
+                return float(ptr[0])
+            else:
+                raise ValueError("invalid style/t combination: style={}, t={}".format(style, t))
+        if style == 1:
+            if t == 1:
+                self._libc.lammps_extract_compute.restype = ct.POINTER(ct.c_double)
+                ptr = self._libc.lammps_extract_compute(self._lammps_ptr, encoding, style, t)
+                ptr = ct.cast(ptr, ct.POINTER(ct.c_double * shape[0]))
+            elif t == 2:
+                self._libc.lammps_extract_compute.restype = ct.POINTER(ct.POINTER(ct.c_double))
+                ptr = self._libc.lammps_extract_compute(self._lammps_ptr, encoding, style, t)
+                ptr = ct.cast(ptr[0], ct.POINTER(ct.c_double * shape[0] * shape[1]))
+            else:
+                raise ValueError("invalid style/t combination: style={}, t={}".format(style, t))
+        if style == 2:
+            if t == 0:
+                self._libc.lammps_extract_compute.restype = ct.POINTER(ct.c_int)
+                ptr = self._libc.lammps_extract_compute(self._lammps_ptr, encoding, style, t)
+                return int(ptr[0])
+            if t == 1:
+                self._libc.extract_compute.restype = ct.POINTER(ct.c_double)
+                ptr = self._libc.lammps_extract_compute(self._lammps_ptr, encoding, style, t)
+                ptr = ct.cast(ptr, ct.POINTER(ct.c_double * shape[0]))
+            if t == 2:
+                self._libc.lammps_extract_compute.restype = ct.POINTER(ct.POINTER(ct.c_double))
+                ptr = self._libc.lammps_extract_compute(self._lammps_ptr, encoding, style, t)
+                ptr = ct.cast(ptr[0], ct.POINTER(ct.c_double * shape[0] * shape[1]))
+
+        arr = np.frombuffer(ptr.contents, dtype=np.double)
+        arr.shape = shape
+        return arr
 
     # TODO
     def extract_fix(self):
