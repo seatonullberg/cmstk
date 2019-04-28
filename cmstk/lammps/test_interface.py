@@ -215,38 +215,54 @@ def test_lammps_set_variable():
     lammps.set_variable("test", "test_value")
     os.remove("log.lammps")
 
-#def test_lammps_reset_box():
-#    raise NotImplementedError
+def test_lammps_reset_box():
+    # test reset of box size after a simulation
+    lammps = LAMMPS()
+    filename = "in.test"
+    write_test_file(filename)
+    lammps.run_file(filename)
+    params = lammps.extract_box()
+    params = {"boxlo": params["boxlo"],
+              "boxhi": params["boxhi"],
+              "xy": params["xy"],
+              "yz": params["yz"],
+              "xz": params["xz"]}
+    lammps.reset_box(params)
+    os.remove(filename)
+    os.remove("log.lammps")
 
-#def test_lammps_create_atoms():
-#    raise NotImplementedError
+def test_lammps_create_atoms():
+    lammps = LAMMPS()
+    with pytest.raises(NotImplementedError):
+        lammps.create_atoms()
+    os.remove("log.lammps")
 
 def test_lammps_gather_atoms():
+    lammps = LAMMPS()
     with pytest.raises(NotImplementedError):
-        lammps = LAMMPS()
         lammps.gather_atoms()
     os.remove("log.lammps")
 
 def test_lammps_gether_atoms_concat():
+    lammps = LAMMPS()
     with pytest.raises(NotImplementedError):
-        lammps = LAMMPS()
         lammps.gather_atoms_concat()
     os.remove("log.lammps")
 
 def test_lammps_gather_atoms_subset():
+    lammps = LAMMPS()
     with pytest.raises(NotImplementedError):
-        lammps = LAMMPS()
         lammps.gather_atoms_subset()
     os.remove("log.lammps")
 
 def test_lammps_scatter_atoms():
+    lammps = LAMMPS()
     with pytest.raises(NotImplementedError):
-        lammps = LAMMPS()
         lammps.scatter_atoms()
     os.remove("log.lammps")
 
 def test_lammps_scatter_atoms_subset():
+    lammps = LAMMPS()
     with pytest.raises(NotImplementedError):
-        lammps = LAMMPS()
         lammps.scatter_atoms_subset()
     os.remove("log.lammps")

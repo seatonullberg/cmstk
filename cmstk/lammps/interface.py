@@ -155,7 +155,7 @@ class LAMMPS(object):
                                       periodicity, ct.byref(box_change))
         result = {
             "boxlo": boxlo[:3],
-            "bokhi": boxhi[:3],
+            "boxhi": boxhi[:3],
             "xy": xy.value,
             "yz": yz.value,
             "xz": xz.value,
@@ -475,18 +475,31 @@ class LAMMPS(object):
         value_encoding = value.encode()
         return self._libc.lammps_set_variable(self._lammps_ptr, name_encoding, value_encoding)
 
-    # TODO
-    def reset_box(self):
-        raise NotImplementedError
+    def reset_box(self, params):
+        """Reset the size of the simulation box.
+        
+        Args:
+            params (dict): Box dimensions to reset to.
+            - keys: boxlo, boxhi, xy, yz, xz
+            - all float values
+        """
+        if type(params) is not dict:
+            raise TypeError("`params` must be of type dict")
 
-    # TODO
-    def create_atoms(self):
-        raise NotImplementedError
+        cboxlo = (3 * ct.c_double)(*params["boxlo"])
+        cboxhi = (3 * ct.c_double)(*params["boxhi"])
+        cxy = ct.c_double(params["xy"])
+        cyz = ct.c_double(params["yz"])
+        cxz = ct.c_double(params["xz"])
+        self._libc.lammps_reset_box(self._lammps_ptr, cboxlo, cboxhi, cxy, cyz, cxz)
 
     # The following are MPI related commands.
     # This interface is currently limited to serial operation.
     # Therefore, these methods are included as stubs to indicate 
     # that the related functionality is intentionally excluded.
+
+    def create_atoms(self):
+        raise NotImplementedError
 
     def gather_atoms(self):
         raise NotImplementedError
