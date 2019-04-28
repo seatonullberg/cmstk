@@ -21,12 +21,13 @@ def write_test_file(filename):
         f.write("pair_coeff 1 1 1.0 1.0 2.5\n\n")
         f.write("neighbor 0.3 bin\n")
         f.write("neigh_modify every 20 delay 0 check no\n\n")
-        f.write("fix 1 all nve\n\n")
+        f.write("fix 1 all nve\n\n")        
         f.write("thermo 50\n")
         f.write("variable test0 equal 1.0\n")
         f.write("variable test1 atom v_test0\n")
         f.write("run 250\n")
         f.write("compute test2 all ke/atom\n")
+        f.write("fix test3 all store/force\n")
 
 def test_lammps_properties():
     # tests access to all LAMMPS properties
@@ -140,8 +141,19 @@ def test_lammps_extract_compute():
     os.remove(filename)
     os.remove("log.lammps")
 
-#def test_lammps_extract_fix():
-#    raise NotImplementedError
+# TODO: tests for other variants should be implemented
+def test_lammps_extract_fix():
+    # test extraction of fix quantity
+    lammps = LAMMPS()
+    filename = "in.test"
+    write_test_file(filename)
+    lammps.run_file(filename)
+    # extract a fix
+    test3 = lammps.extract_fix(id_="test3", style=1, t=2, shape=(4000,3))
+    assert type(test3) is np.ndarray
+    assert test3.shape == (4000,3)
+    os.remove(filename)
+    os.remove("log.lammps")
 
 def test_lammps_extract_global():
     # test extraction of global quantities

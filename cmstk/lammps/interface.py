@@ -233,7 +233,6 @@ class LAMMPS(object):
         arr.shape = shape
         return arr
 
-    # TODO
     def extract_compute(self, id_, style, t, shape=None):
         """Extract a compute-based entity.
         
@@ -301,9 +300,65 @@ class LAMMPS(object):
         arr.shape = shape
         return arr
 
-    # TODO
-    def extract_fix(self):
-        raise NotImplementedError        
+    def extract_fix(self, id_, style, t, shape=None):
+        """Extracts a fix quantity.
+        
+        Notes:
+            style/t combinations:
+            style=0, t=0: float of global data
+            style=0, t=1: INVALID
+            style=0, t=2: INVALID
+            style=1, t=0: INVALID
+            style=1, t=1: vector of per-atom data
+            style=1, t=2: array of per-atom data
+            style=2, t=0: INVALID
+            style=2, t=1: vector of local data
+            style=2, t=2: array of local data
+
+        Args:
+            id_ (str): ID of the fix quantity.
+            style (int): Determines the data group to extract from.
+            - 0 for global, 1 for per-atom, 2 for local.
+            t (int): Determines the type to be returned.
+            - 0 for scalar, 1 for vector, 2 for array.
+            shape (optional) (tuple of int): Desired shape of the output.
+            - required for vectors and arrays
+
+        Returns:
+            float or numpy.ndarray
+        """
+        encoding = id_.encode()
+        if style not in [0, 1, 2] or t not in [0, 1, 2]:
+            raise ValueError("`style` and `t` must be 0, 1, or 2")
+
+        # IGNORE the i, j array/vector indexing
+        i, j = 0, 0
+
+        if style == 0:
+            if t == 0:
+                self._libc.lammps_extract_fix.restype = ct.POINTER(ct.c_double)
+                ptr = self._libc.lammps_extract_fix(self._lammps_ptr, encoding, style, t, i, j)
+                result = float(ptr[0])
+                self._libc.lammps_free(ptr)
+                return result
+            else:
+                raise ValueError("invalid style/t combination: style={}, t={}".format(style, t))
+        if style == 1 or style == 2:
+            if t == 1:
+                self._libc.lammps_extract_fix.restype = ct.POINTER(ct.c_double)
+                ptr = self._libc.lammps_extract_fix(self._lammps_ptr, encoding, style, t, i, j)
+                result = ct.cast(ptr, ct.POINTER(ct.c_double * shape[0]))
+            elif t == 2:
+                self._libc.lammps_extract_fix.restype = ct.POINTER(ct.POINTER(ct.c_double))
+                ptr = self._libc.lammps_extract_fix(self._lammps_ptr, encoding, style, t, i, j)
+                result = ct.cast(ptr[0], ct.POINTER(ct.c_double * shape[0] * shape[1]))
+            else:
+                raise ValueError("invalid style/t combination: style={}, t={}".format(style, t))
+        
+        arr = np.frombuffer(result.contents, dtype=np.double)
+        self._libc.lammps_free(ptr)
+        arr.shape = shape
+        return arr
 
     def extract_global(self, name, t):
         """Extracts a global scalar quantity.
