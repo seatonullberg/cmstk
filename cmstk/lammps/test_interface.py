@@ -29,6 +29,12 @@ def write_test_file(filename):
         f.write("compute test2 all ke/atom\n")
         f.write("fix test3 all store/force\n")
 
+def test_lammps_cmd_args():
+    # test initialization with command line arguments
+    lammps = LAMMPS(cmd_args=["-log", "test.log"])
+    assert os.path.exists("test.log")
+    os.remove("test.log")
+
 def test_lammps_properties():
     # tests access to all LAMMPS properties
     lammps = LAMMPS()

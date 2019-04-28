@@ -9,14 +9,16 @@ class LAMMPS(object):
     Args:
         libc_path (optional) (str): Path to the liblammps_serial.so file.
         - Defaults to using the environment variable "LIBLAMMPS_SERIAL".
-
+        cmd_args (optional) (list): Command line arguments.
     Attributes:
         opened (bool): Indicates if the underlying LAMMPS library is open.
     """
 
-    def __init__(self, libc_path=None):
+    def __init__(self, libc_path=None, cmd_args=None):
         if type(libc_path) not in [type(None), str]:
             raise TypeError("`libc_path` must be of type str")
+        if type(cmd_args) not in [type(None), list]:
+            raise TypeError("`cmd_args` must be of type list")
 
         # load shared lib from environment variable
         if libc_path is None:
@@ -25,9 +27,21 @@ class LAMMPS(object):
         # load the shared library
         self._libc = ct.CDLL(libc_path, ct.RTLD_GLOBAL)
 
+        # process command line arguments
+        if cmd_args:
+            cmd_args.insert(0, "interface.py")
+            n_args = len(cmd_args)
+            for i, arg in enumerate(cmd_args):
+                if type(arg) is str:
+                    cmd_args[i] = arg.encode()
+            c_args = (ct.c_char_p*n_args)(*cmd_args)
+        else:
+            c_args = None
+            n_args = 0
+
         # open a LAMMPS instance
         self._lammps_ptr = ct.c_void_p()
-        self._libc.lammps_open_no_mpi(0, None, ct.byref(self._lammps_ptr))
+        self._libc.lammps_open_no_mpi(n_args, c_args, ct.byref(self._lammps_ptr))
 
         # indicate that the instance has been opened
         self.opened = True
