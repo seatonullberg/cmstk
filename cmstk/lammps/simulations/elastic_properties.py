@@ -14,36 +14,35 @@ class ElasticProperties(BaseLammpsSimulation):
     def __init__(self, potential, structure):
         self.potential = potential
         self.structure = structure
-        # init the lammps interface
         lammps = LAMMPS()
-        # extract bulk modulus, shear modulus, c11, c12, and c44
-        equal_vars = ["bulkmodulus", "shearmodulus1", "c11", "c12", "c44"]
-        # no atomic style variables
-        atom_vars = []
-        # init the base
-        super().__init__(lammps, equal_vars, atom_vars)
+        super().__init__(lammps)
+        self.add_variable_quantity("bulkmodulus", 0)
+        self.add_variable_quantity("shearmodulus1", 0)
+        self.add_variable_quantity("c11", 0)
+        self.add_variable_quantity("c12", 0)
+        self.add_variable_quantity("c44", 0)
 
     @property
     def bulk_modulus(self):
-        return self._results["bulkmodulus"]
+        return self.quantities["bulkmodulus"]["results"]
 
     @property
     def shear_modulus(self):
-        return self._results["shearmodulus1"]
+        return self.quantities["shearmodulus1"]["results"]
 
     @property
     def c11(self):
-        return self._results["c11"]
+        return self.quantities["c11"]["results"]
 
     @property
     def c12(self):
-        return self._results["c12"]
+        return self.quantities["c12"]["results"]
 
     @property
     def c44(self):
-        return self._results["c44"]
+        return self.quantities["c44"]["results"]
 
+    # TODO
     def __str__(self):
         # https://github.com/lammps/lammps/tree/master/examples/ELASTIC
-        # TODO: write the script here.
         pass

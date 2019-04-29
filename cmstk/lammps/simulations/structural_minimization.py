@@ -1,5 +1,7 @@
+import type_sanity as ts
 from cmstk.lammps import LAMMPS
 from cmstk.lammps.simulations.base import BaseLammpsSimulation
+from cmstk.potentials.base import BasePotential
 
 
 class StructuralMinimization(BaseLammpsSimulation):
@@ -14,28 +16,25 @@ class StructuralMinimization(BaseLammpsSimulation):
     def __init__(self, potential, structure):
         self.potential = potential
         self.structure = structure
-        # init the lammps interface
         lammps = LAMMPS()
-        # extract total energy, lattice parameter, and cohesive energy 
-        equal_vars = ["teng", "length", "ecoh"]
-        # no atom style variables to extract
-        atom_vars = []
-        # init the base
-        super().__init__(lammps, equal_vars, atom_vars)
+        super().__init__(lammps)
+        self.add_variable_quantity("teng", 0)    # extract total energy
+        self.add_variable_quantity("length", 0)  # extract lattice parameter
+        self.add_variable_quantity("ecoh", 0)    # extract cohesive energy
 
     @property
     def total_energy(self):
-        return self._results["teng"]
+        return self.quantities["teng"]["results"]
 
     @property
     def length(self):
-        return self._results["length"]
+        return self.quantities["length"]["results"]
 
     @property
     def cohesive_energy(self):
-        return self._results["ecoh"]
+        return self.quantities["ecoh"]["results"]
 
+    # TODO
     def __str__(self):
         # https://icme.hpc.msstate.edu/mediawiki/index.php/LAMMPS_Tutorial_1
-        # TODO: write the script here.
         pass

@@ -14,22 +14,17 @@ class VacancyFormationEnergy(BaseLammpsSimulation):
     def __init__(self, potential, structure):
         self.potential = potential
         self.structure = structure
-        # init the lammps interface
         lammps = LAMMPS()
-        # extract vacancy formation energy
-        equal_vars = ["Ev"]
-        # no atom style variables to extract
-        atom_vars = []
-        # init the base
-        super().__init__(lammps, equal_vars, atom_vars)
+        super().__init__(lammps)
+        self.add_variable_quantity("Ev", 0)
 
     @property
     def energy(self):
-        return self._results["Ev"]
+        return self.quantities["Ev"]["results"]
 
+    # TODO
     def __str__(self):
         # https://icme.hpc.msstate.edu/mediawiki/index.php/LAMMPS_Vacancy_Formation_Energy
-        # TODO: write the script here.
         pass
 
 
@@ -45,20 +40,15 @@ class InterstitialFormationEnergy(BaseLammpsSimulation):
     def __init__(self, potential, structure):
         self.potential = potential
         self.structure = structure
-        # init the lammps interface
         lammps = LAMMPS()
-        # extract interstitial formation energy
-        equal_vars = ["Ei"]
-        # no atom style variables to extract
-        atom_vars = []
-        # init the base
-        super().__init__(lammps, equal_vars, atom_vars)
+        super().__init__(lammps)
+        self.add_variable_quantity("Ei", 0)
 
     @property
     def energy(self):
-        return self._results["Ei"]
+        return self.quantities["Ei"]["results"]
 
+    # TODO
     def __str__(self):
         # https://icme.hpc.msstate.edu/mediawiki/index.php/LAMMPS_Interstitial_Formation_Energy
-        # TODO: write the script here.
         pass

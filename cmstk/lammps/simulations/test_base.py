@@ -17,7 +17,7 @@ def test_base_lammps_simulation():
     write_test_file(filename)
     # TODO: test the other initialization methods
     simulation.simulate(filename=filename)
-    for quantity in simulation.quantities:
+    for _, quantity in simulation.quantities.items():
         assert quantity["result"] is not None
     os.remove("log.lammps")
     os.remove(filename)
