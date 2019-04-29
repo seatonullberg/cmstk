@@ -9,20 +9,19 @@ class BaseLammpsSimulation(object):
     
     Attributes:
         lammps_obj (LAMMPS): An instance of the serial LAMMPS interface.
+        quantities (list of dict): All computed quantities.
+        - access results via the `result` key of each entry.
+        - `quantity_name` key is set as the `name` or `id_` argument of the respective add method.
     """
 
     def __init__(self, lammps_obj):
         if type(lammps_obj) is not LAMMPS:
             raise TypeError("`lammps_obj` must be of type LAMMPS")
         self.lammps_obj = lammps_obj
-        self._quantities = {"atom":     [],
-                            "compute":  [],
-                            "fix":      [],
-                            "global":   [],
-                            "variable": []}
+        self.quantities = []
 
     def add_atom_quantity(self, name, t, shape):
-        """Add a per-atom quantity to extract from the simulation.
+        """Adds a per-atom quantity to extract from the simulation.
         
         Args:
             name (str): Name of the atomic quantity.
@@ -31,7 +30,12 @@ class BaseLammpsSimulation(object):
             shape (tuple of ints): Desired shape of the result.
             - (nrows, ncols) format.
         """
-        pass
+        new_entry = {"quantity_name": name,
+                     "func": self.lammps_obj.extract_atom,
+                     "args": None,
+                     "result": None}
+        new_entry["args"] = {"name": name, "t": t, "shape": shape}
+        self.quantities.append(new_entry)
 
     def add_compute_quantity(self, id_, style, t, shape=None):
         """Adds a compute based quantity to extract from the simulation.
@@ -45,7 +49,12 @@ class BaseLammpsSimulation(object):
             shape (optional) (tuple of ints): Desired shape of the output.
             - required for vectors and arrays.
         """ 
-        pass
+        new_entry = {"quantity_name": id_,
+                     "func": self.lammps_obj.extract_compute,
+                     "args": None,
+                     "result": None}
+        new_entry["args"] = {"id_": id_, "style": style, "t": t, "shape": shape}
+        self.quantities.append(new_entry)
 
     def add_fix_quantity(self, id_, style, t, shape=None):
         """Adds a fix based quantity to extract from the simulation.
@@ -59,20 +68,30 @@ class BaseLammpsSimulation(object):
             shape (optional) (tuple of ints): Desired shape of the output.
             - required for vectors and arrays
         """
-        pass
+        new_entry = {"quantity_name": id_,
+                     "func": self.lammps_obj.extract_fix,
+                     "args": None,
+                     "result": None}
+        new_entry["args"] = {"id_": id_, "style": style, "t": t, "shape": shape}
+        self.quantities.append(new_entry)
 
     def add_global_quantity(self, name, t):
-        """Extract a global quantity from the simulation.
+        """Adds a global quantity to extract from the simulation.
         
         Args:
             name (str): Name of the global quantity.
             t (int): Determines the type of the result.
             - 0 for int, 1 for double
         """
-        pass
+        new_entry = {"quantity_name": name,
+                     "func": self.lammps_obj.extract_global,
+                     "args": None,
+                     "result": None}
+        new_entry["args"] = {"name": name, "t": t}
+        self.quantities.append(new_entry)
 
     def add_variable_quantity(self, name, t, group=None):
-        """Extract a variable quantity from the simulation.
+        """Adds a variable quantity to extract from the simulation.
         
         Args:
             name (str): Name of the variable.
@@ -81,15 +100,30 @@ class BaseLammpsSimulation(object):
             group (optional) (str): Name of the group for atomic type variables.
             - Required for atomic type varables.
         """
-        pass
+        new_entry = {"quantity_name": name,
+                     "func": self.lammps_obj.extract_variable,
+                     "args": None,
+                     "result": None}
+        new_entry["args"] = {"name": name, "t": t, "group": group}
+        self.quantities.append(new_entry)
 
-    def simulate(self, filename=None, cmd_str=None):
+    def simulate(self, filename=None, cmd_list=None, cmd_str=None):
         """Exectue a LAMMPS simulation and extract the desired quantities.
         
         Args:
             filename (optional) (str): File path to an input script to use.
+            cmd_list (optional) (list of str): List of LAMMPS commands to use.
             cmd_str (optional) (str): Raw string of LAMMPS commands to use.
 
             - one must be defined.
         """
-        pass
+        if filename:
+            self.lammps_obj.run_file(filename)
+        elif cmd_list:
+            self.lammps_obj.commands_list(cmd_list)
+        elif cmd_str:
+            self.lammps_obj.commands_string(cmd_str)
+        else:
+            raise ValueError("`filename` or `cmd_list` or `cmd_str` must be defined")
+        for quantity in self.quantities:
+            quantity["result"] = quantity["func"](**quantity["args"])
