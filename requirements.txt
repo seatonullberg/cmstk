@@ -1,0 +1,4 @@
+numpy
+matplotlib
+scipy
+type-sanity==1.1.0

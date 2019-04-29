@@ -1,3 +1,4 @@
+import type_sanity as ts
 from cmstk.units.exceptions import UnsafeUnitOperationError
 
 
@@ -168,8 +169,7 @@ class BaseUnit(object):
         Returns:
             self.__class__
         """
-        if not isinstance(other, BaseUnit):
-            raise TypeError("`other` must be an instance of type BaseUnit")
+        ts.is_instance((other, BaseUnit, "other"))
         if self.kind != other.kind:
             raise TypeError("`other` must be the same kind of unit")
         return self.__class__

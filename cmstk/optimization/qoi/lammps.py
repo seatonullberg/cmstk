@@ -1,3 +1,4 @@
+import type_sanity as ts
 from cmstk.optimization.qoi.base import BaseQOI
 
 
@@ -16,17 +17,11 @@ class LammpsQOI(BaseQOI):
     def __init__(self, symbols, potential_str, structure_str,
                  name, target, parameters):
         super().__init__(self, name, target, parameters)
-        
-        if type(symbols) is not tuple:
-            raise TypeError("`symbols` must be of type tuple")
+        ts.is_type((symbols, tuple, "symbols"), 
+                   (potential_str, str, "potential_str"), 
+                   (structure_str, str, "structure_str"))
         for s in symbols:
-            if type(s) is not str:
-                raise TypeError("all members of `symbols` must be of type str")
-        if type(potential_str) is not str:
-            raise TypeError("`potential_str` must be of type str")
-        if type(structure_str) is not str:
-            raise TypeError("`structure_str` must be of type str")
-
+            ts.is_type((s, str))
         self._symbols = symbols
         self._potential_str = potential_str
         self._structure_str = structure_str

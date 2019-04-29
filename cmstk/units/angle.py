@@ -1,3 +1,4 @@
+import type_sanity as ts
 from cmstk.units.base import BaseUnit
 import math
 
@@ -17,8 +18,7 @@ class AngleUnit(BaseUnit, float):
     """
 
     def __init__(self, base_value):
-        if type(base_value) is not float:
-            raise TypeError("`base_value` must be of type float")
+        ts.is_type((base_value, float, "base_value"))
         super().__init__(value=base_value, kind=AngleUnit)
         self.base_value = base_value
         self.base_unit = Radian

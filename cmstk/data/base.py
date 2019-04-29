@@ -1,5 +1,6 @@
 import os
 import json
+import type_sanity as ts
 from cmstk.data.exceptions import ReadOnlyError
 
 
@@ -12,8 +13,7 @@ class BaseDataReader(object):
     """
 
     def __init__(self, path=None):
-        if type(path) not in [str, type(None)]:
-            raise TypeError("`path` must be of type str")
+        ts.is_type_any((path, [str, type(None)], "path"))
         self._path = path
         self._data = None
 
@@ -50,9 +50,7 @@ class BaseDataReader(object):
         Args:
             filename (str): Name of a JSON file in the data directory.
         """
-        if type(filename) is not str:
-            raise TypeError("`filename` must be of type str")
-        
+        ts.is_type((filename, str, "filename"))
         json_path = os.path.join(self.path, filename)
         with open(json_path) as f:
             json_data = json.load(f)
@@ -65,9 +63,7 @@ class BaseDataReader(object):
         Args:
             filename (str): Name of the text file in the data directory.
         """
-        if type(filename) is not str:
-            raise TypeError("`filename` must be of type str")
-
+        ts.is_type((filename, str, "filename"))
         text_path = os.path.join(self.path, filename)
         with open(text_path) as f:
             text_data = f.readlines()

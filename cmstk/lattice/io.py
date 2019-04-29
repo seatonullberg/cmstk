@@ -1,3 +1,4 @@
+import type_sanity as ts
 from cmstk.lattice import Atom, Lattice
 from cmstk.units.vector import Vector3D
 from cmstk.units.distance import Picometer
@@ -11,11 +12,7 @@ def write_lattice_to_proto_file(path, lattice):
         path (str): Path to write the protobuf file at.
         lattice (Lattice): Lattice object to write.
     """
-    if type(path) is not str:
-        raise TypeError("`path` must be of type str")
-    if type(lattice) is not Lattice:
-        raise TypeError("`lattice` must be of type Lattice")
-        
+    ts.is_type((path, str, "path"), (lattice, Lattice, "lattice"))
     proto_atoms = []
     # convert atoms to ProtoAtoms
     for a in lattice.atoms:
@@ -43,9 +40,7 @@ def read_lattice_from_proto_file(path):
     Returns:
         Lattice
     """
-    if type(path) is not str:
-        raise TypeError("`path` must be of type str")
-
+    ts.is_type((path, str, "path"))
     proto_lattice = ProtoLattice()
     with open(path, "rb") as f:
         proto_lattice.ParseFromString(f.read())

@@ -1,3 +1,4 @@
+import type_sanity as ts
 from cmstk.optimization.sampling import BaseSampler
 from cmstk.optimization.filtration import BaseFilterSet
 from cmstk.optimization.qoi.base import BaseQOI
@@ -20,18 +21,12 @@ class Optimizer(object):
     """
 
     def __init__(self, n_samples, sampler, filter_set, qois, parameters):
-        if type(n_samples) is not int:
-            raise TypeError("`n_samples` must be of type int")
-        if not isinstance(sampler, BaseSampler):
-            raise TypeError("`sampler` must be an instance of type BaseSampler")
-        if not isinstance(filter_set, BaseFilterSet):
-            raise TypeError("`filter_set` must be an instance of tyep BaseFilterSet")
+        ts.is_type((n_samples, int, "n_samples"))
+        ts.is_instance((sampler, BaseSampler, "sampler"), (filter_set, BaseFilterSet, "filter_set"))
         for q in qois:
-            if not isinstance(q, BaseQOI):
-                raise TypeError("all members of `qois` must be an instance of type BaseQOI")
+            ts.is_instance((q, BaseQOI))
         for p in parameters:
-            if not isinstance(p, dict):
-                raise TypeError("all members of `parameters` must be an instance of type dict")
+            ts.is_instance((p, dict))
         
         self._n_samples = n_samples
         self._sampler = sampler

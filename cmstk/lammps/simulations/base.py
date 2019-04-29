@@ -1,3 +1,4 @@
+import type_sanity as ts
 from cmstk.lammps import LAMMPS
 
 
@@ -15,8 +16,7 @@ class BaseLammpsSimulation(object):
     """
 
     def __init__(self, lammps_obj):
-        if type(lammps_obj) is not LAMMPS:
-            raise TypeError("`lammps_obj` must be of type LAMMPS")
+        ts.is_type((lammps_obj, LAMMPS, "lammps_obj"))
         self.lammps_obj = lammps_obj
         self.quantities = []
 

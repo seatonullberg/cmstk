@@ -1,4 +1,4 @@
-from cmstk.lattice import Atom, AtomicPosition, Lattice
+from cmstk.lattice import Atom, Lattice
 from cmstk.lattice.io import write_lattice_to_proto_file
 from cmstk.lattice.unit_cell import unit_cell_fcc
 from cmstk.units import Picometer

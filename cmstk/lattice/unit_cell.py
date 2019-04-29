@@ -1,3 +1,4 @@
+import type_sanity as ts
 from cmstk.lattice import Atom, Lattice
 from cmstk.units.distance import DistanceUnit, Picometer
 from cmstk.units.vector import Vector3D
@@ -15,11 +16,8 @@ def unit_cell_sc(a0, symbol, tolerance=None):
     Returns:
         Lattice
     """
-    if not isinstance(a0, DistanceUnit):
-        raise TypeError("`a0` must be an instance of type DistanceUnit")
-    if type(symbol) is not str:
-        raise TypeError("`symbol` must be of type str")
-
+    ts.is_instance((a0, DistanceUnit, "a0"))
+    ts.is_type((symbol, str, "symbol"))
     lattice = Lattice()
     a0 = a0.to(Picometer).value
     positions = [(Picometer(0.0), Picometer(0.0), Picometer(0.0)), 
@@ -49,11 +47,8 @@ def unit_cell_bcc(a0, symbol, tolerance=None):
     Returns:
         Lattice
     """
-    if not isinstance(a0, DistanceUnit):
-        raise TypeError("`a0` must be an instance of type DistanceUnit")
-    if type(symbol) is not str:
-        raise TypeError("`symbol` must be of type str")
-
+    ts.is_instance((a0, DistanceUnit, "a0"))
+    ts.is_type((symbol, str, "symbol"))
     lattice = unit_cell_sc(a0, symbol)  # start with the corners
     a0 = a0.to(Picometer).value
     # add central atom 
@@ -76,11 +71,8 @@ def unit_cell_fcc(a0, symbol, tolerance=None):
     Returns:
         Lattice
     """
-    if not isinstance(a0, DistanceUnit):
-        raise TypeError("`a0` must be an instance of type DistanceUnit")
-    if type(symbol) is not str:
-        raise TypeError("`symbol` must be of type str")
-
+    ts.is_instance((a0, DistanceUnit, "a0"))
+    ts.is_type((symbol, str, "symbol"))
     lattice = unit_cell_sc(a0, symbol)  # start with the corners
     a0 = a0.to(Picometer).value
     # add face atoms
@@ -113,13 +105,8 @@ def unit_cell_hcp(a, c, symbol, tolerance=None):
     Returns:
         Lattice
     """
-    if not isinstance(a, DistanceUnit):
-        raise TypeError("`a` must be an instance of type DistanceUnit")
-    if not isinstance(c, DistanceUnit):
-        raise TypeError("`c` must be an instance of type DistanceUnit")
-    if type(symbol) is not str:
-        raise TypeError("`symbol` must be of type str")
-
+    ts.is_instance((a, DistanceUnit, "a"), (c, DistanceUnit, "c"))
+    ts.is_type((symbol, str, "symbol"))
     lattice = Lattice()
     a = a.to(Picometer).value
     c = c.to(Picometer).value

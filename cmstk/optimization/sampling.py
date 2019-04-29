@@ -1,3 +1,4 @@
+import type_sanity as ts
 import numpy as np
 from scipy.stats import gaussian_kde
 
@@ -11,13 +12,9 @@ class BaseSampler(object):
     """
 
     def __init__(self, obj, n_samples):
-        if not isinstance(obj, BaseSampler):
-            raise TypeError("`obj` must be an instance of type BaseSampler")
-        obj_methods = [method_name for method_name in dir(obj) if callable(getattr(obj, method_name))]
-        if "sample" not in obj_methods:
-            raise ValueError("`obj` must implement a method called `sample`")
-        if type(n_samples) is not int:
-            raise TypeError("`n_samples` must be of type int")
+        ts.is_instance((obj, BaseSampler, "obj"))
+        ts.implements((obj, "sample", "obj"))
+        ts.is_type((n_samples, int, "n_samples"))
         if n_samples < 1:
             raise ValueError("`n_samples` must be greater than 1")
         self._n_samples = n_samples
@@ -34,10 +31,7 @@ class GaussianSampler(BaseSampler):
 
     def __init__(self, n_samples, mean, stdev):
         super().__init__(self, n_samples)
-        if type(mean) is not np.ndarray:
-            raise TypeError("`mean` must be of type numpy.ndarray")
-        if type(stdev) is not np.ndarray:
-            raise TypeError("`stdev` must be of type numpy.ndarray")
+        ts.is_type((mean, np.ndarray, "mean"), (stdev, np.ndarray, "stdev"))
         if mean.shape != stdev.shape:
             raise ValueError("`mean` and `stdev` must have the same shape")
         if len(mean.shape) > 1 or len(stdev.shape) > 1:
@@ -66,10 +60,7 @@ class KDESampler(BaseSampler):
 
     def __init__(self, n_samples, arr, bandwidth):
         super().__init__(self, n_samples)
-        if type(arr) is not np.ndarray:
-            raise TypeError("`arr` must be of type numpy.ndarray")
-        if type(bandwidth) is not float:
-            raise TypeError("`bandwidth` must be of type float")
+        ts.is_type((arr, np.ndarray, "arr"), (bandwidth, float, "bandwidth"))
         self._arr = arr
         self._bandwidth = bandwidth
 
@@ -97,10 +88,7 @@ class UniformSampler(BaseSampler):
 
     def __init__(self, n_samples, low, high):
         super().__init__(self, n_samples)
-        if type(low) is not np.ndarray:
-            raise TypeError("`low` must be of type numpy.ndarray")
-        if type(high) is not np.ndarray:
-            raise TypeError("`high` must be of type numpy.ndarray")
+        ts.is_type((low, np.ndarray, "low"), (high, np.ndarray, "high"))
         if low.shape != high.shape:
             raise ValueError("`low` and `high` must have the same shape")
         if len(low.shape) > 1 or len(high.shape) > 1:

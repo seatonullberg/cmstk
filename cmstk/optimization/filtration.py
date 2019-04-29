@@ -1,3 +1,4 @@
+import type_sanity as ts
 from cmstk.optimization.loss import BaseLossFunction
 import numpy as np
 from sklearn.preprocessing import StandardScaler
@@ -11,11 +12,8 @@ class BaseFilter(object):
     """
 
     def __init__(self, obj):
-        if not isinstance(obj, BaseFilter):
-            raise TypeError("`obj` must be an instance of BaseFilter")
-        obj_methods = [method_name for method_name in dir(obj) if callable(getattr(obj, method_name))]
-        if "filter" not in obj_methods:
-            raise ValueError("`obj` must implement a method called `filter`")
+        ts.is_instance((obj, BaseFilter, "obj"))
+        ts.implements((obj, "filter", "obj"))
         self._scaler = StandardScaler()  # store this for faster use
 
     def normalize(self, arr):
@@ -44,8 +42,7 @@ class ConstraintFilter(BaseFilter):
 
     def __init__(self, constraints, normalize=True):
         super().__init__(self)
-        if type(constraints) is not dict:
-            raise TypeError("`constraints` must be of type dict")
+        ts.is_type((constraints, dict, "constraints"))
         self._constraints = constraints
         self._normalize = normalize
 
@@ -72,10 +69,8 @@ class LossFunctionFilter(BaseFilter):
 
     def __init__(self, loss_function, percentile, normalize=True):
         super().__init__(self)
-        if not isinstance(loss_function, BaseLossFunction):
-            raise TypeError("`loss_function` must be an instance of type BaseLossFunction")
-        if type(percentile) is not float:
-            raise TypeError("`percentile` must be of type float")
+        ts.is_instance((loss_function, BaseLossFunction, "loss_function"))
+        ts.is_type((percentile, float, "percentile"))
         if not 0.0 < percentile < 100.0:
             raise ValueError("`percentile` must be between 0.0 and 100.0")
         self._loss_function = loss_function
@@ -91,9 +86,7 @@ class LossFunctionFilter(BaseFilter):
         Returns:
             numpy.ndarray
         """
-        if type(arr) is not np.ndarray:
-            raise TypeError("`arr` must be of type numpy.ndarray")
-
+        ts.is_type((arr, np.ndarray, "arr"))
         if self._normalize:
             arr = self.normalize(arr)
 
@@ -143,14 +136,11 @@ class BaseFilterSet(object):
     """
 
     def __init__(self, obj):
-        obj_methods = [method_name for method_name in dir(obj) if callable(getattr(obj, method_name))]
-        if "apply" not in obj_methods:
-            raise ValueError("`obj` must implement a method called `apply`")
+        ts.implements((obj, "apply", "obj"))
         self._filters = []
 
     def add_filter(self, f):
-        if not isinstance(f, BaseFilter):
-            raise TypeError("`f` must be an instance of type BaseFilter")
+        ts.is_instance((f, BaseFilter, "f"))
         self._filters.append(f)
 
 

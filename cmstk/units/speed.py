@@ -1,3 +1,4 @@
+import type_sanity as ts
 from cmstk.units.base import BaseUnit
 from cmstk.units.distance import DistanceUnit, Meter
 from cmstk.units.time import TimeUnit, Second
@@ -19,8 +20,7 @@ class SpeedUnit(BaseUnit, float):
     """
 
     def __init__(self, base_value):
-        if type(base_value) is not float:
-            raise TypeError("`base_error` must be of type float")
+        ts.is_type((base_value, float, "base_value"))
         super().__init__(value=base_value, kind=SpeedUnit)
         self.base_value = base_value
         self.base_unit = MeterPerSecond
@@ -36,11 +36,7 @@ class SpeedUnit(BaseUnit, float):
         Returns:
             SpeedUnit
         """
-        if not isinstance(d, DistanceUnit):
-            raise TypeError("`d` must be an instance of type DistanceUnit")
-        if not isinstance(t, TimeUnit):
-            raise TypeError("`t` must be an instance of type TimeUnit")
-
+        ts.is_instance((d, DistanceUnit, "d"), (t, TimeUnit, "t"))
         new_speed = d.to(Meter).value / t.to(Second).value
         return cls(new_speed)
 

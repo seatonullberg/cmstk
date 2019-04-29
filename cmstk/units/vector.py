@@ -1,6 +1,7 @@
 from cmstk.units.base import BaseUnit
 from cmstk.units.angle import AngleUnit
 import math
+import type_sanity as ts
 import numpy as np
 from scipy.spatial.transform import Rotation
 
@@ -20,12 +21,10 @@ class Vector(object):
     """
 
     def __init__(self, values):
-        if type(values) is not tuple:
-            raise TypeError("`values` must be of type tuple")
+        ts.is_type((values, tuple, "values"))
         unit_kind = values[0].kind
         for v in values:
-            if not isinstance(v, BaseUnit):
-                raise TypeError("all members of `values` must be an instance of type BaseUnit")
+            ts.is_instance((v, BaseUnit))
             if v.kind != unit_kind:
                 raise ValueError("all members of `values` must be the same kind of unit")
         self.unit_kind = unit_kind
@@ -60,13 +59,11 @@ class Vector(object):
 
     # TODO: vector operations
     def cross(self, vec, t=None):
-        if not isinstance(vec, Vector):
-            raise TypeError("`vec` must be an instance of type Vector")
+        ts.is_instance((vec, Vector, "vec"))
         raise NotImplementedError
         
     def dot(self, vec, t=None):
-        if not isinstance(vec, Vector):
-            raise TypeError("`vec` must be an instance of type Vector")
+        ts.is_instance((vec, Vector, "vec"))
         raise NotImplementedError
 
     def rotate(self, vec):
@@ -75,8 +72,7 @@ class Vector(object):
         Args:
             vec (instance of Vector): Angle vector to rotate by.
         """
-        if not isinstance(vec, Vector):
-            raise TypeError("`vec` must be an instance of type Vector")
+        ts.is_instance((vec, Vector, "vec"))
         if self.size != vec.size:
             raise ValueError("`vec` must have size {}".format(self.size))
         if vec.unit_kind is not AngleUnit:
@@ -98,8 +94,7 @@ class Vector(object):
         Args:
             vec (instance of Vector): Vector to translate by.
         """
-        if not isinstance(vec, Vector):
-            raise TypeError("`vec` must be an instance of type Vector")
+        ts.is_instance((vec, Vector, "vec"))
         if self.size != vec.size:
             raise ValueError("`vec` must have size {}".format(self.size))
         if self.unit_kind is not vec.unit_kind:

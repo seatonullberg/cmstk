@@ -1,3 +1,4 @@
+import type_sanity as ts
 from cmstk.units.base import BaseUnit
 from cmstk.units.area import AreaUnit, MeterSquared
 from cmstk.units.force import ForceUnit, Newton
@@ -18,8 +19,7 @@ class PressureUnit(BaseUnit, float):
     """
 
     def __init__(self, base_value):
-        if type(base_value) is not float:
-            raise TypeError("`base_value` must be of type float")
+        ts.is_type((base_value, float, "base_value"))
         super().__init__(value=base_value, kind=PressureUnit)
         self.base_value = base_value
         self.base_unit = Pascal
@@ -35,11 +35,7 @@ class PressureUnit(BaseUnit, float):
         Returns:
             PressureUnit
         """
-        if not isinstance(a, AreaUnit):
-            raise TypeError("`a` must be an instance of type AreaUnit")
-        if not isinstance(f, ForceUnit):
-            raise TypeError("`f` must be an instance of type ForceUnit")
-
+        ts.is_instance((a, AreaUnit, "a"), (f, ForceUnit, "f"))
         new_pressure = f.to(Newton).value / a.to(MeterSquared).value
         return cls(new_pressure)
 

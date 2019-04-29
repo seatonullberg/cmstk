@@ -1,3 +1,4 @@
+import type_sanity as ts
 from cmstk.potentials.base import BasePotential
 
 
@@ -15,8 +16,7 @@ class LennardJonesPotential(BasePotential):
     """
 
     def __init__(self, symbols, parameters, cutoff):
-        if type(cutoff) is not float:
-            raise TypeError("`cutoff` must be of type float")
+        ts.is_type((cutoff, float, "cutoff"))
         self._cutoff = cutoff
         super().__init__(self, symbols, parameters)
 

@@ -1,3 +1,4 @@
+import type_sanity as ts
 import numpy as np
 
 
@@ -22,8 +23,7 @@ class BaseWeightingScheme(object):
         Returns:
             numpy.ndarray
         """
-        if type(data) is not np.ndarray:
-            raise TypeError("`data` must be of type numpy.ndarray")
+        ts.is_type((data, np.ndarray, "data"))
         return self._evaluation_function(data)
 
 
@@ -35,8 +35,7 @@ class TargetNormalWeightingScheme(BaseWeightingScheme):
     """
 
     def __init__(self, targets):
-        if type(targets) is not np.ndarray:
-            raise TypeError("`targets` must be of type numpy.ndarray")
+        ts.is_type((targets, np.ndarray, "targets"))
         self._targets = targets
         super().__init__(self._target_normal_weights)
 

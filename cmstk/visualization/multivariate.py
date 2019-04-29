@@ -1,3 +1,4 @@
+import type_sanity as ts
 import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
 import numpy as np
@@ -16,13 +17,9 @@ class ParallelCoordinatesPlot(object):
     """
 
     def __init__(self, title, xlabels, ylabel):
-        if type(title) is not str:
-            raise TypeError("`title` must be of type str")
-        if type(xlabels) is not list:
-            raise TypeError("`xlabels` must be of type list")
-        if type(ylabel) is not str:
-            raise TypeError("`ylabel` must be of type str")
-
+        ts.is_type((title, str, "title"), 
+                   (xlabels, list, "xlabels"), 
+                   (ylabel, str, "ylabel"))
         self._title = title
         self._xlabels = xlabels
         self._ylabel = ylabel
@@ -45,11 +42,7 @@ class ParallelCoordinatesPlot(object):
             - refer to https://matplotlib.org/users/colors.html for valid inputs.
             label (str): Identifier to include in the plot legend.
         """
-        if type(data) is not np.ndarray:
-            raise TypeError("`data` must be of type numpy.ndarray")
-        if type(label) is not str:
-            raise TypeError("`label` must be of type str")
-
+        ts.is_type((data, np.ndarray, "data"), (label, str, "label"))
         ncols = data.shape[1]
         if self._ncols is None:
             self._ncols = ncols
@@ -66,11 +59,8 @@ class ParallelCoordinatesPlot(object):
         Args:
             filename (str): File path to write the plot to.
         """
-        if type(filename) is not str:
-            raise TypeError("`filename` must be of type str")
-
+        ts.is_type((filename, str, "filename"))
         fig, axes = plt.subplots(nrows=1, ncols=self._ncols-1, figsize=(8,4), sharey=True)
-
         x = range(self._ncols)
         patches = []
         # iterate over the axes

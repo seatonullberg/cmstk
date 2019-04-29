@@ -1,4 +1,5 @@
 import math
+import type_sanity as ts
 from cmstk.data import ElementsReader
 from cmstk.lattice.exceptions import AtomicPositionError
 from cmstk.units.distance import DistanceUnit, Picometer
@@ -37,12 +38,9 @@ class Atom(object):
     """
 
     def __init__(self, symbol, position):
-        if type(symbol) is not str:
-            raise TypeError("`symbol` must be of type str")
+        ts.is_type((symbol, str, "symbol"))
         self.symbol = symbol
-
-        if type(position) is not Vector3D:
-            raise TypeError("`position` must be of type Vector3D")
+        ts.is_type((position, Vector3D, "position"))
         if position.unit_kind is not DistanceUnit:
             raise TypeError("`position` must contain units of kind DistanceUnit")
         
@@ -93,7 +91,9 @@ class Lattice(object):
         atoms (list of Atom): Collection of atoms in the lattice.
     """
 
+    # TODO: weird bug where if i initialize this as an empty list it fails to make structures
     def __init__(self, atoms=None):
+        #ts.is_type((atoms, list, "atoms"))
         if atoms is None:
             atoms = []
         if type(atoms) is not list:
@@ -134,11 +134,9 @@ class Lattice(object):
         Raises:
             AtomicPositionError - If an atom already exists in the given position.
         """
-        if type(atom) is not Atom:
-            raise TypeError("`atom` must be of type Atom")
+        ts.is_type((atom, Atom, "atom"))
         if tolerance is not None:
-            if not isinstance(tolerance, DistanceUnit):
-                raise TypeError("`tolerance` must be an instance of DistanceUnit")
+            ts.is_instance((tolerance, DistanceUnit, "tolerance"))
 
         for a in self.atoms:
             if tolerance is None:
@@ -161,13 +159,11 @@ class Lattice(object):
         Raises:
             AtomicPositionError - If an atom does not exist in the given position.
         """
-        if type(position) is not Vector3D:
-            raise TypeError("`position` must be of type Vector3D")
+        ts.is_type((position, Vector3D, "position"))
         if position.unit_kind is not DistanceUnit:
             raise TypeError("`position` must contain units of kind DistanceUnit")
         if tolerance is not None:
-            if not isinstance(tolerance, DistanceUnit):
-                raise TypeError("`tolerance` must be an instance of DistanceUnit")
+            ts.is_instance((tolerance, DistanceUnit, "tolerance"))
 
         for i, a in enumerate(self._atoms):  # iterate over the actual list because it may be modified intermediately
             if tolerance is None:
@@ -192,13 +188,11 @@ class Lattice(object):
         Args:
             dims (tuple of ints): The number of times to repeat in each direction (x, y, z).
         """
-        if type(dims) is not tuple:
-            raise TypeError("`dims` must be of type tuple")
+        ts.is_type((dims, tuple, "dims"))
         if len(dims) != 3:
             raise ValueError("`dims` must have length 3")
         for d in dims:
-            if type(d) is not int:
-                raise TypeError("all members of `dims` must be of type int")
+            ts.is_type((d, int))
         raise NotImplementedError
 
     def rotate(self, angles):
@@ -207,8 +201,7 @@ class Lattice(object):
         Args:
             angles (Vector3D of AngleUnits): Angles to rotate the lattice by in (x, y, z).
         """
-        if type(angles) is not Vector3D:
-            raise TypeError("`angles` must be of type Vector3D")
+        ts.is_type((angles, Vector3D, "angles"))
         if angles.unit_kind is not AngleUnit:
             raise TypeError("`angles` must contain units of kind AngleUnits")
         for a in self.atoms:
@@ -222,8 +215,7 @@ class Lattice(object):
             - Here the Vector3D functions not as a point in space but a translation factor to move all atoms by.
             - This prevents having to do the type checking on a tuple of DistanceUnits which is already handled by Vector3D.
         """
-        if type(dims) is not Vector3D:
-            raise TypeError("`dims` must be of type Vector3D")
+        ts.is_type((dims, Vector3D, "dims"))
         if dims.unit_kind is not DistanceUnit:
             raise TypeError("`position` must contain units of kind DistanceUnit")
         for a in self.atoms:

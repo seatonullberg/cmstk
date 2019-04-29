@@ -1,3 +1,4 @@
+import type_sanity as ts
 import ctypes as ct
 import numpy as np
 import os
@@ -15,11 +16,8 @@ class LAMMPS(object):
     """
 
     def __init__(self, libc_path=None, cmd_args=None):
-        if type(libc_path) not in [type(None), str]:
-            raise TypeError("`libc_path` must be of type str")
-        if type(cmd_args) not in [type(None), list]:
-            raise TypeError("`cmd_args` must be of type list")
-
+        ts.is_type_any((libc_path, [type(None), str], "libc_path"),
+                       (cmd_args, [type(None), list], "cmd_args"))
         # load shared lib from environment variable
         if libc_path is None:
             libc_path = os.getenv("LIBLAMMPS_SERIAL")
@@ -99,9 +97,7 @@ class LAMMPS(object):
         Args:
             path (str): Path to the input file.
         """
-        if type(path) is not str:
-            raise TypeError("`path` must be of type str")
-
+        ts.is_type((path, str, "path"))
         encoding = path.encode()
         self._libc.lammps_file(self._lammps_ptr, encoding)
 
@@ -111,9 +107,7 @@ class LAMMPS(object):
         Args:
             cmd (str): LAMMPS command string.
         """
-        if type(cmd) is not str:
-            raise TypeError("`cmd` must be of type str")
-
+        ts.is_type((cmd, str, "cmd"))
         encoding = cmd.encode()
         self._libc.lammps_command(self._lammps_ptr, encoding)
         # error handling
@@ -131,9 +125,7 @@ class LAMMPS(object):
         Args:
             cmd_list (list): List of LAMMPS commands to execute.
         """
-        if type(cmd_list) is not list:
-            raise TypeError("`cmd_list` must be of type list")
-
+        ts.is_type((cmd_list, list, "cmd_list"))
         cmds = [cmd.encode() for cmd in cmd_list if type(cmd) is str]
         args = (ct.c_char_p * len(cmd_list))(*cmds)  # not really sure what this line does
         self._libc.lammps_commands_list(self._lammps_ptr, len(cmd_list), args)
@@ -144,12 +136,11 @@ class LAMMPS(object):
         Args:
             multi_cmd (str): Single string containing multiple commands
         """
-        if type(multi_cmd) is not str:
-            raise TypeError("`multi_cmd` must be of type str")
-
+        ts.is_type((multi_cmd, str, "multi_cmd"))
         encoding = multi_cmd.encode()
         self._libc.lammps_commands_string(self._lammps_ptr, ct.c_char_p(encoding))
 
+    @ts.returns_type(dict)
     def extract_box(self):
         """Extract the LAMMPS simulation box.
         
@@ -178,6 +169,7 @@ class LAMMPS(object):
         }
         return result
 
+    @ts.returns_type(int)
     def extract_setting(self, name):
         """Extract size of certain LAMMPS data types.
         
@@ -188,14 +180,12 @@ class LAMMPS(object):
         Returns:
             int
         """
-        if type(name) is not str:
-            raise TypeError("`name` must be of type str")
-
+        ts.is_type((name, str, "name"))
         encoding = name.encode()
         self._libc.lammps_extract_setting.restype = ct.c_int
         return int(self._libc.lammps_extract_setting(self._lammps_ptr, encoding))
 
-
+    @ts.returns_type(np.ndarray)
     def extract_atom(self, name, t, shape):
         """Extract a per-atom quantity.
         
@@ -209,12 +199,9 @@ class LAMMPS(object):
         Returns:
             numpy.ndarray
         """
-        if type(name) is not str:
-            raise TypeError("`name` must be of type str")
-        if type(t) is not int:
-            raise TypeError("`t` must be of type int")
-        if type(shape) is not tuple:
-            raise TypeError("`shape` must be of type tuple")
+        ts.is_type((name, str, "name"),
+                   (t, int, "t"),
+                   (shape, tuple, "shape"))
         if len(shape) > 2:
             raise ValueError("`shape` has a maximum dimensionality of 2")
 
@@ -247,6 +234,7 @@ class LAMMPS(object):
         arr.shape = shape
         return arr
 
+    @ts.returns_type_any([int, float, np.ndarray])
     def extract_compute(self, id_, style, t, shape=None):
         """Extract a compute-based entity.
         
@@ -314,6 +302,7 @@ class LAMMPS(object):
         arr.shape = shape
         return arr
 
+    @ts.returns_type_any([float, np.ndarray])
     def extract_fix(self, id_, style, t, shape=None):
         """Extracts a fix quantity.
         
@@ -374,6 +363,7 @@ class LAMMPS(object):
         arr.shape = shape
         return arr
 
+    @ts.returns_type_any([int, float])
     def extract_global(self, name, t):
         """Extracts a global scalar quantity.
         
@@ -385,11 +375,7 @@ class LAMMPS(object):
         Returns:
             int or float
         """
-        if type(name) is not str:
-            raise TypeError("`name` must be of type str")
-        if type(t) is not int:
-            raise TypeError("`t` must be of type int")
-
+        ts.is_type((name, str, "name"), (t, int, "t"))
         encoding = name.encode()
 
         if t == 0:
@@ -403,6 +389,7 @@ class LAMMPS(object):
         else:
             raise ValueError("`t` must be 0 or 1")
 
+    @ts.returns_type_any([float, np.ndarray])
     def extract_variable(self, name, t, group=None):
         """Extract a LAMMPS variable.
 
@@ -417,13 +404,8 @@ class LAMMPS(object):
         Returns:
             float or numpy.ndarray
         """
-        if type(name) is not str:
-            raise TypeError("`name` must be of type str")
-        if type(t) is not int:
-            raise TypeError("`t` must be of type int")
-        if type(group) not in [type(None), str]:
-            raise TypeError("`group` must be of type str")
-
+        ts.is_type((name, str, "name"), (t, int, "t"))
+        ts.is_type_any((group, [type(None), str], "group"))
         name_encoding = name.encode()
         if group:
             group_encoding = group.encode()
@@ -450,6 +432,7 @@ class LAMMPS(object):
         else:
             raise ValueError("`t` must be 0 or 1")
 
+    @ts.returns_type(int)
     def get_natoms(self):
         """Returns the total number of atoms in the system.
         
@@ -459,6 +442,7 @@ class LAMMPS(object):
         self._libc.lammps_get_natoms.restype = ct.c_int
         return self._libc.lammps_get_natoms(self._lammps_ptr)
 
+    @ts.returns_type(float)
     def get_thermo(self, name):
         """Returns current value of the thermo keyword.
         
@@ -468,8 +452,7 @@ class LAMMPS(object):
         Returns:
             float
         """
-        if type(name) is not str:
-            raise TypeError("`name` must be of type str")
+        ts.is_type((name, str, "name"))
         encoding = name.encode()
         self._libc.lammps_get_thermo.restype = ct.c_double
         return self._libc.lammps_get_thermo(self._lammps_ptr, encoding)
@@ -481,10 +464,7 @@ class LAMMPS(object):
             name (str): Name of the variable to set.
             value (str): Value to assign.
         """
-        if type(name) is not str:
-            raise TypeError("`name` must be of type str")
-        if type(value) is not str:
-            raise TypeError("`value` must be of type str")
+        ts.is_type((name, str, "name"), (value, str, "value"))
         name_encoding = name.encode()
         value_encoding = value.encode()
         return self._libc.lammps_set_variable(self._lammps_ptr, name_encoding, value_encoding)
@@ -497,9 +477,7 @@ class LAMMPS(object):
             - keys: boxlo, boxhi, xy, yz, xz
             - all float values
         """
-        if type(params) is not dict:
-            raise TypeError("`params` must be of type dict")
-
+        ts.is_type((params, dict, "params"))
         cboxlo = (3 * ct.c_double)(*params["boxlo"])
         cboxhi = (3 * ct.c_double)(*params["boxhi"])
         cxy = ct.c_double(params["xy"])

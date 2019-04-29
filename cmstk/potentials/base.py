@@ -1,3 +1,4 @@
+import type_sanity as ts
 
 
 class BasePotential(object):
@@ -14,24 +15,17 @@ class BasePotential(object):
     """
 
     def __init__(self, obj, symbols, parameters):
-        if type(symbols) is not list:
-            raise TypeError("`symbols` must be of type list")
+        ts.is_type((symbols, list, "symbols"))
         for s in symbols:
-            if type(s) is not str:
-                raise TypeError("all members of `symbols` must be of type str")
+            ts.is_type((s, str))
         self.symbols = symbols
-        if type(parameters) is not dict:
-            raise TypeError("`parameters` must be of type dict")
+        ts.is_type((parameters, dict, "parameters"))
         for k, v in parameters.items():
             if type(k) is not str or type(v) is not float:
                 raise TypeError("`parameters` must have keys of type str and values of type float")
         self.parameters = parameters
-
-        if not isinstance(obj, BasePotential):
-            raise TypeError("`obj` must be an instance of type BasePotential")
-        obj_methods = [method_name for method_name in dir(obj) if callable(getattr(obj, method_name))]
-        if "to_lammps" not in obj_methods:
-            raise ValueError("`obj` must implement a method called `to_lammps`")
+        ts.is_instance((obj, BasePotential, "obj"))
+        ts.implements((obj, "to_lammps", "obj"))
     
     @property 
     def symbol_pairs(self):

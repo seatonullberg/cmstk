@@ -1,3 +1,4 @@
+import type_sanity as ts
 from cmstk.data.setfl import SetflReader
 import matplotlib.pyplot as plt
 
@@ -13,8 +14,7 @@ class SetflProfilePlot(object):
     """
 
     def __init__(self, reader):
-        if type(reader) is not SetflReader:
-            raise TypeError("`reader` must be of type SetflReader")
+        ts.is_type((reader, SetflReader, "reader"))
         self._reader = reader
         self.custom = {"embedding_xlim": None,
                        "embedding_ylim": None,
@@ -29,9 +29,7 @@ class SetflProfilePlot(object):
         Args:
             filename (str): File path to write the plot to.
         """
-        if type(filename) is not str:
-            raise TypeError("`filename` must be of type str")
-        
+        ts.is_type((filename, str, "filename"))
         fig, axes = plt.subplots(nrows=1, ncols=3, figsize=(10,5))
         
         # plot the embedding function for each symbol

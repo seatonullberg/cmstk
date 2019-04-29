@@ -1,3 +1,4 @@
+import type_sanity as ts
 import numpy as np
 
 
@@ -27,10 +28,7 @@ class BaseLossFunction(object):
         Returns:
             numpy.ndarray or float
         """
-        if type(target) not in [np.ndarray, float]:
-            raise TypeError("`target` must be of type numpy.ndarray or float")
-        if type(actual) not in [np.ndarray, float]:
-            raise TypeError("`actual` must be of type numpy.ndarray or float")
+        ts.is_type_any((target, [np.ndarray, float], "target"), (actual, [np.ndarray, float], "actual"))
         if type(target) is not type(actual):
             raise TypeError("`target` and `actual` must both be of type numpy.ndarray or float")
         if type(target) is np.ndarray and type(actual) is np.ndarray:
@@ -51,8 +49,7 @@ class BaseLossFunction(object):
         Returns:
             numpy.ndarray
         """
-        if type(errors) is not np.ndarray:
-            raise TypeError("`errors` must be of type numpy.ndarray")
+        ts.is_type((errors, np.ndarray, "errors"))
         if len(errors.shape) != 2:
             raise ValueError("`errors` must be a 2d array")
         return self._reduction_function(errors)

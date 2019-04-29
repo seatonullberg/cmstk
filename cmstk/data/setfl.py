@@ -1,3 +1,4 @@
+import type_sanity as ts
 from cmstk.data.base import BaseDataReader
 
 
@@ -12,8 +13,7 @@ class SetflReader(BaseDataReader):
     """
 
     def __init__(self, filename):
-        if type(filename) is not str:
-            raise TypeError("`filename` must be of type str")
+        ts.is_type((filename, str, "filename"))
         super().__init__()
         self.read_text(filename)
         self._body = self._read_body()
