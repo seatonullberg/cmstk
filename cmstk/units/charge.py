@@ -2,15 +2,15 @@ import type_sanity as ts
 from cmstk.units.base import BaseUnit
 
 
-class EnergyUnit(BaseUnit, float):
-    """Representation of an energy unit.
-    
-    The Base unit of energy is Joule.
+class ChargeUnit(BaseUnit, float):
+    """Representation of a charge unit.
+
+    The base unit of charge is Coulomb.
 
     Args:
         base_value (float): Starting value to initialize the unit with.
         - Must be in terms of the base unit.
-        
+
     Attributes:
         base_value (float): Value in terms of the base unit.
         base_unit (type): The base unit type.
@@ -18,13 +18,13 @@ class EnergyUnit(BaseUnit, float):
 
     def __init__(self, base_value):
         ts.is_type((base_value, float, "base_value"))
-        super().__init__(value=base_value, kind=EnergyUnit)
+        super().__init__(value=base_value, kind=ChargeUnit)
         self.base_value = base_value
-        self.base_unit = Joule
+        self.base_unit = Coulomb
 
 
-class ElectronVolt(EnergyUnit):
-    """Representation of the electron volt energy unit.
+class Coulomb(ChargeUnit):
+    """Representation of the Coulomb charge unit.
 
     Args:
         value (float): Starting value to initialize the unit with.
@@ -39,21 +39,21 @@ class ElectronVolt(EnergyUnit):
 
     @staticmethod
     def convert(x):
-        return x * 1.60218e-19
+        return x
 
     @staticmethod
     def convert_inverse(x):
-        return x / 1.60218e-19
+        return x
 
 
-class Joule(EnergyUnit):
-    """Representation of the Joule energy unit.
+class ElectronCharge(ChargeUnit):
+    """Representation of the ElectronCharge charge unit.
 
     Args:
-        value (float): Staring value to initialize the unit with.
+        value (float): Starting value to initialize the unit with.
 
     Attributes:
-        value (float): Value of the unit.
+       value (float): Value of the unit.
     """
 
     def __init__(self, value):
@@ -62,8 +62,8 @@ class Joule(EnergyUnit):
 
     @staticmethod
     def convert(x):
-        return x
+        return x * 1.60218e-19
 
     @staticmethod
     def convert_inverse(x):
-        return x
+        return x / 1.60218e-19
