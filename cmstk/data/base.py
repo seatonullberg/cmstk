@@ -1,7 +1,7 @@
 import os
 import json
 import type_sanity as ts
-from cmstk.data.exceptions import ReadOnlyError
+from cmstk.exceptions import ReadOnlyError
 
 
 class BaseDataReader(object):

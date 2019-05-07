@@ -1,8 +1,8 @@
 import pytest
-from cmstk.units.base import BaseUnit
-from cmstk.units.distance import Angstrom, Nanometer
-from cmstk.units.angle import Radian
-from cmstk.units.exceptions import UnsafeUnitOperationError
+from cmstk.units.base import BaseUnit, BaseScheme
+from cmstk.units.distance import Angstrom, Nanometer, DistanceUnit
+from cmstk.units.angle import Radian, AngleUnit
+from cmstk.exceptions import ReadOnlyError, UnsafeUnitOperationError
 from cmstk.units.testing_resources import within_one_percent
 
 def test_init_base_unit():
@@ -11,6 +11,18 @@ def test_init_base_unit():
     bu = BaseUnit(value=value, kind=BaseUnit)
     assert bu.value == value
     assert bu.kind == BaseUnit
+
+def test_base_scheme():
+    # tests if BaseScheme can be initialized read-only
+    units = {DistanceUnit: Angstrom}
+    scheme = BaseScheme(units)
+    assert scheme[DistanceUnit] is Angstrom
+    with pytest.raises(ReadOnlyError):
+        del scheme[DistanceUnit]
+    with pytest.raises(ReadOnlyError):
+        scheme[DistanceUnit] = Nanometer
+    with pytest.raises(ReadOnlyError):
+        scheme[AngleUnit] = Radian
 
 def test_like_base_unit_operations():
     # tests if all operations work for like units

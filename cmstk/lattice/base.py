@@ -266,10 +266,10 @@ class Lattice(object):
     ####################
 
     @classmethod
-    def from_lammps(cls, path):
+    def from_lammps(cls, path, unit_scheme):
         raise NotImplementedError
 
-    def to_lammps(self, path):
+    def to_lammps(self, path, unit_scheme):
         raise NotImplementedError
 
     @classmethod

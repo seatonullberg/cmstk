@@ -1,5 +1,5 @@
 from cmstk.data.base import BaseDataReader
-from cmstk.data.exceptions import ReadOnlyError
+from cmstk.exceptions import ReadOnlyError
 import os
 import pytest
 

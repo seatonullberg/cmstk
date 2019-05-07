@@ -1,5 +1,5 @@
 from cmstk.data.elements import ElementsReader
-from cmstk.data.exceptions import ReadOnlyError
+from cmstk.exceptions import ReadOnlyError
 from cmstk.units.distance import Picometer
 from cmstk.units.mass import AtomicMassUnit
 import pytest

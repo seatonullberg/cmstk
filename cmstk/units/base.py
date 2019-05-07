@@ -1,5 +1,5 @@
 import type_sanity as ts
-from cmstk.units.exceptions import UnsafeUnitOperationError
+from cmstk.exceptions import ReadOnlyError, UnsafeUnitOperationError
 
 
 class BaseUnit(object):
@@ -279,3 +279,34 @@ class BaseUnit(object):
     def __str__(self):
         # override str special method
         return "{}: base_value={}".format(self.__class__.__name__, self.base_value)
+
+
+class BaseScheme(object):
+    """Representation of a collection of unit types which adhere to a common system.
+    
+    This is a Read-Only object.
+
+    Args:
+        units (dict): The unit kind and its associated concrete type.
+        - keys are instances of type BaseUnit and values are instances of their key
+    """
+
+    def __init__(self, units):
+        ts.is_type((units, dict, "units"))
+        for k, v in units.items():
+            if not issubclass(k, BaseUnit):
+                raise TypeError("`{}` must be a subclass of type BaseUnit".format(k))
+            if not issubclass(v, k):
+                raise TypeError("`{}` must be a subclass of `{}`".format(v, k))
+        self._units = units
+
+    def __delitem__(self, key):
+        raise ReadOnlyError(name=self.__class__.__name__, operation="__delitem__")
+
+    def __setitem__(self, key, item):
+        raise ReadOnlyError(self.__class__.__name__, "__setitem__")
+
+    def __getitem__(self, key):
+        if key not in self._units:
+            raise KeyError("`{}` is not a unit kind defined by this unit scheme".format(key))
+        return self._units[key]
