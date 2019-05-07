@@ -1,5 +1,4 @@
 from cmstk.lattice import Atom, Lattice
-from cmstk.lattice.io import write_lattice_to_proto_file
 from cmstk.units import Picometer
 from cmstk.units.vector import Vector3D
 import os
@@ -28,7 +27,7 @@ if __name__ == "__main__":
     print("Writing lattice to file...")
     # write the lattice to a protobuf encoded binary file
     filename = "test.lattice"
-    write_lattice_to_proto_file(path=filename, lattice=lattice)
+    lattice.to_proto(filename)
     end = datetime.now()
     # analyze time and space results
     total_time = (end-start).total_seconds()

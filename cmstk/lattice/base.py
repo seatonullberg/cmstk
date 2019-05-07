@@ -2,6 +2,7 @@ import math
 import type_sanity as ts
 from cmstk.data import ElementsReader
 from cmstk.lattice.exceptions import AtomicPositionError
+from cmstk.lattice.test_types_pb2 import ProtoAtom, ProtoLattice
 from cmstk.units.distance import DistanceUnit, Picometer
 from cmstk.units.angle import AngleUnit, Radian
 from cmstk.units.vector import Vector3D
@@ -119,6 +120,19 @@ class Lattice(object):
         """Returns the number of atoms."""
         return len(self._atoms)
 
+    @property
+    def symbols(self):
+        """Returns a set of all atomic symbols."""
+        syms = set()
+        for a in self.atoms:
+            syms.add(a.symbol)
+        return syms
+
+    @property
+    def n_symbols(self):
+        """Returns the number of atomic symbols."""
+        return len(self.symbols)
+
     #######################
     #  Atomic Operations  #
     #######################
@@ -220,3 +234,64 @@ class Lattice(object):
             raise TypeError("`position` must contain units of kind DistanceUnit")
         for a in self.atoms:
             a.position.translate(dims)
+
+    ####################
+    #  I/O Operations  #
+    ####################
+
+    @classmethod
+    def from_lammps(cls, path):
+        raise NotImplementedError
+
+    def to_lammps(self, path):
+        raise NotImplementedError
+
+    @classmethod
+    def from_proto(cls, path):
+        """Initializes a Lattice from a protobuffer file.
+
+        Args:
+            path (str): Path to the protobuffer file.
+
+        Returns:
+            Lattice
+        """
+        ts.is_type((path, str, "path"))
+        proto_lattice = ProtoLattice()
+        with open(path, "rb") as f:
+            proto_lattice.ParseFromString(f.read())
+        atoms = []
+        for a in proto_lattice.atoms:
+            pos = (Picometer(a.x), Picometer(a.y), Picometer(a.z))
+            pos = Vector3D(pos)
+            atom = Atom(symbol=a.symbol, position=pos)
+            atoms.append(atom)
+        return cls(atoms)
+
+    def to_proto(self, path):
+        """Writes a Lattice to a protobuffer file.
+        
+        Args:
+            path (str): Path to the protobuffer file.
+        """
+        ts.is_type((path, str, "path"))
+        proto_atoms = []
+        for a in self.atoms:
+            proto_atom = ProtoAtom(
+                x=a.position[0],
+                y=a.position[1],
+                z=a.position[2],
+                radius=a.atomic_radius,
+                symbol=a.symbol
+            )
+            proto_atoms.append(proto_atom)
+        proto_lattice = ProtoLattice(atoms=proto_atoms)
+        with open(path, "wb") as f:
+            f.write(proto_lattice.SerializeToString())
+
+    @classmethod
+    def from_vasp(cls, path):
+        raise NotImplementedError
+
+    def to_vasp(self, path):
+        raise NotImplementedError

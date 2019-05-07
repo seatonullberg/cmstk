@@ -7,6 +7,7 @@ from cmstk.units.test_testing_resources import within_one_percent
 from cmstk.units.vector import Vector3D
 import pytest
 import math
+import os
 import numpy as np
 
 
@@ -63,6 +64,7 @@ def test_init_lattice():
     # tests if a Lattice can be initialized
     l = Lattice()
     assert l.n_atoms == 0
+    assert l.n_symbols == 0
 
 def test_lattice_add_atom():
     # tests  proper atom addition behavior
@@ -72,8 +74,16 @@ def test_lattice_add_atom():
     a = Atom(symbol="C", position=p)
     l.add_atom(a)
     assert l.n_atoms == 1
+    assert l.n_symbols == 1
     with pytest.raises(AtomicPositionError):
         l.add_atom(a)
+    # confirm further addition of same symbol does not affect symbols
+    p = (Picometer(999), Picometer(999), Picometer(999))
+    p = Vector3D(p)
+    a = Atom(symbol="C", position=p)
+    l.add_atom(a)
+    assert l.n_atoms == 2
+    assert l.n_symbols == 1
 
 def test_lattice_add_atom_with_tolerance():
     # tests proper atom addition behavior with custom tolerance
@@ -100,8 +110,10 @@ def test_lattice_remove_atom():
         l.remove_atom(p)
     l.add_atom(a)
     assert l.n_atoms == 1
+    assert l.n_symbols == 1
     l.remove_atom(p)
     assert l.n_atoms == 0
+    assert l.n_symbols == 0
 
 def test_lattice_remove_atom_with_tolerance():
     # tests proper atom removal behavior with custom tolerance
@@ -121,8 +133,8 @@ def test_lattice_remove_atom_with_tolerance():
 
 def test_lattice_repeat():
     # tests lattice repetition
-    with pytest.raises(NotImplementedError):
-        l = Lattice()
+   l = Lattice()    
+   with pytest.raises(NotImplementedError):
         l.repeat((1, 1, 1))
 
 def test_lattice_rotate():
@@ -153,3 +165,20 @@ def test_lattice_translate():
         assert a.position[1].value == 2.0
         assert type(a.position[2]) is Picometer
         assert a.position[2].value == 2.0
+
+def test_lattice_to_from_proto():
+    # tests if Lattice can be written to protobuf file
+    # tests if Lattice can be initialized from protobuf file
+    l = Lattice()
+    p = (Picometer(1.0), Picometer(1.0), Picometer(1.0))
+    p = Vector3D(p)
+    a = Atom(symbol="C", position=p)
+    l.add_atom(a)
+    assert l.n_atoms == 1
+    filename = "test.lattice"
+    l.to_proto(filename)
+    assert os.path.exists("test.lattice")
+    new_l = Lattice.from_proto(filename)
+    assert type(new_l) is Lattice
+    assert new_l.n_atoms == 1
+    os.remove("test.lattice")
