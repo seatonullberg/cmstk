@@ -6,8 +6,11 @@ from cmstk.lattice.test_types_pb2 import ProtoAtom, ProtoLattice
 from cmstk.units.distance import DistanceUnit, Picometer
 from cmstk.units.angle import AngleUnit, Radian
 from cmstk.units.vector import Vector3D
+from cmstk.units.charge import ChargeUnit
+from cmstk.units.speed import SpeedUnit
 
 
+# TODO: this should be modified to return a generalized DistanceUnit
 def separation_distance(p1, p2):
     """Returns the separation distance between two positions.
 
@@ -31,21 +34,35 @@ class Atom(object):
     
     Args:
         symbol (str): IUPAC chemical symbol.
-        position (Vector3D): Verified (x, y, z) spatial coordinates.
+        position (Vector3D): (x, y, z) spatial coordinates.
+        charge (optional) (ChargeUnit): Electric charge of the atom.
+        velocity (optional) (Vector3D of SpeedUnit): (x, y, z) velocity. 
 
     Attributes:
         symbol (str): IUPAC chemical symbol.
-        position (Vector3D): Verified (x, y, z) spatial coordinates.
+        position (Vector3D): (x, y, z) spatial coordinates.
+        charge (ChargeUnit): Electric charge of the atom.
+        velocity (Vector3D of SpeedUnit): (x, y, z) velocity.
     """
 
-    def __init__(self, symbol, position):
-        ts.is_type((symbol, str, "symbol"))
-        self.symbol = symbol
-        ts.is_type((position, Vector3D, "position"))
+    def __init__(self, symbol, position, charge=None, velocity=None):
+        ts.is_type((symbol, str, "symbol"), (position, Vector3D, "position"))
         if position.unit_kind is not DistanceUnit:
             raise TypeError("`position` must contain units of kind DistanceUnit")
-        
+        ts.is_instance_any((charge, [type(None), ChargeUnit], "charge"))
+        if charge is None:
+            charge = ChargeUnit(0.0)
+        ts.is_type_any((velocity, [type(None), Vector3D], "velocity"))
+        if velocity is None:
+            velocity = (SpeedUnit(0.0), SpeedUnit(0.0), SpeedUnit(0.0))
+            velocity = Vector3D(velocity)
+        if velocity.unit_kind is not SpeedUnit:
+            raise TypeError("`velocity` must contain units of kind SpeedUnit")
+
+        self.symbol = symbol
         self.position = position
+        self.charge = charge
+        self.velocity = velocity
         self._elements_reader = ElementsReader() # store this for easy access in properties
 
     @property
@@ -56,6 +73,15 @@ class Atom(object):
             Picometer
         """
         return self._elements_reader.atomic_radius(self.symbol)
+
+    @property
+    def atomic_weight(self):
+        """Returns the Atom's mass as described in elements.json.
+
+        Returns:
+            AtomicMassUnit
+        """
+        return self._elements_reader.atomic_weight(self.symbol)
 
     @property
     def covalent_radius(self):
@@ -264,7 +290,11 @@ class Lattice(object):
         for a in proto_lattice.atoms:
             pos = (Picometer(a.x), Picometer(a.y), Picometer(a.z))
             pos = Vector3D(pos)
-            atom = Atom(symbol=a.symbol, position=pos)
+            chg = a.charge
+            chg = ChargeUnit(chg)
+            vel = (SpeedUnit(a.vx), SpeedUnit(a.vy), SpeedUnit(a.vz))
+            vel = Vector3D(vel)
+            atom = Atom(symbol=a.symbol, position=pos, charge=chg, velocity=vel)
             atoms.append(atom)
         return cls(atoms)
 
@@ -282,7 +312,11 @@ class Lattice(object):
                 y=a.position[1],
                 z=a.position[2],
                 radius=a.atomic_radius,
-                symbol=a.symbol
+                symbol=a.symbol,
+                vx=a.velocity[0],
+                vy=a.velocity[1],
+                vz=a.velocity[2],
+                charge=a.charge
             )
             proto_atoms.append(proto_atom)
         proto_lattice = ProtoLattice(atoms=proto_atoms)

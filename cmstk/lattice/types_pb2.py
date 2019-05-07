@@ -19,7 +19,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   name='types.proto',
   package='lattice',
   syntax='proto3',
-  serialized_pb=_b('\n\x0btypes.proto\x12\x07lattice\"L\n\tProtoAtom\x12\t\n\x01x\x18\x01 \x01(\x02\x12\t\n\x01y\x18\x02 \x01(\x02\x12\t\n\x01z\x18\x03 \x01(\x02\x12\x0e\n\x06radius\x18\x04 \x01(\x02\x12\x0e\n\x06symbol\x18\x05 \x01(\t\"1\n\x0cProtoLattice\x12!\n\x05\x61toms\x18\x01 \x03(\x0b\x32\x12.lattice.ProtoAtomb\x06proto3')
+  serialized_pb=_b('\n\x0btypes.proto\x12\x07lattice\"\x80\x01\n\tProtoAtom\x12\t\n\x01x\x18\x01 \x01(\x02\x12\t\n\x01y\x18\x02 \x01(\x02\x12\t\n\x01z\x18\x03 \x01(\x02\x12\x0e\n\x06radius\x18\x04 \x01(\x02\x12\x0e\n\x06symbol\x18\x05 \x01(\t\x12\n\n\x02vx\x18\x06 \x01(\x02\x12\n\n\x02vy\x18\x07 \x01(\x02\x12\n\n\x02vz\x18\x08 \x01(\x02\x12\x0e\n\x06\x63harge\x18\t \x01(\x02\"1\n\x0cProtoLattice\x12!\n\x05\x61toms\x18\x01 \x03(\x0b\x32\x12.lattice.ProtoAtomb\x06proto3')
 )
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
 
@@ -68,6 +68,34 @@ _PROTOATOM = _descriptor.Descriptor(
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
+    _descriptor.FieldDescriptor(
+      name='vx', full_name='lattice.ProtoAtom.vx', index=5,
+      number=6, type=2, cpp_type=6, label=1,
+      has_default_value=False, default_value=float(0),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='vy', full_name='lattice.ProtoAtom.vy', index=6,
+      number=7, type=2, cpp_type=6, label=1,
+      has_default_value=False, default_value=float(0),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='vz', full_name='lattice.ProtoAtom.vz', index=7,
+      number=8, type=2, cpp_type=6, label=1,
+      has_default_value=False, default_value=float(0),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    _descriptor.FieldDescriptor(
+      name='charge', full_name='lattice.ProtoAtom.charge', index=8,
+      number=9, type=2, cpp_type=6, label=1,
+      has_default_value=False, default_value=float(0),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
   ],
   extensions=[
   ],
@@ -80,8 +108,8 @@ _PROTOATOM = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=24,
-  serialized_end=100,
+  serialized_start=25,
+  serialized_end=153,
 )
 
 
@@ -111,8 +139,8 @@ _PROTOLATTICE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=102,
-  serialized_end=151,
+  serialized_start=155,
+  serialized_end=204,
 )
 
 _PROTOLATTICE.fields_by_name['atoms'].message_type = _PROTOATOM

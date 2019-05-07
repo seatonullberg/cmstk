@@ -5,6 +5,8 @@ from cmstk.units.distance import Picometer
 from cmstk.units.angle import Radian
 from cmstk.units.test_testing_resources import within_one_percent
 from cmstk.units.vector import Vector3D
+from cmstk.units.charge import ChargeUnit
+from cmstk.units.speed import SpeedUnit
 import pytest
 import math
 import os
@@ -21,37 +23,6 @@ def test_separation_distance():
     assert type(result) is Picometer
     assert within_one_percent(math.sqrt(3.0), result.value)
 
-def test_init_atomic_position():
-    # tests if an Vector3D can be initialized
-    position = (Picometer(1.0), Picometer(1.0), Picometer(1.0))
-    position = Vector3D(position)
-    for p in position:
-        assert type(p) is Picometer
-        assert p.value == 1.0
-
-def test_atomic_position_setitem():
-    # tests if an Vector3D only accepts DistanceUnits
-    position = (Picometer(1.0), Picometer(1.0), Picometer(1.0))
-    position = Vector3D(position)
-    with pytest.raises(TypeError):
-        position[0] = 0.0
-
-def test_atomic_position_getitem():
-    # tests if an Vector3D coordinate is directly accessible
-    position = (Picometer(1.0), Picometer(1.0), Picometer(1.0))
-    position = Vector3D(position)
-    coord_x = position[0]
-    assert type(coord_x) is Picometer
-    assert coord_x.value == 1.0
-
-def test_atomic_position_iter():
-    # tests if an Vector3D coordinate can be directly iterated over
-    position = (Picometer(1.0), Picometer(1.0), Picometer(1.0))
-    position = Vector3D(position)
-    for coord in position:
-        assert type(coord) is Picometer
-        assert coord.value == 1.0
-
 def test_init_atom():
     # tests if an Atom can be initialized
     p = (Picometer(1.0), Picometer(1.0), Picometer(1.0))
@@ -59,6 +30,8 @@ def test_init_atom():
     a = Atom("C", p)
     assert a.symbol == "C"
     assert type(a.position) is Vector3D
+    assert isinstance(a.charge, ChargeUnit)
+    assert type(a.velocity) is Vector3D
 
 def test_init_lattice():
     # tests if a Lattice can be initialized

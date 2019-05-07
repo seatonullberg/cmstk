@@ -1,5 +1,5 @@
 from cmstk.units.vector import Vector, Vector2D, Vector3D
-from cmstk.units.distance import Angstrom, Nanometer, Meter
+from cmstk.units.distance import DistanceUnit, Angstrom, Nanometer, Meter, Picometer
 from cmstk.units.angle import AngleUnit, Radian, Degree
 from cmstk.units.test_testing_resources import within_one_percent
 import pytest
@@ -72,6 +72,13 @@ def test_vector_getitem():
     vector = Vector(values)
     assert type(vector[2]) is Degree
     assert vector[2].value == 1.0
+
+def test_vector_setitem():
+    # tests proper behavior of __setitem__()
+    position = (Picometer(1.0), Picometer(1.0), Picometer(1.0))
+    position = Vector3D(position)
+    with pytest.raises(TypeError):
+        position[0] = 0.0
 
 def test_vector_to_ndarray():
     # tests if Vector can be exported to numpy.ndarray
