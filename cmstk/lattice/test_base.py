@@ -7,6 +7,7 @@ from cmstk.units.test_testing_resources import within_one_percent
 from cmstk.units.vector import Vector3D
 from cmstk.units.charge import ChargeUnit
 from cmstk.units.speed import SpeedUnit
+from cmstk.units.schemes import SIScheme
 import pytest
 import math
 import os
@@ -51,12 +52,14 @@ def test_lattice_add_atom():
     with pytest.raises(AtomicPositionError):
         l.add_atom(a)
     # confirm further addition of same symbol does not affect symbols
-    p = (Picometer(999), Picometer(999), Picometer(999))
+    p = (Picometer(999.0), Picometer(999.0), Picometer(999.0))
     p = Vector3D(p)
     a = Atom(symbol="C", position=p)
     l.add_atom(a)
     assert l.n_atoms == 2
     assert l.n_symbols == 1
+    assert l.bounding_box["max_x"] == Picometer(999.0)
+    assert l.bounding_box["min_x"] == Picometer(1.0)
 
 def test_lattice_add_atom_with_tolerance():
     # tests proper atom addition behavior with custom tolerance
@@ -139,9 +142,29 @@ def test_lattice_translate():
         assert type(a.position[2]) is Picometer
         assert a.position[2].value == 2.0
 
+def test_lattice_to_from_lammps():
+    # tests if Lattice can be written to a LAMMPS structure file
+    # tests is Lattice can be initialized from a LAMMPS structure file
+    l = Lattice()
+    p = (Picometer(1.0), Picometer(1.0), Picometer(1.0))
+    p = Vector3D(p)
+    a = Atom(symbol="C", position=p)
+    l.add_atom(a)
+    assert l.n_atoms == 1
+    filename = "test.structure"
+    scheme = SIScheme()
+    l.to_lammps(filename, scheme)
+    assert os.path.exists(filename)
+    symbols = {0: "C"}
+    new_l = Lattice.from_lammps(filename, scheme, symbols)
+    assert type(new_l) is Lattice
+    assert new_l.n_atoms == 1
+    assert new_l._atoms[0].symbol == "C"
+    os.remove(filename)
+
 def test_lattice_to_from_proto():
-    # tests if Lattice can be written to protobuf file
-    # tests if Lattice can be initialized from protobuf file
+    # tests if Lattice can be written to a protobuf file
+    # tests if Lattice can be initialized from a protobuf file
     l = Lattice()
     p = (Picometer(1.0), Picometer(1.0), Picometer(1.0))
     p = Vector3D(p)
@@ -150,8 +173,9 @@ def test_lattice_to_from_proto():
     assert l.n_atoms == 1
     filename = "test.lattice"
     l.to_proto(filename)
-    assert os.path.exists("test.lattice")
+    assert os.path.exists(filename)
     new_l = Lattice.from_proto(filename)
     assert type(new_l) is Lattice
     assert new_l.n_atoms == 1
-    os.remove("test.lattice")
+    os.remove(filename)
+

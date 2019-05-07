@@ -1,4 +1,5 @@
 import type_sanity as ts
+from cmstk.units.base import BaseScheme
 from cmstk.units import *
 
 class SIScheme(BaseScheme):
