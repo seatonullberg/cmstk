@@ -1,7 +1,5 @@
 import type_sanity as ts
-from cmstk.optimization.loss import BaseLossFunction
 import numpy as np
-from sklearn.preprocessing import StandardScaler
 
 
 class BaseFilter(object):
@@ -14,18 +12,6 @@ class BaseFilter(object):
     def __init__(self, obj):
         ts.is_instance((obj, BaseFilter, "obj"))
         ts.implements((obj, "filter", "obj"))
-        self._scaler = StandardScaler()  # store this for faster use
-
-    def normalize(self, arr):
-        """Normalize features by removing the mean and scaling to unit variance.
-        
-        Args:
-            arr (numpy.ndarray): Array to be normalized.
-
-        Returns:
-            numpy.ndarray
-        """
-        return self._scaler.fit_transform(arr)
 
 
 # TODO: may want to create a constraint object rather than use a general dictionary?
@@ -36,15 +22,12 @@ class ConstraintFilter(BaseFilter):
     Args:
         arr (numpy.ndarray): Array of costs.
         constraints (dict): Dictionary of constraints by qoi.
-        normalize (optional) (bool): Normalize the array of costs if True.
-        - True by default
     """
 
-    def __init__(self, constraints, normalize=True):
+    def __init__(self, constraints):
         super().__init__(self)
         ts.is_type((constraints, dict, "constraints"))
         self._constraints = constraints
-        self._normalize = normalize
 
     def filter(self, arr):
         """Returns a mask of points which satisfy the constraints.
@@ -58,24 +41,19 @@ class ConstraintFilter(BaseFilter):
         raise NotImplementedError
 
 
-class LossFunctionFilter(BaseFilter):
-    """Implementation of a filter which takes an arbitrary loss function.
+class PercentileFilter(BaseFilter):
+    """Implementation of a filter which scores samples as a row-wise summation and applies a percentile constraint.
     
     Args:
-        loss_function (instance of BaseLossFunction): The loss function to apply.
-        normalize (optional) (bool): Normalize the array of costs if True.
-        - True by default
+        percentile (float): The percentile value to accept.
     """
 
-    def __init__(self, loss_function, percentile, normalize=True):
+    def __init__(self, percentile):
         super().__init__(self)
-        ts.is_instance((loss_function, BaseLossFunction, "loss_function"))
         ts.is_type((percentile, float, "percentile"))
         if not 0.0 < percentile < 100.0:
             raise ValueError("`percentile` must be between 0.0 and 100.0")
-        self._loss_function = loss_function
         self._percentile = percentile
-        self._normalize = normalize
 
     def filter(self, arr):
         """Returns a mask of points with acceptable loss.
@@ -87,12 +65,9 @@ class LossFunctionFilter(BaseFilter):
             numpy.ndarray
         """
         ts.is_type((arr, np.ndarray, "arr"))
-        if self._normalize:
-            arr = self.normalize(arr)
-
-        reduced_arr = self._loss_function.reduction(arr)  # use loss function to reduce each row to a scalar
-        percentile_val = np.percentile(reduced_arr, self._percentile)
-        efficient_indices = reduced_arr <= percentile_val
+        costs = np.sum(arr, axis=1)
+        percentile_val = np.percentile(costs, self._percentile)
+        efficient_indices = costs <= percentile_val
         return efficient_indices
 
 
@@ -100,13 +75,11 @@ class ParetoFilter(BaseFilter):
     """Implementation of a Pareto efficiency filter.
     
     Args:
-        normalize (optional) (bool): Normalize the array of costs if True.
-        - True by default
+        None
     """
 
-    def __init__(self, normalize=True):
+    def __init__(self):
         super().__init__(self)
-        self._normalize = normalize
 
     def filter(self, arr):
         """Returns a mask of Pareto efficient points.
@@ -117,9 +90,7 @@ class ParetoFilter(BaseFilter):
         Returns:
             numpy.ndarray
         """
-        if self._normalize:
-            arr = self.normalize(arr)
-
+        ts.is_type((arr, np.ndarray, "arr"))
         is_efficient = np.ones(arr.shape[0], dtype=bool)
         for i, cost in enumerate(arr):
             if is_efficient[i]:
