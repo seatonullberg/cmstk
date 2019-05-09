@@ -9,6 +9,14 @@ def test_init_elements_reader():
     # tests if ElementsReader can be initialized
     er = ElementsReader()
 
+def test_elements_reader_atomic_number():
+    # tests ElementsReader atomic number access
+    er = ElementsReader()
+    symbol = "C"
+    atomic_number = er.atomic_number(symbol)
+    assert type(atomic_number) is int
+    assert atomic_number == 6
+
 def test_elements_reader_atomic_radius():
     # tests ElementsReader atomic radius access
     er = ElementsReader()

@@ -10,6 +10,15 @@ class ElementsReader(BaseDataReader):
         super().__init__()
         self.read_json("elements.json")
 
+    def atomic_number(self, symbol):
+        """Returns the atomic number of `symbol` as an int.
+        
+        Args:
+            symbol (str): IUPAC chemical symbol.
+        """
+        n = self[symbol]["atomic_number"]
+        return n
+
     def atomic_radius(self, symbol):
         """Returns atomic radius of `symbol` in Picometer units.
         
