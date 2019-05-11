@@ -1,6 +1,7 @@
 import os
 import json
 import type_sanity as ts
+from xml.etree import ElementTree
 from cmstk.exceptions import ReadOnlyError
 
 
@@ -69,6 +70,18 @@ class BaseDataReader(object):
             text_data = f.readlines()
 
         self._data = text_data
+
+    def read_xml(self, filename):
+        """Reads an xml file into an ElementTree object.
+        
+        Args:
+            filename (str): Name of the xml file in the data directory.
+        """
+        ts.is_type((filename, str, "filename"))
+        xml_path = os.path.join(self.path, filename)
+        xml_data = ElementTree.parse(xml_path).getroot()
+
+        self._data = xml_data
 
     #######################
     #  Method Overriding  #

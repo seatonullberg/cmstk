@@ -28,6 +28,11 @@ def test_base_data_reader_read_text():
     bdr.read_text(filename)
     assert bdr[4][:5] == "10000"
 
+def test_base_data_reader_read_xml():
+    # tests BaseDataReader read_xml method
+    # TODO
+    raise NotImplementedError
+
 def test_base_data_reader_access():
     # tests if BaseDataReader provides read access.
     # tests if BaseDataReader denies write/delete access.
