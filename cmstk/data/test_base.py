@@ -30,8 +30,12 @@ def test_base_data_reader_read_text():
 
 def test_base_data_reader_read_xml():
     # tests BaseDataReader read_xml method
-    # TODO
-    raise NotImplementedError
+    bdr = BaseDataReader()
+    filename = os.path.join("vasp", "Si_fcc.vasprun.xml")
+    bdr.read_xml(filename)
+    system = bdr._data.find("incar").findall("i")[0]
+    system = system.text.strip()
+    assert system == "fcc Si"
 
 def test_base_data_reader_access():
     # tests if BaseDataReader provides read access.
