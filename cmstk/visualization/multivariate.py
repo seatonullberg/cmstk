@@ -2,69 +2,57 @@ import type_sanity as ts
 import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
 import numpy as np
+from cmstk.visualization.base import BasePlot
 
 
-class ParallelCoordinatesPlot(object):
-    """Represents a plotting object which handles multidimensional coordinates.
-
+class ParallelCoordinatesPlot(BasePlot):
+    """Implementation of a plot displaying multidimensional coordinates along a continuous axis.
+    
     Args:
-        title (str): Title of the plot.
-        xlabels (list): Name of each quantity on the x axis.
-        ylabel (str): Y axis label.
-
-    Attributes:
-        custom (dict): Stores custom settings to tweak the plot.
+        ncols (int): The dimensionality of the coordinates.
+        xlabels (optional) (list of str): The labels to assign to each dimension.
     """
 
-    def __init__(self, title, xlabels, ylabel):
-        ts.is_type((title, str, "title"), 
-                   (xlabels, list, "xlabels"), 
-                   (ylabel, str, "ylabel"))
-        self._title = title
-        self._xlabels = xlabels
-        self._ylabel = ylabel
-
-        self._data = []  # list of numpy arrays to plot (can be appended multiple times before plotting) 
-        self._colors = []  # list of colors to use when plotting elements of self._data
-        self._labels = []  # labels to refer to each dataset by
-        self._ncols = None  # the number of columns set by first data addition
-        self.custom = {"ylim": None,
-                       "legend_loc": "upper right",
-                       "plot_origin_line": True}
+    def __init__(self, ncols, xlabels=None):
+        ts.is_type((ncols, int, "ncols"))
+        self._ncols = ncols
+        if xlabels is None:
+            self._xlabels = [i for i in range(ncols)]
+        else:
+            self._xlabels = xlabels
+        self._data = []    # list of numpy.ndarrays
+        self._colors = []  # list of colors to use for each member of self._data
+        self._labels = []  # list of labels for each member of self._data
+        super().__init__(nrows=1, ncols=self._ncols-1, figsize=(10, 5), sharey=True)
 
     def add_data(self, data, color, label):
-        """Add a dataset to be plotted in a unique color.
+        """Add a dataset to be plotted.
         
         Args:
-            data (numpy.ndarray): A 2D array of costs.
-            - each addition must have an identical number of columns.
-            color (obj): Color to use when plotting all rows of `data`.
+            data (numpy.ndarray): The data to plot.
+            - each addition must have an identical number of columns equal to self._ncols
+            color (obj): Color to associate with data.
             - refer to https://matplotlib.org/users/colors.html for valid inputs.
-            label (str): Identifier to include in the plot legend.
+            label (str): label to associate with data.
         """
         ts.is_type((data, np.ndarray, "data"), (label, str, "label"))
         ncols = data.shape[1]
-        if self._ncols is None:
-            self._ncols = ncols
-        if self._ncols != ncols:
+        if ncols != self._ncols:
             raise ValueError("`data` must have {} columns".format(self._ncols))
-        
         self._data.append(data)
         self._colors.append(color)
         self._labels.append(label)
 
-    def generate_plot(self, filename):
-        """Generates and saves a plot to file.
-
+    def make(self):
+        """Plots the available data.
+        
         Args:
-            filename (str): File path to write the plot to.
+            None
         """
-        ts.is_type((filename, str, "filename"))
-        fig, axes = plt.subplots(nrows=1, ncols=self._ncols-1, figsize=(8,4), sharey=True)
         x = range(self._ncols)
         patches = []
         # iterate over the axes
-        for i, ax in enumerate(axes):
+        for i, ax in enumerate(self.axes):
             # iterate over datasets and their corresponding colors/labels
             for dataset, color, label in zip(self._data, self._colors, self._labels):
                 # only add legend on the first axis
@@ -74,24 +62,18 @@ class ParallelCoordinatesPlot(object):
                 # add data to plot
                 for d in dataset:
                     ax.plot(x, d, color=color)
-                # plot central reference line is desired
-                if self.custom["plot_origin_line"]:
-                    ax.plot(x, [0 for _ in x], color="black")
-            # set custom view port
-            if self.custom["ylim"]:
-                ax.set_ylim(self.custom["ylim"])
+                # plot central reference line
+                ax.plot(x, [0 for _ in x], color="black")
             # alter the xtick labels and style
             ax.set_xlim((x[i], x[i+1]))
             ax.set_xticks([x[i]], minor=False)
             ax.set_xticklabels([self._xlabels[i]])
 
         # set the last tick label
-        axes[-1].set_xticks(x[-2:], minor=False)
-        axes[-1].set_xticklabels(self._xlabels[-2:])
+        self.axes[-1].set_xticks(x[-2:], minor=False)
+        self.axes[-1].set_xticklabels(self._xlabels[-2:])
 
-        axes[0].set_ylabel(self._ylabel)
-        plt.legend(handles=patches, loc=self.custom["legend_loc"])
-        fig.suptitle(self._title)
-
-        plt.subplots_adjust(wspace=0)
-        plt.savefig(filename)
+        # adjust spacing
+        self.fig.subplots_adjust(wspace=0)
+        # self.fig.legend moves the legend outside of the axes
+        plt.legend(handles=patches, loc="upper right")

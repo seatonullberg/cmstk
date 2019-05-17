@@ -11,21 +11,20 @@ if __name__ == "__main__":
     start = datetime.now()
 
     # Single symbol plot
-    # use custom viewport
-    custom = {"embedding_xlim": (0.0, 2.0),
-              "embedding_ylim": (-10.0, 5.0),
-              "density_xlim": (0.0, 5.0),
-              "density_ylim": (0.0, 1.0),
-              "pair_xlim": (1.0, 5.0),
-              "pair_ylim": (-0.75, 0.75)}
     filename = os.path.join("potentials", "Mishin-Ni-1999.eam.alloy")
     setfl_reader = SetflReader(filename)
     setfl_plot = SetflProfilePlot(setfl_reader)
-    setfl_plot.custom = custom
+    # viewport customization
+    setfl_plot.axes[0].set_xlim((0.0, 2.0))
+    setfl_plot.axes[0].set_ylim((-10.0, 5.0))
+    setfl_plot.axes[1].set_xlim((0.0, 5.0))
+    setfl_plot.axes[1].set_ylim((0.0, 1.0))
+    setfl_plot.axes[2].set_xlim((1.0, 5.0))
+    setfl_plot.axes[2].set_ylim((-0.75, 0.75))
+    setfl_plot.make()
     print("Writing single symbol plot to file...")
     filename1 = "Mishin-Ni-1999.eam.png"
-    setfl_plot.generate_plot(filename1)
-
+    setfl_plot.savefig(filename1)
 
     # VALIDATION CODE <replace Mishin 2004 2 symbol section with this>
     #custom = {"embedding_xlim": (0.0, 50.0),
@@ -43,38 +42,36 @@ if __name__ == "__main__":
     #setfl_plot.generate_plot(filename2)
     
     # Double symbol plot
-    # use custom viewport
-    custom = {"embedding_xlim": (0.0, 3.0),
-              "embedding_ylim": (-4.0, 6.0),
-              "density_xlim": (0.0, 6.0),
-              "density_ylim": (0.0, 0.2),
-              "pair_xlim": (1.0, 6.0),
-              "pair_ylim": (-0.75, 0.75)}
     filename = os.path.join("potentials", "Mishin-Ni-Al-2004.eam.alloy")
     setfl_reader = SetflReader(filename)
     setfl_plot = SetflProfilePlot(setfl_reader)
-    setfl_plot.custom = custom
+    # viewport customization
+    setfl_plot.axes[0].set_xlim((0.0, 3.0))
+    setfl_plot.axes[0].set_ylim((-4.0, 6.0))
+    setfl_plot.axes[1].set_xlim((0.0, 6.0))
+    setfl_plot.axes[1].set_ylim((0.0, 0.2))
+    setfl_plot.axes[2].set_xlim((1.0, 6.0))
+    setfl_plot.axes[2].set_ylim((-0.75, 0.75))
+    setfl_plot.make()
     print("Writing double symbol plot to file...")
     filename2 = "Mishin-Ni-Al-2004.eam.png"
-    setfl_plot.generate_plot(filename2)
-
-
+    setfl_plot.savefig(filename2)
 
     # Triple symbol plot
-    # use custom viewport
-    custom = {"embedding_xlim": (0.0, 3.0),
-              "embedding_ylim": (-4.0, 12.0),
-              "density_xlim": (3.25, 5.0),
-              "density_ylim": (0.0, 0.01),
-              "pair_xlim": (1.0, 5.0),
-              "pair_ylim": (-0.75, 0.75)}
     filename = os.path.join("potentials", "Bonny-Fe-Ni-Cr-2011.eam.alloy")
     setfl_reader = SetflReader(filename)
     setfl_plot = SetflProfilePlot(setfl_reader)
-    setfl_plot.custom = custom
+    # viewport customization
+    setfl_plot.axes[0].set_xlim((0.0, 3.0))
+    setfl_plot.axes[0].set_ylim((-4.0, 12.0))
+    setfl_plot.axes[1].set_xlim((3.25, 5.0))
+    setfl_plot.axes[1].set_ylim((0.0, 0.01))
+    setfl_plot.axes[2].set_xlim((1.0, 5.0))
+    setfl_plot.axes[2].set_ylim((-0.75, 0.75))
+    setfl_plot.make()
     print("Writing triple symbol plot to file...")
     filename3 = "Bonny-Fe-Ni-Cr-2011.eam.png"
-    setfl_plot.generate_plot(filename3)
+    setfl_plot.savefig(filename3)
 
     end = datetime.now()
     total_time = (end-start).total_seconds()

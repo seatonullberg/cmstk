@@ -1,78 +1,60 @@
 import type_sanity as ts
+from cmstk.visualization.base import BasePlot
 from cmstk.data.setfl import SetflReader
-import matplotlib.pyplot as plt
 
 
-class SetflProfilePlot(object):
-    """Represents a plotting object which produces embedding, density, and pair function curves from a SetflReader.
+class SetflProfilePlot(BasePlot):
+    """Implementation of a plot displaying embedding, density, and pair function curves.
     
     Args:
-        reader (SetflReader): The setfl format eam potential reader object.
-    
-    Attributes:
-        custom (dict): Stores custom settings to tweak the plot.
+        reader (SetflReader): The setfl format eam potential reader.
     """
 
     def __init__(self, reader):
         ts.is_type((reader, SetflReader, "reader"))
+        if reader._data is None:
+            raise ValueError("`reader` must be populated prior to plotting.")
         self._reader = reader
-        self.custom = {"embedding_xlim": None,
-                       "embedding_ylim": None,
-                       "density_xlim": None,
-                       "density_ylim": None,
-                       "pair_xlim": None,
-                       "pair_ylim": None}
+        super().__init__(nrows=1, ncols=3, figsize=(10, 5))  # construct 3 subplots
 
-    def generate_plot(self, filename):
-        """Generates and saves plot to file.
+    def make(self):
+        """Plots the available data.
         
         Args:
-            filename (str): File path to write the plot to.
+            None
         """
-        ts.is_type((filename, str, "filename"))
-        fig, axes = plt.subplots(nrows=1, ncols=3, figsize=(10,5))
-        
         # plot the embedding function for each symbol
         for e in self._reader.elements:
             embedding_y = self._reader.embedding_function(e)
             embedding_x = [self._reader.d_rho*(i+1) for i in range(self._reader.n_rho)]
-            if self.custom["embedding_xlim"] is not None:
-                axes[0].set_xlim(self.custom["embedding_xlim"])
-            if self.custom["embedding_ylim"] is not None:
-                axes[0].set_ylim(self.custom["embedding_ylim"])
-            axes[0].plot(embedding_x, embedding_y, label=e)
-            axes[0].set_xlabel("Electron Density")
-            axes[0].set_ylabel("Energy (eV)")
-            axes[0].set_title("Embedding Function")
-            axes[0].legend()
-        
+            self.axes[0].plot(embedding_x, embedding_y, label=e)
+            self.axes[0].legend()
+            # these are defaults which can be overwritten
+            self.axes[0].set_xlabel("Electron Density")
+            self.axes[0].set_ylabel("Energy (eV)")
+            self.axes[0].set_title("Embedding Function")
+
         # plot the density function for each symbol
         for e in self._reader.elements:
             density_y = self._reader.density_function(e)
             density_x = [self._reader.d_r*(i+1) for i in range(self._reader.n_r)]
-            if self.custom["density_xlim"] is not None:
-                axes[1].set_xlim(self.custom["density_xlim"])
-            if self.custom["density_ylim"] is not None:
-                axes[1].set_ylim(self.custom["density_ylim"])
-            axes[1].plot(density_x, density_y, label=e)
-            axes[1].set_xlabel("Distance (Angstroms)")
-            axes[1].set_ylabel("Electron Density")
-            axes[1].set_title("Density Function")
-            axes[1].legend()
-        
+            self.axes[1].plot(density_x, density_y, label=e)
+            self.axes[1].legend()
+            # these are defaults which can be overwritten
+            self.axes[1].set_xlabel("Distance (Angstroms)")
+            self.axes[1].set_ylabel("Electron Density")
+            self.axes[1].set_title("Density Function")
+
         # plot the pair function for each pair
         for ep in self._reader.element_pairs:
             potential_y = self._reader.r_normalized_pair_function(ep)
             potential_x = [self._reader.d_r*(i+1) for i in range(self._reader.n_r)]
-            if self.custom["pair_xlim"] is not None:
-                axes[2].set_xlim(self.custom["pair_xlim"])
-            if self.custom["pair_ylim"] is not None:
-                axes[2].set_ylim(self.custom["pair_ylim"])
-            axes[2].plot(potential_x, potential_y, label=ep)
-            axes[2].set_xlabel("Distance (Angstroms)")
-            axes[2].set_ylabel("Energy (eV)")
-            axes[2].set_title("Pair Function")
-            axes[2].legend()
-        plt.tight_layout(pad=1.0)
-        plt.savefig(filename)
+            self.axes[2].plot(potential_x, potential_y, label=ep)
+            self.axes[2].legend()
+            # these are defaults which can be overwritten
+            self.axes[2].set_xlabel("Distance (Angstroms)")
+            self.axes[2].set_ylabel("Energy (eV)")
+            self.axes[2].set_title("Pair Function")
+
+        self.fig.tight_layout(pad=1.0)
     
