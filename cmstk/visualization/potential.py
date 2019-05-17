@@ -13,7 +13,7 @@ class SetflProfilePlot(BasePlot):
     def __init__(self, reader):
         ts.is_type((reader, SetflReader, "reader"))
         if reader._data is None:
-            raise ValueError("`reader` must be populated prior to plotting.")
+            raise ValueError("`reader` must be populated prior to plotting")
         self._reader = reader
         super().__init__(nrows=1, ncols=3, figsize=(10, 5))  # construct 3 subplots
 
