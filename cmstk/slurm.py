@@ -275,18 +275,3 @@ class SubmissionScript(object):
             "--qos": self.qos
         }
         return tags
-
-
-if __name__ == "__main__":
-    ss = SubmissionScript()
-    print(ss.filepath)
-    print(ss.job_name)
-    print(ss.mail_type)
-    print(ss.ntasks)
-    print(ss.cpus_per_task)
-    print(ss.distribution)
-    print(ss.mem_per_cpu)
-    print(ss.time)
-    print(ss.output)
-    print(ss.error)
-    print(ss.qos)
