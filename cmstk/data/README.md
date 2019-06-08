@@ -1,1 +1,0 @@
-A collection of utilities to read data from the top level `data` directory.

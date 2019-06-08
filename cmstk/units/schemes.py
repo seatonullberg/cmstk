@@ -1,6 +1,7 @@
 import type_sanity as ts
-from cmstk.units.base import BaseScheme
 from cmstk.units import *
+from cmstk.units.base import BaseScheme
+
 
 class SIScheme(BaseScheme):
     """Implementation of the SI units."""
@@ -11,6 +12,10 @@ class SIScheme(BaseScheme):
                  TemperatureUnit: Kelvin, PressureUnit: Pascal, ChargeUnit: Coulomb}
         super().__init__(units)
 
+    def to_lammps(self, path):
+        ts.is_type((path, str, "path"))
+        with open(path, "w") as f:
+            f.write("units si\n")
 
 # TODO: add force `ElectronVoltPerAngstrom`
 class MetalScheme(BaseScheme):
@@ -21,3 +26,8 @@ class MetalScheme(BaseScheme):
                  EnergyUnit: ElectronVolt, SpeedUnit: AngstromPerPicosecond, TemperatureUnit: Kelvin,
                  PressureUnit: Bar, ChargeUnit: ElectronCharge}
         super().__init__(units)
+
+    def to_lammps(self, path):
+        ts.is_type((path, str, "path"))
+        with open(path, "w") as f:
+            f.write("units metal\n")

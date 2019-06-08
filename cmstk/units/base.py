@@ -1,4 +1,5 @@
 import type_sanity as ts
+import os
 from cmstk.exceptions import ReadOnlyError, UnsafeUnitOperationError
 
 
@@ -299,6 +300,10 @@ class BaseScheme(object):
             if not issubclass(v, k):
                 raise TypeError("`{}` must be a subclass of `{}`".format(v, k))
         self._units = units
+
+    # overridden by sub-class
+    def to_lammps(self):
+        raise NotImplementedError("BaseScheme is unable to provide a default implementation of `to_lammps`")
 
     def __delitem__(self, key):
         raise ReadOnlyError(name=self.__class__.__name__, operation="__delitem__")

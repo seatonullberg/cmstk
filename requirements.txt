@@ -1,4 +1,3 @@
-numpy
 matplotlib
+numpy
 scipy
-type-sanity==1.1.0
