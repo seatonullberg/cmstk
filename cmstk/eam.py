@@ -1,3 +1,7 @@
+class SetflFile(object):
+    """File wrapper for a setfl formatted EAM potential tabulation."""
+    pass
+
 import type_sanity as ts
 from cmstk.data.base import BaseDataReader
 
