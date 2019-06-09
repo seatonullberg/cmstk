@@ -3,7 +3,7 @@ import json
 
 
 class Database(object):
-    """A read-only collection of elemental data.
+    """A collection of elemental data.
     
     Args:
         filepath (optional) (str): Filepath to a json database.
