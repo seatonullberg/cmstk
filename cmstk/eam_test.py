@@ -1,104 +1,77 @@
-from cmstk.data.setfl import SetflReader
+from cmstk.eam import SetflFile
 import os
-import pytest
+import numpy as np
 
+def test_setfl_file():
+    """Test the initialization of an eam.SetflFile class."""
+    path = "/home/seaton/python-repos/cmstk/data/potentials/Bonny-Fe-Ni-Cr-2011.eam.alloy"
+    path = os.path.abspath(__file__)
+    path = os.path.dirname(path)
+    path = os.path.dirname(path)
+    path = os.path.join(path, "data", "potentials", 
+                        "Bonny-Fe-Ni-Cr-2011.eam.alloy")
+    setfl = SetflFile(path)
+    setfl.read()
+    assert setfl.comments == [
+            "Source: G. Bonny et al., Modelling Simul. Mater. Sci. Eng. 19 (2011) 085008",
+            "Potential to model dislocatons: WP2-2 of PERFORM60",
+            "Contact information: gbonny@sckcen.be"
+    ]
+    assert setfl.symbols == ["Fe", "Ni", "Cr"]
+    assert setfl.symbol_pairs == ["FeFe", "FeNi", "FeCr", "NiNi", "NiCr", "CrCr"]
+    assert setfl.symbol_descriptors == {
+            "Fe": "26 55.845 3.49869656 fcc",
+            "Ni": "28 58.6934 3.51929445 fcc",
+            "Cr": "24 51.9961 3.58437967 fcc"
+    }
+    assert setfl.n_rho == 5000
+    assert setfl.d_rho == 0.001
+    assert setfl.n_r == 5000
+    assert setfl.d_r == 0.00112
+    assert setfl.cutoff == 5.6
 
-def test_init_setfl_reader():
-    # tests if SetflReader can be initialized
-    filename = os.path.join("potentials", "Mishin-Ni-Al-2004.eam.alloy")
-    sr = SetflReader(filename)
+    setfl_writer = SetflFile("test.eam.alloy")
+    setfl_writer.comments = setfl.comments
+    setfl_writer.symbols = setfl.symbols
+    setfl_writer.symbol_pairs = setfl.symbol_pairs
+    setfl_writer.symbol_descriptors = setfl.symbol_descriptors
+    setfl_writer.n_rho = setfl.n_rho
+    setfl_writer.d_rho = setfl.d_rho
+    setfl_writer.n_r = setfl.n_r
+    setfl_writer.d_r = setfl.d_r
+    setfl_writer.cutoff = setfl.cutoff
+    setfl_writer.embedding_function = setfl.embedding_function
+    setfl_writer.density_function = setfl.density_function
+    setfl_writer.pair_function = setfl.pair_function
+    setfl_writer.write()
 
-def test_init_multicolumn_setfl_reader():
-    # tests if SetflReader can be initialized with a mutlicolumn setfl file
-    filename = os.path.join("potentials", "Bonny-Fe-Ni-Cr-2011.eam.alloy")
-    sr = SetflReader(filename)
-
-def test_setfl_reader_elements():
-    # tests SetflReader elements access
-    filename = os.path.join("potentials", "Mishin-Ni-Al-2004.eam.alloy")
-    sr = SetflReader(filename)
-    e = sr.elements
-    assert type(e) is tuple
-    assert len(e) == 2
-    assert e[0] == "Ni"
-    assert e[1] == "Al"
-
-def test_setfl_reader_n_rho():
-    # tests SetflReader n_rho access
-    filename = os.path.join("potentials", "Mishin-Ni-Al-2004.eam.alloy")
-    sr = SetflReader(filename)
-    n_rho = sr.n_rho
-    assert type(n_rho) is int
-    assert n_rho == 10000
-
-def test_setfl_reader_d_rho():
-    # tests SetflReader d_rho access
-    filename = os.path.join("potentials", "Mishin-Ni-Al-2004.eam.alloy")
-    sr = SetflReader(filename)
-    d_rho = sr.d_rho
-    assert type(d_rho) is float
-    assert d_rho == 0.6995103513405870E-03
-
-def test_setfl_reader_n_r():
-    # tests SetflReader n_r access
-    filename = os.path.join("potentials", "Mishin-Ni-Al-2004.eam.alloy")
-    sr = SetflReader(filename)
-    n_r = sr.n_r
-    assert type(n_r) is int
-    assert n_r == 10000
-
-def test_setfl_reader_d_r():
-    # tests SetflReader d_r access
-    filename = os.path.join("potentials", "Mishin-Ni-Al-2004.eam.alloy")
-    sr = SetflReader(filename)
-    d_r = sr.d_r
-    assert type(d_r) == float
-    assert d_r == 0.6724883999724820E-03
-
-def test_setfl_reader_cutoff():
-    # tests SetflReader cutoff access
-    filename = os.path.join("potentials", "Mishin-Ni-Al-2004.eam.alloy")
-    sr = SetflReader(filename)
-    cutoff = sr.cutoff
-    assert type(cutoff) is float
-    assert cutoff == 0.6724883999724820E+01
-
-def test_setfl_reader_embedding_function():
-    # tests SetflReader embedding_function access
-    filename = os.path.join("potentials", "Mishin-Ni-Al-2004.eam.alloy")
-    sr = SetflReader(filename)
-    assert len(sr.embedding_function("Ni")) == sr.n_rho
-    assert sr.embedding_function("Ni")[0] == -0.02254965015409191
-    assert sr.embedding_function("Ni")[-1] == 35.83747720830262
-    assert len(sr.embedding_function("Al")) == sr.n_rho
-    assert sr.embedding_function("Al")[0] == -0.009869001533035417
-    assert sr.embedding_function("Al")[-1] == 33.48918359905302
-
-def test_setfl_reader_density_function():
-    # tests SetflReader density_function access
-    filename = os.path.join("potentials", "Mishin-Ni-Al-2004.eam.alloy")
-    sr = SetflReader(filename)
-    assert len(sr.density_function("Ni")) == sr.n_r
-    assert sr.density_function("Ni")[0] == 0.1898365536999464
-    assert sr.density_function("Ni")[-1] == 0.0
-    assert len(sr.density_function("Al")) == sr.n_r
-    assert sr.density_function("Al")[0] == 0.07796851416742136
-    assert sr.density_function("Al")[-1] == 5.768820510391516e-15
-
-def test_setfl_reader_pair_function():
-    # tests SetflReader pair_function access
-    filename = os.path.join("potentials", "Mishin-Ni-Al-2004.eam.alloy")
-    sr = SetflReader(filename)
-    assert len(sr.pair_function("NiNi")) == sr.n_r
-    assert sr.pair_function("NiNi")[0] == 0.0
-    assert sr.pair_function("NiNi")[-1] == 0.0
-    assert len(sr.pair_function("NiAl")) == sr.n_r
-    assert sr.pair_function("NiAl")[0] == 0.0
-    assert sr.pair_function("NiAl")[-1] == 2.271146915325446e-12
-    assert len(sr.pair_function("AlAl")) == sr.n_r
-    assert sr.pair_function("AlAl")[0] == 0.0
-    assert sr.pair_function("AlAl")[-1] == 2.094408263365527e-12
-    # ensure the pairs are formed correctly
-    with pytest.raises(KeyError):
-        _ = sr.pair_function("AlNi")
-
+    setfl_reader = SetflFile("test.eam.alloy")
+    setfl_reader.read()
+    assert setfl_reader.comments == setfl.comments
+    assert setfl_reader.symbols == setfl.symbols
+    assert setfl_reader.symbol_pairs == setfl.symbol_pairs
+    assert setfl_reader.symbol_descriptors == setfl.symbol_descriptors
+    assert setfl_reader.n_rho == setfl.n_rho
+    assert setfl_reader.d_rho == setfl.d_rho
+    assert setfl_reader.n_r == setfl.n_r
+    assert setfl_reader.d_r == setfl.d_r
+    assert setfl_reader.cutoff == setfl.cutoff
+    import numpy as np
+    for s in setfl_reader.symbols:
+        for v1, v2 in zip(setfl_reader.embedding_function[s],
+                          setfl.embedding_function[s]):
+            if np.isnan(v1) and np.isnan(v2):
+                continue
+            assert v1 == v2
+        for v1, v2 in zip(setfl_reader.density_function[s],
+                          setfl.density_function[s]):
+            if np.isnan(v1) and np.isnan(v2):
+                continue
+            assert v1 == v2
+    for sp in setfl_reader.symbol_pairs:
+        for v1, v2 in zip(setfl_reader.pair_function[sp],
+                          setfl.pair_function[sp]):
+            if np.isnan(v1) and np.isnan(v2):
+                continue
+            assert v1 == v2
+    os.remove("test.eam.alloy")
