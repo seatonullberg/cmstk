@@ -1,2 +1,3 @@
 *.alloy filter=lfs diff=lfs merge=lfs -text
 *.vasprun.xml filter=lfs diff=lfs merge=lfs -text
+*.in filter=lfs diff=lfs merge=lfs -text

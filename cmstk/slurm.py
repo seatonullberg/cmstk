@@ -6,11 +6,14 @@ class SubmissionScript(object):
     """File wrapper for a SLURM submission script.
 
     Args:
-        None
+        filepath (optional) (str): Filepath to a SLURM script.
     """
 
-    def __init__(self):
-        self._filepath = "runjob.slurm"
+    def __init__(self, filepath=None):
+        if filepath is None:
+            filepath = "runjob.slurm"
+        assert type(filepath) is str
+        self._filepath = filepath
         # SBATCH tags
         self._job_name = "slurm_job"
         self._mail_type = ["NONE"]
