@@ -11,7 +11,6 @@ def test_area_from_distance():
     d2 = Picometer(value)  # arbitrary distance
     a = AreaUnit.from_distance(d1, d2)
     assert type(a) is AreaUnit
-    assert isinstance(a, float)
     assert a.to(MeterSquared).value == d1.to(Meter).value * d2.to(Meter).value
 
 
@@ -22,7 +21,6 @@ def test_init_angstrom_squared():
     value = 1.0
     a = AngstromSquared(value)
     assert isinstance(a, AreaUnit)
-    assert isinstance(a, float)
     assert a.value == value
     assert a.kind == AreaUnit
 
@@ -54,7 +52,6 @@ def test_init_meter_squared():
     value = 1.0
     m = MeterSquared(value)
     assert isinstance(m, AreaUnit)
-    assert isinstance(m, float)
     assert m.value == value
     assert m.kind == AreaUnit
 
@@ -86,7 +83,6 @@ def test_init_nanometer_squared():
     value = 1.0
     n = NanometerSquared(value)
     assert isinstance(n, AreaUnit)
-    assert isinstance(n, float)
     assert n.value == value
     assert n.kind == AreaUnit
 
@@ -119,7 +115,6 @@ def test_init_picometer_squared():
     value = 1.0
     p = PicometerSquared(value)
     assert isinstance(p, AreaUnit)
-    assert isinstance(p, float)
     assert p.value == value
     assert p.kind == AreaUnit
 

@@ -9,7 +9,6 @@ def test_init_atomic_mass_unit():
     value = 1.0
     a = AtomicMassUnit(value)
     assert isinstance(a, MassUnit)
-    assert isinstance(a, float)
     assert a.value == value
     assert a.kind == MassUnit
 
@@ -41,7 +40,6 @@ def test_init_gram():
     value = 1.0
     g = Gram(value)
     assert isinstance(g, MassUnit)
-    assert isinstance(g, float)
     assert g.value == value
     assert g.kind == MassUnit
 
@@ -73,7 +71,6 @@ def test_init_kilogram():
     value = 1.0
     k = Kilogram(value)
     assert isinstance(k, MassUnit)
-    assert isinstance(k, float)
     assert k.value == value
     assert k.kind == MassUnit
 
@@ -105,7 +102,6 @@ def test_init_picogram():
     value = 1.0
     p = Picogram(value)
     assert isinstance(p, MassUnit)
-    assert isinstance(p, float)
     assert p.value == value
     assert p.kind == MassUnit
 

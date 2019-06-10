@@ -17,4 +17,5 @@ setuptools.setup(
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: MIT License",
     ],
+    include_package_data=True
 )

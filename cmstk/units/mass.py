@@ -1,8 +1,7 @@
-import type_sanity as ts
 from cmstk.units.base import BaseUnit
 
 
-class MassUnit(BaseUnit, float):
+class MassUnit(BaseUnit):
     """Representation of a mass unit.
 
     The base unit of mass is Kilogram.
@@ -17,7 +16,7 @@ class MassUnit(BaseUnit, float):
     """
 
     def __init__(self, base_value):
-        ts.is_type((base_value, float, "base_value"))
+        assert type(base_value) is float
         super().__init__(value=base_value, kind=MassUnit)
         self.base_value = base_value
         self.base_unit = Kilogram

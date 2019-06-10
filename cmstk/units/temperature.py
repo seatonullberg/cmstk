@@ -2,7 +2,7 @@ import type_sanity as ts
 from cmstk.units.base import BaseUnit
 
 
-class TemperatureUnit(BaseUnit, float):
+class TemperatureUnit(BaseUnit):
     """Representation of a temperature unit.
 
     The base unit of temperature is Celsius.
@@ -23,7 +23,7 @@ class TemperatureUnit(BaseUnit, float):
     """
 
     def __init__(self, base_value):
-        ts.is_type((base_value, float, "base_value"))
+        assert type(base_value) is float
         super().__init__(value=base_value, kind=TemperatureUnit)
         self.base_value = base_value
         self.base_unit = Celsius

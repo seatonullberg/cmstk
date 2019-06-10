@@ -8,7 +8,6 @@ def test_init_electron_volt():
     value = 1.0
     ev = ElectronVolt(value)
     assert isinstance(ev, EnergyUnit)
-    assert isinstance(ev, float)
     assert ev.value == value
     assert ev.kind == EnergyUnit
 
@@ -34,7 +33,6 @@ def test_init_joule():
     value = 1.0
     j = Joule(value)
     assert isinstance(j, EnergyUnit)
-    assert isinstance(j, float)
     assert j.value == value
     assert j.kind == EnergyUnit
 

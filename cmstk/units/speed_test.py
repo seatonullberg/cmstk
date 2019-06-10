@@ -13,7 +13,6 @@ def test_speed_from_distance_time():
     t = Picosecond(value)  # arbitrary time
     s = SpeedUnit.from_distance_time(d, t)
     assert type(s) is SpeedUnit
-    assert isinstance(s, float)
     assert s.to(MeterPerSecond).value == d.to(Meter).value / t.to(Second).value
 
 
@@ -24,7 +23,6 @@ def test_init_angstrom_per_picosecond():
     value = 1.0
     a = AngstromPerPicosecond(value)
     assert isinstance(a, SpeedUnit)
-    assert isinstance(a, float)
     assert a.value == value
     assert a.kind == SpeedUnit
 
@@ -50,7 +48,6 @@ def test_init_meter_per_second():
     value = 1.0
     m = MeterPerSecond(value)
     assert isinstance(m, SpeedUnit)
-    assert isinstance(m, float)
     assert m.value == value
     assert m.kind == SpeedUnit
 

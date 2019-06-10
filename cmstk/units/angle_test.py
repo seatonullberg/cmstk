@@ -9,7 +9,6 @@ def test_init_degree():
     value = 1.0
     d = Degree(value)
     assert isinstance(d, AngleUnit)
-    assert isinstance(d, float)
     assert d.value == value
     assert d.kind == AngleUnit
 
@@ -35,7 +34,6 @@ def test_init_radian():
     value = 1.0
     r = Radian(value)
     assert isinstance(r, AngleUnit)
-    assert isinstance(r, float)
     assert r.value == value
     assert r.kind == AngleUnit
 

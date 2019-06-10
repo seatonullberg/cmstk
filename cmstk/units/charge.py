@@ -1,8 +1,7 @@
-import type_sanity as ts
 from cmstk.units.base import BaseUnit
 
 
-class ChargeUnit(BaseUnit, float):
+class ChargeUnit(BaseUnit):
     """Representation of a charge unit.
 
     The base unit of charge is Coulomb.
@@ -17,7 +16,7 @@ class ChargeUnit(BaseUnit, float):
     """
 
     def __init__(self, base_value):
-        ts.is_type((base_value, float, "base_value"))
+        assert type(base_value) is float
         super().__init__(value=base_value, kind=ChargeUnit)
         self.base_value = base_value
         self.base_unit = Coulomb

@@ -12,7 +12,6 @@ def test_pressure_from_area_force():
     f = Dyne(value)
     p = PressureUnit.from_area_force(a, f)
     assert type(p) is PressureUnit
-    assert isinstance(p, float)
     assert p.to(Pascal).value == f.to(Newton).value / a.to(MeterSquared).value
 
 
@@ -23,7 +22,6 @@ def test_init_bar():
     value = 1.0
     b = Bar(value)
     assert isinstance(b, PressureUnit)
-    assert isinstance(b, float)
     assert b.value == value
     assert b.kind == PressureUnit
 
@@ -49,7 +47,6 @@ def test_init_pascal():
     value = 1.0
     p = Pascal(value)
     assert isinstance(p, PressureUnit)
-    assert isinstance(p, float)
     assert p.value == value
     assert p.kind == PressureUnit
 

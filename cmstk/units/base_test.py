@@ -2,7 +2,7 @@ import pytest
 from cmstk.units.base import BaseUnit, BaseScheme
 from cmstk.units.distance import Angstrom, Nanometer, DistanceUnit
 from cmstk.units.angle import Radian, AngleUnit
-from cmstk.exceptions import ReadOnlyError, UnsafeUnitOperationError
+from cmstk.exceptions import UnsafeUnitOperationError
 from cmstk.units.testing_resources import within_one_percent
 
 def test_init_base_unit():
@@ -17,11 +17,11 @@ def test_base_scheme():
     units = {DistanceUnit: Angstrom}
     scheme = BaseScheme(units)
     assert scheme[DistanceUnit] is Angstrom
-    with pytest.raises(ReadOnlyError):
+    with pytest.raises(Exception):
         del scheme[DistanceUnit]
-    with pytest.raises(ReadOnlyError):
+    with pytest.raises(Exception):
         scheme[DistanceUnit] = Nanometer
-    with pytest.raises(ReadOnlyError):
+    with pytest.raises(Exception):
         scheme[AngleUnit] = Radian
 
 def test_like_base_unit_operations():

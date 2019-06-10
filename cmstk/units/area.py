@@ -1,10 +1,9 @@
-import type_sanity as ts
 from cmstk.units.base import BaseUnit
 from cmstk.units.distance import DistanceUnit
 from cmstk.units.distance import Meter
 
 
-class AreaUnit(BaseUnit, float): 
+class AreaUnit(BaseUnit): 
     """Representation of a distance unit.
 
     The base unit of area is MeterSquared.
@@ -19,7 +18,7 @@ class AreaUnit(BaseUnit, float):
     """
 
     def __init__(self, base_value):
-        ts.is_type((base_value, float, "base_value"))
+        assert type(base_value) is float
         super().__init__(value=base_value, kind=AreaUnit)
         self.base_value = base_value
         self.base_unit = MeterSquared
@@ -35,7 +34,8 @@ class AreaUnit(BaseUnit, float):
         Returns:
             AreaUnit
         """
-        ts.is_instance((d1, DistanceUnit, "d1"), (d2, DistanceUnit, "d2"))
+        assert isinstance(d1, DistanceUnit)
+        assert isinstance(d2, DistanceUnit)
         new_area = d1.to(Meter).value * d2.to(Meter).value
         return cls(new_area)
 

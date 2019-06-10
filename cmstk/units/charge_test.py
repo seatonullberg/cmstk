@@ -8,7 +8,6 @@ def test_init_coulomb():
     value = 1.0
     c = Coulomb(value)
     assert isinstance(c, ChargeUnit)
-    assert isinstance(c, float)
     assert c.value == value
     assert c.kind == ChargeUnit
 
@@ -33,7 +32,6 @@ def test_init_electron_charge():
     value = 1.0
     e = ElectronCharge(value)
     assert isinstance(e, ChargeUnit)
-    assert isinstance(e, float)
     assert e.value == value
     assert e.kind == ChargeUnit
 

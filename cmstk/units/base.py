@@ -1,6 +1,5 @@
-import type_sanity as ts
 import os
-from cmstk.exceptions import ReadOnlyError, UnsafeUnitOperationError
+from cmstk.exceptions import UnsafeUnitOperationError
 
 
 class BaseUnit(object):
@@ -170,7 +169,7 @@ class BaseUnit(object):
         Returns:
             self.__class__
         """
-        ts.is_instance((other, BaseUnit, "other"))
+        assert isinstance(other, BaseUnit)
         if self.kind != other.kind:
             raise TypeError("`other` must be the same kind of unit")
         return self.__class__
@@ -293,7 +292,7 @@ class BaseScheme(object):
     """
 
     def __init__(self, units):
-        ts.is_type((units, dict, "units"))
+        assert type(units) is dict
         for k, v in units.items():
             if not issubclass(k, BaseUnit):
                 raise TypeError("`{}` must be a subclass of type BaseUnit".format(k))
@@ -301,15 +300,13 @@ class BaseScheme(object):
                 raise TypeError("`{}` must be a subclass of `{}`".format(v, k))
         self._units = units
 
-    # overridden by sub-class
-    def to_lammps(self):
-        raise NotImplementedError("BaseScheme is unable to provide a default implementation of `to_lammps`")
-
+    # TODO: make proper exceptions
     def __delitem__(self, key):
-        raise ReadOnlyError(name=self.__class__.__name__, operation="__delitem__")
+        raise Exception("don't del item")
 
+    # TODO: make proper exceptions
     def __setitem__(self, key, item):
-        raise ReadOnlyError(self.__class__.__name__, "__setitem__")
+        raise Exception("don't set item")
 
     def __getitem__(self, key):
         if key not in self._units:

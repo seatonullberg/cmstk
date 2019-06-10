@@ -8,7 +8,6 @@ def test_init_picosecond():
     value = 1.0
     p = Picosecond(value)
     assert isinstance(p, TimeUnit)
-    assert isinstance(p, float)
     assert p.value == value
     assert p.kind == TimeUnit
 
@@ -34,7 +33,6 @@ def test_init_second():
     value = 1.0
     s = Second(value)
     assert isinstance(s, TimeUnit)
-    assert isinstance(s, float)
     assert s.value == value
     assert s.kind == TimeUnit
 

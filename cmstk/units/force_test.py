@@ -9,7 +9,6 @@ def test_init_dyne():
     value = 1.0
     d = Dyne(value)
     assert isinstance(d, ForceUnit)
-    assert isinstance(d, float)
     assert d.value == value
     assert d.kind == ForceUnit
 
@@ -35,7 +34,6 @@ def test_init_newton():
     value = 1.0
     n = Newton(value)
     assert isinstance(n, ForceUnit)
-    assert isinstance(n, float)
     assert n.value == value
     assert n.kind == ForceUnit
 
