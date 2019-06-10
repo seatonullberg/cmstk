@@ -1,3 +1,6 @@
+
+# DEPRECATED
+
 from cmstk.visualization.multivariate import ParallelCoordinatesPlot
 import numpy as np
 import os
@@ -34,13 +37,13 @@ if __name__ == "__main__":
     pcp.axes[0].set_ylabel(ylabel)
 
     # custom title
-    pcp.suptitle(title)
+    pcp.fig.suptitle(title)
 
     # generate the plot
     pcp.make()
     filename = "parallel_coordinates.png"
     print("Writing parallel coordinates plot to file...")
-    pcp.savefig(filename, bbox_inches="tight")
+    pcp.fig.savefig(filename, bbox_inches="tight")
 
     end = datetime.now()
     total_time = (end-start).total_seconds()

@@ -1,9 +1,8 @@
-import type_sanity as ts
-from cmstk.visualization.base import BasePlot
-from cmstk.data.vasprun import VasprunReader
+import matplotlib.pyplot as plt
+from cmstk.vasp.vasprun import VasprunReader
 
 
-class DensityOfStatesPlot(BasePlot):
+class DensityOfStatesPlot(object):
     """Implementation of a plot displaying DOS vs. Energy.
     
     Args:
@@ -11,11 +10,11 @@ class DensityOfStatesPlot(BasePlot):
     """
 
     def __init__(self, reader):
-        ts.is_type((reader, VasprunReader, "reader"))
+        assert type(reader) is VasprunReader
         if reader._data is None:
             raise ValueError("`reader` must be populated prior to plotting")
         self._reader = reader
-        super().__init__(nrows=1, ncols=1, figsize=(10, 5))  # construct a single subplot
+        self.fig, self.axes = plt.subplots(nrows=1, ncols=1, figsize=(10, 5))
 
     def make(self):
         """Plots the available data.

@@ -4,7 +4,6 @@ import numpy as np
 
 def test_setfl_file():
     """Test the initialization of an eam.SetflFile class."""
-    path = "/home/seaton/python-repos/cmstk/data/potentials/Bonny-Fe-Ni-Cr-2011.eam.alloy"
     path = os.path.abspath(__file__)
     path = os.path.dirname(path)
     path = os.path.dirname(path)

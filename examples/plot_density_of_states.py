@@ -1,5 +1,8 @@
+
+# DEPRECATED
+
 from cmstk.visualization.vasp import DensityOfStatesPlot
-from cmstk.data.vasprun import VasprunReader
+from cmstk.vasp.vasprun import VasprunReader
 import os
 from datetime import datetime
 
