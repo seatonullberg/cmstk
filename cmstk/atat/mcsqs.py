@@ -166,4 +166,3 @@ class RndstrFile(object):
                 if type(v) is not float:
                     raise TypeError()
         self._probabilities = value
-    
