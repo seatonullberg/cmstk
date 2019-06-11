@@ -1,4 +1,4 @@
-from cmstk.atat.mcsqs import BestcorrFile, RndstrFile
+from cmstk.atat.mcsqs import BestcorrFile, BestsqsFile, RndstrFile
 from cmstk.testing_resources import data_directory
 import numpy as np
 import os
@@ -13,6 +13,21 @@ def test_bestcorr_file():
     assert len(bestcorr.clusters) == 1
     assert len(bestcorr.clusters[0]) == 4
 
+def test_bestsqs_file():
+    """Tests initialization of a BestsqsFile object."""
+    path = os.path.join(data_directory(), "atat", "bestsqs.out")
+    bestsqs = BestsqsFile(path)
+    bestsqs.read()
+    lat_v = np.array([[10.7, 0.0, 0.0],
+                      [0.0, 10.7, 0.0],
+                      [0.0, 0.0, 10.7]])
+    assert np.array_equal(bestsqs.lattice_vectors, lat_v)
+    bas_v = np.array([[0.0, 0.0, -1.0],
+                      [0.0, -1.0, 0.0],
+                      [-1.0, 0.0, 0.0]])
+    assert np.array_equal(bestsqs.basis_vectors, bas_v)
+    assert bestsqs.positions.shape == (108, 3)
+    assert len(bestsqs.symbols) == 108
 
 def test_rndstr_file():
     """Tests the initialization of a RndstrFile object."""

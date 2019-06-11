@@ -105,8 +105,80 @@ class BestsqsFile(BaseFile):
 
     def __init__(self, filepath="bestsqs.out"):
         super().__init__(filepath)
+        self._lattice_vectors = None
+        self._basis_vectors = None
+        self._positions = None
+        self._symbols = None
 
+    def read(self, path=None):
+        if path is None:
+            path = self.filepath
+        with open(path, "r") as f:
+            lines = f.readlines()
+        lattice_vectors = []
+        basis_vectors = []
+        positions = []
+        for sublines, vectors in [(lines[:3], lattice_vectors), 
+                                  (lines[3:6], basis_vectors),
+                                  (lines[6:], positions)]:
+            for line in sublines:
+                vector = [float(l.strip()) for l in line.split()[:3]]
+                vectors.append(vector)
+        self.lattice_vectors = np.array(lattice_vectors)
+        self.basis_vectors = np.array(basis_vectors)
+        self.positions = np.array(positions)
+        symbols = []
+        for line in lines[6:]:
+            symbol = line.split()[-1].strip()
+            symbols.append(symbol)
+        self.symbols = symbols
+
+    @property
+    def lattice_vectors(self):
+        """(numpy.ndarray): Vectors defining the entire lattice."""
+        return self._lattice_vectors
     
+    @lattice_vectors.setter
+    def lattice_vectors(self, value):
+        if type(value) is not np.ndarray:
+            raise TypeError()
+        self._lattice_vectors = value
+
+    @property
+    def basis_vectors(self):
+        """(numpy.ndarray): Vectors defining the basis set."""
+        return self._basis_vectors
+
+    @basis_vectors.setter
+    def basis_vectors(self, value):
+        if type(value) is not np.ndarray:
+            raise TypeError()
+        self._basis_vectors = value
+
+    @property
+    def positions(self):
+        """(numpy.ndarray): Coordinates of each atom in the lattice."""
+        return self._positions
+
+    @positions.setter
+    def positions(self, value):
+        if type(value) is not np.ndarray:
+            raise TypeError()
+        self._positions = value
+
+    @property
+    def symbols(self):
+        """(list of str): IUPAC symbol of each atom in the lattice.
+           - Order matches that of self.positions.
+        """
+        return self._symbols
+
+    @symbols.setter
+    def symbols(self, value):
+        for v in value:
+            if type(v) is not str:
+                raise TypeError()
+        self._symbols = value
 
 
 class RndstrFile(BaseFile):
@@ -260,9 +332,3 @@ class RndstrFile(BaseFile):
                 if type(v) is not float:
                     raise TypeError()
         self._probabilities = value
-
-
-if __name__ == "__main__":
-    path = "/home/seaton/python-repos/cmstk/data/atat/bestsqs.out"
-    bestsqs = BestsqsFile(path)
-    bestsqs.read()
