@@ -89,7 +89,7 @@ class BestcorrFile(BaseFile):
                 objective_functions.append(value)
         self.objective_functions = objective_functions
 
-# TODO:
+
 class BestsqsFile(BaseFile):
     """File wrapper for a bestsqs.out output file.
     
