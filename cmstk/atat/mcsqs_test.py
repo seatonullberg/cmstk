@@ -1,6 +1,21 @@
-from cmstk.atat.mcsqs import RndstrFile
+from cmstk.atat.mcsqs import BestcorrFile, RndstrFile
 import numpy as np
 import os
+
+
+def test_bestcorr_file():
+    """Tests initialization of a BestcorrFile object."""
+    path = os.path.abspath(__file__)
+    path = os.path.dirname(path)
+    path = os.path.dirname(path)
+    path = os.path.dirname(path)
+    path = os.path.join(path, "data", "bestcorr.out")
+
+    bestcorr = BestcorrFile(path)
+    bestcorr.read()
+    assert bestcorr.objective_functions == [-0.997685]
+    assert len(bestcorr.clusters) == 1
+    assert len(bestcorr.clusters[0]) == 4
 
 
 def test_rndstr_file():

@@ -1,6 +1,108 @@
 import numpy as np
 
 
+class BestcorrFile(object):
+    """File wrapper for a bestcorr.out output file.
+    
+    Notes:
+        File specification:
+        https://www.brown.edu/Departments/Engineering/Labs/avdw/atat/manual/node47.html
+
+        ** This is a read-only wrapper.
+
+    Args:
+        filepath (optional) (str): Filepath to a bestcorr.out file.
+    """
+
+    def __init__(self, filepath=None):
+        if filepath is None:
+            filepath = "bestcorr.out"
+        assert type(filepath) is str
+        self._filepath = filepath
+        self._clusters = None
+        self._objective_functions = None
+
+    def read(self, path=None):
+        if path is None:
+            path = self.filepath
+        assert type(path) is str
+        with open(path, "r") as f:
+            lines = f.readlines()
+        self._read_clusters(lines)
+        self._read_objective_functions(lines)
+
+    @property
+    def filepath(self):
+        """(str): Path to the file."""
+        return self._filepath
+
+    @filepath.setter
+    def filepath(self, value):
+        if type(value) is not str:
+            raise ValueError()
+        self._filepath = value
+
+    @property
+    def clusters(self):
+        """(list of list of dict: key: str, value: number): Information about
+        every cluster for every iteration."""
+        return self._clusters
+
+    @clusters.setter
+    def clusters(self, value):
+        for val in value:
+            if type(val) is not list:
+                raise TypeError()
+            for v in val:
+                if type(v) is not dict:
+                    raise TypeError()
+                for dk, dv in v.items():
+                    if type(dk) is not str:
+                        raise TypeError()
+                    if type(dv) not in [int, float]:
+                        raise TypeError()
+        self._clusters = value
+
+    @property
+    def objective_functions(self):
+        """(list of float): The objective function value at each iteration."""
+        return self._objective_functions
+    
+    @objective_functions.setter
+    def objective_functions(self, value):
+        for v in value:
+            if type(v) is not float:
+                raise TypeError()
+        self._objective_functions = value
+
+    def _read_clusters(self, lines):
+        clusters = []
+        current_cluster = []
+        for line in lines:
+            if line.startswith("Objective_function"):
+                clusters.append(current_cluster)
+                current_cluster = []
+            else:
+                segments = [l.strip() for l in line.split()]
+                d = {
+                    "n_points": int(segments[0]),
+                    "diameter": float(segments[1]),
+                    "correlation": float(segments[2]),
+                    "target": float(segments[3]),
+                    "difference": float(segments[4])
+                }
+                current_cluster.append(d)
+        self.clusters = clusters
+
+    def _read_objective_functions(self, lines):
+        objective_functions = []
+        for line in lines:
+            if line.startswith("Objective_function"):
+                value = float(line.split("=")[1])
+                objective_functions.append(value)
+        self.objective_functions = objective_functions
+
+
 class RndstrFile(object):
     """File wrapper for a rndstr.in input file.
     
@@ -166,3 +268,15 @@ class RndstrFile(object):
                 if type(v) is not float:
                     raise TypeError()
         self._probabilities = value
+
+
+if __name__ == "__main__":
+    path = "/home/seaton/python-repos/cmstk/cmstk/bestcorr.out"
+    bestcorr = BestcorrFile(path)
+    bestcorr.read()
+    for iteration in bestcorr.clusters:
+        for cluster in iteration:
+            print(cluster)
+    print()
+    for objective_function in bestcorr.objective_functions:
+        print(objective_function)
