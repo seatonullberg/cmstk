@@ -1,7 +1,8 @@
+from cmstk.base import BaseFile
 from cmstk.elements import Database
 
 
-class SetflFile(object):
+class SetflFile(BaseFile):
     """File wrapper for a setfl formatted EAM potential tabulation.
 
     Notes:
@@ -9,12 +10,11 @@ class SetflFile(object):
         https://sites.google.com/a/ncsu.edu/cjobrien/tutorials-and-guides/eam
     
     Args:
-        filepath (optional) (str): Filepath to a setfl file.
+        filepath (str): Filepath to a setfl file.
     """
 
-    def __init__(self, filepath=None):
-        assert type(filepath) in [str, type(None)]
-        self._filepath = filepath 
+    def __init__(self, filepath):
+        super().__init__(filepath) 
         self._comments = None
         self._symbols = None
         self._symbol_pairs = None
@@ -71,17 +71,6 @@ class SetflFile(object):
             for sp in self.symbol_pairs:
                 pair_function = map(str, self.pair_function[sp])
                 f.write("{}\n".format("\n".join(pair_function)))
-
-    @property
-    def filepath(self):
-        """(str): Path to the file."""
-        return self._filepath
-
-    @filepath.setter
-    def filepath(self, value):
-        if type(value) is not str:
-            raise TypeError()
-        self._filepath = value
 
     @property
     def comments(self):

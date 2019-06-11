@@ -1,9 +1,10 @@
+from cmstk.testing_resources import data_directory
+from cmstk.base import BaseFile
 import os
 import json
-from cmstk.testing_resources import data_directory
 
 
-class Database(object):
+class Database(BaseFile):
     """A collection of elemental data.
     
     Args:
@@ -13,8 +14,7 @@ class Database(object):
     def __init__(self, filepath=None):
         if filepath is None:
             filepath = os.path.join(data_directory(), "elements.json")
-        assert type(filepath) is str
-        self._filepath = filepath
+        super().__init__(filepath)
         with open(filepath, "r") as f:
             self._data = json.load(f)
 
@@ -68,14 +68,3 @@ class Database(object):
         assert type(path) is str
         with open(path, "w") as f:
             json.dump(self._data)
-
-    @property
-    def filepath(self):
-        """(str): Returns the path to a json database."""
-        return self._filepath
-
-    @filepath.setter
-    def filepath(self, value):
-        if type(value) is not str:
-            raise TypeError()
-        self._filepath = value

@@ -1,7 +1,8 @@
+from cmstk.base import BaseFile
 import numpy as np
 
 
-class BestcorrFile(object):
+class BestcorrFile(BaseFile):
     """File wrapper for a bestcorr.out output file.
     
     Notes:
@@ -14,11 +15,8 @@ class BestcorrFile(object):
         filepath (optional) (str): Filepath to a bestcorr.out file.
     """
 
-    def __init__(self, filepath=None):
-        if filepath is None:
-            filepath = "bestcorr.out"
-        assert type(filepath) is str
-        self._filepath = filepath
+    def __init__(self, filepath="bestcorr.out"):
+        super().__init__(filepath)
         self._clusters = None
         self._objective_functions = None
 
@@ -30,17 +28,6 @@ class BestcorrFile(object):
             lines = f.readlines()
         self._read_clusters(lines)
         self._read_objective_functions(lines)
-
-    @property
-    def filepath(self):
-        """(str): Path to the file."""
-        return self._filepath
-
-    @filepath.setter
-    def filepath(self, value):
-        if type(value) is not str:
-            raise ValueError()
-        self._filepath = value
 
     @property
     def clusters(self):
@@ -102,8 +89,27 @@ class BestcorrFile(object):
                 objective_functions.append(value)
         self.objective_functions = objective_functions
 
+# TODO:
+class BestsqsFile(BaseFile):
+    """File wrapper for a bestsqs.out output file.
+    
+    Notes:
+        File specification:
+        https://www.brown.edu/Departments/Engineering/Labs/avdw/atat/manual/node47.html
 
-class RndstrFile(object):
+        ** This is a read-only wrapper.
+    
+    Args:
+        filepath (optional) (str): Filepath to a bestsqs.out file.
+    """
+
+    def __init__(self, filepath="bestsqs.out"):
+        super().__init__(filepath)
+
+    
+
+
+class RndstrFile(BaseFile):
     """File wrapper for a rndstr.in input file.
     
     Notes:
@@ -118,11 +124,8 @@ class RndstrFile(object):
         filepath (optional) (str): Filepath to a rndstr.in file.
     """
 
-    def __init__(self, filepath=None):
-        if filepath is None:
-            filepath = "rndstr.in"
-        assert type(filepath) is str
-        self._filepath = filepath
+    def __init__(self, filepath="rndstr.in"):
+        super().__init__(filepath)
         self._lattice_angles = None
         self._lattice_parameters = None
         self._lattice_vectors = None
@@ -197,17 +200,6 @@ class RndstrFile(object):
                 f.write("{}\n".format(prob))
 
     @property
-    def filepath(self):
-        """(str): Path to the file."""
-        return self._filepath
-
-    @filepath.setter
-    def filepath(self, value):
-        if type(value) is not str:
-            raise TypeError()
-        self._filepath = value
-
-    @property
     def lattice_angles(self):
         """(iterable of float): Angles corresponding to the lattice vectors."""
         return self._lattice_angles
@@ -271,12 +263,6 @@ class RndstrFile(object):
 
 
 if __name__ == "__main__":
-    path = "/home/seaton/python-repos/cmstk/cmstk/bestcorr.out"
-    bestcorr = BestcorrFile(path)
-    bestcorr.read()
-    for iteration in bestcorr.clusters:
-        for cluster in iteration:
-            print(cluster)
-    print()
-    for objective_function in bestcorr.objective_functions:
-        print(objective_function)
+    path = "/home/seaton/python-repos/cmstk/data/atat/bestsqs.out"
+    bestsqs = BestsqsFile(path)
+    bestsqs.read()

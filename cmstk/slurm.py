@@ -1,19 +1,17 @@
+from cmstk.base import BaseFile
 import os
 import datetime
 
 
-class SubmissionScript(object):
+class SubmissionScript(BaseFile):
     """File wrapper for a SLURM submission script.
 
     Args:
         filepath (optional) (str): Filepath to a SLURM script.
     """
 
-    def __init__(self, filepath=None):
-        if filepath is None:
-            filepath = "runjob.slurm"
-        assert type(filepath) is str
-        self._filepath = filepath
+    def __init__(self, filepath="runjob.slurm"):
+        super().__init__(filepath)
         # SBATCH tags
         self._job_name = "slurm_job"
         self._mail_type = ["NONE"]
@@ -104,17 +102,6 @@ class SubmissionScript(object):
             s += c + "\n"
         with open(path, "w") as f:
             f.write(s)
-
-    @property
-    def filepath(self):
-        """(str): Path to the file."""
-        return self._filepath
-    
-    @filepath.setter
-    def filepath(self, value):
-        if type(value) is not str:
-            raise TypeError()
-        self._filepath = value
 
     @property
     def job_name(self):
