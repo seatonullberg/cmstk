@@ -1,16 +1,12 @@
 from cmstk.atat.mcsqs import BestcorrFile, RndstrFile
+from cmstk.testing_resources import data_directory
 import numpy as np
 import os
 
 
 def test_bestcorr_file():
     """Tests initialization of a BestcorrFile object."""
-    path = os.path.abspath(__file__)
-    path = os.path.dirname(path)
-    path = os.path.dirname(path)
-    path = os.path.dirname(path)
-    path = os.path.join(path, "data", "bestcorr.out")
-
+    path = os.path.join(data_directory(), "atat", "bestcorr.out")
     bestcorr = BestcorrFile(path)
     bestcorr.read()
     assert bestcorr.objective_functions == [-0.997685]
@@ -20,12 +16,7 @@ def test_bestcorr_file():
 
 def test_rndstr_file():
     """Tests the initialization of a RndstrFile object."""
-    path = os.path.abspath(__file__)
-    path = os.path.dirname(path)
-    path = os.path.dirname(path)
-    path = os.path.dirname(path)
-    path = os.path.join(path, "data", "structures", "rndstr.in")
-
+    path = os.path.join(data_directory(), "atat", "rndstr.in")
     rndstr = RndstrFile(path)
     rndstr.read()
 

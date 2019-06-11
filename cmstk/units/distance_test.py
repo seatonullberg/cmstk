@@ -1,5 +1,5 @@
 from cmstk.units.distance import DistanceUnit, Angstrom, Meter, Nanometer, Picometer
-from cmstk.units.testing_resources import within_one_percent
+from cmstk.testing_resources import within_one_percent
 
 
 # Angstrom

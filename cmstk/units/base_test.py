@@ -3,7 +3,7 @@ from cmstk.units.base import BaseUnit, BaseScheme
 from cmstk.units.distance import Angstrom, Nanometer, DistanceUnit
 from cmstk.units.angle import Radian, AngleUnit
 from cmstk.exceptions import UnsafeUnitOperationError
-from cmstk.units.testing_resources import within_one_percent
+from cmstk.testing_resources import within_one_percent
 
 def test_init_base_unit():
     # tests if BaseUnit can be initialized

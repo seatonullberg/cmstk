@@ -1,15 +1,12 @@
 from cmstk.vasp.poscar import PoscarFile
+from cmstk.testing_resources import data_directory
 import numpy as np
 import os
 
 
 def test_poscar_file():
     """Tests the initialization of a vasp.PoscarFile object."""
-    path = os.path.abspath(__file__)
-    path = os.path.dirname(path)
-    path = os.path.dirname(path)
-    path = os.path.dirname(path)
-    path = os.path.join(path, "data", "structures", "POSCAR")
+    path = os.path.join(data_directory(), "vasp", "POSCAR")
     poscar = PoscarFile(path)
     poscar.read()
 

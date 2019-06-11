@@ -1,5 +1,5 @@
 from cmstk.units.pressure import PressureUnit, Bar, Pascal
-from cmstk.units.testing_resources import within_one_percent
+from cmstk.testing_resources import within_one_percent
 from cmstk.units.area import AngstromSquared, MeterSquared
 from cmstk.units.force import Dyne, Newton
 

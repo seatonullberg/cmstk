@@ -1,7 +1,7 @@
 from cmstk.units.speed import SpeedUnit, AngstromPerPicosecond, MeterPerSecond
 from cmstk.units.distance import Angstrom, Meter
 from cmstk.units.time import Picosecond, Second
-from cmstk.units.testing_resources import within_one_percent
+from cmstk.testing_resources import within_one_percent
 
 
 # SpeedUnit

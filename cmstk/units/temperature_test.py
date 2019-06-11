@@ -1,5 +1,5 @@
 from cmstk.units.temperature import TemperatureUnit, Celsius, Fahrenheit, Kelvin
-from cmstk.units.testing_resources import within_one_percent
+from cmstk.testing_resources import within_one_percent
 
 # Celsius
 

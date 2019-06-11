@@ -1,6 +1,6 @@
 from cmstk.units.area import AreaUnit, AngstromSquared, MeterSquared, NanometerSquared, PicometerSquared
 from cmstk.units.distance import Angstrom, Meter, Nanometer, Picometer
-from cmstk.units.testing_resources import within_one_percent
+from cmstk.testing_resources import within_one_percent
 
 # AreaUnit
 

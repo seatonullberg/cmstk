@@ -1,5 +1,6 @@
 import os
 import json
+from cmstk.testing_resources import data_directory
 
 
 class Database(object):
@@ -11,10 +12,7 @@ class Database(object):
 
     def __init__(self, filepath=None):
         if filepath is None:
-            filepath = os.path.abspath(__file__)
-            filepath = os.path.dirname(filepath)
-            filepath = os.path.dirname(filepath)
-            filepath = os.path.join(filepath, "data", "elements.json")
+            filepath = os.path.join(data_directory(), "elements.json")
         assert type(filepath) is str
         self._filepath = filepath
         with open(filepath, "r") as f:
