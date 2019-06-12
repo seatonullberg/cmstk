@@ -105,76 +105,103 @@ class BestsqsFile(BaseFile):
 
     def __init__(self, filepath="bestsqs.out"):
         super().__init__(filepath)
+        self._lattice_parameters = None
         self._lattice_vectors = None
-        self._basis_vectors = None
         self._positions = None
         self._symbols = None
 
     def read(self, path=None):
+        """Reads a bestsqs.out file.
+        
+        Args:
+            path (optional) (str): Filepath to read.
+
+        Returns:
+            None
+        """
         if path is None:
             path = self.filepath
         with open(path, "r") as f:
             lines = f.readlines()
-        lattice_vectors = []
-        basis_vectors = []
-        positions = []
-        for sublines, vectors in [(lines[:3], lattice_vectors), 
-                                  (lines[3:6], basis_vectors),
-                                  (lines[6:], positions)]:
-            for line in sublines:
-                vector = [float(l.strip()) for l in line.split()[:3]]
-                vectors.append(vector)
-        self.lattice_vectors = np.array(lattice_vectors)
-        self.basis_vectors = np.array(basis_vectors)
-        self.positions = np.array(positions)
-        symbols = []
-        for line in lines[6:]:
-            symbol = line.split()[-1].strip()
-            symbols.append(symbol)
+        lattice_vectors = lines[3:6]
+        lattice_vectors = [
+            np.fromstring(l, sep=" ") for l in lattice_vectors
+        ]
+        lattice_vectors = np.array(lattice_vectors)
+        # for whatever reason the lattice vectors are negated and flipped
+        # so here i change it back
+        # to be exactly what it was in the input file...
+        lattice_vectors = np.flip(lattice_vectors, axis=1) * -1
+        self.lattice_vectors = lattice_vectors
+        lattice_parameters = lines[:3]
+        lattice_parameters = [
+            np.fromstring(l, sep=" ") for l in lattice_parameters
+        ]
+        lattice_parameters = np.array(lattice_parameters)
+        # currently this is a 3x3 array but i convert it to a 
+        # 1d array of just the scalar parameters along the diagonal
+        # for more flexibility across various file formats
+        lattice_parameters = np.diag(lattice_parameters)
+        self.lattice_parameters = lattice_parameters
+        # extract positions and symbols from the remaining lines
+        positions = [" ".join(l.split()[:3]) for l in lines[6:]]
+        symbols = [l.split()[-1] for l in lines[6:]]
+        positions = [
+            np.fromstring(p, sep=" ") for p in positions
+        ]
+        positions = np.array(positions)
+        self.positions = positions
+        symbols = tuple(symbols)
         self.symbols = symbols
 
     @property
+    def lattice_parameters(self):
+        """(numpy.ndarray): Length of each lattice vector."""
+        return self._lattice_parameters
+
+    @lattice_parameters.setter
+    def lattice_parameters(self, value):
+        if type(value) is not np.ndarray:
+            raise TypeError()
+        if value.dtype != float:
+            raise ValueError()
+        self._lattice_parameters = value
+
+    @property
     def lattice_vectors(self):
-        """(numpy.ndarray): Vectors defining the entire lattice."""
+        """(numpy.ndarray): Vectors defining the boundary of the lattice."""
         return self._lattice_vectors
-    
+
     @lattice_vectors.setter
     def lattice_vectors(self, value):
         if type(value) is not np.ndarray:
             raise TypeError()
+        if value.dtype != float:
+            raise ValueError()
         self._lattice_vectors = value
-
-    @property
-    def basis_vectors(self):
-        """(numpy.ndarray): Vectors defining the basis set."""
-        return self._basis_vectors
-
-    @basis_vectors.setter
-    def basis_vectors(self, value):
-        if type(value) is not np.ndarray:
-            raise TypeError()
-        self._basis_vectors = value
 
     @property
     def positions(self):
         """(numpy.ndarray): Coordinates of each atom in the lattice."""
         return self._positions
-
+    
     @positions.setter
     def positions(self, value):
         if type(value) is not np.ndarray:
             raise TypeError()
+        if value.dtype != float:
+            raise ValueError()
         self._positions = value
 
     @property
     def symbols(self):
-        """(list of str): IUPAC symbol of each atom in the lattice.
-           - Order matches that of self.positions.
-        """
+        """(tuple of str): IUPAC symbol of each atom in the lattice."""
         return self._symbols
 
     @symbols.setter
     def symbols(self, value):
+        if type(value) is not tuple:
+            raise TypeError()
         for v in value:
             if type(v) is not str:
                 raise TypeError()
@@ -217,35 +244,42 @@ class RndstrFile(BaseFile):
             path = self.filepath
         with open(path, "r") as f:
             lines = f.readlines()
-        self.lattice_parameters = list(map(float, lines[0].split()[:3]))
-        self.lattice_angles = list(map(float, lines[0].split()[3:]))
-        lat_v = lines[1:4]
-        lattice_vectors = []
-        for line in lat_v:
-            v = list(map(float, line.split()))
-            lattice_vectors.append(v)
-        self.lattice_vectors = np.array(lattice_vectors)
+        lattice_parameters = " ".join(lines[0].split()[:3])
+        lattice_parameters = np.fromstring(lattice_parameters, sep=" ")
+        self.lattice_parameters = lattice_parameters
+        lattice_angles = " ".join(lines[0].split()[3:])
+        lattice_angles = np.fromstring(lattice_angles, sep=" ")
+        self.lattice_angles = lattice_angles
+        lattice_vectors = lines[1:4]
+        lattice_vectors = [
+            np.fromstring(l, sep=" ") for l in lattice_vectors
+        ]
+        lattice_vectors = np.array(lattice_vectors)
+        self.lattice_vectors = lattice_vectors
         positions = []
+        positions = [" ".join(l.split()[:3]) for l in lines[4:]]
+        positions = [
+            np.fromstring(p, sep=" ") for p in positions
+        ]
+        positions = np.array(positions)
+        self.positions = positions
         probabilities = []
-        for line in lines[4:]:
-            positions.append(list(map(float, line.split()[:3])))
-            probs_section = line.split()[3:]
-            probs_section = [p.split(",") for p in probs_section]
-            probability = {}
-            for probs in probs_section:
-                symbols = [p.split("=")[0].strip() for p in probs]
-                probs = [float(p.split("=")[1].strip()) for p in probs]
-                for s, p in zip(symbols, probs):
-                    probability[s] = p
-            probabilities.append(probability)
-        self.positions = np.array(positions)
-        self.probabilities = probabilities
+        probabilities = [l.split()[3] for l in lines[4:]] # no spaces
+        probabilities = [p.split(",") for p in probabilities]
+        formatted_probabilities = []
+        for probability in probabilities:
+            d = {}
+            for prob in probability:
+                symbol, value = prob.split("=")
+                d[symbol] = float(value)
+            formatted_probabilities.append(d)
+        self.probabilities = tuple(formatted_probabilities)
 
     def write(self, path=None):
         """Writes a rndstr.in file.
         
         Args:
-            path (optional) (str): Filepath to write.
+            path (optional) (str): Filepath to write to.
 
         Returns:
             None
@@ -253,82 +287,106 @@ class RndstrFile(BaseFile):
         if path is None:
             path = self.filepath
         with open(path, "w") as f:
-            for param in self.lattice_parameters:
-                f.write("{} ".format(param))
-            for ang in self.lattice_angles:
-                f.write("{} ".format(ang))
-            f.write("\n")
+            lattice_parameters = self.lattice_parameters.astype(str)
+            lattice_parameters = " ".join(lattice_parameters)
+            f.write(lattice_parameters)
+            lattice_angles = self.lattice_angles.astype(str)
+            lattice_angles = " ".join(lattice_angles)
+            f.write(" {}\n".format(lattice_angles))
             for row in self.lattice_vectors:
-                for item in row:
-                    f.write("{} ".format(item))
-                f.write("\n")
-            for pos, prob in zip(self.positions, self.probabilities):
-                probs_lst = []
-                for k, v in prob.items():
-                    probs_lst.append("{}={}".format(k, v))
-                prob = ",".join(probs_lst)
-                for p in pos:
-                    f.write("{} ".format(p))
-                f.write("{}\n".format(prob))
+                row = row.astype(str)
+                row = " ".join(row)
+                f.write("{}\n".format(row))
+            for position, probability in zip(self.positions, 
+                                             self.probabilities):
+                position = position.astype(str)
+                position = " ".join(position)
+                probability = ["{}={}".format(k, v) 
+                               for k, v in probability.items()]
+                probability = ",".join(probability)
+                f.write("{} {}\n".format(position, probability))
 
     @property
     def lattice_angles(self):
-        """(iterable of float): Angles corresponding to the lattice vectors."""
+        """(numpy.ndarray): Angles corresponding to each lattice vector."""
         return self._lattice_angles
 
     @lattice_angles.setter
     def lattice_angles(self, value):
-        for v in value:
-            if type(v) is not float:
-                raise TypeError()
+        if type(value) is not np.ndarray:
+            raise TypeError()
+        if value.dtype != float:
+            raise ValueError()
         self._lattice_angles = value
 
     @property
     def lattice_parameters(self):
-        """(iterable of float): Length of each lattice vector."""
+        """(numpy.ndarray): Length of each lattice vector."""
         return self._lattice_parameters
-    
+
     @lattice_parameters.setter
     def lattice_parameters(self, value):
-        for v in value:
-            if type(v) is not float:
-                raise TypeError()
+        if type(value) is not np.ndarray:
+            raise TypeError()
+        if value.dtype != float:
+            raise ValueError()
         self._lattice_parameters = value
 
     @property
     def lattice_vectors(self):
-        """(numpy.ndarray): Basis set."""
+        """(numpy.ndarray): Vectors defining the edge of the lattice."""
         return self._lattice_vectors
 
     @lattice_vectors.setter
     def lattice_vectors(self, value):
         if type(value) is not np.ndarray:
             raise TypeError()
+        if value.dtype != float:
+            raise ValueError()
         self._lattice_vectors = value
 
     @property
     def positions(self):
-        """(numpy.ndarray): 3D coordinates of each atom in the system."""
+        """(numpy.ndarray): Coordinates of each atom in the lattice."""
         return self._positions
 
     @positions.setter
     def positions(self, value):
         if type(value) is not np.ndarray:
             raise TypeError()
+        if value.dtype != float:
+            raise ValueError()
         self._positions = value
 
     @property
     def probabilities(self):
-        """(iterable of dict: key: str, value: float): Likelihood of each 
-        species occupying a given position."""
+        """(tuple of dict: key: str, value: float): Likelihood of a given symbol
+        occupying a site for all sites."""
         return self._probabilities
 
     @probabilities.setter
     def probabilities(self, value):
-        for val in value:
-            for k, v in val.items():
-                if type(k) is not str:
+        if type(value) is not tuple:
+            raise TypeError
+        for v in value:
+            for dk, dv in v.items():
+                if type(dk) is not str:
                     raise TypeError()
-                if type(v) is not float:
+                if type(dv) is not float:
                     raise TypeError()
         self._probabilities = value
+        
+
+
+
+if __name__ == "__main__":
+    rndstr = RndstrFile("/home/seaton/python-repos/cmstk/data/atat/rndstr.in")
+    rndstr.read()
+        
+
+
+
+
+
+
+
