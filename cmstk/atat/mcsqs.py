@@ -149,7 +149,9 @@ class BestsqsFile(BaseFile):
         positions = [
             np.fromstring(p, sep=" ") for p in positions
         ]
-        positions = np.array(positions)
+        # once again, for some reason, the values of the positions are negated
+        # therefore I am forced to convert back to positive space here
+        positions = np.array(positions) * -1
         self.positions = positions
         symbols = tuple(symbols)
         self.symbols = symbols
