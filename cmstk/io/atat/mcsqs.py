@@ -8,7 +8,7 @@ def bestsqs_to_poscar(bestsqs, sym_order, coord_sys="Direct", relaxations=None):
     
     Args:
         bestsqs (BestsqsFile): File object to convert.
-        sym_order (set of str): IUPAC symbols in the order they should appear.
+        sym_order (list of str): IUPAC symbols in the order they should appear.
         coord_sys (optional) (str): Specifies the POSCAR coordinate system.
         relaxations (optional) (numpy.ndarray): Boolean array defining the 
         selective dynamics parameters of each atom in the lattice.
@@ -18,11 +18,13 @@ def bestsqs_to_poscar(bestsqs, sym_order, coord_sys="Direct", relaxations=None):
     """
     if type(bestsqs) is not BestsqsFile:
         raise TypeError()
-    if type(sym_order) is not set:
+    if type(sym_order) is not list:
         raise TypeError()
     for sym in sym_order:
         if type(sym) is not str:
             raise TypeError()
+    if len(sym_order) != len(set(sym_order)):
+        raise ValueError()
     if type(coord_sys) is not str:
         raise TypeError()
     if type(relaxations) not in [np.ndarray, type(None)]:

@@ -10,7 +10,7 @@ def test_bestsqs_to_poscar():
     path = os.path.join(data_directory(), "atat", "bestsqs.out")
     bestsqs = BestsqsFile(path)
     bestsqs.read()
-    sym_order = set(["Fe", "Cr"])
+    sym_order = ["Fe", "Cr"]
     poscar = bestsqs_to_poscar(bestsqs, sym_order)
     assert poscar.positions.shape == bestsqs.positions.shape
     assert poscar.lattice_vectors.shape == bestsqs.lattice_vectors.shape

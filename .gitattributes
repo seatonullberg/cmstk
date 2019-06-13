@@ -3,3 +3,4 @@
 *.in filter=lfs diff=lfs merge=lfs -text
 POSCAR filter=lfs diff=lfs merge=lfs -text
 *.out filter=lfs diff=lfs merge=lfs -text
+OUTCAR filter=lfs diff=lfs merge=lfs -text
