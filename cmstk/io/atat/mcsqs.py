@@ -32,6 +32,7 @@ def bestsqs_to_poscar(bestsqs, sym_order, coord_sys="Direct", relaxations=None):
             raise ValueError()
 
     poscar = PoscarFile()
+    poscar.coordinate_system = coord_sys
     poscar.relaxations = relaxations  # assumed to be ordered by symbol
     # do multiplication here and set lattice constant to 1
     # for a general solution to non-cubic lattices
