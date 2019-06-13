@@ -1,118 +1,95 @@
-import type_sanity as ts
+from cmstk.base import BaseFile
+from xml.etree import ElementTree
 import numpy as np
-from cmstk.data.base import BaseDataReader
 
 
-class VasprunReader(BaseDataReader):
-    """Represents access to VASP output file `vasprun.xml`.
+class VasprunFile(BaseFile):
+    """File wrapper for a VASP vasprun.xml file.
     
+    Notes:
+        This is a read-only file wrapper.
+
     Args:
-        filename (str): Filename to read.
+        filepath (optional) (str): Filepath to a vasprun.xml file.
     """
 
-    def __init__(self, filename):
-        ts.is_type((filename, str, "filename"))
-        super().__init__()
-        self.read_xml(filename)
+    def __init__(self, filepath="vasprun.xml"):
+        super().__init__(filepath)
+        self._density_of_states = None
+        self._eigenvalues = None
+        self._fermi_energy = None
 
-    def dos(self, is_total=True):
-        """Returns an array of the density of states at all energy levels.
-        
-        Args:
-            is_total (optional) (bool): Determines whether `total` or `partial` DOS is extracted.
-        
-        Returns:
-            numpy.ndarray
-            - col 0: energy
-            -col 1, 2: density
-        """
-        ts.is_type((is_total, bool, "is_total"))
-        dos_section = self._data.find("calculation").find("dos")
-        if is_total:
-            arr = dos_section.find("total")
-        else:
-            arr = dos_section.find("partial")
-        arr = arr[0][-1][-1]
-        result = np.zeros(shape=(len(arr), 3))
+    def read(self, path=None):
+        if path is None:
+            path = self.filepath
+        # Density of States
+        root = ElementTree.parse(path).getroot()
+        dos_tree = root.find("calculation").find("dos")
+        arr = dos_tree.find("total")[0][-1][-1]
+        dos = np.zeros(shape=(len(arr), 3))
         for i, row in enumerate(arr):
             for j in range(3):
-                result[i, j] = float(row.text.split()[j])
-        return result
-
-    def eigenvalues(self):
-        """Returns an array of the electron Eigenvalues.
-        
-        Returns:
-            numpy.ndarray
-            - dimensionality = (n_spins, n_kpoints, n_bands, 2 <value, occupation>)
-        """
+                dos[i, j] = float(row.text.split()[j])
+        self.density_of_states = dos
+        # Eigenvalues
         try:
-            eigen = self._data.find('calculation').find('projected').find('eigenvalues').find('array')[-1]
+            ev_tree = root.find('calculation')\
+                          .find('projected')\
+                          .find('eigenvalues')\
+                          .find('array')[-1]
         except AttributeError:
-            eigen = self._data.find('calculation').find('eigenvalues').find('array')[-1]
-
-        n_spins, n_kpoints, n_bands = len(eigen), len(eigen[0]), len(eigen[0][0])
-        evalues = np.zeros(shape=(n_spins, n_kpoints, n_bands, 2))
+            ev_tree = root.find('calculation')\
+                          .find('eigenvalues')\
+                          .find('array')[-1]
+        n_spins = len(ev_tree)
+        n_kpoints = len(ev_tree[0])
+        n_bands = len(ev_tree[0][0])
+        eigenvalues = np.zeros(shape=(n_spins, n_kpoints, n_bands, 2))
         for i in range(n_spins):
             for j in range(n_kpoints):
                 for k in range(n_bands):
-                    evalues[i, j, k, 0] = float(eigen[i][j][k].text.split()[0])
-                    evalues[i, j, k, 1] = float(eigen[i][j][k].text.split()[1])
-        return evalues
+                    eigenvalues[i, j, k, 0] = float(ev_tree[i][j][k].text
+                                                                    .split()[0])
+                    eigenvalues[i, j, k, 1] = float(ev_tree[i][j][k].text
+                                                                    .split()[1])
+        self._eigenvalues = eigenvalues
+        # Fermi Energy
+        fermi_energy = float(dos_tree.find("i").text)
+        self._fermi_energy = fermi_energy
 
+    @property
+    def density_of_states(self):
+        """(numpy.ndarray): Total density of states."""
+        return self._density_of_states
+    
+    @density_of_states.setter
+    def density_of_states(self, value):
+        if type(value) is not np.ndarray:
+            raise TypeError()
+        self._density_of_states = value
+
+    @property
+    def eigenvalues(self):
+        """(numpy.ndarray): Array of eigenvalues of electrons in the system.
+        - dimensionality: (n_spins, n_kpoints, n_bands, 2 <value, occupation>)
+        """
+        return self._eigenvalues
+
+    @eigenvalues.setter
+    def eigenvalues(self, value):
+        if type(value) is not np.ndarray:
+            raise TypeError()
+        if len(value.shape) != 4:
+            raise ValueError()
+        self._eigenvalues = value
+
+    @property
     def fermi_energy(self):
-        """Returns the Fermi-Energy.
-        
-        Returns:
-            float
-        """
-        dos_section = self._data.find("calculation").find("dos")
-        e_fermi = float(dos_section.find("i").text)
-        return e_fermi
+        """(float): Fermi energy of the system."""
+        return self._fermi_energy
 
-    def kpoints(self):
-        """Returns an array of the k-points.
-        
-        Returns:
-            numpy.ndarray
-        """
-        kpts_raw = self._data.find('kpoints').findall('varray')[0]
-        n_kpts = len(kpts_raw)
-        kpts = np.zeros(shape=(n_kpts, 3))
-        for i in range(n_kpts):
-            for j in range(3):
-                kpts[i, j] = float(kpts_raw[i].text.split()[j])
-        return kpts
-
-    def kpoints_path(self):
-        """Returns the k-points generation path.
-        
-        Returns:
-            numpy.ndarray
-        """
-        generation = self._data.find('kpoints').find('generation').findall('v')
-        kpath = np.zeros([len(generation), 3])
-        for i in range(len(generation)):
-            for j in range(3):
-                kpath[i, j] = float(generation[i].text.split()[j])
-        return kpath
-
-    def reciprocal_lattice(self, is_initial=True):
-        """Returns lattice vectors of the reciprocal lattice.
-        
-        Args:
-            is_initial (optional) (bool): Determines if the initial or final lattice vectors are returned.
-
-        Returns:
-            numpy.ndarray
-        """
-        ts.is_type((is_initial, bool, "is_initial"))
-        rcp_latt = np.zeros(shape=(3, 3))
-        if is_initial:
-            rcp_raw = self._data.findall('structure')[0].find('crystal').findall('varray')[1]
-        else:
-            rcp_raw = self._data.findall('structure')[1].find('crystal').findall('varray')[1]
-        for i in range(3):
-            for j in range(3):
-                rcp_latt[i, j] = float(rcp_raw[i].text.split()[j])
-        return rcp_latt
+    @fermi_energy.setter
+    def fermi_energy(self, value):
+        if type(value) != float:
+            raise TypeError()
+        self._fermi_energy = value
