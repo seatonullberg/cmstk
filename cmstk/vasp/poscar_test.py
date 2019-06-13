@@ -1,6 +1,7 @@
 from cmstk.vasp.poscar import PoscarFile
 from cmstk.testing_resources import data_directory
 import numpy as np
+import copy
 import os
 
 
@@ -37,3 +38,25 @@ def test_poscar_file():
     assert np.array_equal(poscar_reader.relaxations,
                           poscar.relaxations)
     os.remove("test.poscar")
+
+
+def test_poscar_to_cartesian():
+    """Tests conversion from direct to cartesian coordinates."""
+    path = os.path.join(data_directory(), "vasp", "POSCAR")
+    poscar = PoscarFile(path)
+    poscar.read()
+    orig_positions = copy.deepcopy(poscar.positions)
+    # starts as cartesian so convert to direct
+    poscar.to_direct()
+    poscar.to_cartesian()
+    cart_positions = copy.deepcopy(poscar.positions)
+    assert np.array_equal(orig_positions, cart_positions)
+
+
+def test_poscar_to_direct():
+    """Tests conversion from cartesian to direct coordinates."""
+    path = os.path.join(data_directory(), "vasp", "POSCAR")
+    poscar = PoscarFile(path)
+    poscar.read()
+    poscar.to_direct()
+    assert np.max(poscar.positions) <= 1

@@ -106,6 +106,48 @@ class PoscarFile(BaseFile):
                 row = " ".join(row)
                 f.write("{}\n".format(row))
 
+    def to_cartesian(self):
+        """Converts positions to a Cartesian coordinate system.
+        
+        Args:
+            None
+
+        Returns:
+            None
+        """
+        # do nothing if already in Cartesian system
+        if self.coordinate_system[0] in ["C", "c"]:
+            return
+        factor = np.diag(self.lattice_constant * self.lattice_vectors)
+        # TODO:
+        # there has to be a faster way...
+        positions = []
+        for row in self.positions:
+            positions.append(np.diag(row * factor))
+        self.positions = np.array(positions)
+        self.coordinate_system = "Cartesian"
+
+    def to_direct(self):
+        """Converts positions to a Direct coordinate system.
+        
+        Args:
+            None
+
+        Returns:
+            None
+        """
+        # do nothing if already in Direct system
+        if self.coordinate_system[0] in ["D", "d"]:
+            return
+        factor = np.diag(self.lattice_constant * self.lattice_vectors)
+        # TODO:
+        # there has to be a faster way...
+        positions = []
+        for row in self.positions:
+            positions.append(np.diag(row / factor))
+        self.positions = np.array(positions)
+        self.coordinate_system = "Direct"
+
     @property
     def comment(self):
         """(str): Comment line at the top of the file."""
