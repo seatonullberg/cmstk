@@ -58,5 +58,8 @@ def test_poscar_to_direct():
     path = os.path.join(data_directory(), "vasp", "POSCAR")
     poscar = PoscarFile(path)
     poscar.read()
+    orig_shape = copy.deepcopy(poscar.positions.shape)
     poscar.to_direct()
+    direct_shape = copy.deepcopy(poscar.positions.shape)
     assert np.max(poscar.positions) <= 1
+    assert direct_shape == orig_shape

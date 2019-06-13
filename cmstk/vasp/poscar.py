@@ -123,7 +123,7 @@ class PoscarFile(BaseFile):
         # there has to be a faster way...
         positions = []
         for row in self.positions:
-            positions.append(np.diag(row * factor))
+            positions.append(row * factor)
         self.positions = np.array(positions)
         self.coordinate_system = "Cartesian"
 
@@ -144,7 +144,7 @@ class PoscarFile(BaseFile):
         # there has to be a faster way...
         positions = []
         for row in self.positions:
-            positions.append(np.diag(row / factor))
+            positions.append(row / factor)
         self.positions = np.array(positions)
         self.coordinate_system = "Direct"
 
