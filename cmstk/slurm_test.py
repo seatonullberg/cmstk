@@ -21,7 +21,10 @@ def test_submission_script():
     assert str(ss1.time) == "1:00:00"
     assert ss1.output == "job.out"
     assert ss1.error == "job.err"
-    assert ss1.qos == os.environ.get("SLURM_QOS")
+    if ss0.qos is None:
+        assert ss1.qos == "None"
+    else:
+        assert ss1.qos == os.environ.get("SLURM_QOS")
     assert ss1.modules == ["test/0.1.0"]
     assert ss1.cmds == ["echo 'test'"]
     os.remove(ss0.filepath)
