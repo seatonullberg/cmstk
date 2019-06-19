@@ -107,9 +107,3 @@ class OszicarFile(BaseFile):
             if type(v) is not float:
                 raise TypeError()
         self._magnetization = value
-
-
-if __name__ == "__main__":
-    path = "/home/seaton/python-repos/cmstk/data/vasp/OSZICAR"
-    oszicar = OszicarFile(path)
-    oszicar.read()
