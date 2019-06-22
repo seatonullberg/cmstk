@@ -1,4 +1,4 @@
-from cmstk.units.base import BaseUnit
+from cmstk.units.base import BaseUnit, Number
 
 
 class DistanceUnit(BaseUnit): 
@@ -7,32 +7,25 @@ class DistanceUnit(BaseUnit):
     The base unit of distance is Meter.
     
     Args:
-        base_value (float): Starting value to initialize the unit with.
+        base_value (float or int): Starting value to initialize the unit with.
         - Must be in terms of the base unit.
-
-    Attributes:
-        base_value (float): Value in terms of the base unit.
-        base_unit (type): The base unit type.
     """
 
-    def __init__(self, base_value):
-        assert type(base_value) is float
-        super().__init__(value=base_value, kind=DistanceUnit)
-        self.base_value = base_value
-        self.base_unit = Meter
+    def __init__(self, base_value: Number):
+        super().__init__(Meter, DistanceUnit, base_value)
 
 
 class Angstrom(DistanceUnit):
     """Representation of the Angstrom distance unit.
     
     Args:
-        value (float): Starting value to initialize the unit with.
+        value (optional) (float or int): Starting value.
     
     Attributes:
-        value (float): Value of the unit.
+        value (float or int): Value of the unit.
     """
 
-    def __init__(self, value):
+    def __init__(self, value: Number = 0):
         super().__init__(self.convert(value))
         self.value = value
 
@@ -49,13 +42,13 @@ class Meter(DistanceUnit):
     """Represents the Meter distance unit.
     
     Args:
-        value (float): Starting value to initialize the unit with.
+        value (optional) (float or int): Starting value.
 
     Attributes:
-        value (float): Value of the unit.
+        value (float or int): Value of the unit.
     """
 
-    def __init__(self, value):
+    def __init__(self, value: Number = 0):
         super().__init__(self.convert(value))
         self.value = value
 
@@ -72,13 +65,13 @@ class Nanometer(DistanceUnit):
     """Representation of the Nanometer distance unit.
     
     Args:
-        value (float): Starting value to initialize the unit with.
+        value (optional) (float or int): Starting value.
 
     Attributes:
-        value (float): Value of the unit.
+        value (float or int): Value of the unit.
     """
 
-    def __init__(self, value):
+    def __init__(self, value: Number = 0):
         super().__init__(self.convert(value))
         self.value = value
 
@@ -94,13 +87,13 @@ class Picometer(DistanceUnit):
     """Representation of the Picometer distance unit.
 
     Args:
-        value (float): Starting value to initialize the unit with.
+        value (optional) (float or int): Starting value.
 
     Attributes:
-        value (float): Value of the unit.
+        value (float or int): Value of the unit.
     """
 
-    def __init__(self, value):
+    def __init__(self, value: Number = 0):
         super().__init__(self.convert(value))
         self.value = value
 

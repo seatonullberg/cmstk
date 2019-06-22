@@ -2,20 +2,12 @@ from cmstk.units.angle import AngleUnit, Degree, Radian
 from cmstk.testing_resources import within_one_percent
 
 
-# Degree
-
-def test_init_degree():
-    # tests if Degree can be initialized
+def test_degree():
+    """Tests initialization and conversion of a Degree object."""
     value = 1.0
     d = Degree(value)
-    assert isinstance(d, AngleUnit)
-    assert d.value == value
     assert d.kind == AngleUnit
-
-def test_degree_to_all():
-    # tests Degree unit conversion
-    value = 1.0
-    d = Degree(value)
+    assert d.value == value
     new_d = d.to(Degree)
     assert type(new_d) is Degree
     assert within_one_percent(value, new_d.value)
@@ -27,20 +19,12 @@ def test_degree_to_all():
     assert within_one_percent(0.0174533, base.value)
 
 
-# Radian
-
-def test_init_radian():
-    # tests if Radian can be initialized
+def test_radian():
+    """Tests initialization and conversion of a Radian object."""
     value = 1.0
     r = Radian(value)
-    assert isinstance(r, AngleUnit)
-    assert r.value == value
     assert r.kind == AngleUnit
-
-def test_radian_to_all():
-    # tests Radian unit conversion
-    value = 1.0
-    r = Radian(value)
+    assert r.value == value
     d = r.to(Degree)
     assert type(d) is Degree
     assert within_one_percent(57.2958, d.value)

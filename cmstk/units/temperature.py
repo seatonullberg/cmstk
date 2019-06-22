@@ -1,4 +1,3 @@
-import type_sanity as ts
 from cmstk.units.base import BaseUnit
 
 

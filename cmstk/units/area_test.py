@@ -1,33 +1,25 @@
-from cmstk.units.area import AreaUnit, AngstromSquared, MeterSquared, NanometerSquared, PicometerSquared
+from cmstk.units.area import (AreaUnit, AngstromSquared, MeterSquared, 
+                              NanometerSquared, PicometerSquared)
 from cmstk.units.distance import Angstrom, Meter, Nanometer, Picometer
 from cmstk.testing_resources import within_one_percent
 
-# AreaUnit
 
 def test_area_from_distance():
-    # tests if AreaUnit can be initialized from two distances
+    """Tests AreaUnit initialization from 2 instances of a DistanceUnit."""
     value = 1.0
-    d1 = Nanometer(value)  # arbitrary distance
-    d2 = Picometer(value)  # arbitrary distance
-    a = AreaUnit.from_distance(d1, d2)
+    d0 = Nanometer(value)  # arbitrary distance
+    d1 = Picometer(value)  # arbitrary distance
+    a = AreaUnit.from_distance(d0, d1)
     assert type(a) is AreaUnit
-    assert a.to(MeterSquared).value == d1.to(Meter).value * d2.to(Meter).value
+    assert a.to(MeterSquared).value == d0.to(Meter).value * d1.to(Meter).value
 
 
-# AngstromSquared
-
-def test_init_angstrom_squared():
-    # tests if AngstromSquared can be initialized
+def test_angstrom_squared():
+    """Tests initialization and conversion of an AngstromSquared object."""
     value = 1.0
     a = AngstromSquared(value)
-    assert isinstance(a, AreaUnit)
-    assert a.value == value
     assert a.kind == AreaUnit
-
-def test_angstrom_squared_to_all():
-    # tests AngstromSquared unit conversion
-    value = 1.0
-    a = AngstromSquared(value)
+    assert a.value == value
     new_a = a.to(AngstromSquared)
     assert type(new_a) is AngstromSquared
     assert within_one_percent(value, new_a.value)
@@ -45,20 +37,13 @@ def test_angstrom_squared_to_all():
     assert within_one_percent(1e-20, base.value)
 
 
-# MeterSquared
 
-def test_init_meter_squared():
-    # tests if MeterSquared can be initialized
+def test_meter_squared():
+    """Tests initialization and conversion of a MeterSquared object."""
     value = 1.0
     m = MeterSquared(value)
-    assert isinstance(m, AreaUnit)
-    assert m.value == value
     assert m.kind == AreaUnit
-
-def test_meter_squared_to_all():
-    # tests MeterSquared unit conversion
-    value = 1.0
-    m = MeterSquared(value)
+    assert m.value == value
     a = m.to(AngstromSquared)
     assert type(a) is AngstromSquared
     assert within_one_percent(1e20, a.value)
@@ -76,20 +61,12 @@ def test_meter_squared_to_all():
     assert within_one_percent(value, base.value)
 
 
-# NanometerSquared
-
-def test_init_nanometer_squared():
-    # tests if NanometerSquared can be initialized
+def test_nanometer_squared():
+    """Tests initialization and conversion of a NanometerSquared object."""
     value = 1.0
     n = NanometerSquared(value)
-    assert isinstance(n, AreaUnit)
-    assert n.value == value
     assert n.kind == AreaUnit
-
-def test_nanometer_squared_to_all():
-    # tests NanometerSquared unit conversion
-    value = 1.0
-    n = NanometerSquared(value)
+    assert n.value == value
     a = n.to(AngstromSquared)
     assert type(a) is AngstromSquared
     assert within_one_percent(100, a.value)
@@ -106,22 +83,14 @@ def test_nanometer_squared_to_all():
     base = n.to_base()
     assert type(base) is MeterSquared
     assert within_one_percent(1e-18, base.value)
+    
 
-
-# PicometerSquared
-
-def test_init_picometer_squared():
-    # tests if PicometerSquared can be initialized
+def test_picometer_squared():
+    """Tests initialization and conversion of a PicometerSquared object."""
     value = 1.0
     p = PicometerSquared(value)
-    assert isinstance(p, AreaUnit)
-    assert p.value == value
     assert p.kind == AreaUnit
-
-def test_picometer_squared_to_all():
-    # tests PicometerSquared unit conversion
-    value = 1.0
-    p = PicometerSquared(value)
+    assert p.value == value
     a = p.to(AngstromSquared)
     assert type(a) is AngstromSquared
     assert within_one_percent(1e-4, a.value)

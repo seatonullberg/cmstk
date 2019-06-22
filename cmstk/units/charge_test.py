@@ -1,20 +1,13 @@
 from cmstk.units.charge import ChargeUnit, Coulomb, ElectronCharge
 from cmstk.testing_resources import within_one_percent
 
-# Coulomb
 
-def test_init_coulomb():
-    # tests if Coulomb can be initialized
+def test_coulomb():
+    """Tests initialization and conversion of a Coulomb object."""
     value = 1.0
     c = Coulomb(value)
-    assert isinstance(c, ChargeUnit)
-    assert c.value == value
     assert c.kind == ChargeUnit
-
-def test_coulomb_to_all():
-    # tests Coulomb unit conversion
-    value = 1.0
-    c = Coulomb(value)
+    assert c.value == value
     new_c = c.to(Coulomb)
     assert type(new_c) is Coulomb
     assert within_one_percent(value, new_c.value)
@@ -24,21 +17,14 @@ def test_coulomb_to_all():
     base = c.to_base()
     assert type(base) is Coulomb
     assert within_one_percent(value, base.value)
+    
 
-# ElectronCharge
-
-def test_init_electron_charge():
+def test_electron_charge():
     # tests if ElectronCharge can be initialized
     value = 1.0
     e = ElectronCharge(value)
-    assert isinstance(e, ChargeUnit)
-    assert e.value == value
     assert e.kind == ChargeUnit
-
-def test_electron_charge_to_all():
-    # tests ElectronCharge unit conversion
-    value = 1.0
-    e = ElectronCharge(value)
+    assert e.value == value
     c = e.to(Coulomb)
     assert type(c) is Coulomb
     assert within_one_percent(1.60218e-19, c.value)

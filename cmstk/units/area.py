@@ -1,6 +1,5 @@
-from cmstk.units.base import BaseUnit
-from cmstk.units.distance import DistanceUnit
-from cmstk.units.distance import Meter
+from cmstk.units.base import BaseUnit, Number
+from cmstk.units.distance import DistanceUnit, Meter
 
 
 class AreaUnit(BaseUnit): 
@@ -9,34 +8,28 @@ class AreaUnit(BaseUnit):
     The base unit of area is MeterSquared.
     
     Args:
-        base_value (float): Starting value to initialize the unit with.
+        base_value (float or int): Starting value to initialize the unit with.
         - Must be in terms of the base unit.
-
-    Attributes:
-        base_value (float): Value in terms of the base unit.
-        base_unit (type): The base unit type.
     """
 
-    def __init__(self, base_value):
-        assert type(base_value) is float
-        super().__init__(value=base_value, kind=AreaUnit)
-        self.base_value = base_value
-        self.base_unit = MeterSquared
+    def __init__(self, base_value: Number):
+        super().__init__(MeterSquared, AreaUnit, base_value)
 
     @classmethod
-    def from_distance(cls, d1, d2):
+    def from_distance(cls, d0, d1):
         """Initializes AreaUnit from two arbitrary DistanceUnits.
         
         Args:
-            d1 (DistanceUnit): The first distance.
-            d2 (DistanceUnit): The second distance.
+            d0 (instance of DistanceUnit): The first distance.
+            d1 (instance of DistanceUnit): The second distance.
         
         Returns:
             AreaUnit
         """
-        assert isinstance(d1, DistanceUnit)
-        assert isinstance(d2, DistanceUnit)
-        new_area = d1.to(Meter).value * d2.to(Meter).value
+        if not isinstance(d0, DistanceUnit) or not isinstance(d1, DistanceUnit):
+            err = "`d0` and `d1` must be instances of type DistanceUnit"
+            raise ValueError(err)
+        new_area = d0.to(Meter).value * d1.to(Meter).value
         return cls(new_area)
 
 
@@ -44,13 +37,13 @@ class AngstromSquared(AreaUnit):
     """Representation of the AngstromSquared area unit
     
     Args:
-        value (float): Starting value to initialize the unit with.
+        value (optional) (float or int): Starting value.
 
     Attributes:
-        value (float): Value of the unit.
+        value (float or int): Value of the unit.
     """
 
-    def __init__(self, value):
+    def __init__(self, value: Number = 0):
         super().__init__(self.convert(value))
         self.value = value
 
@@ -67,13 +60,13 @@ class MeterSquared(AreaUnit):
     """Representation of the MeterSquared area unit.
     
     Args:
-        value (float): Starting value to initialize the unit with.
+        value (optional) (float or int): Starting value.
 
     Attributes:
-        value (float): Value of the unit.
+        value (float or int): Value of the unit.
     """
 
-    def __init__(self, value):
+    def __init__(self, value: Number = 0):
         super().__init__(self.convert(value))
         self.value = value
 
@@ -85,19 +78,18 @@ class MeterSquared(AreaUnit):
     def convert_inverse(x):
         return x
 
-    
 
 class NanometerSquared(AreaUnit):
     """Representation of the NanometerSquared area unit.
 
     Args:
-        value (float): Starting value to initialize the unit with.
+        value (optional) (float or int): Starting value.
 
     Attributes:
-        value (float): Value of the unit.
+        value (float or int): Value of the unit.
     """
 
-    def __init__(self, value):
+    def __init__(self, value: Number = 0):
         super().__init__(self.convert(value))
         self.value = value
 
@@ -114,13 +106,13 @@ class PicometerSquared(AreaUnit):
     """Representation of the PicometerSquared area unit.
 
     Args:
-        value (float): Starting value to initialize the unit with.
+        value (optional) (float or int): Starting value.
 
     Attributes:
-        value (float): Value of the unit.
+        value (float or int): Value of the unit.
     """
 
-    def __init__(self, value):
+    def __init__(self, value: Number = 0):
         super().__init__(self.convert(value))
         self.value = value
 

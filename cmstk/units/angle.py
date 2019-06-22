@@ -1,5 +1,5 @@
-from cmstk.units.base import BaseUnit
 import math
+from cmstk.units.base import BaseUnit, Number
 
 
 class AngleUnit(BaseUnit):
@@ -8,32 +8,25 @@ class AngleUnit(BaseUnit):
     The base unit of angle is Radian.
 
     Args:
-        base_value (float): Starting value to initialize the unit with.
+        base_value (float or int): Starting value to initialize the unit with.
         - must be in terms of the base unit.
-
-    Attributes:
-        base_value (float): Value in terms of the base unit.
-        base_unit (type): The base unit type.
     """
 
-    def __init__(self, base_value):
-        assert type(base_value) is float
-        super().__init__(value=base_value, kind=AngleUnit)
-        self.base_value = base_value
-        self.base_unit = Radian
+    def __init__(self, base_value: Number):
+        super().__init__(Radian, AngleUnit, base_value)
 
 
 class Degree(AngleUnit):
     """Representation of the Degree angle unit.
 
     Args:
-        value (float): Starting value to initialize the unit with.
+        value (optional) (float or int): Starting value.
 
     Attributes:
-        value (float): Value of the unit.
+        value (float or int): Value of the unit.
     """
 
-    def __init__(self, value):
+    def __init__(self, value: Number = 0):
         super().__init__(self.convert(value))
         self.value = value
 
@@ -50,13 +43,13 @@ class Radian(AngleUnit):
     """Representation of the Radian angle unit.
 
     Args:
-        value (float): Starting value to initialize the unit with.
+        value (optional) (float or int): Starting value.
 
     Attributes:
         value (float): Value of the unit.
     """
 
-    def __init__(self, value):
+    def __init__(self, value: Number = 0):
         super().__init__(self.convert(value))
         self.value = value
 

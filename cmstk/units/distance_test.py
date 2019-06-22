@@ -1,21 +1,14 @@
-from cmstk.units.distance import DistanceUnit, Angstrom, Meter, Nanometer, Picometer
+from cmstk.units.distance import (DistanceUnit, Angstrom, Meter, Nanometer, 
+                                  Picometer)
 from cmstk.testing_resources import within_one_percent
 
 
-# Angstrom
-
-def test_init_angstrom():
-    # tests if Angstrom can be initialized
+def test_angstrom():
+    """Tests initialization and conversion of an Angstrom object."""
     value = 1.0
     a = Angstrom(value)
-    assert isinstance(a, DistanceUnit)
-    assert a.value == value
     assert a.kind == DistanceUnit
-
-def test_angstrom_to_all():
-    # tests Angstrom unit conversion
-    value = 1.0
-    a = Angstrom(value)
+    assert a.value == value
     new_a = a.to(Angstrom)
     assert type(new_a) is Angstrom
     assert within_one_percent(value, new_a.value)
@@ -31,22 +24,14 @@ def test_angstrom_to_all():
     base = a.to_base()
     assert type(base) is Meter
     assert within_one_percent(1e-10, base.value)
+    
 
-
-# Meter
-
-def test_init_meter():
-    # tests if Meter can be initialized
+def test_meter():
+    """Tests initialization and conversion of a Meter object."""
     value = 1.0
     m = Meter(value)
-    assert isinstance(m, DistanceUnit)
-    assert m.value == value
     assert m.kind == DistanceUnit
-
-def test_meter_to_all():
-    # tests Meter unit conversion
-    value = 1.0
-    m = Meter(value)
+    assert m.value == value
     a = m.to(Angstrom)
     assert type(a) is Angstrom
     assert within_one_percent(1e10, a.value)
@@ -62,22 +47,14 @@ def test_meter_to_all():
     base = m.to_base()
     assert type(base) is Meter
     assert within_one_percent(value, base.value)
-    
 
-# Nanometer
 
 def test_init_nanometer():
-    # tests if Nanometer can be initialized
+    """Tests initialization and conversion of a Nanometer object."""
     value = 1.0
     n = Nanometer(value)
-    assert isinstance(n, DistanceUnit)
-    assert n.value == value
     assert n.kind == DistanceUnit
-
-def test_nanometer_to_all():
-    # tests Nanometer unit conversion
-    value = 1.0
-    n = Nanometer(value)
+    assert n.value == value
     a = n.to(Angstrom)
     assert type(a) is Angstrom
     assert within_one_percent(10.0, a.value)
@@ -93,22 +70,14 @@ def test_nanometer_to_all():
     base = n.to_base()
     assert type(base) is Meter
     assert within_one_percent(1e-9, base.value)
-    
 
-# Picometer
 
-def test_init_picometer():
-    # tests if a Picometer can be initialized
+def test_picometer():
+    """Tests initialization and conversion of a Picometer object."""
     value = 1.0
     p = Picometer(value)
-    assert isinstance(p, DistanceUnit)
-    assert p.value == value
     assert p.kind == DistanceUnit
-
-def test_picometer_to_all():
-    # tests Picometer unit conversion
-    value = 1.0
-    p = Picometer(value)
+    assert p.value == value
     a = p.to(Angstrom)
     assert type(a) is Angstrom
     assert within_one_percent(0.01, a.value)
@@ -124,4 +93,3 @@ def test_picometer_to_all():
     base = p.to_base()
     assert type(base) is Meter
     assert within_one_percent(1e-12, base.value)
-

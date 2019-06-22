@@ -1,16 +1,16 @@
 import matplotlib.pyplot as plt
-from cmstk.vasp.vasprun import VasprunReader
+from cmstk.vasp.vasprun import VasprunFile
 
 
 class DensityOfStatesPlot(object):
     """Implementation of a plot displaying DOS vs. Energy.
     
     Args:
-        reader (VasprunReader): vasprun.xml reader to supply DOS data.
+        reader (VasprunFile): vasprun.xml wrapper to supply DOS data.
     """
 
     def __init__(self, reader):
-        assert type(reader) is VasprunReader
+        assert type(reader) is VasprunFile
         if reader._data is None:
             raise ValueError("`reader` must be populated prior to plotting")
         self._reader = reader
