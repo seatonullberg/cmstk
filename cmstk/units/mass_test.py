@@ -2,20 +2,12 @@ from cmstk.units.mass import MassUnit, AtomicMassUnit, Gram, Kilogram, Picogram
 from cmstk.testing_resources import within_one_percent
 
 
-# AtomicMassUnit
-
-def test_init_atomic_mass_unit():
-    # tests if AtomicMassUnit can be initialized
+def test_atomic_mass_unit():
+    """Tests initialization and conversion of an AtomicMassUnit."""
     value = 1.0
     a = AtomicMassUnit(value)
-    assert isinstance(a, MassUnit)
-    assert a.value == value
     assert a.kind == MassUnit
-
-def test_atomic_mass_unit_to_all():
-    # tests AtomicMassUnit unit conversion
-    value = 1.0
-    a = AtomicMassUnit(value)
+    assert a.value == value
     new_a = a.to(AtomicMassUnit)
     assert type(new_a) is AtomicMassUnit
     assert within_one_percent(value, new_a.value)
@@ -31,22 +23,15 @@ def test_atomic_mass_unit_to_all():
     base = a.to_base()
     assert type(base) is Kilogram
     assert within_one_percent(1.66054e-27, base.value)
+    
 
 
-# Gram
-
-def test_init_gram():
-    # tests if Gram can be initialized
+def test_gram():
+    """Tests initialization and conversion of a Gram object."""
     value = 1.0
     g = Gram(value)
-    assert isinstance(g, MassUnit)
-    assert g.value == value
     assert g.kind == MassUnit
-
-def test_gram_to_all():
-    # tests Gram unit conversion
-    value = 1.0
-    g = Gram(value)
+    assert g.value == value
     a = g.to(AtomicMassUnit)
     assert type(a) is AtomicMassUnit
     assert within_one_percent(6.022e+23, a.value)
@@ -64,20 +49,12 @@ def test_gram_to_all():
     assert within_one_percent(0.001, base.value)
 
 
-# Kilogram
-
-def test_init_kilogram():
-    # tests if Kilogram can be initialized
+def test_kilogram():
+    """Tests initialization and conversion of a Kilogram object."""
     value = 1.0
     k = Kilogram(value)
-    assert isinstance(k, MassUnit)
-    assert k.value == value
     assert k.kind == MassUnit
-
-def test_kilogram_to_all():
-    # tests Kilogram unit conversion
-    value = 1.0
-    k = Kilogram(value)
+    assert k.value == value
     a = k.to(AtomicMassUnit)
     assert type(a) is AtomicMassUnit
     assert within_one_percent(6.022e+26, a.value)
@@ -95,20 +72,12 @@ def test_kilogram_to_all():
     assert within_one_percent(value, base.value)
 
 
-# Picogram
-
-def test_init_picogram():
-    # tests if Picogram can be initialized
+def test_picogram():
+    """Tests initialization and conversion of a Picogram object."""
     value = 1.0
     p = Picogram(value)
-    assert isinstance(p, MassUnit)
-    assert p.value == value
     assert p.kind == MassUnit
-
-def test_picogram_to_all():
-    # tests Picogram unit conversion
-    value = 1.0
-    p = Picogram(value)
+    assert p.value == value
     a = p.to(AtomicMassUnit)
     assert type(a) is AtomicMassUnit
     assert within_one_percent(6.022e+11, a.value)

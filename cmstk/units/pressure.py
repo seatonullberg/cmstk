@@ -1,4 +1,4 @@
-from cmstk.units.base import BaseUnit
+from cmstk.units.base import BaseUnit, Number
 from cmstk.units.area import AreaUnit, MeterSquared
 from cmstk.units.force import ForceUnit, Newton
 

@@ -1,20 +1,13 @@
 from cmstk.units.energy import EnergyUnit, ElectronVolt, Joule
 from cmstk.testing_resources import within_one_percent
 
-# ElectronVolt
 
-def test_init_electron_volt():
-    # tests if ElectronVolt can be initialized
+def test_electron_volt():
+    """Tests initialization and conversion of an ElectronVolt object."""
     value = 1.0
     ev = ElectronVolt(value)
-    assert isinstance(ev, EnergyUnit)
-    assert ev.value == value
     assert ev.kind == EnergyUnit
-
-def test_electron_volt_to_all():
-    # tests ElectronVolt unit conversion
-    value = 1.0
-    ev = ElectronVolt(value)
+    assert ev.value == value
     new_ev = ev.to(ElectronVolt)
     assert type(new_ev) is ElectronVolt
     assert within_one_percent(value, new_ev.value)
@@ -26,20 +19,12 @@ def test_electron_volt_to_all():
     assert within_one_percent(1.60218e-19, base.value)
 
 
-# Joule
-
-def test_init_joule():
-    # tests if Joule can be initialized
+def test_joule():
+    """Tests initialization and conversion of a Joule object."""
     value = 1.0
     j = Joule(value)
-    assert isinstance(j, EnergyUnit)
-    assert j.value == value
     assert j.kind == EnergyUnit
-
-def test_joule_to_all():
-    # tests Joule unit conversion
-    value = 1.0
-    j = Joule(value)
+    assert j.value == value
     ev = j.to(ElectronVolt)
     assert type(ev) is ElectronVolt
     assert within_one_percent(6.242e18, ev.value)
@@ -50,4 +35,3 @@ def test_joule_to_all():
     base = j.to_base()
     assert type(base) is Joule
     assert within_one_percent(value, base.value)
-    

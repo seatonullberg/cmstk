@@ -1,4 +1,4 @@
-from cmstk.units.base import BaseUnit
+from cmstk.units.base import BaseUnit, Number
 
 
 class ForceUnit(BaseUnit):
@@ -9,30 +9,23 @@ class ForceUnit(BaseUnit):
     Args:
         base_value (float): Starting value to initialize the unit with.
         - Must be in terms of the base unit.
-
-    Attributes:
-        base_value (float): Value of the unit in terms of the base unit.
-        base_unit (type): The base unit type.
     """
 
-    def __init__(self, base_value):
-        assert type(base_value) is float
-        super().__init__(value=base_value, kind=ForceUnit)
-        self.base_value = base_value
-        self.base_unit = Newton
+    def __init__(self, base_value: Number):
+        super().__init__(Newton, ForceUnit, base_value)
 
 
 class Dyne(ForceUnit):
     """Representation of the Dyne unit of force.
 
     Args:
-        value (float): Starting value to initialize the unit with.
+        value (optional) (float or int): Starting value.
 
     Attributes:
-        value (float): Value of the unit.
+        value (float or int): Value of the unit.
     """
 
-    def __init__(self, value):
+    def __init__(self, value: Number = 0):
         super().__init__(self.convert(value))
         self.value = value
 
@@ -49,13 +42,13 @@ class Newton(ForceUnit):
     """Representation of the Newton unit of force.
 
     Args:
-        value (float): Starting value to initialize the unit with.
+        value (optional) (float or int): Starting value.
 
     Attributes:
-        value (float): Value of the unit.
+        value (float or int): Value of the unit.
     """
 
-    def __init__(self, value):
+    def __init__(self, value: Number = 0):
         super().__init__(self.convert(value))
         self.value = value
 
