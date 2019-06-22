@@ -1,4 +1,4 @@
-from cmstk.units.base import BaseUnit
+from cmstk.units.base import BaseUnit, Number
 
 
 class TimeUnit(BaseUnit):
@@ -7,32 +7,25 @@ class TimeUnit(BaseUnit):
     The base unit of time is Second.
     
     Args:
-        base_value (float): Starting value to initialize the unit with.
+        base_value (float or int): Starting value to initialize the unit with.
         - Must be in terms of the base unit.
-
-    Attributes:
-        base_value (float): Value in terms of the base unit.
-        base_unit (type): The base unit type.
     """
 
-    def __init__(self, base_value):
-        assert type(base_value) is float
-        super().__init__(value=base_value, kind=TimeUnit)
-        self.base_value = base_value
-        self.base_unit = Second
+    def __init__(self, base_value: Number):
+        super().__init__(Second, TimeUnit, base_value)
 
 
 class Picosecond(TimeUnit):
     """Representation of the Picosecond time unit.
     
     Args:
-        value (float): Staring value to initialize the unit with.
+        value (optional) (float or int): Staring value.
 
     Attributes:
-        value (float): Value of the unit.
+        value (float or int): Value of the unit.
     """
     
-    def __init__(self, value):
+    def __init__(self, value: Number = 0):
         super().__init__(self.convert(value))
         self.value = value
 
@@ -49,13 +42,13 @@ class Second(TimeUnit):
     """Representation of the Second time unit.
     
     Args:
-        value (float): Starting value to initialize the unit with
+        value (optional) (float or int): Starting value.
     
     Attributes:
-        value (float): Value of the unit.
+        value (float or int): Value of the unit.
     """
 
-    def __init__(self, value):
+    def __init__(self, value: Number = 0):
         super().__init__(self.convert(value))
         self.value = value
 

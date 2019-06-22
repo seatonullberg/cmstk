@@ -1,4 +1,4 @@
-from cmstk.units.base import BaseUnit
+from cmstk.units.base import BaseUnit, Number
 
 
 class TemperatureUnit(BaseUnit):
@@ -13,32 +13,25 @@ class TemperatureUnit(BaseUnit):
     BaseUnit class.
     
     Args:
-        base_value (float): Starting value to initialize the unit with.
+        base_value (float or int): Starting value to initialize the unit with.
         - Must be in terms of the base unit.
-
-    Attributes:
-        base_value (float): Value in terms of the base unit.
-        base_unit (type): The base unit type.
     """
 
-    def __init__(self, base_value):
-        assert type(base_value) is float
-        super().__init__(value=base_value, kind=TemperatureUnit)
-        self.base_value = base_value
-        self.base_unit = Celsius
+    def __init__(self, base_value: Number):
+        super().__init__(Celsius, TemperatureUnit, base_value)
 
 
 class Celsius(TemperatureUnit):
     """Representation of the Celsius temperature unit.
     
     Args:
-        value (float): Starting value to initialize the unit with.
+        value (optional) (float or int): Starting value.
 
     Attributes:
-        value (float): Value of the unit.
+        value (float or int): Value of the unit.
     """
 
-    def __init__(self, value):
+    def __init__(self, value: Number = 0):
         super().__init__(self.convert(value))
         self.value = value
 
@@ -55,13 +48,13 @@ class Fahrenheit(TemperatureUnit):
     """Representation of the Fahrenheit temperature unit.
     
     Args:
-        value (float): Starting value to initialize the unit with.
+        value (optional) (float or int): Starting value.
 
     Attributes:
-        value (float): Value of the unit.
+        value (float or int): Value of the unit.
     """
 
-    def __init__(self, value):
+    def __init__(self, value: Number = 0):
         super().__init__(self.convert(value))
         self.value = value
 
@@ -78,13 +71,13 @@ class Kelvin(TemperatureUnit):
     """Representation of the Kelvin temperature unit.
     
     Args:
-        value (float): Starting value to initialize the unit with.
+        value (optional) (float or int): Starting value.
 
     Attributes:
-        value (float): Value of the unit.
+        value (float or int): Value of the unit.
     """
 
-    def __init__(self, value):
+    def __init__(self, value: Number = 0):
         super().__init__(self.convert(value))
         self.value = value
 

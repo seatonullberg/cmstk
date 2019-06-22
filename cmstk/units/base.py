@@ -24,11 +24,11 @@ class BaseUnit(object):
         self.base_value = base_value
         self.kind = kind
 
-    def to(self, t: type) -> Any:
+    def to(self, t: Any) -> Any:
         """Converts self to another unit of the same kind.
         
         Args:
-            t (type): The unit to convert to.
+            t (instance of BaseUnit): The unit to convert to.
         
         Returns:
             instance of type(t)
@@ -49,9 +49,12 @@ class BaseUnit(object):
         """
         return self.to(self.base_unit)
 
-    def _check_kind(self, other: type) -> None:
+    def _check_kind(self, other: Any) -> None:
         """Raises an error if units are of a different kind.
            - other is an instance of BaseUnit
+
+        Args:
+            other (instance of BaseUnit): The unit to check.    
         """
         if self.kind != other.kind:
             raise ValueError("incompatible units: self.kind={} other.kind={}"

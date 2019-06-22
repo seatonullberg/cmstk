@@ -4,10 +4,9 @@ from cmstk.units.time import Picosecond, Second
 from cmstk.testing_resources import within_one_percent
 
 
-# SpeedUnit
-
 def test_speed_from_distance_time():
-    # tests if SpeedUnit can be initialized from a distance and a time
+    """Tests SpeedUnit initialization from an instance of a DistanceUnit and
+    a TimeUnit."""
     value = 1.0
     d = Angstrom(value)    # arbitrary distance
     t = Picosecond(value)  # arbitrary time
@@ -16,20 +15,13 @@ def test_speed_from_distance_time():
     assert s.to(MeterPerSecond).value == d.to(Meter).value / t.to(Second).value
 
 
-# AngstromPerPicosecond
-
-def test_init_angstrom_per_picosecond():
-    # tests if AngstromPerPicosecond can be initialized
+def test_angstrom_per_picosecond():
+    """Tests initialization and conversion of an AngstromPerPicosecond 
+    object."""
     value = 1.0
     a = AngstromPerPicosecond(value)
-    assert isinstance(a, SpeedUnit)
-    assert a.value == value
     assert a.kind == SpeedUnit
-
-def test_angstrom_per_picosecond_to_all():
-    # tests AngstromPerPicosecond unit conversion
-    value = 1.0
-    a = AngstromPerPicosecond(value)
+    assert a.value == value
     new_a = a.to(AngstromPerPicosecond)
     assert type(new_a) is AngstromPerPicosecond
     assert within_one_percent(value, new_a.value)
@@ -39,22 +31,14 @@ def test_angstrom_per_picosecond_to_all():
     base = a.to_base()
     assert type(base) is MeterPerSecond
     assert within_one_percent(100.0, base.value)
+    
 
-
-# MeterPerSecond
-
-def test_init_meter_per_second():
-    # tests if MeterPerSecond can be initialized
+def test_meter_per_second():
+    """Tests initialization and conversion of a MeterPerSecond object."""
     value = 1.0
     m = MeterPerSecond(value)
-    assert isinstance(m, SpeedUnit)
-    assert m.value == value
     assert m.kind == SpeedUnit
-
-def test_meter_per_second_to_all():
-    # tests MeterPerSecond unit conversion
-    value = 1.0
-    m = MeterPerSecond(value)
+    assert m.value == value
     a = m.to(AngstromPerPicosecond)
     assert type(a) is AngstromPerPicosecond
     assert within_one_percent(0.01, a.value)
@@ -64,4 +48,3 @@ def test_meter_per_second_to_all():
     base = m.to_base()
     assert type(base) is MeterPerSecond
     assert within_one_percent(value, base.value)
-

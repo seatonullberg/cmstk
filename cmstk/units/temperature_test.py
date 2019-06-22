@@ -1,20 +1,13 @@
 from cmstk.units.temperature import TemperatureUnit, Celsius, Fahrenheit, Kelvin
 from cmstk.testing_resources import within_one_percent
 
-# Celsius
 
-def test_init_celsius():
-    # tests if Celsius can be initialized
+def test_celsius():
+    """Tests initialization and conversion of a Celsius object."""
     value = 1.0
     c = Celsius(value)
-    assert isinstance(c, TemperatureUnit)
-    assert c.value == value
     assert c.kind == TemperatureUnit
-
-def test_celsius_to_all():
-    # tests Celsius unit conversion
-    value = 1.0 
-    c = Celsius(value)
+    assert c.value == value
     new_c = c.to(Celsius)
     assert type(c) is Celsius
     assert within_one_percent(value, c.value)
@@ -29,20 +22,12 @@ def test_celsius_to_all():
     assert within_one_percent(value, base.value)
 
 
-# Fahrenheit
-
-def test_init_fahrenheit():
-    # tests if Fahrenheit can be initialized
+def test_fahrenheit():
+    """Tests initialization and conversion of a Fahrenheit object."""
     value = 1.0
     f = Fahrenheit(value)
-    assert isinstance(f, TemperatureUnit)
-    assert f.value == value
     assert f.kind == TemperatureUnit
-
-def test_fahrenheit_to_all():
-    # tests Fahrenheit unit conversion
-    value = 1.0
-    f = Fahrenheit(value)
+    assert f.value == value
     c = f.to(Celsius)
     assert type(c) is Celsius
     assert -18.0 < c.value < -17.0  # within_one_percent fails ???
@@ -58,20 +43,12 @@ def test_fahrenheit_to_all():
     assert -18.0 < base.value < -17.0  # within_one_percent fails ???
 
 
-# Kelvin
-
 def test_init_kelvin():
-    # tests is Kelvin can be initialized
+    """Tests initialization and conversion of a Kelvin object."""
     value = 1.0
     k = Kelvin(value)
-    assert isinstance(k, TemperatureUnit)
-    assert k.value == value
     assert k.kind == TemperatureUnit
-
-def test_kelvin_to_all():
-    # tests Kelvin unit conversion
-    value = 1.0
-    k = Kelvin(value)
+    assert k.value == value
     c = k.to(Celsius)
     assert type(c) is Celsius
     assert -273.0 < c.value < -272.0  # within_one_percent_fails ???
@@ -86,4 +63,3 @@ def test_kelvin_to_all():
     base = k.to_base()
     assert type(base) is Celsius
     assert -273.0 < base.value < -272.0  # within_one_percent_fails ???
- 

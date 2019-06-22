@@ -1,4 +1,4 @@
-from cmstk.units.base import BaseUnit
+from cmstk.units.base import BaseUnit, Number
 from cmstk.units.distance import DistanceUnit, Meter
 from cmstk.units.time import TimeUnit, Second
 
@@ -10,33 +10,28 @@ class SpeedUnit(BaseUnit):
     I use `speed` instead of `velocity` because these are not vector quantities.
 
     Args:
-        base_value (float): Starting value to initialize the unit with.
+        base_value (float or int): Starting value to initialize the unit with.
         - Must be in terms of the base unit.
-
-    Attributes:
-        base_value (float): Value in terms of the base unit.
-        base_unit (type): The base unit type.
     """
 
-    def __init__(self, base_value):
-        assert type(base_value) is float
-        super().__init__(value=base_value, kind=SpeedUnit)
-        self.base_value = base_value
-        self.base_unit = MeterPerSecond
+    def __init__(self, base_value: Number):
+        super().__init__(MeterPerSecond, SpeedUnit, base_value)
 
     @classmethod
     def from_distance_time(cls, d, t):
         """Initializes SpeedUnit from a DistanceUnit and a TimeUnit.
         
         Args:
-            d (DistanceUnit): The distance.
-            t (TimeUnit): The time.
+            d (instance of DistanceUnit): The distance.
+            t (instance of TimeUnit): The time.
 
         Returns:
             SpeedUnit
         """
-        assert isinstance(d, DistanceUnit)
-        assert isinstance(t, TimeUnit)
+        if not isinstance(d, DistanceUnit) or not isinstance(t, TimeUnit):
+            err = ("`d` and `t` must be instances of type DistanceUnit and \
+                    TimeUnit respectively")
+            raise ValueError(err)
         new_speed = d.to(Meter).value / t.to(Second).value
         return cls(new_speed)
 
@@ -45,13 +40,13 @@ class AngstromPerPicosecond(SpeedUnit):
     """Representation of the AngstromPerPicosecond Speed unit.
     
     Args:
-        value (numpy.ndarray): Starting value to initialize the unit with.
+        value (optional) (float or int): Starting value.
 
     Attributes:
-        value (numpy.ndarray): Value of the unit.
+        value (float or int): Value of the unit.
     """
 
-    def __init__(self, value):
+    def __init__(self, value: Number = 0):
         super().__init__(self.convert(value))
         self.value = value
 
@@ -68,13 +63,13 @@ class MeterPerSecond(SpeedUnit):
     """Representation of the MeterPerSecond Speed unit.
     
     Args:
-        value (numpy.ndarray): Starting value to initialize the unit with.
+        value (optional) (float or int): Starting value.
 
     Attributes:
-        value (numpy.ndarray): Value of the unit.
+        value (float or int): Value of the unit.
     """
 
-    def __init__(self, value):
+    def __init__(self, value: Number = 0):
         super().__init__(self.convert(value))
         self.value = value
 
