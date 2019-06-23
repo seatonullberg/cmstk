@@ -1,6 +1,7 @@
 from cmstk.units.base import BaseUnit, Number
 from cmstk.units.area import AreaUnit, MeterSquared
 from cmstk.units.force import ForceUnit, Newton
+from typing import Any
 
 
 class PressureUnit(BaseUnit):
@@ -13,11 +14,11 @@ class PressureUnit(BaseUnit):
         - Must be in terms of the base unit.
     """
 
-    def __init__(self, base_value: Number):
+    def __init__(self, base_value: Number) -> None:
         super().__init__(Pascal, PressureUnit, base_value)
 
     @classmethod
-    def from_area_force(cls, a, f):
+    def from_area_force(cls, a: Any, f: Any) -> Any:  # unable to declare
         """Initializes PressureUnit from an arbitrary AreaUnit and ForceUnit.
         
         Args:
@@ -49,16 +50,16 @@ class Bar(PressureUnit):
         value (float or int): Value of the unit.
     """
 
-    def __init__(self, value: Number = 0):
+    def __init__(self, value: Number = 0) -> None:
         super().__init__(self.convert(value))
         self.value = value
 
     @staticmethod
-    def convert(x):
+    def convert(x: Number) -> Number:
         return x * 100000
 
     @staticmethod
-    def convert_inverse(x):
+    def convert_inverse(x: Number) -> Number:
         return x / 100000
         
 
@@ -72,14 +73,14 @@ class Pascal(PressureUnit):
         value (float or int): Value of the unit.
     """
 
-    def __init__(self, value: Number = 0):
+    def __init__(self, value: Number = 0) -> None:
         super().__init__(self.convert(value))
         self.value = value
 
     @staticmethod
-    def convert(x):
+    def convert(x: Number) -> Number:
         return x
 
     @staticmethod
-    def convert_inverse(x):
+    def convert_inverse(x: Number) -> Number:
         return x

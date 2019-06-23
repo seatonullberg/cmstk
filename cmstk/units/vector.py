@@ -1,7 +1,7 @@
 import math
 import numpy as np
 from scipy.spatial.transform import Rotation
-from typing import Iterable, Any
+from typing import Any, MutableSequence
 from cmstk.units.base import BaseUnit
 from cmstk.units.angle import AngleUnit
 
@@ -20,7 +20,7 @@ class Vector(object):
           (Angstrom, Radian...) 
     """
 
-    def __init__(self, values: Iterable[BaseUnit]) -> None:
+    def __init__(self, values: MutableSequence[BaseUnit]) -> None:
         kind = values[0].kind
         for v in values[1:]:
             if v.kind != kind:
@@ -30,22 +30,25 @@ class Vector(object):
         self._values = values
 
     @property
-    def size(self):
-        """Return the size of the vector."""
+    def size(self) -> int:
+        """(int): Return the size of the vector."""
         return len(self._values)
 
     # TODO: init from a numpy.ndarray
 
-    def to_ndarray(self, t=None) -> np.ndarray:
+    # TODO: This needs better type annotations
+    def to_ndarray(self, t: Any = None) -> np.ndarray:
         """Converts the values in vector to a numpy.ndarray.
         
         Args:
-            t (optional) (type): Unit type to convert to before placing values in array.
+            t (optional) (instance of BaseUnit): Unit type to convert to before
+            placing values in array.
             - If t is None, the base_unit of self.kind will be used.
 
         Returns:
             numpy.ndarray
         """
+
         if t is None:
             t = self.kind(0).base_unit
         else:
@@ -64,7 +67,7 @@ class Vector(object):
     def dot(self):
         raise NotImplementedError()
 
-    def rotate(self, vec) -> None:
+    def rotate(self, vec: Any) -> None:  # unable to declare
         """Rotate by an angle vector.
         
         Args:
@@ -89,7 +92,7 @@ class Vector(object):
             units.append(original_units[i](v))  # convert back to original unit
         self._values = units
 
-    def translate(self, vec) -> None:
+    def translate(self, vec: Any) -> None:  # unable to declare
         """Translate values by another vector of same kind.
         
         Args:
@@ -108,11 +111,11 @@ class Vector(object):
             units.append((v_self + v_other).to(type(v_self)))
         self._values = units
 
-    def magnitude(self, t: type) -> Any:
+    def magnitude(self, t: Any) -> Any:
         """Return the magnitude in terms of type t.
         
         Args:
-            t (type): Type to return the magnitude as.
+            t (instance of BaseUnit): Type to return the magnitude as.
             - must be a subclass of self.kind
         
         Returns:
@@ -150,7 +153,7 @@ class Vector2D(Vector):
         kind (type): The kind of all units in the vector.
     """
 
-    def __init__(self, values: Iterable[BaseUnit]):
+    def __init__(self, values: MutableSequence[BaseUnit]):
         if len(values) != 2:
             raise ValueError("`values` must have length 2")
         super().__init__(values)
@@ -166,7 +169,7 @@ class Vector3D(Vector):
         kind (type): The kind of all units in the vector.
     """
 
-    def __init__(self, values: Iterable[BaseUnit]):
+    def __init__(self, values: MutableSequence[BaseUnit]):
         if len(values) != 3:
             raise ValueError("`values` must have length 3")
         super().__init__(values)

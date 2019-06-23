@@ -11,7 +11,7 @@ class DistanceUnit(BaseUnit):
         - Must be in terms of the base unit.
     """
 
-    def __init__(self, base_value: Number):
+    def __init__(self, base_value: Number) -> None:
         super().__init__(Meter, DistanceUnit, base_value)
 
 
@@ -25,16 +25,16 @@ class Angstrom(DistanceUnit):
         value (float or int): Value of the unit.
     """
 
-    def __init__(self, value: Number = 0):
+    def __init__(self, value: Number = 0) -> None:
         super().__init__(self.convert(value))
         self.value = value
 
     @staticmethod
-    def convert(x):
+    def convert(x: Number) -> Number:
         return x * 1e-10
 
     @staticmethod
-    def convert_inverse(x):
+    def convert_inverse(x: Number) -> Number:
         return x / 1e-10
 
 
@@ -48,16 +48,16 @@ class Meter(DistanceUnit):
         value (float or int): Value of the unit.
     """
 
-    def __init__(self, value: Number = 0):
+    def __init__(self, value: Number = 0) -> None:
         super().__init__(self.convert(value))
         self.value = value
 
     @staticmethod
-    def convert(x):
+    def convert(x: Number) -> Number:
         return x
 
     @staticmethod
-    def convert_inverse(x):
+    def convert_inverse(x: Number) -> Number:
         return x
 
 
@@ -71,16 +71,16 @@ class Nanometer(DistanceUnit):
         value (float or int): Value of the unit.
     """
 
-    def __init__(self, value: Number = 0):
+    def __init__(self, value: Number = 0) -> None:
         super().__init__(self.convert(value))
         self.value = value
 
     @staticmethod
-    def convert(x):
+    def convert(x: Number) -> Number:
         return x * 1e-9
 
     @staticmethod
-    def convert_inverse(x):
+    def convert_inverse(x: Number) -> Number:
         return x / 1e-9
 
 class Picometer(DistanceUnit):
@@ -93,14 +93,14 @@ class Picometer(DistanceUnit):
         value (float or int): Value of the unit.
     """
 
-    def __init__(self, value: Number = 0):
+    def __init__(self, value: Number = 0) -> None:
         super().__init__(self.convert(value))
         self.value = value
 
     @staticmethod
-    def convert(x):
+    def convert(x: Number) -> Number:
         return x * 1e-12
 
     @staticmethod
-    def convert_inverse(x):
+    def convert_inverse(x: Number) -> Number:
         return x / 1e-12

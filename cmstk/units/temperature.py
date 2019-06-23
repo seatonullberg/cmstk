@@ -17,7 +17,7 @@ class TemperatureUnit(BaseUnit):
         - Must be in terms of the base unit.
     """
 
-    def __init__(self, base_value: Number):
+    def __init__(self, base_value: Number) -> None:
         super().__init__(Celsius, TemperatureUnit, base_value)
 
 
@@ -31,16 +31,16 @@ class Celsius(TemperatureUnit):
         value (float or int): Value of the unit.
     """
 
-    def __init__(self, value: Number = 0):
+    def __init__(self, value: Number = 0) -> None:
         super().__init__(self.convert(value))
         self.value = value
 
     @staticmethod
-    def convert(x):
+    def convert(x: Number) -> Number:
         return x
 
     @staticmethod
-    def convert_inverse(x):
+    def convert_inverse(x: Number) -> Number:
         return x
 
 
@@ -54,16 +54,16 @@ class Fahrenheit(TemperatureUnit):
         value (float or int): Value of the unit.
     """
 
-    def __init__(self, value: Number = 0):
+    def __init__(self, value: Number = 0) -> None:
         super().__init__(self.convert(value))
         self.value = value
 
     @staticmethod
-    def convert(x):
+    def convert(x: Number) -> Number:
         return (x - 32) * (5 / 9)
 
     @staticmethod
-    def convert_inverse(x):
+    def convert_inverse(x: Number) -> Number:
         return (x * (9 / 5)) + 32
 
 
@@ -77,14 +77,14 @@ class Kelvin(TemperatureUnit):
         value (float or int): Value of the unit.
     """
 
-    def __init__(self, value: Number = 0):
+    def __init__(self, value: Number = 0) -> None:
         super().__init__(self.convert(value))
         self.value = value
 
     @staticmethod
-    def convert(x):
+    def convert(x: Number) -> Number:
         return x - 273.15
 
     @staticmethod
-    def convert_inverse(x):
+    def convert_inverse(x: Number) -> Number:
         return x + 273.15

@@ -1,3 +1,4 @@
+from typing import Any
 from cmstk.units.base import BaseUnit, Number
 from cmstk.units.distance import DistanceUnit, Meter
 
@@ -12,11 +13,11 @@ class AreaUnit(BaseUnit):
         - Must be in terms of the base unit.
     """
 
-    def __init__(self, base_value: Number):
+    def __init__(self, base_value: Number) -> None:
         super().__init__(MeterSquared, AreaUnit, base_value)
 
     @classmethod
-    def from_distance(cls, d0, d1):
+    def from_distance(cls, d0: Any, d1: Any) -> Any:  # unable to declare
         """Initializes AreaUnit from two arbitrary DistanceUnits.
         
         Args:
@@ -43,16 +44,16 @@ class AngstromSquared(AreaUnit):
         value (float or int): Value of the unit.
     """
 
-    def __init__(self, value: Number = 0):
+    def __init__(self, value: Number = 0) -> None:
         super().__init__(self.convert(value))
         self.value = value
 
     @staticmethod
-    def convert(x):
+    def convert(x: Number) -> Number:
         return x * 1e-20
 
     @staticmethod
-    def convert_inverse(x):
+    def convert_inverse(x: Number) -> Number:
         return x / 1e-20
 
 
@@ -66,16 +67,16 @@ class MeterSquared(AreaUnit):
         value (float or int): Value of the unit.
     """
 
-    def __init__(self, value: Number = 0):
+    def __init__(self, value: Number = 0) -> None:
         super().__init__(self.convert(value))
         self.value = value
 
     @staticmethod
-    def convert(x):
+    def convert(x: Number) -> Number:
         return x
 
     @staticmethod
-    def convert_inverse(x):
+    def convert_inverse(x: Number) -> Number:
         return x
 
 
@@ -89,16 +90,16 @@ class NanometerSquared(AreaUnit):
         value (float or int): Value of the unit.
     """
 
-    def __init__(self, value: Number = 0):
+    def __init__(self, value: Number = 0) -> None:
         super().__init__(self.convert(value))
         self.value = value
 
     @staticmethod
-    def convert(x):
+    def convert(x: Number) -> Number:
         return x * 1e-18
 
     @staticmethod
-    def convert_inverse(x):
+    def convert_inverse(x: Number) -> Number:
         return x / 1e-18
 
 
@@ -112,14 +113,14 @@ class PicometerSquared(AreaUnit):
         value (float or int): Value of the unit.
     """
 
-    def __init__(self, value: Number = 0):
+    def __init__(self, value: Number = 0) -> None:
         super().__init__(self.convert(value))
         self.value = value
 
     @staticmethod
-    def convert(x):
+    def convert(x: Number) -> Number:
         return x * 1e-24
 
     @staticmethod
-    def convert_inverse(x):
+    def convert_inverse(x: Number) -> Number:
         return x / 1e-24

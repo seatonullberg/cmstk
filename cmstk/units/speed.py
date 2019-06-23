@@ -1,6 +1,7 @@
 from cmstk.units.base import BaseUnit, Number
 from cmstk.units.distance import DistanceUnit, Meter
 from cmstk.units.time import TimeUnit, Second
+from typing import Any
 
 
 class SpeedUnit(BaseUnit):
@@ -14,11 +15,11 @@ class SpeedUnit(BaseUnit):
         - Must be in terms of the base unit.
     """
 
-    def __init__(self, base_value: Number):
+    def __init__(self, base_value: Number) -> None:
         super().__init__(MeterPerSecond, SpeedUnit, base_value)
 
     @classmethod
-    def from_distance_time(cls, d, t):
+    def from_distance_time(cls, d: Any, t: Any) -> Any:  # unable to declare
         """Initializes SpeedUnit from a DistanceUnit and a TimeUnit.
         
         Args:
@@ -46,16 +47,16 @@ class AngstromPerPicosecond(SpeedUnit):
         value (float or int): Value of the unit.
     """
 
-    def __init__(self, value: Number = 0):
+    def __init__(self, value: Number = 0) -> None:
         super().__init__(self.convert(value))
         self.value = value
 
     @staticmethod
-    def convert(x):
+    def convert(x: Number) -> Number:
         return x * 100.0
 
     @staticmethod
-    def convert_inverse(x):
+    def convert_inverse(x: Number) -> Number:
         return x / 100.0
 
 
@@ -69,14 +70,14 @@ class MeterPerSecond(SpeedUnit):
         value (float or int): Value of the unit.
     """
 
-    def __init__(self, value: Number = 0):
+    def __init__(self, value: Number = 0) -> None:
         super().__init__(self.convert(value))
         self.value = value
 
     @staticmethod
-    def convert(x):
+    def convert(x: Number) -> Number:
         return x
 
     @staticmethod
-    def convert_inverse(x):
+    def convert_inverse(x: Number) -> Number:
         return x

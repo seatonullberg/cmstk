@@ -1,5 +1,5 @@
 import numpy as np
-from typing import Optional, List
+from typing import Optional, MutableSequence, Sequence
 
 
 class Atom(object):
@@ -49,7 +49,7 @@ class Lattice(object):
         coordinate_system (optional) (str): Specify `cartesian` or `direct`.
     """
 
-    def __init__(self, atoms: List[Atom], principal_axes: np.ndarray,
+    def __init__(self, atoms: MutableSequence[Atom], principal_axes: np.ndarray,
                  parameters: np.ndarray, angles: np.ndarray,
                  coordinate_system: str = "direct") -> None:
         self._atoms = atoms
@@ -110,7 +110,7 @@ class Lattice(object):
         else:
             del self._atoms[removal_index]
 
-    def group_atoms_by_symbol(self, order: List[str]) -> None:
+    def group_atoms_by_symbol(self, order: Sequence[str]) -> None:
         """Groups atoms by their IUPAC chemical symbol.
         
         Args:
@@ -176,7 +176,7 @@ class Lattice(object):
             yield a
 
     @atoms.setter
-    def atoms(self, value: List[Atom]):
+    def atoms(self, value: MutableSequence[Atom]):
         self._atoms = value
 
     @property

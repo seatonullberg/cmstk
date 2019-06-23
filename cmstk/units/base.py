@@ -53,8 +53,19 @@ class BaseUnit(object):
            - other is an instance of BaseUnit
 
         Args:
-            other (instance of BaseUnit): The unit to check.    
+            other (instance of BaseUnit): The unit to check.
+
+        Returns:
+            None
+
+        Raises:
+            TypeError:
+            - If `other` is not an instance of Baseunit
+            ValueError:
+            - If `other.kind` does not match `self.kind`
         """
+        if not isinstance(other, BaseUnit):
+            raise TypeError("`other` must be an instance of BaseUnit")
         if self.kind != other.kind:
             raise ValueError("incompatible units: self.kind={} other.kind={}"
                              .format(self.kind, other.kind))
