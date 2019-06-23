@@ -4,7 +4,7 @@ cmstk_dir="$(pwd)"
 
 # static type checking
 echo -e "\u001b[33m[cmstk] mypy static type checking...\u001b[0m"
-MYPYPATH="$cmstk_dir/mypy"
+export MYPYPATH="$cmstk_dir/mypy"
 mypy --config-file "$MYPYPATH/mypy.ini" "$cmstk_dir/cmstk/"
 
 echo ""
