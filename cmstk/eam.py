@@ -1,5 +1,4 @@
 from cmstk.base import BaseFile
-from cmstk.elements import Database
 
 
 class SetflFile(BaseFile):

@@ -26,10 +26,15 @@ class PressureUnit(BaseUnit):
 
         Returns:
             PressureUnit
+
+        Raises:
+            TypeError:
+            - If `a` or `f` are not instances of the proper type
         """
         if not isinstance(a, AreaUnit) or not isinstance(f, ForceUnit):
             err = ("`a` and `f` must be an instance of type AreaUnit and \
                     ForceUnit respectively")
+            raise TypeError(err)
         new_pressure = f.to(Newton).value / a.to(MeterSquared).value
         return cls(new_pressure)
 

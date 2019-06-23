@@ -2,7 +2,7 @@ import math
 import numpy as np
 from scipy.spatial.transform import Rotation
 from typing import Iterable, Any
-from cmstk.units.base import BaseUnit, Number
+from cmstk.units.base import BaseUnit
 from cmstk.units.angle import AngleUnit
 
 

@@ -1,8 +1,7 @@
 import pytest
 import numpy as np
 from cmstk.units.vector import Vector, Vector2D, Vector3D
-from cmstk.units.distance import (DistanceUnit, Angstrom, Nanometer, Meter,
-                                  Picometer)
+from cmstk.units.distance import Angstrom, Nanometer, Meter, Picometer
 from cmstk.units.angle import AngleUnit, Radian, Degree
 from cmstk.testing_resources import within_one_percent
 

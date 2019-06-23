@@ -164,7 +164,7 @@ class SubmissionScript(BaseFile):
         first_method, second_method = value.split(":")
         if first_method not in first_methods:
             raise ValueError()
-        if second_method not in second_method:
+        if second_method not in second_methods:
             raise ValueError()
         self._distribution = value
 

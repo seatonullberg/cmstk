@@ -1,7 +1,8 @@
 from cmstk.eam import SetflFile
 from cmstk.testing_resources import data_directory
-import os
 import numpy as np
+import os
+
 
 def test_setfl_file():
     """Test the initialization of an eam.SetflFile class."""
@@ -54,7 +55,6 @@ def test_setfl_file():
     assert setfl_reader.n_r == setfl.n_r
     assert setfl_reader.d_r == setfl.d_r
     assert setfl_reader.cutoff == setfl.cutoff
-    import numpy as np
     for s in setfl_reader.symbols:
         for v1, v2 in zip(setfl_reader.embedding_function[s],
                           setfl.embedding_function[s]):

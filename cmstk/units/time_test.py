@@ -29,8 +29,8 @@ def test_second():
     assert type(p) is Picosecond
     assert within_one_percent(1e12, p.value)
     new_s = s.to(Second)
-    assert type(s) is Second
-    assert within_one_percent(value, s.value)
+    assert type(new_s) is Second
+    assert within_one_percent(value, new_s.value)
     base = s.to_base()
     assert type(base) is Second
     assert within_one_percent(value, base.value)

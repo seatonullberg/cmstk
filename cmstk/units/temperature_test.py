@@ -9,8 +9,8 @@ def test_celsius():
     assert c.kind == TemperatureUnit
     assert c.value == value
     new_c = c.to(Celsius)
-    assert type(c) is Celsius
-    assert within_one_percent(value, c.value)
+    assert type(new_c) is Celsius
+    assert within_one_percent(value, new_c.value)
     f = c.to(Fahrenheit)
     assert type(f) is Fahrenheit
     assert within_one_percent(33.8, f.value)

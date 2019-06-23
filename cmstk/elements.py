@@ -67,4 +67,4 @@ class Database(BaseFile):
             path = self.filepath
         assert type(path) is str
         with open(path, "w") as f:
-            json.dump(self._data)
+            json.dump(self._data, f)

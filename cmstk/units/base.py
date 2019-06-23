@@ -1,4 +1,3 @@
-import inspect
 from typing import Union, Any
 Number = Union[float, int]
 

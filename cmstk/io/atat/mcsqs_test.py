@@ -1,7 +1,6 @@
 from cmstk.atat.mcsqs import BestsqsFile
 from cmstk.io.atat.mcsqs import bestsqs_to_poscar
 from cmstk.testing_resources import data_directory
-import numpy as np
 import os
 
 
