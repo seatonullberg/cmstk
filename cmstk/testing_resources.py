@@ -1,11 +1,11 @@
 import os
+import math
 
 
 def within_one_percent(a, b):
     """Returns True if a is within 1% of b."""
-    upper = b * 1.01
-    lower = b * 0.99
-    return lower < a < upper
+    diff = math.sqrt((a - b)**2)
+    return (diff / b) < 0.01
 
 def  data_directory():
     """Returns the absolute path to the data directory."""

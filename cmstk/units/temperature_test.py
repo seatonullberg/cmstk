@@ -30,8 +30,7 @@ def test_fahrenheit():
     assert f.value == value
     c = f.to(Celsius)
     assert type(c) is Celsius
-    assert -18.0 < c.value < -17.0  # within_one_percent fails ???
-    #assert within_one_percent(-17.22, c.value)
+    assert within_one_percent(-17.22, c.value)
     new_f = f.to(Fahrenheit)
     assert type(new_f) is Fahrenheit
     assert within_one_percent(value, new_f.value)
@@ -40,8 +39,7 @@ def test_fahrenheit():
     assert within_one_percent(255.928, k.value)
     base = f.to_base()
     assert type(base) is Celsius
-    assert -18.0 < base.value < -17.0  # within_one_percent fails ???
-
+    assert within_one_percent(-17.22, base.value)
 
 def test_init_kelvin():
     """Tests initialization and conversion of a Kelvin object."""
@@ -51,15 +49,13 @@ def test_init_kelvin():
     assert k.value == value
     c = k.to(Celsius)
     assert type(c) is Celsius
-    assert -273.0 < c.value < -272.0  # within_one_percent_fails ???
-    #assert within_one_percent(-272.15, c.value)
+    assert within_one_percent(-272.15, c.value)
     f = k.to(Fahrenheit)
     assert type(f) is Fahrenheit
-    assert -458 < f.value < -457  # within_one_percent_fails ???
-    #assert within_one_percent(-457.870, f.value)
+    assert within_one_percent(-457.870, f.value)
     new_k = k.to(Kelvin)
     assert type(new_k) is Kelvin
     assert within_one_percent(value, new_k.value)
     base = k.to_base()
     assert type(base) is Celsius
-    assert -273.0 < base.value < -272.0  # within_one_percent_fails ???
+    assert within_one_percent(-272.15, base.value)
