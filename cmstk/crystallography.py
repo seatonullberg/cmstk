@@ -1,5 +1,5 @@
 import numpy as np
-from typing import Iterable, Optional
+from typing import Optional, List
 
 
 class Atom(object):
@@ -49,16 +49,15 @@ class Lattice(object):
         coordinate_system (optional) (str): Specify `cartesian` or `direct`.
     """
 
-    def __init__(self, atoms: Iterable[Atom], principal_axes: np.ndarray,
+    def __init__(self, atoms: List[Atom], principal_axes: np.ndarray,
                  parameters: np.ndarray, angles: np.ndarray,
                  coordinate_system: str = "direct") -> None:
-        self.atoms = atoms
+        self._atoms = atoms
         self.principal_axes = principal_axes
         self.parameters = parameters
         self.angles = angles
-        self.coordinate_system = coordinate_system
+        self._coordinate_system = coordinate_system
 
-    # TODO:
     def add_atom(self, atom: Atom, tolerance: float = 0.001) -> None:
         """Adds an atom to the lattice if the position is not occupied.
         
@@ -74,9 +73,15 @@ class Lattice(object):
             ValueError
             - If an atom exists within tolerance boundary.
         """
-        raise NotImplementedError()
+        new_pos = atom.position
+        for a in self.atoms:
+            diff = np.sqrt((new_pos - a.position)**2)
+            for d in diff:
+                if d < tolerance:
+                    err = "an atom already exists within the tolerance distance"
+                    raise ValueError(err)
+        self._atoms.append(atom)
 
-    # TODO:
     def remove_atom(self, position: np.ndarray, 
                     tolerance: float = 0.001) -> None:
         """Removes an atom from the lattice if the position is occupied.
@@ -93,57 +98,47 @@ class Lattice(object):
             ValueError
             - If an atom does not exist within tolerance boundary.
         """
-        raise NotImplementedError()
+        removal_index = None
+        for i, a in enumerate(self.atoms):
+            diff = np.sqrt((position - a.position)**2)
+            for d in diff:
+                if d < tolerance:
+                    removal_index = i
+        if removal_index is None:
+            err = "an atom does not exist within the tolerance distance"
+            raise ValueError(err)
+        else:
+            del self._atoms[removal_index]
 
-    # TODO:
-    def translate(self, translation: np.ndarray) -> None:
-        """Translates the lattice by a 3D translation vector.
+    def group_atoms_by_symbol(self, order: List[str]) -> None:
+        """Groups atoms by their IUPAC chemical symbol.
         
         Args:
-            translation (numpy.ndarray): The translation vector.
+            order (list of str): IUPAC chemical symbols in the order which 
+            groups are to be arranged.
 
         Returns:
             None
         
         Raises:
-            ValueError
-            - If the translation is not a 3D vector.
+            ValueError:
+            - If `order` has non-unique members.
+            - If a member of `order` is not the symbol of any atom.
         """
-        raise NotImplementedError()
+        if len(order) != len(set(order)):
+            raise ValueError("`order` must have unique members")
+        new_atoms = []
+        for symbol in order:
+            ok = False
+            for a in self.atoms:
+                if symbol == a.symbol:
+                    new_atoms.append(a)
+                    ok = True
+            if not ok:
+                err = "symbol `{}` not found in atoms".format(symbol)
+                raise ValueError(err)
+        self._atoms = new_atoms
 
-    # TODO:
-    def rotate(self, rotation: np.ndarray) -> None:
-        """Rotates the lattice by a 3D rotation vector.
-        
-        Args:
-            rotation (numpy.ndarray): The rotation vector.
-        
-        Returns:
-            None
-
-        Raises:
-            ValueError
-            - If the rotation is not a 3D vector.
-        """
-        raise NotImplementedError()
-
-    # TODO:
-    def repeat(self, size: np.ndarray) -> None:
-        """Repeates the lattice in 3 dimensions.
-        
-        Args:
-            size (numpy.ndarray): The number of repetitions in each direction.
-
-        Returns:
-            None
-
-        Raises:
-            ValueError
-            - If the size is not a 3D vector.
-        """
-        raise NotImplementedError()
-
-    # TODO:
     def change_coordinate_system(self, system: str) -> None:
         """Modifies the coordinate system by which all atoms in the lattice are 
         represented.
@@ -158,4 +153,49 @@ class Lattice(object):
             ValueError:
             - If the system name is unsupported.
         """
-        raise NotImplementedError()
+        if self.coordinate_system == system:
+            return
+        if system == "cartesian":
+            self._change_coordinate_system_cartesian()
+        elif system == "direct":
+            self._change_coordinate_system_direct()
+        else:
+            err = "coordinate system must be one of: cartesian, direct"
+            raise ValueError(err)
+
+    @property
+    def atoms(self):
+        """(iterator of Atom): Yileds all atoms in the lattice.
+        
+        Notes:
+            This exists to prevent being able to append directly into 
+            `self.atoms`.
+            - Ensures the tolerance check is always done upon addition.
+        """
+        for a in self._atoms:
+            yield a
+
+    @atoms.setter
+    def atoms(self, value: List[Atom]):
+        self._atoms = value
+
+    @property
+    def coordinate_system(self):
+        """(str): Returns the coordinate system which all positions are in.
+
+        Notes:
+            No setter provided because that is always done internally. 
+        """
+        return self._coordinate_system
+
+    def _change_coordinate_system_cartesian(self):
+        factor = np.diag(self.parameters * self.principal_axes)
+        for a in self.atoms:
+            a.position = (a.position * factor).flatten()
+        self._coordinate_system = "cartesian"
+
+    def _change_coordinate_system_direct(self):
+        factor = np.diag(self.parameters * self.principal_axes)
+        for a in self.atoms:
+            a.position = (a.position / factor).flatten()
+        self._coordinate_system = "direct"
