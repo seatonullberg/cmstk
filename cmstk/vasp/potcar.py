@@ -1,6 +1,5 @@
-from cmstk.base import BaseFile
 
 
-class PotcarFile(BaseFile):
+class PotcarFile(object):
     """File wrapper for a VASP POTCAR file."""
     pass

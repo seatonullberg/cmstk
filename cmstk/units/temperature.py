@@ -1,4 +1,5 @@
-from cmstk.units.base import BaseUnit, Number
+from cmstk.units.base import BaseUnit
+from cmstk.types import Number
 
 
 class TemperatureUnit(BaseUnit):

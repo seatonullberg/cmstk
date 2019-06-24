@@ -1,7 +1,7 @@
-from cmstk.base import BaseFile
+from typing import Optional, Sequence
 
 
-class OutcarFile(BaseFile):
+class OutcarFile(object):
     """File wrapper for a VASP OUTCAR file.
     
     Notes:
@@ -9,18 +9,21 @@ class OutcarFile(BaseFile):
 
     Args:
         filepath (optional) (str): Filepath to an OUTCAR file.
+        entropy (sequence of float): Entropy value of the system at each step.
+        total_energy (sequence of float): Total (free energy) value of the 
+        system at each step.
     """
 
-    def __init__(self, filepath="OUTCAR"):
-        super().__init__(filepath)
-        self._entropy = None
-        self._total_energy = None
+    def __init__(self, filepath: str = "OUTCAR") -> None:
+        self.filepath = filepath
+        self.entropy: Sequence[float]
+        self.total_energy: Sequence[float]
 
-    def read(self, path=None):
+    def read(self, path: Optional[str] = None) -> None:
         """Reads an OUTCAR file.
         
         Args:
-            path (optional) (str): Filepath to read.
+            path (optional) (str): The filepath to read from.
 
         Returns:
             None
@@ -39,35 +42,3 @@ class OutcarFile(BaseFile):
                 total_energy_values.append(float(split_line[-2]))  # skip `eV`
         self.entropy = tuple(entropy_values)
         self.total_energy = tuple(total_energy_values)
-
-    @property
-    def entropy(self):
-        """(tuple of float): Entropy value of the system reported at each step 
-        of the simulation."""
-        return self._entropy
-    
-    @entropy.setter
-    def entropy(self, value):
-        if type(value) is not tuple:
-            raise TypeError()
-        for v in value:
-            if type(v) is not float:
-                raise TypeError()
-        self._entropy = value
-
-    @property
-    def total_energy(self):
-        """(tuple of float): Total (free energy) value of the system reported 
-        at each step of the simulation."""
-        return self._total_energy
-
-    @total_energy.setter
-    def total_energy(self, value):
-        if type(value) is not tuple:
-            raise TypeError()
-        for v in value:
-            if type(v) is not float:
-                raise TypeError()
-        self._total_energy = value
-
-    

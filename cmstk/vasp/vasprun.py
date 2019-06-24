@@ -1,9 +1,9 @@
-from cmstk.base import BaseFile
 from xml.etree import ElementTree
 import numpy as np
+from typing import Optional, Sequence
 
 
-class VasprunFile(BaseFile):
+class VasprunFile(object):
     """File wrapper for a VASP vasprun.xml file.
     
     Notes:
@@ -11,15 +11,23 @@ class VasprunFile(BaseFile):
 
     Args:
         filepath (optional) (str): Filepath to a vasprun.xml file.
+
+    Attributes:
+        filepath (optional) (str): Filepath to a vasprun.xml file.
+        density_of_states (numpy.ndarray): Total density of states.
+        eigenvalues (numpy.ndarray): Array of eigenvalues of electrons in the 
+        system.
+        - dimensionality: (n_spins, n_kpoints, n_bands, 2 <value, occupation>)
+        fermi_energy (float): Fermi energy of the system.
     """
 
-    def __init__(self, filepath="vasprun.xml"):
-        super().__init__(filepath)
-        self._density_of_states = None
-        self._eigenvalues = None
-        self._fermi_energy = None
+    def __init__(self, filepath: str = "vasprun.xml") -> None:
+        self.filepath = filepath
+        self.density_of_states: np.ndarray
+        self.eigenvalues: np.ndarray
+        self.fermi_energy: float
 
-    def read(self, path=None):
+    def read(self, path: Optional[str] = None) -> None:
         if path is None:
             path = self.filepath
         # Density of States
@@ -52,44 +60,7 @@ class VasprunFile(BaseFile):
                                                                     .split()[0])
                     eigenvalues[i, j, k, 1] = float(ev_tree[i][j][k].text
                                                                     .split()[1])
-        self._eigenvalues = eigenvalues
+        self.eigenvalues = eigenvalues
         # Fermi Energy
         fermi_energy = float(dos_tree.find("i").text)
-        self._fermi_energy = fermi_energy
-
-    @property
-    def density_of_states(self):
-        """(numpy.ndarray): Total density of states."""
-        return self._density_of_states
-    
-    @density_of_states.setter
-    def density_of_states(self, value):
-        if type(value) is not np.ndarray:
-            raise TypeError()
-        self._density_of_states = value
-
-    @property
-    def eigenvalues(self):
-        """(numpy.ndarray): Array of eigenvalues of electrons in the system.
-        - dimensionality: (n_spins, n_kpoints, n_bands, 2 <value, occupation>)
-        """
-        return self._eigenvalues
-
-    @eigenvalues.setter
-    def eigenvalues(self, value):
-        if type(value) is not np.ndarray:
-            raise TypeError()
-        if len(value.shape) != 4:
-            raise ValueError()
-        self._eigenvalues = value
-
-    @property
-    def fermi_energy(self):
-        """(float): Fermi energy of the system."""
-        return self._fermi_energy
-
-    @fermi_energy.setter
-    def fermi_energy(self, value):
-        if type(value) != float:
-            raise TypeError()
-        self._fermi_energy = value
+        self.fermi_energy = fermi_energy

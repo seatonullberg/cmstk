@@ -1,6 +1,5 @@
-from cmstk.base import BaseFile
 
 
-class IncarFile(BaseFile):
+class IncarFile(object):
     """File wrapper for a VASP INCAR file."""
     pass

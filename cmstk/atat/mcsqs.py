@@ -1,70 +1,60 @@
-from cmstk.base import BaseFile
 import numpy as np
+from typing import Dict, List, Optional, Tuple
+from cmstk.types import Number
 
 
-class BestcorrFile(BaseFile):
+class BestcorrFile(object):
     """File wrapper for a bestcorr.out output file.
     
     Notes:
+        This is a read-only wrapper.
         File specification:
         https://www.brown.edu/Departments/Engineering/Labs/avdw/atat/manual/node47.html
 
-        ** This is a read-only wrapper.
 
     Args:
         filepath (optional) (str): Filepath to a bestcorr.out file.
+
+    Attributes:
+        filepath (str): Filepath to a bestcorr.out file.
+        clusters (list of list of dict: key: str, value: Number): Information
+        about each cluster at every iteration.
+        objective_functions (list of float): Value of the objective function at
+        each iteration.
     """
 
-    def __init__(self, filepath="bestcorr.out"):
-        super().__init__(filepath)
-        self._clusters = None
-        self._objective_functions = None
+    def __init__(self, filepath: str = "bestcorr.out") -> None:
+        self.filepath = filepath
+        self.clusters: List[List[Dict[str, Number]]]
+        self.objective_functions: List[float]
 
-    def read(self, path=None):
+    def read(self, path: Optional[str] = None) -> None:
+        """Reads a bestcorr.out file.
+        
+        Args:
+            path (optional) (str): The filepath to read from.
+
+        Returns:
+            None
+        """
         if path is None:
             path = self.filepath
-        assert type(path) is str
         with open(path, "r") as f:
             lines = f.readlines()
         self._read_clusters(lines)
         self._read_objective_functions(lines)
 
-    @property
-    def clusters(self):
-        """(list of list of dict: key: str, value: number): Information about
-        every cluster for every iteration."""
-        return self._clusters
+    def _read_clusters(self, lines: List[str]) -> None:
+        """Reads cluster information from a bestcorr.out file.
+        
+        Args:
+            lines (list of str): Lines in the file separated by `\n`.
 
-    @clusters.setter
-    def clusters(self, value):
-        for val in value:
-            if type(val) is not list:
-                raise TypeError()
-            for v in val:
-                if type(v) is not dict:
-                    raise TypeError()
-                for dk, dv in v.items():
-                    if type(dk) is not str:
-                        raise TypeError()
-                    if type(dv) not in [int, float]:
-                        raise TypeError()
-        self._clusters = value
-
-    @property
-    def objective_functions(self):
-        """(list of float): The objective function value at each iteration."""
-        return self._objective_functions
-    
-    @objective_functions.setter
-    def objective_functions(self, value):
-        for v in value:
-            if type(v) is not float:
-                raise TypeError()
-        self._objective_functions = value
-
-    def _read_clusters(self, lines):
-        clusters = []
-        current_cluster = []
+        Returns:
+            None
+        """
+        clusters: List[List[Dict[str, Number]]] = []
+        current_cluster: List[Dict[str, Number]] = []
         for line in lines:
             if line.startswith("Objective_function"):
                 clusters.append(current_cluster)
@@ -81,8 +71,16 @@ class BestcorrFile(BaseFile):
                 current_cluster.append(d)
         self.clusters = clusters
 
-    def _read_objective_functions(self, lines):
-        objective_functions = []
+    def _read_objective_functions(self, lines: List[str]) -> None:
+        """Reads objective function information from a bestcorr.out file.
+        
+        Args:
+            lines (list of str): Lines in the file separated by `\n`.
+
+        Returns:
+            None
+        """
+        objective_functions: List[float] = []
         for line in lines:
             if line.startswith("Objective_function"):
                 value = float(line.split("=")[1])
@@ -90,31 +88,39 @@ class BestcorrFile(BaseFile):
         self.objective_functions = objective_functions
 
 
-class BestsqsFile(BaseFile):
+class BestsqsFile(object):
     """File wrapper for a bestsqs.out output file.
     
     Notes:
+        This is a read-only wrapper.
         File specification:
         https://www.brown.edu/Departments/Engineering/Labs/avdw/atat/manual/node47.html
 
-        ** This is a read-only wrapper.
     
     Args:
         filepath (optional) (str): Filepath to a bestsqs.out file.
+
+    Attributes:
+        filepath (str): Filepath to a bestsqs.out file.
+        lattice_parameters (numpy.ndarray): Length of each lattice vector.
+        lattice_vectors (numpy.ndarray): Vectors defining the boundary of the 
+        lattice.
+        positions (numpy.ndarray): Coordinates of each atom in the lattice.
+        symbols (list of str): IUPAC symbol of each atom in the lattice.
     """
 
-    def __init__(self, filepath="bestsqs.out"):
-        super().__init__(filepath)
-        self._lattice_parameters = None
-        self._lattice_vectors = None
-        self._positions = None
-        self._symbols = None
+    def __init__(self, filepath: str = "bestsqs.out") -> None:
+        self.filepath = filepath
+        self.lattice_parameters: np.ndarray
+        self.lattice_vectors: np.ndarray
+        self.positions: np.ndarray
+        self.symbols: List[str]
 
-    def read(self, path=None):
+    def read(self, path: Optional[str] = None) -> None:
         """Reads a bestsqs.out file.
         
         Args:
-            path (optional) (str): Filepath to read.
+            path (optional) (str): The filepath to read from.
 
         Returns:
             None
@@ -146,98 +152,42 @@ class BestsqsFile(BaseFile):
         # extract positions and symbols from the remaining lines
         positions = [" ".join(l.split()[:3]) for l in lines[6:]]
         symbols = [l.split()[-1] for l in lines[6:]]
+        self.symbols = symbols
         positions = [
             np.fromstring(p, sep=" ") for p in positions
         ]
         # once again, for some reason, the values of the positions are negated
         # therefore I am forced to convert back to positive space here
-        positions = np.array(positions) * -1
-        self.positions = positions
-        symbols = tuple(symbols)
-        self.symbols = symbols
-
-    @property
-    def lattice_parameters(self):
-        """(numpy.ndarray): Length of each lattice vector."""
-        return self._lattice_parameters
-
-    @lattice_parameters.setter
-    def lattice_parameters(self, value):
-        if type(value) is not np.ndarray:
-            raise TypeError()
-        if value.dtype != float:
-            raise ValueError()
-        self._lattice_parameters = value
-
-    @property
-    def lattice_vectors(self):
-        """(numpy.ndarray): Vectors defining the boundary of the lattice."""
-        return self._lattice_vectors
-
-    @lattice_vectors.setter
-    def lattice_vectors(self, value):
-        if type(value) is not np.ndarray:
-            raise TypeError()
-        if value.dtype != float:
-            raise ValueError()
-        self._lattice_vectors = value
-
-    @property
-    def positions(self):
-        """(numpy.ndarray): Coordinates of each atom in the lattice."""
-        return self._positions
-    
-    @positions.setter
-    def positions(self, value):
-        if type(value) is not np.ndarray:
-            raise TypeError()
-        if value.dtype != float:
-            raise ValueError()
-        self._positions = value
-
-    @property
-    def symbols(self):
-        """(tuple of str): IUPAC symbol of each atom in the lattice."""
-        return self._symbols
-
-    @symbols.setter
-    def symbols(self, value):
-        if type(value) is not tuple:
-            raise TypeError()
-        for v in value:
-            if type(v) is not str:
-                raise TypeError()
-        self._symbols = value
+        self.positions = np.array(positions) * -1
 
 
-class RndstrFile(BaseFile):
+class RndstrFile(object):
     """File wrapper for a rndstr.in input file.
     
     Notes:
-        File specification:
-        https://www.brown.edu/Departments/Engineering/Labs/avdw/atat/manual/node47.html
-        
-        ** This implementation does not support the (ax, ay, az...) format for
+        This implementation does not support the (ax, ay, az...) format for
         specifying tilt angles in the lattice! Any files formatted as such will
         be read improperly and may fail silently!
+        File specification:
+        https://www.brown.edu/Departments/Engineering/Labs/avdw/atat/manual/node47.html
 
     Args:
         filepath (optional) (str): Filepath to a rndstr.in file.
     """
 
-    def __init__(self, filepath="rndstr.in"):
-        super().__init__(filepath)
-        self._lattice_angles = None
-        self._lattice_parameters = None
-        self._lattice_vectors = None
-        self._positions = None
-        self._probabilities = None
+    def __init__(self, filepath: str = "rndstr.in") -> None:
+        self.filepath = filepath
+        self.lattice_angles: np.ndarray
+        self.lattice_parameters: np.ndarray
+        self.lattice_vectors: np.ndarray
+        self.positions: np.ndarray
+        self.probabilities: List[Dict[str, float]]
 
-    def read(self, path=None):
+    def read(self, path: Optional[str] = None) -> None:
         """Reads a rndstr.in file.
         
         Args:
-            path (optional) (str): Filepath to read.
+            path (optional) (str): The filepath to read from.
 
         Returns:
             None
@@ -258,14 +208,13 @@ class RndstrFile(BaseFile):
         ]
         lattice_vectors = np.array(lattice_vectors)
         self.lattice_vectors = lattice_vectors
-        positions = []
+        positions: List = []
         positions = [" ".join(l.split()[:3]) for l in lines[4:]]
         positions = [
             np.fromstring(p, sep=" ") for p in positions
         ]
-        positions = np.array(positions)
-        self.positions = positions
-        probabilities = []
+        self.positions = np.array(positions)
+        probabilities: List = []
         probabilities = [l.split()[3] for l in lines[4:]] # no spaces
         probabilities = [p.split(",") for p in probabilities]
         formatted_probabilities = []
@@ -275,13 +224,13 @@ class RndstrFile(BaseFile):
                 symbol, value = prob.split("=")
                 d[symbol] = float(value)
             formatted_probabilities.append(d)
-        self.probabilities = tuple(formatted_probabilities)
+        self.probabilities = formatted_probabilities
 
-    def write(self, path=None):
+    def write(self, path: Optional[str] = None) -> None:
         """Writes a rndstr.in file.
         
         Args:
-            path (optional) (str): Filepath to write to.
+            path (optional) (str): The filepath to write to.
 
         Returns:
             None
@@ -303,92 +252,7 @@ class RndstrFile(BaseFile):
                                              self.probabilities):
                 position = position.astype(str)
                 position = " ".join(position)
-                probability = ["{}={}".format(k, v) 
+                prob_lst = ["{}={}".format(k, v) 
                                for k, v in probability.items()]
-                probability = ",".join(probability)
-                f.write("{} {}\n".format(position, probability))
-
-    @property
-    def lattice_angles(self):
-        """(numpy.ndarray): Angles corresponding to each lattice vector."""
-        return self._lattice_angles
-
-    @lattice_angles.setter
-    def lattice_angles(self, value):
-        if type(value) is not np.ndarray:
-            raise TypeError()
-        if value.dtype != float:
-            raise ValueError()
-        self._lattice_angles = value
-
-    @property
-    def lattice_parameters(self):
-        """(numpy.ndarray): Length of each lattice vector."""
-        return self._lattice_parameters
-
-    @lattice_parameters.setter
-    def lattice_parameters(self, value):
-        if type(value) is not np.ndarray:
-            raise TypeError()
-        if value.dtype != float:
-            raise ValueError()
-        self._lattice_parameters = value
-
-    @property
-    def lattice_vectors(self):
-        """(numpy.ndarray): Vectors defining the edge of the lattice."""
-        return self._lattice_vectors
-
-    @lattice_vectors.setter
-    def lattice_vectors(self, value):
-        if type(value) is not np.ndarray:
-            raise TypeError()
-        if value.dtype != float:
-            raise ValueError()
-        self._lattice_vectors = value
-
-    @property
-    def positions(self):
-        """(numpy.ndarray): Coordinates of each atom in the lattice."""
-        return self._positions
-
-    @positions.setter
-    def positions(self, value):
-        if type(value) is not np.ndarray:
-            raise TypeError()
-        if value.dtype != float:
-            raise ValueError()
-        self._positions = value
-
-    @property
-    def probabilities(self):
-        """(tuple of dict: key: str, value: float): Likelihood of a given symbol
-        occupying a site for all sites."""
-        return self._probabilities
-
-    @probabilities.setter
-    def probabilities(self, value):
-        if type(value) is not tuple:
-            raise TypeError
-        for v in value:
-            for dk, dv in v.items():
-                if type(dk) is not str:
-                    raise TypeError()
-                if type(dv) is not float:
-                    raise TypeError()
-        self._probabilities = value
-        
-
-
-
-if __name__ == "__main__":
-    rndstr = RndstrFile("/home/seaton/python-repos/cmstk/data/atat/rndstr.in")
-    rndstr.read()
-        
-
-
-
-
-
-
-
+                prob_str = ",".join(prob_lst)
+                f.write("{} {}\n".format(position, prob_str))

@@ -1,17 +1,20 @@
-from cmstk.base import BaseFile
 import os
 import datetime
+from typing import Sequence, Optional
 
 
-class SubmissionScript(BaseFile):
+# TODO: Use tags similar to INCAR instead of properties
+
+
+class SubmissionScript(object):
     """File wrapper for a SLURM submission script.
 
     Args:
         filepath (optional) (str): Filepath to a SLURM script.
     """
 
-    def __init__(self, filepath="runjob.slurm"):
-        super().__init__(filepath)
+    def __init__(self, filepath: str = "runjob.slurm") -> None:
+        self.filepath = filepath
         # SBATCH tags
         self._job_name = "slurm_job"
         self._mail_type = ["NONE"]
@@ -24,8 +27,8 @@ class SubmissionScript(BaseFile):
         self._error = "job.err"
         self._qos = os.environ.get("SLURM_QOS")
         # body content
-        self._modules = []
-        self._cmds = []
+        self._modules: Sequence = []
+        self._cmds: Sequence = []
 
     def read(self, path=None):
         """Read in a SLURM submission script.

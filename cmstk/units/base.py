@@ -1,5 +1,5 @@
 from typing import Union, Any
-Number = Union[float, int]
+from cmstk.types import Number
 
 
 class BaseUnit(object):
