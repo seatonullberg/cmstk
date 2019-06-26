@@ -1,7 +1,7 @@
-from cmstk.testing_resources import data_directory
-from typing import List, Optional
-import os
+from cmstk.utils import data_directory
 import json
+import os
+from typing import List, Optional
 
 
 class Database(object):

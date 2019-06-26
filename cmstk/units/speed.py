@@ -1,7 +1,7 @@
 from cmstk.units.base import BaseUnit
-from cmstk.types import Number
 from cmstk.units.distance import DistanceUnit, Meter
 from cmstk.units.time import TimeUnit, Second
+from cmstk.utils import Number
 from typing import Any
 
 

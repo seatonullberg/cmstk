@@ -1,7 +1,7 @@
 from cmstk.units.pressure import PressureUnit, Bar, Pascal
-from cmstk.testing_resources import within_one_percent
 from cmstk.units.area import AngstromSquared, MeterSquared
 from cmstk.units.force import Dyne, Newton
+from cmstk.utils import within_one_percent
 
 
 def test_pressure_from_area_force():

@@ -1,5 +1,5 @@
 from cmstk.vasp.oszicar import OszicarFile
-from cmstk.testing_resources import data_directory
+from cmstk.utils import data_directory
 import os
 
 

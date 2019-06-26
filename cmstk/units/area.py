@@ -1,7 +1,7 @@
 from typing import Any
 from cmstk.units.base import BaseUnit
 from cmstk.units.distance import DistanceUnit, Meter
-from cmstk.types import Number
+from cmstk.utils import Number
 
 
 class AreaUnit(BaseUnit): 

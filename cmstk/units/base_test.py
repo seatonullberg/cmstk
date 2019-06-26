@@ -2,7 +2,7 @@ import pytest
 from cmstk.units.base import BaseUnit
 from cmstk.units.distance import Angstrom, Nanometer, Meter, DistanceUnit
 from cmstk.units.angle import Radian
-from cmstk.testing_resources import within_one_percent
+from cmstk.utils import within_one_percent
 
 
 def test_base_unit():

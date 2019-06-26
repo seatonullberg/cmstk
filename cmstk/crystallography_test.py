@@ -5,17 +5,21 @@ from cmstk.crystallography import Atom, Lattice
 
 def test_lattice():
     """Tests initialization of a Lattice object."""
+    assert Lattice().n_atoms == 0
     atom0 = Atom(position_direct=np.array([0.5, 0.5, 0.5]))
     lattice_parameters = np.array([2.0, 2.0, 2.0])
     lattice = Lattice(atoms=[atom0], parameters=lattice_parameters)
+    assert lattice.n_atoms == 1
     assert np.array_equal(atom0.position_cartesian,
                           np.array([1.0, 1.0, 1.0]))
     atom1 = Atom(position_direct=np.array([0.75, 0.75, 0.75]))
     lattice.add_atom(atom1)
+    assert lattice.n_atoms == 2
     assert np.array_equal(atom1.position_cartesian,
                           np.array([1.5, 1.5, 1.5]))
     atom2 = Atom(position_cartesian=np.array([0.1, 0.1, 0.1]))
     lattice.add_atom(atom2)
+    assert lattice.n_atoms == 3
     assert np.array_equal(atom2.position_direct,
                           np.array([0.05, 0.05, 0.05]))
 

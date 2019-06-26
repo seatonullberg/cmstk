@@ -1,5 +1,5 @@
 from cmstk.units.angle import AngleUnit, Degree, Radian
-from cmstk.testing_resources import within_one_percent
+from cmstk.utils import within_one_percent
 
 
 def test_degree():

@@ -1,5 +1,5 @@
 from cmstk.vasp.kpoints import KpointsFile
-from cmstk.testing_resources import data_directory
+from cmstk.utils import data_directory
 import os
 
 

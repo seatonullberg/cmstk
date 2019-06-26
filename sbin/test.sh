@@ -11,7 +11,7 @@ echo ""
 
 # unit testing
 echo -e "\u001b[33m[cmstk] pytest unit testing...\u001b[0m"
-python3 -m pytest -vv "$cmstk_dir/cmstk/"
+python3 -m pytest -vv "$cmstk_dir/cmstk/" --ignore="$cmstk_dir/cmstk/lammps"  # lammps package is deprecated
 
 echo ""
 

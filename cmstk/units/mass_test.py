@@ -1,5 +1,5 @@
 from cmstk.units.mass import MassUnit, AtomicMassUnit, Gram, Kilogram, Picogram
-from cmstk.testing_resources import within_one_percent
+from cmstk.utils import within_one_percent
 
 
 def test_atomic_mass_unit():
