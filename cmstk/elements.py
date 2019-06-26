@@ -1,5 +1,5 @@
 from cmstk.testing_resources import data_directory
-from typing import List, Optional, Sequence
+from typing import List, Optional
 import os
 import json
 

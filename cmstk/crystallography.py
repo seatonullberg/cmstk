@@ -1,201 +1,255 @@
+from cmstk.utils import Number
+import copy
 import numpy as np
-from typing import Optional, MutableSequence, Sequence
+from typing import Generator, List, MutableSequence, Sequence
 
 
 class Atom(object):
     """Representation of an atom.
-    
+
+    Notes:
+        One or both of `position_cartesian` and `position_direct` must be
+        supplied as an argument.
+        A 'direct' coordinate system is one in which the positions are 
+        normalized by the lengths of their axes such that the largest magnitude
+        in any direction is 1. 
+        A 'cartesian' coordinate system is one in which the positions are not 
+        normalized by the underlying axes.
+
     Args:
-        symbol (str): IUPAC chemical symbol.
-        position (numpy.ndarray): Coordinates in 3D.
-        charge (optional) (float): Electronic charge of the atom.
-        magnetic_moment (optional) (numpy.ndarray): Magnetic moment in 3D.
-        velocity (optional) (numpy.ndarray): Velocity in 3D.
+        charge: Electronic charge.
+        - default: 0
+        magnetic_moment: Magnetic moment vector.
+        - default: empty array
+        position_cartesian: Atomic position in cartesian coordinates.
+        - default: empty array
+        position_direct: Atomic position in direct coordinates.
+        - default: empty array
+        symbol: IUPAC chemical symbol.
+        - default: ""
+        velocity: Velocity vector.
+        - default: empty array
     
     Attributes:
-        symbol (str): IUPAC chemical symbol.
-        position (numpy.ndarray): Coordinates in 3D.
-        charge (float): Electronic charge of the atom.
-        magnetic_moment (numpy.ndarray): Magnetic moment in 3D.
-        velocity (numpy.ndarray): Velocity in 3D.
+        charge: Electronic charge.
+        magnetic_moment: Magnetic moment vector.
+        position_cartesian: Atomic position in cartesian coordinates.
+        position_direct: Atomic position in direct coordinates.
+        symbol: IUPAC chemical symbol.
+        velocity: Velocity vector.
     """
 
-    def __init__(self, symbol: str, position: np.ndarray,
-                 charge: Optional[float] = None, 
-                 magnetic_moment: Optional[np.ndarray] = None,
-                 velocity: Optional[np.ndarray] = None) -> None:
-        self.symbol = symbol
-        self.position = position
+    def __init__(self, charge: Number = 0,
+                 magnetic_moment: np.ndarray = np.array([]),
+                 position_cartesian: np.ndarray = np.array([]),
+                 position_direct: np.ndarray = np.array([]),
+                 symbol: str = "",
+                 velocity: np.ndarray = np.array([])) -> None:
+        if position_cartesian.size == 0 and position_direct.size == 0:
+            err = ("one or both of `position_cartesian` and `position_direct`\
+                    must be populated.")
+            raise ValueError(err)
         self.charge = charge
         self.magnetic_moment = magnetic_moment
+        self.position_cartesian = position_cartesian
+        self.position_direct = position_direct
+        self.symbol = symbol
         self.velocity = velocity
 
-
+    
 class Lattice(object):
     """Representation of a crystal lattice.
     
     Args:
-        atoms (iterable of Atoms): All atoms in the lattice.
-        principal_axes (numpy.ndarray): Vectors defining the lattice.
-        parameters (numpy.ndarray): Lengths of each principal axis.
-        angles (numpy.ndarray): Tilt of each principal axis.
-        coordinate_system (optional) (str): Specify `cartesian` or `direct`.
+        angles: Tilt of each axis.
+        atoms: Underlying collection of atoms.
+        axes: Vectors defining the coordinate system.
+        parameters: Scaling factor of each axis.
 
     Attributes:
-        atoms (iterable of Atoms): All atoms in the lattice.
-        principal_axes (numpy.ndarray): Vectors defining the lattice.
-        parameters (numpy.ndarray): Lengths of each principal axis.
-        angles (numpy.ndarray): Tilt of each principal axis.
-        coordinate_system (optional) (str): Specify `cartesian` or `direct`.
+        angles: Tilt of each axis.
+        axes: Vectors defining the coordinate system.
+        parameters: Scaling factor of each axis.
+
+    Properties:
+        atoms: Underlying collection of atoms.
+        charges: Charge of each atom.
+        magnetic_moments: Magnetic moment of each atom.
+        n_atoms: Total number of atoms in the lattice.
+        positions_cartesian: Position of each atom in cartesian coordinates.
+        positions_direct: Position of each atom in direct coordinates.
+        symbols: IUPAC chemical symbol of each atom.
+        velocities: Velocity of each atom.
     """
 
-    def __init__(self, atoms: MutableSequence[Atom], principal_axes: np.ndarray,
-                 parameters: np.ndarray, angles: np.ndarray,
-                 coordinate_system: str = "direct") -> None:
-        self._atoms = atoms
-        self.principal_axes = principal_axes
-        self.parameters = parameters
+    def __init__(self, angles: np.ndarray = np.array([90, 90 ,90]),
+                 atoms: MutableSequence[Atom] = [],
+                 axes: np.ndarray = np.identity(3),
+                 parameters: np.ndarray = np.array([1, 1, 1])) -> None:
         self.angles = angles
-        self._coordinate_system = coordinate_system
+        self.axes = axes
+        self.parameters = parameters
+        self._atoms = self._set_positions(atoms)
 
-    def add_atom(self, atom: Atom, tolerance: float = 0.001) -> None:
+    def add_atom(self, atom: Atom, 
+                 tolerance: float = 0.001) -> None:
         """Adds an atom to the lattice if the position is not occupied.
+
+        Notes:
+            The tolerance distance is always calculated in direct coordinates
+            so that the default value translates well across systems of 
+            varying size.
         
         Args:
-            atom (Atom): The atom to add to the lattice.
-            tolerance (optional) (float): Tolerance used to determine if an atom
-            exists at the specified position.
+            atom: The atom the be added.
+            direct: Specifies the use of direct coordinates.
+            tolerance: The radius in which to check for existing atoms.
 
         Returns:
             None
 
         Raises:
             ValueError
-            - If an atom exists within tolerance boundary.
+            - If an atom exists within the tolerance radius.
         """
-        new_pos = atom.position
+        atom = self._set_positions([atom])[0]
         for a in self.atoms:
-            diff = np.sqrt((new_pos - a.position)**2)
-            for d in diff:
-                if d < tolerance:
-                    err = "an atom already exists within the tolerance distance"
-                    raise ValueError(err)
+            new = atom.position_direct
+            existing = a.position_direct
+            dist = np.sum(np.sqrt((new - existing)**2))
+            if dist < tolerance:
+                err = "an atom exists within the tolerance radius."
+                raise ValueError(err)
         self._atoms.append(atom)
 
-    def remove_atom(self, position: np.ndarray, 
-                    tolerance: float = 0.001) -> None:
+    def remove_atom(self, position: np.ndarray,
+                    direct: bool = True,
+                    tolerance: float = 0.001) -> Atom:
         """Removes an atom from the lattice if the position is occupied.
         
         Args:
-            position (numpy.ndarray): Position to remove an atom from.
-            tolerance (optional) (float): Tolerance used to determine is an atom
-            exists at the specified position.
-        
+            position: The position to remove an atom from.
+            direct: Specifies the use of direct coordinates.
+            tolerance: The radius in which to check for existing atoms.
+
         Returns:
-            None
+            A copy of the removed Atom object
 
         Raises:
-            ValueError
-            - If an atom does not exist within tolerance boundary.
+            ValueError:
+            - If no atom exists within the tolerance radius.
         """
         removal_index = None
+        removed_atom: Atom
         for i, a in enumerate(self.atoms):
-            diff = np.sqrt((position - a.position)**2)
-            for d in diff:
-                if d < tolerance:
-                    removal_index = i
+            if direct:
+                existing = a.position_direct
+            else:
+                existing = a.position_cartesian
+            dist = np.sum(np.sqrt((position - existing)**2))
+            if dist < tolerance:
+                removal_index = i
+                removed_atom = copy.deepcopy(a)
+                break
         if removal_index is None:
-            err = "an atom does not exist within the tolerance distance"
+            err = "an atom does not exist within the tolerance radius."
             raise ValueError(err)
-        else:
-            del self._atoms[removal_index]
+        del self._atoms[removal_index]
+        return removed_atom
 
     def group_atoms_by_symbol(self, order: Sequence[str]) -> None:
         """Groups atoms by their IUPAC chemical symbol.
         
+        Notes:
+            This operation alters the order of `self._atoms`.
+        
         Args:
-            order (list of str): IUPAC chemical symbols in the order which 
-            groups are to be arranged.
+            order: IUPAC chemical symbols ordered in the way that the grouped 
+            atoms will be ordered. 
 
         Returns:
             None
         
         Raises:
             ValueError:
-            - If `order` has non-unique members.
-            - If a member of `order` is not the symbol of any atom.
+            - If `order` is not a unique sequence.
+            - If a member of order is not the symbol of any atom.
         """
         if len(order) != len(set(order)):
-            raise ValueError("`order` must have unique members")
-        new_atoms = []
+            err = "all members of `order` must be unique"
+            raise ValueError(err)
+        new = []
         for symbol in order:
             ok = False
             for a in self.atoms:
                 if symbol == a.symbol:
-                    new_atoms.append(a)
+                    new.append(a)
                     ok = True
             if not ok:
-                err = "symbol `{}` not found in atoms".format(symbol)
+                err = "unrecognized symbol: {}".format(symbol)
                 raise ValueError(err)
-        self._atoms = new_atoms
-
-    def change_coordinate_system(self, system: str) -> None:
-        """Modifies the coordinate system by which all atoms in the lattice are 
-        represented.
-        
-        Args:
-            system (str): The coordinate system to switch to.
-
-        Returns:
-            None
-        
-        Raises:
-            ValueError:
-            - If the system name is unsupported.
-        """
-        if self.coordinate_system == system:
-            return
-        if system == "cartesian":
-            self._change_coordinate_system_cartesian()
-        elif system == "direct":
-            self._change_coordinate_system_direct()
-        else:
-            err = "coordinate system must be one of: cartesian, direct"
-            raise ValueError(err)
+        self._atoms = new
 
     @property
-    def atoms(self):
-        """(iterator of Atom): Yileds all atoms in the lattice.
-        
-        Notes:
-            This exists to prevent being able to append directly into 
-            `self.atoms`.
-            - Ensures the tolerance check is always done upon addition.
-        """
+    def atoms(self) -> Generator[Atom, None, None]: 
         for a in self._atoms:
             yield a
 
     @atoms.setter
-    def atoms(self, value: MutableSequence[Atom]):
-        self._atoms = value
+    def atoms(self, value: MutableSequence[Atom]) -> None:
+        self._atoms = self._set_positions(value)
 
     @property
-    def coordinate_system(self):
-        """(str): Returns the coordinate system which all positions are in.
+    def charges(self) -> np.ndarray:
+        return np.array([a.charge for a in self.atoms])
 
+    @property
+    def magnetic_moments(self) -> np.ndarray:
+        return np.array([a.magnetic_moment for a in self.atoms])
+
+    @property
+    def n_atoms(self) -> int:
+        return len(self._atoms)
+
+    @property
+    def positions_cartesian(self) -> np.ndarray:
+        return np.array([a.position_cartesian for a in self.atoms])
+
+    @property
+    def positions_direct(self) -> np.ndarray:
+        return np.array([a.position_direct for a in self.atoms])
+
+    @property
+    def symbols(self) -> List[str]:
+        return [a.symbol for a in self.atoms]
+
+    @property
+    def velocities(self) -> np.ndarray:
+        return np.ndarray([a.velocity for a in self.atoms])
+
+    def _set_positions(self, atoms: MutableSequence[Atom]) ->\
+        MutableSequence[Atom]:
+        """Sets position of each atom in cartesian and direct systems.
+        
         Notes:
-            No setter provided because that is always done internally. 
+            This strategy is valid becuase the user is required to define at 
+            least one of the position types. Therefore, using either the user 
+            supplied or default lattice parameters and axes, conversion between
+            cartesian and direct can be done with simple multiplication or 
+            division of a conversion factor. 
+
+        Args:
+            atoms: The atoms to modify.
+
+        Returns:
+            The modified atoms.
         """
-        return self._coordinate_system
-
-    def _change_coordinate_system_cartesian(self):
-        factor = np.diag(self.parameters * self.principal_axes)
-        for a in self.atoms:
-            a.position = (a.position * factor).flatten()
-        self._coordinate_system = "cartesian"
-
-    def _change_coordinate_system_direct(self):
-        factor = np.diag(self.parameters * self.principal_axes)
-        for a in self.atoms:
-            a.position = (a.position / factor).flatten()
-        self._coordinate_system = "direct"
+        factor = np.diag(self.parameters * self.axes)
+        for a in atoms:
+            # multiply by the factor for cartesian
+            if a.position_cartesian.size == 0:
+                a.position_cartesian = (a.position_direct * factor).flatten()
+            # divide by the factor for direct
+            if a.position_direct.size == 0:
+                a.position_direct = (a.position_cartesian / factor).flatten()
+        return atoms

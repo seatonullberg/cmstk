@@ -1,6 +1,7 @@
+from cmstk.crystallography import Atom, Lattice
+from cmstk.utils import Number
 import numpy as np
-from typing import Dict, List, Optional, Tuple
-from cmstk.types import Number
+from typing import Dict, List, Optional
 
 
 class BestcorrFile(object):
@@ -13,14 +14,12 @@ class BestcorrFile(object):
 
 
     Args:
-        filepath (optional) (str): Filepath to a bestcorr.out file.
+        filepath: Filepath to a bestcorr.out file.
 
     Attributes:
-        filepath (str): Filepath to a bestcorr.out file.
-        clusters (list of list of dict: key: str, value: Number): Information
-        about each cluster at every iteration.
-        objective_functions (list of float): Value of the objective function at
-        each iteration.
+        filepath: Filepath to a bestcorr.out file.
+        clusters: Information about each cluster at every iteration.
+        objective_functions: Value of the objective function at each iteration.
     """
 
     def __init__(self, filepath: str = "bestcorr.out") -> None:
@@ -32,7 +31,7 @@ class BestcorrFile(object):
         """Reads a bestcorr.out file.
         
         Args:
-            path (optional) (str): The filepath to read from.
+            path: The filepath to read from.
 
         Returns:
             None
@@ -45,10 +44,10 @@ class BestcorrFile(object):
         self._read_objective_functions(lines)
 
     def _read_clusters(self, lines: List[str]) -> None:
-        """Reads cluster information from a bestcorr.out file.
+        """Reads cluster information.
         
         Args:
-            lines (list of str): Lines in the file separated by `\n`.
+            lines: Lines in the file separated by `\n`.
 
         Returns:
             None
@@ -72,10 +71,10 @@ class BestcorrFile(object):
         self.clusters = clusters
 
     def _read_objective_functions(self, lines: List[str]) -> None:
-        """Reads objective function information from a bestcorr.out file.
+        """Reads objective function information.
         
         Args:
-            lines (list of str): Lines in the file separated by `\n`.
+            lines: Lines in the file separated by `\n`.
 
         Returns:
             None
@@ -98,29 +97,26 @@ class BestsqsFile(object):
 
     
     Args:
-        filepath (optional) (str): Filepath to a bestsqs.out file.
+        direct: Specifies a direct coordinate system.
+        filepath: Filepath to a bestsqs.out file.
 
     Attributes:
-        filepath (str): Filepath to a bestsqs.out file.
-        lattice_parameters (numpy.ndarray): Length of each lattice vector.
-        lattice_vectors (numpy.ndarray): Vectors defining the boundary of the 
-        lattice.
-        positions (numpy.ndarray): Coordinates of each atom in the lattice.
-        symbols (list of str): IUPAC symbol of each atom in the lattice.
+        direct: Specifies a direct coordinate system.
+        filepath: Filepath to a bestsqs.out file.
+        lattice: Underlying lattice structure data.
     """
 
-    def __init__(self, filepath: str = "bestsqs.out") -> None:
+    def __init__(self, direct: bool = True,
+                 filepath: str = "bestsqs.out") -> None:
+        self.direct = direct
         self.filepath = filepath
-        self.lattice_parameters: np.ndarray
-        self.lattice_vectors: np.ndarray
-        self.positions: np.ndarray
-        self.symbols: List[str]
+        self.lattice = Lattice()
 
     def read(self, path: Optional[str] = None) -> None:
         """Reads a bestsqs.out file.
         
         Args:
-            path (optional) (str): The filepath to read from.
+            path: The filepath to read from.
 
         Returns:
             None
@@ -129,6 +125,7 @@ class BestsqsFile(object):
             path = self.filepath
         with open(path, "r") as f:
             lines = f.readlines()
+        self.lattice = Lattice()
         lattice_vectors = lines[3:6]
         lattice_vectors = [
             np.fromstring(l, sep=" ") for l in lattice_vectors
@@ -138,7 +135,7 @@ class BestsqsFile(object):
         # so here i change it back
         # to be exactly what it was in the input file...
         lattice_vectors = np.flip(lattice_vectors, axis=1) * -1
-        self.lattice_vectors = lattice_vectors
+        self.lattice.axes = lattice_vectors
         lattice_parameters = lines[:3]
         lattice_parameters = [
             np.fromstring(l, sep=" ") for l in lattice_parameters
@@ -147,18 +144,24 @@ class BestsqsFile(object):
         # currently this is a 3x3 array but i convert it to a 
         # 1d array of just the scalar parameters along the diagonal
         # for more flexibility across various file formats
-        lattice_parameters = np.diag(lattice_parameters)
-        self.lattice_parameters = lattice_parameters
+        self.lattice.parameters = np.diag(lattice_parameters)
         # extract positions and symbols from the remaining lines
         positions = [" ".join(l.split()[:3]) for l in lines[6:]]
         symbols = [l.split()[-1] for l in lines[6:]]
-        self.symbols = symbols
         positions = [
             np.fromstring(p, sep=" ") for p in positions
         ]
         # once again, for some reason, the values of the positions are negated
         # therefore I am forced to convert back to positive space here
-        self.positions = np.array(positions) * -1
+        positions = np.array(positions) * -1
+        if self.direct:
+            for s, p in zip(symbols, positions):
+                a = Atom(symbol=s, position_direct=p)
+                self.lattice.add_atom(a)
+        else:
+            for s, p in zip(symbols, positions):
+                a = Atom(symbol=s, position_cartesian=p)
+                self.lattice.add_atom(a)
 
 
 class RndstrFile(object):
@@ -172,22 +175,32 @@ class RndstrFile(object):
         https://www.brown.edu/Departments/Engineering/Labs/avdw/atat/manual/node47.html
 
     Args:
-        filepath (optional) (str): Filepath to a rndstr.in file.
+        direct: Specifies a direct coordinate system.
+        filepath: Filepath to a rndstr.in file.
+        lattice: The lattice structure to represent.
+        probabilities: Probability of occupation by any symbols at each site.
+
+    Attributes:
+        direct: Specifies a direct coordinate system.
+        filepath: Filepath to a rndstr.in file.
+        lattice: The lattice structure being represented.
+        probabilities: Probability of occupation by any symbols at each site.
     """
 
-    def __init__(self, filepath: str = "rndstr.in") -> None:
+    def __init__(self, direct: bool = True, 
+                 filepath: str = "rndstr.in",
+                 lattice: Lattice = Lattice(),
+                 probabilities: List[Dict[str, float]] = []) -> None:
+        self.direct = direct
         self.filepath = filepath
-        self.lattice_angles: np.ndarray
-        self.lattice_parameters: np.ndarray
-        self.lattice_vectors: np.ndarray
-        self.positions: np.ndarray
-        self.probabilities: List[Dict[str, float]]
+        self.lattice = lattice
+        self.probabilities = probabilities
 
     def read(self, path: Optional[str] = None) -> None:
         """Reads a rndstr.in file.
         
         Args:
-            path (optional) (str): The filepath to read from.
+            path: The filepath to read from.
 
         Returns:
             None
@@ -196,24 +209,29 @@ class RndstrFile(object):
             path = self.filepath
         with open(path, "r") as f:
             lines = f.readlines()
+        self.lattice = Lattice()
         lattice_parameters = " ".join(lines[0].split()[:3])
-        lattice_parameters = np.fromstring(lattice_parameters, sep=" ")
-        self.lattice_parameters = lattice_parameters
+        self.lattice.parameters = np.fromstring(lattice_parameters, sep=" ")
         lattice_angles = " ".join(lines[0].split()[3:])
-        lattice_angles = np.fromstring(lattice_angles, sep=" ")
-        self.lattice_angles = lattice_angles
+        self.lattice.angles = np.fromstring(lattice_angles, sep=" ")
         lattice_vectors = lines[1:4]
         lattice_vectors = [
             np.fromstring(l, sep=" ") for l in lattice_vectors
         ]
-        lattice_vectors = np.array(lattice_vectors)
-        self.lattice_vectors = lattice_vectors
+        self.lattice.axes = np.array(lattice_vectors)
         positions: List = []
         positions = [" ".join(l.split()[:3]) for l in lines[4:]]
         positions = [
             np.fromstring(p, sep=" ") for p in positions
         ]
-        self.positions = np.array(positions)
+        if self.direct:
+            for p in positions:
+                a = Atom(position_direct=p)
+                self.lattice.add_atom(a)
+        else:
+            for p in positions:
+                a = Atom(position_cartesian=p)
+                self.lattice.add_atom(a)
         probabilities: List = []
         probabilities = [l.split()[3] for l in lines[4:]] # no spaces
         probabilities = [p.split(",") for p in probabilities]
@@ -230,7 +248,7 @@ class RndstrFile(object):
         """Writes a rndstr.in file.
         
         Args:
-            path (optional) (str): The filepath to write to.
+            path: The filepath to write to.
 
         Returns:
             None
@@ -238,18 +256,23 @@ class RndstrFile(object):
         if path is None:
             path = self.filepath
         with open(path, "w") as f:
-            lattice_parameters = self.lattice_parameters.astype(str)
+            lattice_parameters = self.lattice.parameters.astype(str)
             lattice_parameters = " ".join(lattice_parameters)
             f.write(lattice_parameters)
-            lattice_angles = self.lattice_angles.astype(str)
+            lattice_angles = self.lattice.angles.astype(str)
             lattice_angles = " ".join(lattice_angles)
             f.write(" {}\n".format(lattice_angles))
-            for row in self.lattice_vectors:
+            for row in self.lattice.axes:
                 row = row.astype(str)
                 row = " ".join(row)
                 f.write("{}\n".format(row))
-            for position, probability in zip(self.positions, 
-                                             self.probabilities):
+            if self.direct:
+                zipper = zip(self.lattice.positions_direct, 
+                             self.probabilities)
+            else:
+                zipper = zip(self.lattice.positions_cartesian,
+                             self.probabilities)
+            for position, probability in zipper:
                 position = position.astype(str)
                 position = " ".join(position)
                 prob_lst = ["{}={}".format(k, v) 
