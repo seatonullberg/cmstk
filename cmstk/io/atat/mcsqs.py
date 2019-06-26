@@ -38,12 +38,12 @@ def bestsqs_to_poscar(bestsqs, sym_order, coord_sys="Direct", relaxations=None):
     poscar.relaxations = relaxations  # assumed to be ordered by symbol
     # do multiplication here and set lattice constant to 1
     # for a general solution to non-cubic lattices
-    poscar.lattice_vectors = (bestsqs.lattice_vectors * 
-                              bestsqs.lattice_parameters)
+    poscar.lattice_vectors = (bestsqs.lattice.axes * 
+                              bestsqs.lattice.parameters)
     poscar.lattice_constant = 1.0
     # count up occurences of each symbol
     sym_counts = {sym: 0 for sym in sym_order}
-    for sym in bestsqs.symbols:
+    for sym in bestsqs.lattice.symbols:
         sym_counts[sym] += 1
     # store the counts in order
     n_atoms_per_symbol = []
@@ -52,7 +52,7 @@ def bestsqs_to_poscar(bestsqs, sym_order, coord_sys="Direct", relaxations=None):
     poscar.n_atoms_per_symbol = tuple(n_atoms_per_symbol)
     # group positions by symbol as required in POSCAR
     positions_by_symbol = {sym: [] for sym in sym_order}
-    for row, sym in zip(bestsqs.positions, bestsqs.symbols):
+    for row, sym in zip(bestsqs.lattice.positions_direct, bestsqs.lattice.symbols):
         positions_by_symbol[sym].append(row)
     positions_by_symbol = {
         sym: np.array(pos) for sym, pos in positions_by_symbol.items()
