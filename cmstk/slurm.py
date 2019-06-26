@@ -1,6 +1,6 @@
 import os
 import datetime
-from typing import Sequence, Optional
+from typing import Sequence
 
 
 # TODO: Use tags similar to INCAR instead of properties

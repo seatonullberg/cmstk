@@ -1,4 +1,4 @@
-from typing import Union, Any
+from typing import Any
 from cmstk.utils import Number
 
 

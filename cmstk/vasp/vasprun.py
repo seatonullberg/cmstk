@@ -1,6 +1,6 @@
 from xml.etree import ElementTree
 import numpy as np
-from typing import Optional, Sequence
+from typing import Optional
 
 
 class VasprunFile(object):
