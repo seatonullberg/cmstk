@@ -1,7 +1,7 @@
 from cmstk.utils import Number
 import copy
 import numpy as np
-from typing import Generator, List, MutableSequence, Sequence
+from typing import Generator, List, MutableSequence, Optional, Sequence
 
 
 class Atom(object):
@@ -39,21 +39,33 @@ class Atom(object):
         velocity: Velocity vector.
     """
 
-    def __init__(self, charge: Number = 0,
-                 magnetic_moment: np.ndarray = np.array([]),
-                 position_cartesian: np.ndarray = np.array([]),
-                 position_direct: np.ndarray = np.array([]),
-                 symbol: str = "",
-                 velocity: np.ndarray = np.array([])) -> None:
-        if position_cartesian.size == 0 and position_direct.size == 0:
+    def __init__(self, charge: Optional[Number] = None,
+                 magnetic_moment: Optional[np.ndarray] = None,
+                 position_cartesian: Optional[np.ndarray] = None,
+                 position_direct: Optional[np.ndarray] = None,
+                 symbol: Optional[str] = None,
+                 velocity: Optional[np.ndarray] = None) -> None:
+        if position_cartesian is None and position_direct is None:
             err = ("one or both of `position_cartesian` and `position_direct`\
                     must be populated.")
             raise ValueError(err)
+        if charge is None:
+            charge = 0
         self.charge = charge
+        if magnetic_moment is None:
+            magnetic_moment = np.array([])
         self.magnetic_moment = magnetic_moment
+        if position_cartesian is None:
+            position_cartesian = np.array([])
         self.position_cartesian = position_cartesian
+        if position_direct is None:
+            position_direct = np.array([])
         self.position_direct = position_direct
+        if symbol is None:
+            symbol = ""
         self.symbol = symbol
+        if velocity is None:
+            velocity = np.array([])
         self.velocity = velocity
 
     
@@ -82,17 +94,25 @@ class Lattice(object):
         velocities: Velocity of each atom.
     """
 
-    def __init__(self, angles: np.ndarray = np.array([90, 90 ,90]),
-                 atoms: MutableSequence[Atom] = [],
-                 axes: np.ndarray = np.identity(3),
-                 parameters: np.ndarray = np.array([1, 1, 1])) -> None:
+    def __init__(self, angles: Optional[np.ndarray] = None,
+                 atoms: Optional[MutableSequence[Atom]] = None,
+                 axes: Optional[np.ndarray] = None,
+                 parameters: Optional[np.ndarray] = None) -> None:
+        if angles is None:
+            angles = np.array([90, 90, 90])
         self.angles = angles
+        if axes is None:
+            axes = np.identity(3)
         self.axes = axes
+        if parameters is None:
+            parameters = np.array([1, 1, 1])
         self.parameters = parameters
+        if atoms is None:
+            atoms = []
         self._atoms = self._set_positions(atoms)
 
     def add_atom(self, atom: Atom, 
-                 tolerance: float = 0.001) -> None:
+                 tolerance: Optional[float] = None) -> None:
         """Adds an atom to the lattice if the position is not occupied.
 
         Notes:
@@ -102,7 +122,6 @@ class Lattice(object):
         
         Args:
             atom: The atom the be added.
-            direct: Specifies the use of direct coordinates.
             tolerance: The radius in which to check for existing atoms.
 
         Returns:
@@ -112,6 +131,8 @@ class Lattice(object):
             ValueError
             - If an atom exists within the tolerance radius.
         """
+        if tolerance is None:
+            tolerance = 0.001
         atom = self._set_positions([atom])[0]
         for a in self.atoms:
             new = atom.position_direct
@@ -123,8 +144,8 @@ class Lattice(object):
         self._atoms.append(atom)
 
     def remove_atom(self, position: np.ndarray,
-                    direct: bool = True,
-                    tolerance: float = 0.001) -> Atom:
+                    direct: Optional[bool] = None,
+                    tolerance: Optional[float] = None) -> Atom:
         """Removes an atom from the lattice if the position is occupied.
         
         Args:
@@ -139,6 +160,10 @@ class Lattice(object):
             ValueError:
             - If no atom exists within the tolerance radius.
         """
+        if direct is None:
+            direct = True
+        if tolerance is None:
+            tolerance = 0.001
         removal_index = None
         removed_atom: Atom
         for i, a in enumerate(self.atoms):
@@ -225,7 +250,7 @@ class Lattice(object):
 
     @property
     def velocities(self) -> np.ndarray:
-        return np.ndarray([a.velocity for a in self.atoms])
+        return np.array([a.velocity for a in self.atoms])
 
     def _set_positions(self, atoms: MutableSequence[Atom]) ->\
         MutableSequence[Atom]:

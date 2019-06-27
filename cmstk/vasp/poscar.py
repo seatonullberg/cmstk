@@ -63,8 +63,7 @@ class PoscarFile(object):
         lattice_vectors = [
             np.fromstring(l, sep=" ") for l in lattice_vectors
         ]
-        lattice_vectors = np.array(lattice_vectors)
-        self.lattice_vectors = lattice_vectors
+        self.lattice_vectors = np.array(lattice_vectors)
         n_atoms_per_symbol = [int(n) for n in lines[5].split()]
         self.n_atoms_per_symbol = tuple(n_atoms_per_symbol)
         if lines[6][0] in ["S", "s"]:
@@ -88,7 +87,7 @@ class PoscarFile(object):
             relaxations = [
                 np.fromstring(r, sep=" ", dtype=bool) for r in relaxations
             ]
-            self.relaxations = relaxations
+            self.relaxations = np.array(relaxations)
 
     def write(self, path: Optional[str] = None) -> None:
         """Writes a POSCAR file.

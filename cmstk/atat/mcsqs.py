@@ -22,7 +22,9 @@ class BestcorrFile(object):
         objective_functions: Value of the objective function at each iteration.
     """
 
-    def __init__(self, filepath: str = "bestcorr.out") -> None:
+    def __init__(self, filepath: Optional[str] = None) -> None:
+        if filepath is None:
+            filepath = "bestcorr.out"
         self.filepath = filepath
         self.clusters: List[List[Dict[str, Number]]]
         self.objective_functions: List[float]
@@ -106,9 +108,13 @@ class BestsqsFile(object):
         lattice: Underlying lattice structure data.
     """
 
-    def __init__(self, direct: bool = True,
-                 filepath: str = "bestsqs.out") -> None:
+    def __init__(self, direct: Optional[bool] = None,
+                 filepath: Optional[str] = None) -> None:
+        if direct is None:
+            direct = True
         self.direct = direct
+        if filepath is None:
+            filepath = "bestsqs.out"
         self.filepath = filepath
         self.lattice = Lattice()
 
@@ -130,21 +136,21 @@ class BestsqsFile(object):
         lattice_vectors = [
             np.fromstring(l, sep=" ") for l in lattice_vectors
         ]
-        lattice_vectors = np.array(lattice_vectors)
+        lattice_vectors_arr = np.array(lattice_vectors)
         # for whatever reason the lattice vectors are negated and flipped
         # so here i change it back
         # to be exactly what it was in the input file...
-        lattice_vectors = np.flip(lattice_vectors, axis=1) * -1
-        self.lattice.axes = lattice_vectors
+        lattice_vectors_arr = np.flip(lattice_vectors_arr, axis=1) * -1
+        self.lattice.axes = lattice_vectors_arr
         lattice_parameters = lines[:3]
         lattice_parameters = [
             np.fromstring(l, sep=" ") for l in lattice_parameters
         ]
-        lattice_parameters = np.array(lattice_parameters)
+        lattice_parameters_arr = np.array(lattice_parameters)
         # currently this is a 3x3 array but i convert it to a 
         # 1d array of just the scalar parameters along the diagonal
         # for more flexibility across various file formats
-        self.lattice.parameters = np.diag(lattice_parameters)
+        self.lattice.parameters = np.diag(lattice_parameters_arr)
         # extract positions and symbols from the remaining lines
         positions = [" ".join(l.split()[:3]) for l in lines[6:]]
         symbols = [l.split()[-1] for l in lines[6:]]
@@ -187,13 +193,21 @@ class RndstrFile(object):
         probabilities: Probability of occupation by any symbols at each site.
     """
 
-    def __init__(self, direct: bool = True, 
-                 filepath: str = "rndstr.in",
-                 lattice: Lattice = Lattice(),
-                 probabilities: List[Dict[str, float]] = []) -> None:
+    def __init__(self, direct: Optional[bool] = None, 
+                 filepath: Optional[str] = None,
+                 lattice: Optional[Lattice] = None,
+                 probabilities: Optional[List[Dict[str, float]]] = None) -> None:
+        if direct is None:
+            direct = True
         self.direct = direct
+        if filepath is None:
+            filepath = "rndstr.in"
         self.filepath = filepath
+        if lattice is None:
+            lattice = Lattice()
         self.lattice = lattice
+        if probabilities is None:
+            probabilities = []
         self.probabilities = probabilities
 
     def read(self, path: Optional[str] = None) -> None:

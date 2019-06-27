@@ -7,7 +7,9 @@ import os
 
 def test_poscar_file():
     """Tests the initialization of a vasp.PoscarFile object."""
-    path = os.path.join(data_directory(), "vasp", "POSCAR")
+    path = os.path.join(data_directory(), 
+                        "vasp", 
+                        "Fe75Cr25_BCC_bulk.poscar")
     poscar = PoscarFile(path)
     poscar.read()
 
@@ -42,7 +44,9 @@ def test_poscar_file():
 
 def test_poscar_to_cartesian():
     """Tests conversion from direct to cartesian coordinates."""
-    path = os.path.join(data_directory(), "vasp", "POSCAR")
+    path = os.path.join(data_directory(), 
+                        "vasp", 
+                        "Fe75Cr25_BCC_bulk.poscar")
     poscar = PoscarFile(path)
     poscar.read()
     orig_positions = copy.deepcopy(poscar.positions)
@@ -55,7 +59,9 @@ def test_poscar_to_cartesian():
 
 def test_poscar_to_direct():
     """Tests conversion from cartesian to direct coordinates."""
-    path = os.path.join(data_directory(), "vasp", "POSCAR")
+    path = os.path.join(data_directory(), 
+                        "vasp", 
+                        "Fe75Cr25_BCC_bulk.poscar")
     poscar = PoscarFile(path)
     poscar.read()
     orig_shape = copy.deepcopy(poscar.positions.shape)

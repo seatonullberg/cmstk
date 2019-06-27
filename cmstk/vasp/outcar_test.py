@@ -5,14 +5,16 @@ import os
 
 def test_outcar_file():
     """Tests the initialization of an OutcarFile object."""
-    path = os.path.join(data_directory(), "vasp", "OUTCAR")
+    path = os.path.join(data_directory(), 
+                        "vasp", 
+                        "Fe75Cr25_BCC_bulk.outcar")
     outcar = OutcarFile(path)
     outcar.read()
     assert type(outcar.entropy) is tuple
-    assert len(outcar.entropy) == 17
-    assert outcar.entropy[0] == -0.00166476
-    assert outcar.entropy[-1] == -0.00008521
+    assert len(outcar.entropy) == 178
+    assert outcar.entropy[0] == 0.00199197
+    assert outcar.entropy[-1] == 0.01933087
     assert type(outcar.total_energy) is tuple
-    assert len(outcar.total_energy) == 18
-    assert outcar.total_energy[0] == 0.85845112
-    assert outcar.total_energy[-1] == -8.57825914
+    assert len(outcar.total_energy) == 202
+    assert outcar.total_energy[0] == 2987.65426306
+    assert outcar.total_energy[-1] == -136.52019257
