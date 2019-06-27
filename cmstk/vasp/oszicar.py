@@ -20,7 +20,9 @@ class OszicarFile(object):
         magnetization (sequence of float): Magnetization at each ionic step.
      """
 
-    def __init__(self, filepath: str = "OSZICAR") -> None:
+    def __init__(self, filepath: Optional[str] = None) -> None:
+        if filepath is None:
+            filepath = "OSZICAR"
         self.filepath = filepath
         self.total_free_energy: Sequence[float]
         self.e0: Sequence[float]

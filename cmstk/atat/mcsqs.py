@@ -159,13 +159,13 @@ class BestsqsFile(object):
         ]
         # once again, for some reason, the values of the positions are negated
         # therefore I am forced to convert back to positive space here
-        positions = np.array(positions) * -1
+        positions_arr = np.array(positions) * -1
         if self.direct:
-            for s, p in zip(symbols, positions):
+            for s, p in zip(symbols, positions_arr):
                 a = Atom(symbol=s, position_direct=p)
                 self.lattice.add_atom(a)
         else:
-            for s, p in zip(symbols, positions):
+            for s, p in zip(symbols, positions_arr):
                 a = Atom(symbol=s, position_cartesian=p)
                 self.lattice.add_atom(a)
 
@@ -271,11 +271,11 @@ class RndstrFile(object):
             path = self.filepath
         with open(path, "w") as f:
             lattice_parameters = self.lattice.parameters.astype(str)
-            lattice_parameters = " ".join(lattice_parameters)
-            f.write(lattice_parameters)
+            lattice_parameters_str = " ".join(lattice_parameters)
+            f.write(lattice_parameters_str)
             lattice_angles = self.lattice.angles.astype(str)
-            lattice_angles = " ".join(lattice_angles)
-            f.write(" {}\n".format(lattice_angles))
+            lattice_angles_str = " ".join(lattice_angles)
+            f.write(" {}\n".format(lattice_angles_str))
             for row in self.lattice.axes:
                 row = row.astype(str)
                 row = " ".join(row)

@@ -1,6 +1,6 @@
 import os
 import datetime
-from typing import Sequence
+from typing import Optional, Sequence
 
 
 # TODO: Use tags similar to INCAR instead of properties
@@ -13,7 +13,9 @@ class SubmissionScript(object):
         filepath (optional) (str): Filepath to a SLURM script.
     """
 
-    def __init__(self, filepath: str = "runjob.slurm") -> None:
+    def __init__(self, filepath: Optional[str] = None) -> None:
+        if filepath is None:
+            filepath = "runjob.slurm"
         self.filepath = filepath
         # SBATCH tags
         self._job_name = "slurm_job"
@@ -30,7 +32,7 @@ class SubmissionScript(object):
         self._modules: Sequence = []
         self._cmds: Sequence = []
 
-    def read(self, path=None):
+    def read(self, path: Optional[str] = None) -> None:
         """Read in a SLURM submission script.
         
         Args:
@@ -79,7 +81,7 @@ class SubmissionScript(object):
                 else:
                     self.cmds.append(line.strip())
 
-    def write(self, path=None):
+    def write(self, path: Optional[str] = None) -> None:
         """Write a SLURM submission script.
         
         Args:

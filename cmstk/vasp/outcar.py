@@ -14,7 +14,9 @@ class OutcarFile(object):
         system at each step.
     """
 
-    def __init__(self, filepath: str = "OUTCAR") -> None:
+    def __init__(self, filepath: Optional[str] = None) -> None:
+        if filepath is None:
+            filepath = "OUTCAR"
         self.filepath = filepath
         self.entropy: Sequence[float]
         self.total_energy: Sequence[float]
