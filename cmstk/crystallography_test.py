@@ -22,7 +22,18 @@ def test_lattice():
     assert lattice.n_atoms == 3
     assert np.array_equal(atom2.position_direct,
                           np.array([0.05, 0.05, 0.05]))
-
+    # test automatic position updates
+    lattice.axes = np.diag([2.0, 2.0, 2.0])
+    assert np.array_equal(atom0.position_cartesian,
+                          np.array([2.0, 2.0, 2.0]))
+    lattice.axes = np.identity(3)
+    lattice.parameters = np.array([3.0, 3.0, 3.0])
+    assert np.array_equal(atom0.position_cartesian,
+                          np.array([1.5, 1.5, 1.5]))
+    # direct position should be unchanged
+    assert np.array_equal(atom0.position_direct,
+                          np.array([0.5, 0.5, 0.5]))
+                          
 
 def test_lattice_add_atom():
     """Tests behavior of the Lattice.add_atom() method."""

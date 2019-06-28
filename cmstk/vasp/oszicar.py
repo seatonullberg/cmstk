@@ -11,29 +11,30 @@ class OszicarFile(object):
         - Future updates must check keyword rather than order.
 
     Args:
-        filepath (optional) (str): Filepath to an OSZICAR file.
-        total_free_energy (sequence of float): Total free energy at each ionic 
-        step.
-        e0 (sequence of float): Energy where sigma == 0 at each ionic step.
-        delta_energy (sequence of float): Change in total energy at each ionic 
-        step.
-        magnetization (sequence of float): Magnetization at each ionic step.
+        filepath: Filepath to an OSZICAR file.
+     
+     Attributes:
+        filepath: Filepath to an OSZICAR file.
+        delta_energy: Change in total energy at each ionic step.
+        e0: Energy where sigma == 0 at each ionic step.
+        magnetization: Magnetization at each ionic step.
+        total_free_energy: Total free energy at each ionic step.
      """
 
     def __init__(self, filepath: Optional[str] = None) -> None:
         if filepath is None:
             filepath = "OSZICAR"
         self.filepath = filepath
-        self.total_free_energy: Sequence[float]
-        self.e0: Sequence[float]
-        self.delta_energy: Sequence[float]
-        self.magnetization: Sequence[float]
+        self.total_free_energy: Sequence[float] = ()
+        self.e0: Sequence[float] = ()
+        self.delta_energy: Sequence[float] = ()
+        self.magnetization: Sequence[float] = ()
 
     def read(self, path: Optional[str] = None) -> None:
         """Reads an OSZICAR file.
         
         Args:
-            path (optional) (str): The filepath to read from.
+            path: The filepath to read from.
 
         Returns:
             None 

@@ -18,17 +18,11 @@ class Atom(object):
 
     Args:
         charge: Electronic charge.
-        - default: 0
         magnetic_moment: Magnetic moment vector.
-        - default: empty array
         position_cartesian: Atomic position in cartesian coordinates.
-        - default: empty array
         position_direct: Atomic position in direct coordinates.
-        - default: empty array
         symbol: IUPAC chemical symbol.
-        - default: ""
         velocity: Velocity vector.
-        - default: empty array
     
     Attributes:
         charge: Electronic charge.
@@ -69,6 +63,8 @@ class Atom(object):
         self.velocity = velocity
 
     
+#TODO: USE PROPERTIES TO ALTER POSITIONS IF PARAMETERS OR AXES ARE MODIFIED.
+
 class Lattice(object):
     """Representation of a crystal lattice.
     
@@ -80,14 +76,14 @@ class Lattice(object):
 
     Attributes:
         angles: Tilt of each axis.
-        axes: Vectors defining the coordinate system.
-        parameters: Scaling factor of each axis.
 
     Properties:
         atoms: Underlying collection of atoms.
+        axes: Vectors defining the coordinate system.
         charges: Charge of each atom.
         magnetic_moments: Magnetic moment of each atom.
         n_atoms: Total number of atoms in the lattice.
+        parameters: Scaling factor of each axis.
         positions_cartesian: Position of each atom in cartesian coordinates.
         positions_direct: Position of each atom in direct coordinates.
         symbols: IUPAC chemical symbol of each atom.
@@ -103,10 +99,10 @@ class Lattice(object):
         self.angles = angles
         if axes is None:
             axes = np.identity(3)
-        self.axes = axes
+        self._axes = axes
         if parameters is None:
             parameters = np.array([1, 1, 1])
-        self.parameters = parameters
+        self._parameters = parameters
         if atoms is None:
             atoms = []
         self._atoms = self._set_positions(atoms)
@@ -225,6 +221,18 @@ class Lattice(object):
         self._atoms = self._set_positions(value)
 
     @property
+    def axes(self) -> np.ndarray:
+        return self._axes
+
+    @axes.setter
+    def axes(self, value: np.ndarray) -> None:
+        # when axes are updated atomic positions must also be updated
+        self._axes = value
+        for a in self.atoms:
+            a.position_cartesian = np.array([])
+        self._atoms = self._set_positions(self._atoms)
+
+    @property
     def charges(self) -> np.ndarray:
         return np.array([a.charge for a in self.atoms])
 
@@ -235,6 +243,18 @@ class Lattice(object):
     @property
     def n_atoms(self) -> int:
         return len(self._atoms)
+
+    @property
+    def parameters(self) -> np.ndarray:
+        return self._parameters
+
+    @parameters.setter
+    def parameters(self, value: np.ndarray) -> None:
+        # when parameters are updated atomic positions must also be updated
+        self._parameters = value
+        for a in self.atoms:
+            a.position_cartesian = np.array([])
+        self._atoms = self._set_positions(self._atoms)
 
     @property
     def positions_cartesian(self) -> np.ndarray:
