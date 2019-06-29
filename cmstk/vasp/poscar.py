@@ -18,10 +18,8 @@ class PoscarFile(object):
         n_atoms_per_symbol: Number of atoms of each type.
         relaxations: Selective dynamics relaxation parameters for each atom.
         scaling_factor: Lattice scaling factor (lattice constant)
-        total_volume: Total volume of the system
-        - * VASP requires this number to be negative to distinguish it from the 
-          scaling factor.
-    
+        - Interpreted as total volume if negative
+
     Attributes:
         filepath: Filepath to a POSCAR file.
         comment: Comment line at the top of the file.
@@ -30,7 +28,6 @@ class PoscarFile(object):
         n_atoms_per_symbol: Number of atoms of each type.
         relaxations: Selective dynamics relaxation parameters for each atom.
         scaling_factor: Lattice scaling factor (lattice constant)
-        total_volume: Total volume of the system
     """
 
     def __init__(self, filepath: Optional[str] = None,
@@ -39,8 +36,7 @@ class PoscarFile(object):
                  lattice: Optional[Lattice] = None,
                  n_atoms_per_symbol: Optional[Sequence[int]] = None,
                  relaxations: Optional[np.ndarray] = None,
-                 scaling_factor: Optional[float] = None,
-                 total_volume: Optional[float] = None) -> None:
+                 scaling_factor: Optional[float] = None) -> None:
         if filepath is None:
             filepath = "POSCAR"
         self.filepath = filepath
@@ -62,9 +58,6 @@ class PoscarFile(object):
         if scaling_factor is None:
             scaling_factor = 1.0
         self.scaling_factor = scaling_factor
-        # rarely used; check for existence in write.
-        # overrides position of scaling_factor if exists.
-        self.total_volume = total_volume
 
     def read(self, path: Optional[str] = None) -> None:
         """Reads a POSCAR file.
@@ -80,11 +73,7 @@ class PoscarFile(object):
         with open(path, "r") as f:
             lines = f.readlines()
         self.comment = lines[0].strip()
-        constant_or_volume = float(lines[1].strip())
-        if constant_or_volume > 0:
-            self.scaling_factor = constant_or_volume
-        else:
-            self.total_volume = constant_or_volume
+        self.scaling_factor = float(lines[1].strip())        
         lattice_vectors = lines[2:5]
         lattice_vectors = [
             np.fromstring(l, sep=" ") for l in lattice_vectors
@@ -105,12 +94,12 @@ class PoscarFile(object):
             self.direct = False
         else:
             self.direct = True
-        positions = lines[coord_sys_index+1:]
-        positions = [" ".join(p.split()[:3]) for p in positions]
-        positions = [
-            np.fromstring(p, sep=" ") for p in positions
+        str_positions = lines[coord_sys_index+1:]
+        str_positions = [" ".join(p.split()[:3]) for p in str_positions]
+        arr_positions = [
+            np.fromstring(p, sep=" ") for p in str_positions
         ]
-        for p in positions:
+        for p in arr_positions:
             if self.direct:
                 a = Atom(position_direct=p)
             else:
@@ -137,10 +126,7 @@ class PoscarFile(object):
             path = self.filepath
         with open(path, "w") as f:
             f.write("{}\n".format(self.comment))
-            if self.total_volume is None:
-                f.write("{}\n".format(self.scaling_factor))
-            else:
-                f.write("{}\n".format(self.total_volume))
+            f.write("{}\n".format(self.scaling_factor))
             for row in self.lattice.axes:
                 row = row.astype(str)
                 row = " ".join(row)

@@ -4,13 +4,17 @@ import numpy as np
 from typing import Optional, Sequence
 
 
-def bestsqs_to_poscar(bestsqs: BestsqsFile, sym_order: Sequence[str],
+def bestsqs_to_poscar(bestsqs: BestsqsFile, 
+                      scaling_factor: float,
+                      sym_order: Sequence[str],
                       direct: Optional[bool] = None,
                       relaxations: Optional[np.ndarray] = None) -> PoscarFile:
     """Converts a BestsqsFile object into a PoscarFile object.
     
     Args:
         bestsqs: File object to convert.
+        scaling_factor: Universal lattice scaling factor.
+        - Interpreted as total volume if negative
         sym_order: IUPAC symbols in the order they should appear.
         direct: Specifies a direct coordinate system.
         relaxations: Selective dynamics parameters of each atom in the lattice.
@@ -26,7 +30,8 @@ def bestsqs_to_poscar(bestsqs: BestsqsFile, sym_order: Sequence[str],
         err = "all members of `sym_order` must be unique"
         raise ValueError(err)
     poscar = PoscarFile(
-        lattice=bestsqs.lattice, direct=direct, relaxations=relaxations
+        direct=direct, lattice=bestsqs.lattice,
+        relaxations=relaxations, scaling_factor=scaling_factor
     )
     # group positions by symbol as required in POSCAR
     poscar.lattice.group_atoms_by_symbol(sym_order)

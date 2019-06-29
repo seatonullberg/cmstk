@@ -16,8 +16,7 @@ def test_poscar_file():
                                direct=poscar.direct, lattice=poscar.lattice,
                                n_atoms_per_symbol=poscar.n_atoms_per_symbol,
                                relaxations=poscar.relaxations,
-                               scaling_factor=poscar.scaling_factor,
-                               total_volume=poscar.total_volume)
+                               scaling_factor=poscar.scaling_factor)
     poscar_writer.write()
     poscar_reader = PoscarFile("test.poscar")
     poscar_reader.read()
@@ -29,5 +28,5 @@ def test_poscar_file():
     assert np.array_equal(poscar_reader.relaxations,
                           poscar.relaxations)
     assert poscar_reader.scaling_factor == poscar.scaling_factor
-    assert poscar_reader.total_volume == poscar.total_volume      
+    assert os.path.exists("test.poscar")
     os.remove("test.poscar")
