@@ -7,3 +7,4 @@
 *.oszicar filter=lfs diff=lfs merge=lfs -text
 *.outcar filter=lfs diff=lfs merge=lfs -text
 *.poscar filter=lfs diff=lfs merge=lfs -text
+*.potcar filter=lfs diff=lfs merge=lfs -text
