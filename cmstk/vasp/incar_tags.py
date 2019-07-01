@@ -1,6 +1,7 @@
 from cmstk.utils import BaseTag
 import numpy as np
-from typing import Any, Optional, Sequence
+import re
+from typing import Any, Optional, Sequence, Tuple
 
 
 class VaspTag(BaseTag):
@@ -18,47 +19,188 @@ class VaspTag(BaseTag):
                  value: Optional[Any] = None) -> None:
         super().__init__(comment, name, valid_options, value)
 
-    def read(self, line: str) -> None:
-        """Reads in tag info from a single line of text.
+    def read_array(self, line: str) -> None:
+        """Reads in tag content with value interpreted as array.
+        
+        Notes:
+            This implementation only works on the fully expanded array notation.
+
+        Args:
+            line: The string to parse.
+
+        Returns:
+            None
+        """
+        value, self.comment = self._read(line)
+        self.value = np.array([float(x) for x in value.split()])
+
+    def read_bool(self, line: str) -> None:
+        """Reads in tag content with value interpreted as bool.
         
         Args:
             line: The string to parse.
 
         Returns:
             None
+
+        Raises:
+            ValueError
+            - If value cannot be interpreted
+        """
+        value, self.comment = self._read(line)
+        if value == ".TRUE.":
+            self.value = True
+        elif value == ".FALSE.":
+            self.value = False
+        else:
+            err = "unable to interpret `{}` as a bool type".format(value)
+            raise ValueError(err)
+
+    def read_float(self, line: str) -> None:
+        """Reads in tag content with value interpreted as float.
         
+        Args:
+            line: The string to parse.
+
+        Returns:
+            None
+        """
+        value, self.comment = self._read(line)
+        self.value = float(value)
+
+    def read_int(self, line: str) -> None:
+        """Reads in tag content with value interpreted as int.
+        
+        Args:
+            line: The string to parse.
+
+        Returns:
+            None
+        """
+        value, self.comment = self._read(line)
+        self.value = int(value)
+
+    def read_str(self, line: str) -> None:
+        """Reads in tag content with value interpreted as str.
+        
+        Args:
+            line: The string to read.
+
+        Returns:
+            None
+        """
+        self.value, self.comment = self._read(line)
+
+    def _read(self, line: str) -> Tuple[str, Optional[str]]:
+        """Reads raw tag content from a line of text.
+        
+        Args:
+            line: The string to parse.
+
+        Returns:
+            Tuple[str, str]
+            - The raw value and comment
+
         Raises:
             ValueError:
-            - If the parsed name does not match the tag's name
+            - if the parsed name does not match the tag's name
         """
         name = line.split()[0]
         if name != self.name:
             err = ("tag with name `{}` cannot be parsed by {}"
-                   .format(name, self.__class__.__name__))
+                   .format(name, self.__class__))
             raise ValueError(err)
-        value = line.split()[2]
-        self.value = value
         if "!" in line:
+            # value is whatever is between `= ` and ` !`
+            value = re.search("= (.*) !", line).group(1).strip()
             comment = line.split("!")[1].strip()
-            self.comment = comment 
+        else:
+            value = line.split()[2]
+            comment = None
+        return (value, comment)
 
-    def write(self) -> str:
-        """Writes a single line string from the tag info.
+    def write_array(self) -> str:
+        """Writes a line of tag info with value interpreted as array.
+        
+        Args:
+            None
+        
+        Returns:
+            str
+        """
+        str_value = " ".join(str(x) for x in self.value)
+        return self._write(str_value)
+
+    def write_bool(self) -> str:
+        """Writes a line of tag info with value interpreted as bool.
+        
+        Notes:
+            If value is None this will write False.
+
+        Args:
+            None
+
+        Returns:
+            str
+        """
+        if self.value:
+            str_value = ".TRUE."
+        else:
+            str_value = ".FALSE."
+        return self._write(str_value)
+
+    def write_float(self) -> str:
+        """Writes a line of tag info with the value interpreted as float.
+
+        Args:
+            None
+
+        Returns:
+            str
+        """
+        str_value = "{:10.4f}".format(self.value)
+        return self._write(str_value)
+
+    def write_int(self) -> str:
+        """Writes a line of tag info with the value interpreted as int.
         
         Args:
             None
 
         Returns:
+            str
+        """
+        str_value = str(self.value)
+        return self._write(str_value)
+
+    def write_str(self) -> str:
+        """Writes a line of tag info with the value interpreted as str.
+        
+        Args:
             None
 
+        Returns:
+            str
+        """
+        return self._write(self.value)
+
+    def _write(self, str_value: str) -> str:
+        """Writes a single line string from preprocessed tag info.
+        
+        Args:
+            str_value: The tag's value formatted as VASP compliant text.
+
+        Returns:
+            str
+        
         Raises:
             ValueError
-            - If `value` is None
+            - If `str_value` is ""
         """
-        if self.value is None:
-            err = "None value cannot be written."
+        if str_value == "":
+            err = "writing a None value may have unforseen consequences"
             raise ValueError(err)
-        s = "{} = {}\t! {}".format(self.name, self.value, self.comment)
+        s = "{} = {}\t! {}\n".format(self.name, str_value, self.comment)
         return s
 
 #===============================#
@@ -87,6 +229,8 @@ class EdiffTag(VaspTag):
         name = "EDIFF"
         valid_options = [float]
         super().__init__(comment, name, valid_options, value)
+
+    def 
 
 
 class EdiffgTag(VaspTag):
