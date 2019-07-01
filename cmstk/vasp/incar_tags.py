@@ -1,98 +1,71 @@
+from cmstk.utils import BaseTag
 import numpy as np
+from typing import Any, Optional, Sequence
 
 
-class BaseTag(object):
+class VaspTag(BaseTag):
     """Representation of a generic INCAR tag.
     
     Args:
-        comment (str): Description of the tag.
-        name (str): VASP compliant tag name.
-        valid_options (iterable): The values this tag accepts.
-        value (object): Value assigned to the tag.
+        comment: Description of the tag.
+        name: VASP compliant tag name.
+        valid_options: The values this tag accepts.
+        value: Value assigned to the tag.
     """
 
-    def __init__(self, comment, name, valid_options, value):
-        assert type(comment) is str
-        self._comment = comment
-        assert type(name) is str
-        self._name = name
-        self._valid_options = valid_options
-        if value in None:
-            self._value = value
-        else:
-            self.value = value  # do necessary checks on assignment
+    def __init__(self, comment: str, name: str, 
+                 valid_options: Sequence[Any],
+                 value: Optional[Any] = None) -> None:
+        super().__init__(comment, name, valid_options, value)
 
-    def read_str(self, s, t):
-        """Parses the value out of an INCAR line.
-    
+    def read(self, line: str) -> None:
+        """Reads in tag info from a single line of text.
+        
         Args:
-            s (str): INCAR line.
-            t (type): Return type
+            line: The string to parse.
 
         Returns:
-            instance of type t
+            None
+        
+        Raises:
+            ValueError:
+            - If the parsed name does not match the tag's name
         """
-        s = s.split("=")
-        # TODO: Take into account possible comment line 
-        # this can fail for certain array representations
-        s = s[1].split()[0].strip()
-        if t is np.ndarray:
-            raise NotImplementedError()
-        elif t is bool:
-            if s == ".TRUE.":
-                return True
-            elif s == ".FALSE.":
-                return False
-            else:
-                raise ValueError()
-        else:
-            return t(s)
+        name = line.split()[0]
+        if name != self.name:
+            err = ("tag with name `{}` cannot be parsed by {}"
+                   .format(name, self.__class__.__name__))
+            raise ValueError(err)
+        value = line.split()[2]
+        self.value = value
+        if "!" in line:
+            comment = line.split("!")[1].strip()
+            self.comment = comment 
 
-    def write_str(self):
-        """Formats the tag as a VASP compliant INCAR instruction.
-
+    def write(self) -> str:
+        """Writes a single line string from the tag info.
+        
         Args:
             None
 
         Returns:
-            str
+            None
+
+        Raises:
+            ValueError
+            - If `value` is None
         """
-        t = type(self.value)
-        if t is np.ndarray:
-            s = " ".join(self.value.astype(str))
-        elif t is bool:
-            if self.value:
-                s = ".TRUE."
-            else:
-                s = ".FALSE."
-        else:
-            s = str(self.value)
-        return "{} = {}\t\t{}\n".format(self._name, s, self._comment)
-
-    @property
-    def value(self):
-        """(object): Value of the tag."""
-        return self._value
-
-    @value.setter
-    def value(self, v):
-        valid = False
-        for option in self._valid_options:
-            if type(option) is type:
-                if type(v) is option:
-                    valid = True
-            elif v == option:
-                valid = True
-        if valid:
-            self._value = v
-        else:
-            raise ValueError()
+        if self.value is None:
+            err = "None value cannot be written."
+            raise ValueError(err)
+        s = "{} = {}\t! {}".format(self.name, self.value, self.comment)
+        return s
 
 #===============================#
 #   VASP Tag Implementations    #
 #===============================#
 
-class AlgoTag(BaseTag):
+class AlgoTag(VaspTag):
 
     def __init__(self, value=None):
         comment = ("""Determines the electronic minimization algorithm and/or 
@@ -107,7 +80,7 @@ class AlgoTag(BaseTag):
         super().__init__(comment, name, valid_options, value)
 
 
-class EdiffTag(BaseTag):
+class EdiffTag(VaspTag):
 
     def __init__(self, value=None):
         comment = "The global break condition for the electronic SC-loop."
@@ -116,7 +89,7 @@ class EdiffTag(BaseTag):
         super().__init__(comment, name, valid_options, value)
 
 
-class EdiffgTag(BaseTag):
+class EdiffgTag(VaspTag):
 
     def __init__(self, value=None):
         comment = ("""Determines the break condition for the ionic relaxation 
@@ -126,7 +99,7 @@ class EdiffgTag(BaseTag):
         super().__init__(comment, name, valid_options, value)
 
 
-class EncutTag(BaseTag):
+class EncutTag(VaspTag):
 
     def __init__(self, value=None):
         comment = "Cutoff energy for the planewave basis set in eV."
@@ -135,7 +108,7 @@ class EncutTag(BaseTag):
         super().__init__(comment, name, valid_options, value)
 
 
-class IbrionTag(BaseTag):
+class IbrionTag(VaspTag):
 
     def __init__(self, value=None):
         comment = "Determines how the ions are updated and moved."
@@ -144,7 +117,7 @@ class IbrionTag(BaseTag):
         super().__init__(comment, name, valid_options, value)
 
 
-class IchargTag(BaseTag):
+class IchargTag(VaspTag):
 
     def __init__(self, value=None):
         comment = "Determines construction of the initial charge density."
@@ -153,7 +126,7 @@ class IchargTag(BaseTag):
         super().__init__(comment, name, valid_options, value)
 
 
-class IsifTag(BaseTag):
+class IsifTag(VaspTag):
 
     def __init__(self, value=None):
         comment = ("""Determines whether the stress tensor is calculated and 
@@ -163,7 +136,7 @@ class IsifTag(BaseTag):
         super().__init__(comment, name, valid_options, value)
 
 
-class IsmearTag(BaseTag):
+class IsmearTag(VaspTag):
 
     def __init__(self, value=None):
         comment = "Determines how partial occupancies are set for each orbital."
@@ -172,7 +145,7 @@ class IsmearTag(BaseTag):
         super().__init__(comment, name, valid_options, value)
 
 
-class IspinTag(BaseTag):
+class IspinTag(VaspTag):
 
     def __init__(self, value=None):
         comment = "Specifies spin polarization."
@@ -181,7 +154,7 @@ class IspinTag(BaseTag):
         super().__init__(comment, name, valid_options, value)
 
 
-class IstartTag(BaseTag):
+class IstartTag(VaspTag):
 
     def __init__(self, value=None):
         comment = "Determines whether or not to read the WAVECAR file."
@@ -190,7 +163,7 @@ class IstartTag(BaseTag):
         super().__init__(comment, name, valid_options, value)
 
 
-class IsymTag(BaseTag):
+class IsymTag(VaspTag):
 
     def __init__(self, value=None):
         comment = "Determines how symmetry is treated."
@@ -199,7 +172,7 @@ class IsymTag(BaseTag):
         super().__init__(comment, name, valid_options, value)
 
 
-class LchargTag(BaseTag):
+class LchargTag(VaspTag):
 
     def __init__(self, value=None):
         comment = "Determines whether or not a CHARGCAR/CHG file is written."
@@ -208,7 +181,7 @@ class LchargTag(BaseTag):
         super().__init__(comment, name, valid_options, value)
 
 
-class LrealTag(BaseTag):
+class LrealTag(VaspTag):
 
     def __init__(self, value=None):
         comment = ("""Determines whether the projection operators are evaluated 
@@ -218,7 +191,7 @@ class LrealTag(BaseTag):
         super().__init__(comment, name, valid_options, value)
 
 
-class LvtotTag(BaseTag):
+class LvtotTag(VaspTag):
 
     def __init__(self, value=None):
         comment = "Determines whether or not a LOCPOT file is written."
@@ -227,7 +200,7 @@ class LvtotTag(BaseTag):
         super().__init__(comment, name, valid_options, value)
 
 
-class LwaveTag(BaseTag):
+class LwaveTag(VaspTag):
 
     def __init__(self, value=None):
         comment = "Determines whether or not a WAVECAR file is written."
@@ -236,7 +209,7 @@ class LwaveTag(BaseTag):
         super().__init__(comment, name, valid_options, value)
 
 
-class MagmomTag(BaseTag):
+class MagmomTag(VaspTag):
 
     def __init__(self, value=None):
         comment = "Specifiec the initial magnetic moment for each atom."
@@ -245,7 +218,7 @@ class MagmomTag(BaseTag):
         super().__init__(comment, name, valid_options, value)
 
 
-class NelmTag(BaseTag):
+class NelmTag(VaspTag):
 
     def __init__(self, value=None):
         comment = "The maximum number of electronic SC steps."
@@ -254,7 +227,7 @@ class NelmTag(BaseTag):
         super().__init__(comment, name, valid_options, value)
 
 
-class NswTag(BaseTag):
+class NswTag(VaspTag):
 
     def __init__(self, value=None):
         comment = "Maximum number of ionic steps."
@@ -263,7 +236,7 @@ class NswTag(BaseTag):
         super().__init__(comment, name, valid_options, value)
 
 
-class PotimTag(BaseTag):
+class PotimTag(VaspTag):
 
     def __init__(self, value=None):
         comment = "Specifies the time step or step width scaling."
@@ -272,7 +245,7 @@ class PotimTag(BaseTag):
         super().__init__(comment, name, valid_options, value)
 
 
-class PrecTag(BaseTag):
+class PrecTag(VaspTag):
 
     def __init__(self, value=None):
         comment = "Determines the precision mode."
@@ -283,7 +256,7 @@ class PrecTag(BaseTag):
         super().__init__(comment, name, valid_options, value)
 
 
-class SigmaTag(BaseTag):
+class SigmaTag(VaspTag):
 
     def __init__(self, value=None):
         comment = "The width of the smearing in eV."
@@ -292,7 +265,7 @@ class SigmaTag(BaseTag):
         super().__init__(comment, name, valid_options, value)
 
 
-class SymprecTag(BaseTag):
+class SymprecTag(VaspTag):
 
     def __init__(self, value=None):
         comment = "Determines accuracy with which positions must be specified."
