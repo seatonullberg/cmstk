@@ -22,7 +22,7 @@ class MockBaseTag(BaseTag):
         name = "TestTag"
         valid_options = ["test", float]
         value = 0.0
-        super().__init__(comment, name, valid_options, value)
+        super().__init__(name, valid_options, comment, value)
 
 
 def test_base_tag():
@@ -31,7 +31,7 @@ def test_base_tag():
     name = "TestTag"
     valid_options = ["test", float]
     value = 0.0
-    base_tag = BaseTag(comment, name, valid_options, value)
+    base_tag = BaseTag(name, valid_options, comment, value)
     base_tag.value = "test"
     with pytest.raises(ValueError):
         base_tag.value = 1

@@ -17,5 +17,5 @@ echo ""
 
 echo -e "\u001b[33m[cmstk] removing generated files...\u001b[0m"
 bash "$cmstk_dir/sbin/cleanup.sh"
-
+echo -e "\u001b[33m[cmstk] test complete.\u001b[0m"
 exit 0

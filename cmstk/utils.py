@@ -38,16 +38,18 @@ class BaseTag(object):
     """Generalized representation of a tag/flag/variable for an input script.
     
     Args:
-        comment: Description of the tag's purpose.
         name: Official tag name.
         valid_options: Values which can be assigned to this tag.
+        comment: Description of the tag's purpose.
+        value: The value of the tag.
 
     Properties:
         value: The value of the tag.
     """
 
-    def __init__(self, comment: str, name: str, 
+    def __init__(self, name: str, 
                  valid_options: Sequence[Any], 
+                 comment: Optional[str] = None,
                  value: Optional[Any] = None) -> None:
         self.comment = comment
         self.name = name

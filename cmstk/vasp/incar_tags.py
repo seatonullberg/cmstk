@@ -8,16 +8,17 @@ class VaspTag(BaseTag):
     """Representation of a generic INCAR tag.
     
     Args:
-        comment: Description of the tag.
         name: VASP compliant tag name.
         valid_options: The values this tag accepts.
+        comment: Description of the tag.
         value: Value assigned to the tag.
     """
 
-    def __init__(self, comment: str, name: str, 
+    def __init__(self, name: str, 
                  valid_options: Sequence[Any],
+                 comment: Optional[str] = None, 
                  value: Optional[Any] = None) -> None:
-        super().__init__(comment, name, valid_options, value)
+        super().__init__(name, valid_options, comment, value)
 
     def _read_array(self, line: str) -> None:
         """Reads in tag content with value interpreted as array.
@@ -104,16 +105,23 @@ class VaspTag(BaseTag):
         Raises:
             ValueError:
             - if the parsed name does not match the tag's name
+            - If no value is found
         """
         name = line.split()[0]
         if name != self.name:
             err = ("tag with name `{}` cannot be parsed by {}"
                    .format(name, self.__class__))
             raise ValueError(err)
+        comment: Optional[str]
         if "!" in line:
             # value is whatever is between `= ` and ` !`
-            value = re.search("= (.*) !", line).group(1).strip()
-            comment = line.split("!")[1].strip()
+            search_result = re.search("= (.*) !", line)
+            if search_result is None:
+                err = "unable to find value in line: {}".format(line)
+                raise ValueError(err)
+            else:
+                value = search_result.group(1).strip()
+                comment = line.split("!")[1].strip()
         else:
             value = line.split()[2]
             comment = None
@@ -359,7 +367,7 @@ class IstartTag(VaspTag):
         super().__init__(comment, name, valid_options, value)
 
     def read(self, line: str):
-        return self._read_int()
+        return self._read_int(line)
 
     def write(self):
         return self._write_int()
@@ -374,7 +382,7 @@ class IsymTag(VaspTag):
         super().__init__(comment, name, valid_options, value)
 
     def read(self, line: str):
-        return self._read_int()
+        return self._read_int(line)
 
     def write(self):
         return self._write_int()

@@ -1,7 +1,6 @@
 from cmstk.vasp.poscar import PoscarFile
 from cmstk.utils import data_directory
 import numpy as np
-import copy
 import os
 
 
