@@ -19,7 +19,7 @@ class VaspTag(BaseTag):
                  value: Optional[Any] = None) -> None:
         super().__init__(comment, name, valid_options, value)
 
-    def read_array(self, line: str) -> None:
+    def _read_array(self, line: str) -> None:
         """Reads in tag content with value interpreted as array.
         
         Notes:
@@ -34,7 +34,7 @@ class VaspTag(BaseTag):
         value, self.comment = self._read(line)
         self.value = np.array([float(x) for x in value.split()])
 
-    def read_bool(self, line: str) -> None:
+    def _read_bool(self, line: str) -> None:
         """Reads in tag content with value interpreted as bool.
         
         Args:
@@ -56,7 +56,7 @@ class VaspTag(BaseTag):
             err = "unable to interpret `{}` as a bool type".format(value)
             raise ValueError(err)
 
-    def read_float(self, line: str) -> None:
+    def _read_float(self, line: str) -> None:
         """Reads in tag content with value interpreted as float.
         
         Args:
@@ -68,7 +68,7 @@ class VaspTag(BaseTag):
         value, self.comment = self._read(line)
         self.value = float(value)
 
-    def read_int(self, line: str) -> None:
+    def _read_int(self, line: str) -> None:
         """Reads in tag content with value interpreted as int.
         
         Args:
@@ -80,7 +80,7 @@ class VaspTag(BaseTag):
         value, self.comment = self._read(line)
         self.value = int(value)
 
-    def read_str(self, line: str) -> None:
+    def _read_str(self, line: str) -> None:
         """Reads in tag content with value interpreted as str.
         
         Args:
@@ -119,7 +119,7 @@ class VaspTag(BaseTag):
             comment = None
         return (value, comment)
 
-    def write_array(self) -> str:
+    def _write_array(self) -> str:
         """Writes a line of tag info with value interpreted as array.
         
         Args:
@@ -131,7 +131,7 @@ class VaspTag(BaseTag):
         str_value = " ".join(str(x) for x in self.value)
         return self._write(str_value)
 
-    def write_bool(self) -> str:
+    def _write_bool(self) -> str:
         """Writes a line of tag info with value interpreted as bool.
         
         Notes:
@@ -149,7 +149,7 @@ class VaspTag(BaseTag):
             str_value = ".FALSE."
         return self._write(str_value)
 
-    def write_float(self) -> str:
+    def _write_float(self) -> str:
         """Writes a line of tag info with the value interpreted as float.
 
         Args:
@@ -161,7 +161,7 @@ class VaspTag(BaseTag):
         str_value = "{:10.4f}".format(self.value)
         return self._write(str_value)
 
-    def write_int(self) -> str:
+    def _write_int(self) -> str:
         """Writes a line of tag info with the value interpreted as int.
         
         Args:
@@ -173,7 +173,7 @@ class VaspTag(BaseTag):
         str_value = str(self.value)
         return self._write(str_value)
 
-    def write_str(self) -> str:
+    def _write_str(self) -> str:
         """Writes a line of tag info with the value interpreted as str.
         
         Args:
@@ -221,6 +221,12 @@ class AlgoTag(VaspTag):
         ]
         super().__init__(comment, name, valid_options, value)
 
+    def read(self, line: str):
+        return self._read_str(line)
+
+    def write(self):
+        return self._write_str()
+
 
 class EdiffTag(VaspTag):
 
@@ -230,7 +236,11 @@ class EdiffTag(VaspTag):
         valid_options = [float]
         super().__init__(comment, name, valid_options, value)
 
-    def 
+    def read(self, line: str):
+        return self._read_float(line)
+
+    def write(self):
+        return self._write_float()
 
 
 class EdiffgTag(VaspTag):
@@ -242,6 +252,12 @@ class EdiffgTag(VaspTag):
         valid_options = [float]
         super().__init__(comment, name, valid_options, value)
 
+    def read(self, line: str):
+        return self._read_float(line)
+
+    def write(self):
+        return self._write_float()
+
 
 class EncutTag(VaspTag):
 
@@ -250,6 +266,12 @@ class EncutTag(VaspTag):
         name = "ENCUT"
         valid_options = [int]
         super().__init__(comment, name, valid_options, value)
+
+    def read(self, line: str):
+        return self._read_int(line)
+
+    def write(self):
+        return self._write_int()
 
 
 class IbrionTag(VaspTag):
@@ -260,6 +282,12 @@ class IbrionTag(VaspTag):
         valid_options = [-1, 0, 1, 2, 3, 5, 6, 7, 8, 44]
         super().__init__(comment, name, valid_options, value)
 
+    def read(self, line: str):
+        return self._read_int(line)
+
+    def write(self):
+        return self._write_int()
+
 
 class IchargTag(VaspTag):
 
@@ -268,6 +296,12 @@ class IchargTag(VaspTag):
         name = "ICHARG"
         valid_options = [0, 1, 2, 4]
         super().__init__(comment, name, valid_options, value)
+
+    def read(self, line: str):
+        return self._read_int(line)
+
+    def write(self):
+        return self._write_int()
 
 
 class IsifTag(VaspTag):
@@ -279,6 +313,12 @@ class IsifTag(VaspTag):
         valid_options = [0, 1, 2, 3, 4, 5, 6, 7]
         super().__init__(comment, name, valid_options, value)
 
+    def read(self, line: str):
+        return self._read_int(line)
+
+    def write(self):
+        return self._write_int()
+
 
 class IsmearTag(VaspTag):
 
@@ -287,6 +327,12 @@ class IsmearTag(VaspTag):
         name = "ISMEAR"
         valid_options = [int]  # can be -5 -> any
         super().__init__(comment, name, valid_options, value)
+
+    def read(self, line: str):
+        return self._read_int(line)
+
+    def writr(self):
+        return self._write_int()
 
 
 class IspinTag(VaspTag):
@@ -297,6 +343,12 @@ class IspinTag(VaspTag):
         valid_options = [1, 2]
         super().__init__(comment, name, valid_options, value)
 
+    def read(self, line: str):
+        return self._read_int(line)
+
+    def write(self):
+        return self._write_int()
+
 
 class IstartTag(VaspTag):
 
@@ -305,6 +357,12 @@ class IstartTag(VaspTag):
         name = "ISTART"
         valid_options = [0, 1, 2, 3]
         super().__init__(comment, name, valid_options, value)
+
+    def read(self, line: str):
+        return self._read_int()
+
+    def write(self):
+        return self._write_int()
 
 
 class IsymTag(VaspTag):
@@ -315,6 +373,12 @@ class IsymTag(VaspTag):
         valid_options = [-1, 0, 1, 2, 3]
         super().__init__(comment, name, valid_options, value)
 
+    def read(self, line: str):
+        return self._read_int()
+
+    def write(self):
+        return self._write_int()
+
 
 class LchargTag(VaspTag):
 
@@ -323,6 +387,12 @@ class LchargTag(VaspTag):
         name = "LCHARG"
         valid_options = [bool]
         super().__init__(comment, name, valid_options, value)
+
+    def read(self, line: str):
+        return self._read_bool(line)
+
+    def write(self):
+        return self._write_bool()
 
 
 class LrealTag(VaspTag):
@@ -334,6 +404,18 @@ class LrealTag(VaspTag):
         valid_options = [bool, "On", "O", "Auto", "A"]
         super().__init__(comment, name, valid_options, value)
 
+    def read(self, line: str):
+        try:
+            self._read_bool(line)
+        except ValueError:
+            self._read_str(line)
+
+    def write(self):
+        if type(self.value) is bool:
+            self._write_bool()
+        else:
+            self._write_str()
+
 
 class LvtotTag(VaspTag):
 
@@ -342,6 +424,12 @@ class LvtotTag(VaspTag):
         name = "LVTOT"
         valid_options = [bool]
         super().__init__(comment, name, valid_options, value)
+
+    def read(self, line: str):
+        return self._read_bool(line)
+
+    def write(self):
+        return self._write_bool()
 
 
 class LwaveTag(VaspTag):
@@ -352,6 +440,12 @@ class LwaveTag(VaspTag):
         valid_options = [bool]
         super().__init__(comment, name, valid_options, value)
 
+    def read(self, line: str):
+        return self._read_bool(line)
+
+    def write(self):
+        return self._write_bool()
+
 
 class MagmomTag(VaspTag):
 
@@ -360,6 +454,12 @@ class MagmomTag(VaspTag):
         name = "MAGMOM"
         valid_options = [np.ndarray]
         super().__init__(comment, name, valid_options, value)
+
+    def read(self, line: str):
+        return self._read_array(line)
+
+    def write(self):
+        return self._write_array()
 
 
 class NelmTag(VaspTag):
@@ -370,6 +470,12 @@ class NelmTag(VaspTag):
         valid_options = [int]
         super().__init__(comment, name, valid_options, value)
 
+    def read(self, line: str):
+        return self._read_int(line)
+
+    def write(self):
+        return self._write_int()
+
 
 class NswTag(VaspTag):
 
@@ -379,6 +485,11 @@ class NswTag(VaspTag):
         valid_options = [int]
         super().__init__(comment, name, valid_options, value)
 
+    def read(self, line: str):
+        return self._read_int(line)
+
+    def write(self):
+        return self._write_int()
 
 class PotimTag(VaspTag):
 
@@ -387,6 +498,12 @@ class PotimTag(VaspTag):
         name = "POTIM"
         valid_options = [float]
         super().__init__(comment, name, valid_options, value)
+
+    def read(self, line: str):
+        return self._read_float(line)
+
+    def write(self):
+        return self._write_float()
 
 
 class PrecTag(VaspTag):
@@ -399,6 +516,12 @@ class PrecTag(VaspTag):
         ]
         super().__init__(comment, name, valid_options, value)
 
+    def read(self, line: str):
+        return self._read_str(line)
+
+    def write(self):
+        return self._write_str()
+
 
 class SigmaTag(VaspTag):
 
@@ -408,6 +531,12 @@ class SigmaTag(VaspTag):
         valid_options = [float]
         super().__init__(comment, name, valid_options, value)
 
+    def read(self, line: str):
+        return self._read_float(line)
+
+    def write(self):
+        return self._write_float()
+
 
 class SymprecTag(VaspTag):
 
@@ -416,4 +545,9 @@ class SymprecTag(VaspTag):
         name = "SYMPREC"
         valid_options = [float]
         super().__init__(comment, name, valid_options, value)
-    
+
+    def read(self, line: str):
+        return self._read_float(line)
+
+    def write(self):
+        return self._write_float()
