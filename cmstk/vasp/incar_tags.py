@@ -339,7 +339,7 @@ class IsmearTag(VaspTag):
     def read(self, line: str):
         return self._read_int(line)
 
-    def writr(self):
+    def write(self):
         return self._write_int()
 
 
