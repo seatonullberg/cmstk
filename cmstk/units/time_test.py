@@ -1,5 +1,5 @@
 from cmstk.units.time import TimeUnit, Picosecond, Second
-from cmstk.testing_resources import within_one_percent
+from cmstk.utils import within_one_percent
 
 
 def test_picosecond():

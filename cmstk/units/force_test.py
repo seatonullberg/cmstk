@@ -1,5 +1,5 @@
 from cmstk.units.force import ForceUnit, Dyne, Newton
-from cmstk.testing_resources import within_one_percent
+from cmstk.utils import within_one_percent
 
 
 def test_dyne():

@@ -1,5 +1,5 @@
-from typing import Union, Any
-from cmstk.types import Number
+from typing import Any
+from cmstk.utils import Number
 
 
 class BaseUnit(object):

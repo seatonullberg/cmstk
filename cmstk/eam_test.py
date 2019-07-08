@@ -1,5 +1,5 @@
 from cmstk.eam import SetflFile
-from cmstk.testing_resources import data_directory
+from cmstk.utils import data_directory
 import numpy as np
 import os
 

@@ -8,22 +8,23 @@ class OutcarFile(object):
         This is a read-only file wrapper.
 
     Args:
-        filepath (optional) (str): Filepath to an OUTCAR file.
-        entropy (sequence of float): Entropy value of the system at each step.
-        total_energy (sequence of float): Total (free energy) value of the 
-        system at each step.
+        filepath: Filepath to an OUTCAR file.
+        entropy: Entropy value of the system at each step.
+        total_energy: Total (free energy) value of the system at each step.
     """
 
-    def __init__(self, filepath: str = "OUTCAR") -> None:
+    def __init__(self, filepath: Optional[str] = None) -> None:
+        if filepath is None:
+            filepath = "OUTCAR"
         self.filepath = filepath
-        self.entropy: Sequence[float]
-        self.total_energy: Sequence[float]
+        self.entropy: Sequence[float] = ()
+        self.total_energy: Sequence[float] = ()
 
     def read(self, path: Optional[str] = None) -> None:
         """Reads an OUTCAR file.
         
         Args:
-            path (optional) (str): The filepath to read from.
+            path: The filepath to read from.
 
         Returns:
             None

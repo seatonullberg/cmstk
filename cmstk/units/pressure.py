@@ -1,7 +1,7 @@
 from cmstk.units.base import BaseUnit
-from cmstk.types import Number
 from cmstk.units.area import AreaUnit, MeterSquared
 from cmstk.units.force import ForceUnit, Newton
+from cmstk.utils import Number
 from typing import Any
 
 

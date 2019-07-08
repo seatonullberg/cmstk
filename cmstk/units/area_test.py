@@ -1,7 +1,7 @@
 from cmstk.units.area import (AreaUnit, AngstromSquared, MeterSquared, 
                               NanometerSquared, PicometerSquared)
 from cmstk.units.distance import Meter, Nanometer, Picometer
-from cmstk.testing_resources import within_one_percent
+from cmstk.utils import within_one_percent
 
 
 def test_area_from_distance():

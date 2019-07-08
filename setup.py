@@ -14,7 +14,7 @@ setuptools.setup(
     url="https://github.com/seatonullberg/cmstk",
     packages=setuptools.find_packages(),
     classifiers=[
-        "Programming Language :: Python :: 3",
+        "Programming Language :: Python :: 3.7",
         "License :: OSI Approved :: MIT License",
     ],
     include_package_data=True

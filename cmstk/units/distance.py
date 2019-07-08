@@ -1,5 +1,5 @@
-from cmstk.types import Number
 from cmstk.units.base import BaseUnit
+from cmstk.utils import Number
 
 
 class DistanceUnit(BaseUnit): 

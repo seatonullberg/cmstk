@@ -1,6 +1,6 @@
 import math
 from cmstk.units.base import BaseUnit
-from cmstk.types import Number
+from cmstk.utils import Number
 
 
 class AngleUnit(BaseUnit):
