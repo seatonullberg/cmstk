@@ -1,3 +1,4 @@
+from ase.build import bulk
 import pytest
 import numpy as np
 from cmstk.crystallography import Atom, Lattice
@@ -33,7 +34,21 @@ def test_lattice():
     # direct position should be unchanged
     assert np.array_equal(atom0.position_direct,
                           np.array([0.5, 0.5, 0.5]))
-                          
+
+
+def test_lattice_from_ase():
+    """Tests initialization of a Lattice object from ase.Atoms."""
+    a0 = 2.856
+    ase_atoms = bulk("Fe", "bcc", a0, cubic=True)
+    parameters = np.array([a0, a0, a0])
+    lattice = Lattice.from_ase(ase_atoms=ase_atoms, parameters=parameters)
+    assert type(lattice) is Lattice
+    assert lattice.n_atoms == 2
+    assert np.array_equal(ase_atoms.get_positions(),
+                          lattice.positions_cartesian)
+    assert np.array_equal(ase_atoms.get_scaled_positions(),
+                          lattice.positions_direct)
+
 
 def test_lattice_add_atom():
     """Tests behavior of the Lattice.add_atom() method."""

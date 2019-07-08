@@ -1,7 +1,14 @@
 from cmstk.utils import Number
 import copy
 import numpy as np
-from typing import Generator, List, MutableSequence, Optional, Sequence
+from typing import Any, Generator, List, MutableSequence, Optional, Sequence
+
+try:
+    import ase
+except ImportError:
+    has_ase = False
+else:
+    has_ase = True
 
 
 class Atom(object):
@@ -63,7 +70,6 @@ class Atom(object):
         self.velocity = velocity
 
     
-#TODO: USE PROPERTIES TO ALTER POSITIONS IF PARAMETERS OR AXES ARE MODIFIED.
 
 class Lattice(object):
     """Representation of a crystal lattice.
@@ -106,6 +112,57 @@ class Lattice(object):
         if atoms is None:
             atoms = []
         self._atoms = self._set_positions(atoms)
+
+    @classmethod
+    def from_ase(cls, ase_atoms: ase.Atoms, 
+                 angles: Optional[np.ndarray] = None, 
+                 axes: Optional[np.ndarray] = None,
+                 parameters: Optional[np.ndarray] = None) -> Any:
+        """Initializes a Lattice object from an ase.Atoms object.
+        
+        Notes:
+            Only the cartesian positions are read in. In order to ensure proper
+            scaling to direct coordinates, provide arguments for `axes` and 
+            `parameters` function parameters.
+
+        Args:
+            ase_atoms: The ase.Atoms object to convert.
+            angles: Tilt of each axis.
+            axes: Vectors defining the coordinate system.
+            parameters: Scaling factor of each axis.
+
+        Returns:
+            Lattice
+
+        Raises:
+            ImportError
+            - If ase is not installed
+        """
+        if not has_ase:
+            err = "this functionality requires the ase package"
+            raise ImportError(err)
+        quantities = {
+            "charge": ase_atoms.get_initial_charges(),
+            "magnetic_moment": ase_atoms.get_initial_magnetic_moments(),
+            "position_cartesian": ase_atoms.get_positions(),
+            "symbol": ase_atoms.get_chemical_symbols(),
+            "velocity": ase_atoms.get_velocities()
+        }
+        # for whatever reason get_velocities() returns None inplace of an empty
+        # array like the rest of them so I have to do this little hack right 
+        # here to check for it and prevent errors in the dict comprehension
+        if quantities["velocity"] is None:
+            quantities["velocity"] = np.array([])
+        cmstk_atoms = []
+        # iterate over each quantity individually in case it is empty
+        for i in range(len(ase_atoms)):
+            quantity = {
+                k: (v[i] if i < len(v) else None) for k, v in quantities.items()
+            }
+            cmstk_atoms.append(Atom(**quantity))
+        return cls(
+            atoms=cmstk_atoms, angles=angles, axes=axes, parameters=parameters
+        )
 
     def add_atom(self, atom: Atom, 
                  tolerance: Optional[float] = None) -> None:
