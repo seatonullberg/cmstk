@@ -153,16 +153,14 @@ class Lattice(object):
         # here to check for it and prevent errors in the dict comprehension
         if quantities["velocity"] is None:
             quantities["velocity"] = np.array([])
-        cmstk_atoms = []
+        lattice = cls(angles=angles, axes=axes, parameters=parameters)
         # iterate over each quantity individually in case it is empty
         for i in range(len(ase_atoms)):
             quantity = {
                 k: (v[i] if i < len(v) else None) for k, v in quantities.items()
             }
-            cmstk_atoms.append(Atom(**quantity))
-        return cls(
-            atoms=cmstk_atoms, angles=angles, axes=axes, parameters=parameters
-        )
+            lattice.add_atom(Atom(**quantity))
+        return lattice
 
     def add_atom(self, atom: Atom, 
                  tolerance: Optional[float] = None) -> None:
