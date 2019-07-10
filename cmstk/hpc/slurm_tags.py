@@ -130,7 +130,7 @@ class SlurmTag(BaseTag):
         """
         return self._write(str(self.value))
 
-    def _wrtie(self, str_value: str) -> str:
+    def _write(self, str_value: str) -> str:
         """Writes a single line string from preprocessed tag info.
 
         Args:
@@ -157,7 +157,7 @@ class SlurmTag(BaseTag):
 #    SLURM Tag Implementations    #
 #=================================#
 
-class AccountTag(BaseTag):
+class AccountTag(SlurmTag):
     
     def __init__(self, value=None):
         name = "account"
@@ -172,7 +172,7 @@ class AccountTag(BaseTag):
     def write(self):
         return self._write_str()
 
-class DistributionTag(BaseTag):
+class DistributionTag(SlurmTag):
     
     def __init__(self, value=None):
         name = "distribution"
@@ -193,7 +193,7 @@ class DistributionTag(BaseTag):
         return self._write_str()
 
 
-class ErrorTag(BaseTag):
+class ErrorTag(SlurmTag):
     
     def __init__(self, value=None):
         name = "error"
@@ -209,7 +209,7 @@ class ErrorTag(BaseTag):
         return self._write_str()
 
 
-class JobNameTag(BaseTag):
+class JobNameTag(SlurmTag):
     
     def __init__(self, value=None):
         name = "job-name"
@@ -225,7 +225,7 @@ class JobNameTag(BaseTag):
         return self._write_str()
 
 
-class MailTypeTag(BaseTag):
+class MailTypeTag(SlurmTag):
     
     def __init__(self, value=None):
         name = "mail-type"
@@ -242,7 +242,7 @@ class MailTypeTag(BaseTag):
         return self._write_str()
 
 
-class MailUserTag(BaseTag):
+class MailUserTag(SlurmTag):
     
     def __init__(self, value=None):
         name = "mail-user"
@@ -258,7 +258,7 @@ class MailUserTag(BaseTag):
         return self._write_str()
 
 
-class MemPerCpuTag(BaseTag):
+class MemPerCpuTag(SlurmTag):
     
     def __init__(self, value=None):
         name = "mem-per-cpu"
@@ -274,7 +274,7 @@ class MemPerCpuTag(BaseTag):
         return self._write_int()
 
 
-class NtasksTag(BaseTag):
+class NtasksTag(SlurmTag):
     
     def __init__(self, value=None):
         name = "ntasks"
@@ -290,7 +290,7 @@ class NtasksTag(BaseTag):
         return self._write_int()
 
 
-class OutputTag(BaseTag):
+class OutputTag(SlurmTag):
     
     def __init__(self, value=None):
         name = "output"
@@ -306,7 +306,7 @@ class OutputTag(BaseTag):
         return self._write_str()
 
 
-class QosTag(BaseTag):
+class QosTag(SlurmTag):
     
     def __init__(self, value=None):
         name = "qos"
@@ -322,7 +322,7 @@ class QosTag(BaseTag):
         return self._write_str()
 
 
-class TimeTag(BaseTag):
+class TimeTag(SlurmTag):
     
     def __init__(self, value=None):
         name = "time"
