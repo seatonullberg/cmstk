@@ -18,7 +18,8 @@ class VaspTag(BaseTag):
                  valid_options: Sequence[Any],
                  comment: Optional[str] = None, 
                  value: Optional[Any] = None) -> None:
-        super().__init__(name, valid_options, comment, value)
+        super().__init__(name=name, valid_options=valid_options, 
+                         comment=comment, value=value)
 
     def _read_array(self, line: str) -> None:
         """Reads in tag content with value interpreted as array.
@@ -114,8 +115,8 @@ class VaspTag(BaseTag):
             raise ValueError(err)
         comment: Optional[str]
         if "!" in line:
-            # value is whatever is between `= ` and ` !`
-            search_result = re.search("= (.*) !", line)
+            # value is whatever is between `=` and `!`
+            search_result = re.search("=(.*)!", line)
             if search_result is None:
                 err = "unable to find value in line: {}".format(line)
                 raise ValueError(err)
@@ -123,7 +124,7 @@ class VaspTag(BaseTag):
                 value = search_result.group(1).strip()
                 comment = line.split("!")[1].strip()
         else:
-            value = line.split()[2]
+            value = " ".join(line.split()[2:])
             comment = None
         return (value, comment)
 
@@ -160,13 +161,16 @@ class VaspTag(BaseTag):
     def _write_float(self) -> str:
         """Writes a line of tag info with the value interpreted as float.
 
+        Notes:
+            This can cause issues when representing number less than 1e-10.
+
         Args:
             None
 
         Returns:
             str
         """
-        str_value = "{:10.4f}".format(self.value)
+        str_value = "{:10.10f}".format(self.value)
         return self._write(str_value)
 
     def _write_int(self) -> str:
@@ -208,7 +212,10 @@ class VaspTag(BaseTag):
         if str_value == "":
             err = "writing a None value may have unforseen consequences"
             raise ValueError(err)
-        s = "{} = {}\t! {}\n".format(self.name, str_value, self.comment)
+        if self.comment is None:
+            s = "{} = {}\n".format(self.name, str_value)
+        else:
+            s = "{} = {}\t! {}\n".format(self.name, str_value, self.comment)
         return s
 
 #===============================#
@@ -227,7 +234,8 @@ class AlgoTag(VaspTag):
             "GW0", "GW", "scGW0", "scGW", "G0W0R", "GW0R", "GWR", "scGW0R",
             "scGWR", "ACFDT", "RPA", "ACFDTR", "RPAR", "BSE", "TDHF"
         ]
-        super().__init__(comment, name, valid_options, value)
+        super().__init__(name=name, comment=comment,
+                         valid_options=valid_options, value=value)
 
     def read(self, line: str):
         return self._read_str(line)
@@ -242,7 +250,8 @@ class EdiffTag(VaspTag):
         comment = "The global break condition for the electronic SC-loop."
         name = "EDIFF"
         valid_options = [float]
-        super().__init__(comment, name, valid_options, value)
+        super().__init__(name=name, comment=comment,
+                         valid_options=valid_options, value=value)
 
     def read(self, line: str):
         return self._read_float(line)
@@ -258,7 +267,8 @@ class EdiffgTag(VaspTag):
                    loop.""")
         name = "EDIFFG"
         valid_options = [float]
-        super().__init__(comment, name, valid_options, value)
+        super().__init__(name=name, comment=comment,
+                         valid_options=valid_options, value=value)
 
     def read(self, line: str):
         return self._read_float(line)
@@ -273,7 +283,8 @@ class EncutTag(VaspTag):
         comment = "Cutoff energy for the planewave basis set in eV."
         name = "ENCUT"
         valid_options = [int]
-        super().__init__(comment, name, valid_options, value)
+        super().__init__(name=name, comment=comment,
+                         valid_options=valid_options, value=value)
 
     def read(self, line: str):
         return self._read_int(line)
@@ -288,7 +299,8 @@ class IbrionTag(VaspTag):
         comment = "Determines how the ions are updated and moved."
         name = "IBRION"
         valid_options = [-1, 0, 1, 2, 3, 5, 6, 7, 8, 44]
-        super().__init__(comment, name, valid_options, value)
+        super().__init__(name=name, comment=comment,
+                         valid_options=valid_options, value=value)
 
     def read(self, line: str):
         return self._read_int(line)
@@ -303,7 +315,8 @@ class IchargTag(VaspTag):
         comment = "Determines construction of the initial charge density."
         name = "ICHARG"
         valid_options = [0, 1, 2, 4]
-        super().__init__(comment, name, valid_options, value)
+        super().__init__(name=name, comment=comment,
+                         valid_options=valid_options, value=value)
 
     def read(self, line: str):
         return self._read_int(line)
@@ -319,7 +332,8 @@ class IsifTag(VaspTag):
                    which degrees of freedom are allowed to change.""")
         name = "ISIF"
         valid_options = [0, 1, 2, 3, 4, 5, 6, 7]
-        super().__init__(comment, name, valid_options, value)
+        super().__init__(name=name, comment=comment,
+                         valid_options=valid_options, value=value)
 
     def read(self, line: str):
         return self._read_int(line)
@@ -334,7 +348,8 @@ class IsmearTag(VaspTag):
         comment = "Determines how partial occupancies are set for each orbital."
         name = "ISMEAR"
         valid_options = [int]  # can be -5 -> any
-        super().__init__(comment, name, valid_options, value)
+        super().__init__(name=name, comment=comment,
+                         valid_options=valid_options, value=value)
 
     def read(self, line: str):
         return self._read_int(line)
@@ -349,7 +364,8 @@ class IspinTag(VaspTag):
         comment = "Specifies spin polarization."
         name = "ISPIN"
         valid_options = [1, 2]
-        super().__init__(comment, name, valid_options, value)
+        super().__init__(name=name, comment=comment,
+                         valid_options=valid_options, value=value)
 
     def read(self, line: str):
         return self._read_int(line)
@@ -364,7 +380,8 @@ class IstartTag(VaspTag):
         comment = "Determines whether or not to read the WAVECAR file."
         name = "ISTART"
         valid_options = [0, 1, 2, 3]
-        super().__init__(comment, name, valid_options, value)
+        super().__init__(name=name, comment=comment,
+                         valid_options=valid_options, value=value)
 
     def read(self, line: str):
         return self._read_int(line)
@@ -379,7 +396,8 @@ class IsymTag(VaspTag):
         comment = "Determines how symmetry is treated."
         name = "ISYM"
         valid_options = [-1, 0, 1, 2, 3]
-        super().__init__(comment, name, valid_options, value)
+        super().__init__(name=name, comment=comment,
+                         valid_options=valid_options, value=value)
 
     def read(self, line: str):
         return self._read_int(line)
@@ -394,7 +412,8 @@ class LchargTag(VaspTag):
         comment = "Determines whether or not a CHARGCAR/CHG file is written."
         name = "LCHARG"
         valid_options = [bool]
-        super().__init__(comment, name, valid_options, value)
+        super().__init__(name=name, comment=comment,
+                         valid_options=valid_options, value=value)
 
     def read(self, line: str):
         return self._read_bool(line)
@@ -410,7 +429,8 @@ class LrealTag(VaspTag):
                    in real space or reciprocal space.""")
         name = "LREAL"
         valid_options = [bool, "On", "O", "Auto", "A"]
-        super().__init__(comment, name, valid_options, value)
+        super().__init__(name=name, comment=comment,
+                         valid_options=valid_options, value=value)
 
     def read(self, line: str):
         try:
@@ -420,9 +440,9 @@ class LrealTag(VaspTag):
 
     def write(self):
         if type(self.value) is bool:
-            self._write_bool()
+            return self._write_bool()
         else:
-            self._write_str()
+            return self._write_str()
 
 
 class LvtotTag(VaspTag):
@@ -431,7 +451,8 @@ class LvtotTag(VaspTag):
         comment = "Determines whether or not a LOCPOT file is written."
         name = "LVTOT"
         valid_options = [bool]
-        super().__init__(comment, name, valid_options, value)
+        super().__init__(name=name, comment=comment,
+                         valid_options=valid_options, value=value)
 
     def read(self, line: str):
         return self._read_bool(line)
@@ -446,7 +467,8 @@ class LwaveTag(VaspTag):
         comment = "Determines whether or not a WAVECAR file is written."
         name = "LWAVE"
         valid_options = [bool]
-        super().__init__(comment, name, valid_options, value)
+        super().__init__(name=name, comment=comment,
+                         valid_options=valid_options, value=value)
 
     def read(self, line: str):
         return self._read_bool(line)
@@ -458,10 +480,11 @@ class LwaveTag(VaspTag):
 class MagmomTag(VaspTag):
 
     def __init__(self, value=None):
-        comment = "Specifiec the initial magnetic moment for each atom."
+        comment = "Specifies the initial magnetic moment for each atom."
         name = "MAGMOM"
         valid_options = [np.ndarray]
-        super().__init__(comment, name, valid_options, value)
+        super().__init__(name=name, comment=comment,
+                         valid_options=valid_options, value=value)
 
     def read(self, line: str):
         return self._read_array(line)
@@ -470,13 +493,30 @@ class MagmomTag(VaspTag):
         return self._write_array()
 
 
+class NcoreTag(VaspTag):
+
+    def __init__(self, value=None):
+        comment = "Determines the number of compute nodes per orbital."
+        name = "NCORE"
+        valid_options = [int]
+        super().__init__(name=name, comment=comment,
+                         valid_options=valid_options, value=value)
+
+    def read(self, line: str):
+        return self._read_int(line)
+
+    def write(self):
+        return self._write_int()
+
+
 class NelmTag(VaspTag):
 
     def __init__(self, value=None):
         comment = "The maximum number of electronic SC steps."
         name = "NELM"
         valid_options = [int]
-        super().__init__(comment, name, valid_options, value)
+        super().__init__(name=name, comment=comment,
+                         valid_options=valid_options, value=value)
 
     def read(self, line: str):
         return self._read_int(line)
@@ -491,7 +531,8 @@ class NswTag(VaspTag):
         comment = "Maximum number of ionic steps."
         name = "NSW"
         valid_options = [int]
-        super().__init__(comment, name, valid_options, value)
+        super().__init__(name=name, comment=comment,
+                         valid_options=valid_options, value=value)
 
     def read(self, line: str):
         return self._read_int(line)
@@ -505,7 +546,8 @@ class PotimTag(VaspTag):
         comment = "Specifies the time step or step width scaling."
         name = "POTIM"
         valid_options = [float]
-        super().__init__(comment, name, valid_options, value)
+        super().__init__(name=name, comment=comment,
+                         valid_options=valid_options, value=value)
 
     def read(self, line: str):
         return self._read_float(line)
@@ -522,7 +564,8 @@ class PrecTag(VaspTag):
         valid_options = [
             "Low", "Medium", "High", "Normal", "Single", "Accurate"
         ]
-        super().__init__(comment, name, valid_options, value)
+        super().__init__(name=name, comment=comment,
+                         valid_options=valid_options, value=value)
 
     def read(self, line: str):
         return self._read_str(line)
@@ -537,7 +580,8 @@ class SigmaTag(VaspTag):
         comment = "The width of the smearing in eV."
         name = "SIGMA"
         valid_options = [float]
-        super().__init__(comment, name, valid_options, value)
+        super().__init__(name=name, comment=comment,
+                         valid_options=valid_options, value=value)
 
     def read(self, line: str):
         return self._read_float(line)
@@ -552,10 +596,27 @@ class SymprecTag(VaspTag):
         comment = "Determines accuracy with which positions must be specified."
         name = "SYMPREC"
         valid_options = [float]
-        super().__init__(comment, name, valid_options, value)
+        super().__init__(name=name, comment=comment,
+                         valid_options=valid_options, value=value)
 
     def read(self, line: str):
         return self._read_float(line)
 
     def write(self):
         return self._write_float()
+
+
+class SystemTag(VaspTag):
+
+    def __init__(self, value=None):
+        comment = "Description of the simulation."
+        name = "SYSTEM"
+        valid_options = [str]
+        super().__init__(name=name, comment=comment,
+                         valid_options=valid_options, value=value)
+
+    def read(self, line: str):
+        return self._read_str(line)
+
+    def write(self):
+        return self._write_str()

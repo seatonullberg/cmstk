@@ -1,5 +1,7 @@
 from cmstk.utils import BaseTagSequence
 from cmstk.vasp.incar_tags import VaspTag
+import importlib
+import inspect
 from typing import Any, Optional, Sequence
 
 
@@ -27,18 +29,38 @@ class IncarFile(object):
     def read(self, path: Optional[str] = None) -> None:
         if path is None:
             path = self.filepath
-        pass
-
+        with open(path, "r") as f:
+            lines = f.readlines()
+            lines = list(map(lambda x: x.strip(), lines))  # remove newlines
+            lines = list(filter(None, lines))  # remove empty strings
+        tags = self._load_all_tags()
+        for line in lines:
+            is_valid = False
+            for _, tag in tags.items():
+                try:
+                    tag.read(line)
+                except ValueError:
+                    continue
+                else:
+                    is_valid = True
+                    self.tags.append(tag)
+                    break
+            if not is_valid:
+                err = "unable to parse the following line: {}".format(line)
+                raise ValueError(err)
 
     def write(self, path: Optional[str] = None) -> None: 
         if path is None:
             path = self.filepath
-        pass
+        with open(path, "w") as f:
+            for tag in self.tags:
+                f.write(tag.write())
 
     @property
     def tags(self) -> BaseTagSequence:
         return self._tags
 
+    # TODO: maybe return a list instead
     @staticmethod
     def _load_all_tags():
         module_str = "cmstk.vasp.incar_tags"
@@ -49,4 +71,5 @@ class IncarFile(object):
         tags = {name: obj for name, obj in classes.items() 
                 if issubclass(obj, VaspTag)}
         del tags["VaspTag"]  # ignore the base class
+        tags = {k: v() for k, v in tags.items()}  # initialize the tags
         return tags
