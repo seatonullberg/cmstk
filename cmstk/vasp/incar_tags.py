@@ -100,7 +100,7 @@ class VaspTag(BaseTag):
             line: The string to parse.
 
         Returns:
-            Tuple[str, str]
+            Tuple[str, Optional[str]]
             - The raw value and comment
 
         Raises:

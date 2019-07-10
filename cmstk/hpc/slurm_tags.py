@@ -1,6 +1,5 @@
 from cmstk.utils import BaseTag
 import datetime
-import re
 from typing import Any, Optional, Sequence, Tuple
 
 
@@ -22,28 +21,137 @@ class SlurmTag(BaseTag):
                          comment=comment, value=value)
 
     def _read_int(self, line: str) -> None:
-        pass
+        """Reads in tag content with value interpreted as int.
+        
+        Args:
+            line: The string to parse.
+
+        Returns:
+            None
+        """
+        value, self.comment = self._read(line)
+        self.value = int(value)
     
     def _read_str(self, line: str) -> None:
-        pass
+        """Reads in tag content with value interpreted as str.
+        
+        Args:
+            line: The string to parse.
+
+        Returns:
+            None
+        """
+        self.value, self.comment = self._read(line)
 
     def _read_time(self, line: str) -> None:
-        pass
+        """Reads in tag content with value interpreted as a duration.
+        
+        Args:
+            line: The string to parse.
+
+        Returns:
+            None
+        """
+        value, self.comment = self._read(line)
+        hours, mins, secs = value.split(":")
+        self.value = datetime.timedelta(hours=int(hours),
+                                        minutes=int(mins),
+                                        seconds=int(secs))
 
     def _read(self, line: str) -> Tuple[str, Optional[str]]:
-        pass
+        """Reads raw tag content from a line of text.
+        
+        Args:
+            line: The string to parse.
+
+        Returns:
+            Tuple[str, Optional[str]]
+            - The raw value and comment
+
+        Raises:
+            ValueError:
+            - if the parsed name does not match the tag's name
+            - If no value is found
+        """
+        name = line.split()[1]
+        name = name.replace("--", "")
+        name, value = name.split("=")
+        if name != self.name:
+            err = ("tag with name `{}` cannot be parsed by {}"
+                   .format(name, self.__class__))
+            raise ValueError(err)
+        comment: Optional[str]
+        if "#" in value:
+            value, comment = value.split("#")
+            comment = comment.strip()
+        else:
+            comment = None
+        value = value.strip()
+        if value == "":
+            err = "unable to find value in line: {}".format(line)
+            raise ValueError(err)
+        return (value, comment)
 
     def _write_int(self) -> str:
-        pass
+        """Writes a line of tag info with the value interpreted as int.
+        
+        Args:
+            None
+
+        Returns:
+            str
+        """
+        str_value = str(self.value)
+        return self._write(str_value)
 
     def _write_str(self) -> str:
-        pass
+        """Writes a line of tag info with the value interpreted as str.
+        
+        Args:
+            None
+
+        Returns:
+            str
+        """
+        return self._write(self.value)
 
     def _write_time(self) -> str:
-        pass
+        """Writes a line of tag info with the value interpreted as a duration.
+        
+        Notes:
+            timedelta objects conveniently already format their str
+            representation in a SLURM compatible format.
+
+        Args:
+            None
+        
+        Returns:
+            str
+        """
+        return self._write(str(self.value))
 
     def _wrtie(self, str_value: str) -> str:
-        pass
+        """Writes a single line string from preprocessed tag info.
+
+        Args:
+            str_value: The tag's value formatted as SLURM compliant text.
+
+        Returns:
+            str
+
+        Raises:
+            ValueError
+            - If `str_value` is ""
+        """
+        if str_value == "":
+            err = "writing a None value may have unforseen consequences"
+            raise ValueError(err)
+        if self.comment is None:
+            s = "#SBATCH --{}={}\n".format(self.name, str_value)
+        else:
+            s = "#SBATCH --{}={}\t# {}\n".format(self.name, str_value, 
+                                                 self.comment)
+        return s
 
 #=================================#
 #    SLURM Tag Implementations    #
@@ -58,6 +166,11 @@ class AccountTag(BaseTag):
         super().__init__(name=name, comment=comment,
                          valid_options=valid_options, value=value)
 
+    def read(self, line: str):
+        return self._read_str(line)
+
+    def write(self):
+        return self._write_str()
 
 class DistributionTag(BaseTag):
     
@@ -73,6 +186,12 @@ class DistributionTag(BaseTag):
         super().__init__(name=name, comment=comment,
                          valid_options=valid_options, value=value)
 
+    def read(self, line: str):
+        return self._read_str(line)
+
+    def write(self):
+        return self._write_str()
+
 
 class ErrorTag(BaseTag):
     
@@ -83,6 +202,12 @@ class ErrorTag(BaseTag):
         super().__init__(name=name, comment=comment,
                          valid_options=valid_options, value=value)
 
+    def read(self, line: str):
+        return self._read_str(line)
+
+    def write(self):
+        return self._write_str()
+
 
 class JobNameTag(BaseTag):
     
@@ -92,6 +217,12 @@ class JobNameTag(BaseTag):
         valid_options = [str]
         super().__init__(name=name, comment=comment,
                          valid_options=valid_options, value=value)
+
+    def read(self, line: str):
+        return self._read_str(line)
+
+    def write(self):
+        return self._write_str()
 
 
 class MailTypeTag(BaseTag):
@@ -104,6 +235,12 @@ class MailTypeTag(BaseTag):
         super().__init__(name=name, comment=comment,
                          valid_options=valid_options, value=value)
 
+    def read(self, line: str):
+        return self._read_str(line)
+
+    def write(self):
+        return self._write_str()
+
 
 class MailUserTag(BaseTag):
     
@@ -113,6 +250,12 @@ class MailUserTag(BaseTag):
         valid_options = [str]
         super().__init__(name=name, comment=comment,
                          valid_options=valid_options, value=value)
+
+    def read(self, line: str):
+        return self._read_str(line)
+
+    def write(self):
+        return self._write_str()
 
 
 class MemPerCpuTag(BaseTag):
@@ -124,6 +267,12 @@ class MemPerCpuTag(BaseTag):
         super().__init__(name=name, comment=comment,
                          valid_options=valid_options, value=value)
 
+    def read(self, line: str):
+        return self._read_int(line)
+
+    def write(self):
+        return self._write_int()
+
 
 class NtasksTag(BaseTag):
     
@@ -133,6 +282,12 @@ class NtasksTag(BaseTag):
         valid_options = [int]
         super().__init__(name=name, comment=comment,
                          valid_options=valid_options, value=value)
+
+    def read(self, line: str):
+        return self._read_int(line)
+
+    def write(self):
+        return self._write_int()
 
 
 class OutputTag(BaseTag):
@@ -144,6 +299,12 @@ class OutputTag(BaseTag):
         super().__init__(name=name, comment=comment,
                          valid_options=valid_options, value=value)
 
+    def read(self, line: str):
+        return self._read_str(line)
+
+    def write(self):
+        return self._write_str()
+
 
 class QosTag(BaseTag):
     
@@ -154,6 +315,12 @@ class QosTag(BaseTag):
         super().__init__(name=name, comment=comment,
                          valid_options=valid_options, value=value)
 
+    def read(self, line: str):
+        return self._read_str(line)
+
+    def write(self):
+        return self._write_str()
+
 
 class TimeTag(BaseTag):
     
@@ -163,3 +330,9 @@ class TimeTag(BaseTag):
         valid_options = [datetime.timedelta]
         super().__init__(name=name, comment=comment,
                          valid_options=valid_options, value=value)
+
+    def read(self, line: str):
+        return self._read_time(line)
+
+    def write(self):
+        return self._write_time()
