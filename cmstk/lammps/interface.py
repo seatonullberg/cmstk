@@ -1,4 +1,3 @@
-import type_sanity as ts
 import ctypes as ct
 import numpy as np
 import os
@@ -16,8 +15,6 @@ class LAMMPS(object):
     """
 
     def __init__(self, libc_path=None, cmd_args=None):
-        ts.is_type_any((libc_path, [type(None), str], "libc_path"),
-                       (cmd_args, [type(None), list], "cmd_args"))
         # load shared lib from environment variable
         if libc_path is None:
             libc_path = os.getenv("LIBLAMMPS_SERIAL")
@@ -97,7 +94,6 @@ class LAMMPS(object):
         Args:
             path (str): Path to the input file.
         """
-        ts.is_type((path, str, "path"))
         encoding = path.encode()
         self._libc.lammps_file(self._lammps_ptr, encoding)
 
@@ -107,14 +103,13 @@ class LAMMPS(object):
         Args:
             cmd (str): LAMMPS command string.
         """
-        ts.is_type((cmd, str, "cmd"))
         encoding = cmd.encode()
         self._libc.lammps_command(self._lammps_ptr, encoding)
         # error handling
         if self.has_exceptions and self._libc.lammps_has_error(self._lammps_ptr):
             buff_size = 100
             str_buff = ct.create_string_buffer(buff_size)
-            err_type = self._libc.lammps_get_last_error_message(self._lammps_ptr, str_buff, buff_size)
+            # err_type = self._libc.lammps_get_last_error_message(self._lammps_ptr, str_buff, buff_size)
             err_msg = str_buff.value.decode().strip()
             # lazy so I don't implement the MPI error
             raise RuntimeError(err_msg)
@@ -125,7 +120,6 @@ class LAMMPS(object):
         Args:
             cmd_list (list): List of LAMMPS commands to execute.
         """
-        ts.is_type((cmd_list, list, "cmd_list"))
         cmds = [cmd.encode() for cmd in cmd_list if type(cmd) is str]
         args = (ct.c_char_p * len(cmd_list))(*cmds)  # not really sure what this line does
         self._libc.lammps_commands_list(self._lammps_ptr, len(cmd_list), args)
@@ -136,11 +130,9 @@ class LAMMPS(object):
         Args:
             multi_cmd (str): Single string containing multiple commands
         """
-        ts.is_type((multi_cmd, str, "multi_cmd"))
         encoding = multi_cmd.encode()
         self._libc.lammps_commands_string(self._lammps_ptr, ct.c_char_p(encoding))
 
-    @ts.returns_type(dict)
     def extract_box(self):
         """Extract the LAMMPS simulation box.
         
@@ -169,7 +161,6 @@ class LAMMPS(object):
         }
         return result
 
-    @ts.returns_type(int)
     def extract_setting(self, name):
         """Extract size of certain LAMMPS data types.
         
@@ -180,12 +171,10 @@ class LAMMPS(object):
         Returns:
             int
         """
-        ts.is_type((name, str, "name"))
         encoding = name.encode()
         self._libc.lammps_extract_setting.restype = ct.c_int
         return int(self._libc.lammps_extract_setting(self._lammps_ptr, encoding))
 
-    @ts.returns_type(np.ndarray)
     def extract_atom(self, name, t, shape):
         """Extract a per-atom quantity.
         
@@ -199,9 +188,6 @@ class LAMMPS(object):
         Returns:
             numpy.ndarray
         """
-        ts.is_type((name, str, "name"),
-                   (t, int, "t"),
-                   (shape, tuple, "shape"))
         if len(shape) > 2:
             raise ValueError("`shape` has a maximum dimensionality of 2")
 
@@ -234,7 +220,6 @@ class LAMMPS(object):
         arr.shape = shape
         return arr
 
-    @ts.returns_type_any([int, float, np.ndarray])
     def extract_compute(self, id_, style, t, shape=None):
         """Extract a compute-based entity.
         
@@ -302,7 +287,6 @@ class LAMMPS(object):
         arr.shape = shape
         return arr
 
-    @ts.returns_type_any([float, np.ndarray])
     def extract_fix(self, id_, style, t, shape=None):
         """Extracts a fix quantity.
         
@@ -363,7 +347,6 @@ class LAMMPS(object):
         arr.shape = shape
         return arr
 
-    @ts.returns_type_any([int, float])
     def extract_global(self, name, t):
         """Extracts a global scalar quantity.
         
@@ -375,7 +358,6 @@ class LAMMPS(object):
         Returns:
             int or float
         """
-        ts.is_type((name, str, "name"), (t, int, "t"))
         encoding = name.encode()
 
         if t == 0:
@@ -389,7 +371,6 @@ class LAMMPS(object):
         else:
             raise ValueError("`t` must be 0 or 1")
 
-    @ts.returns_type_any([float, np.ndarray])
     def extract_variable(self, name, t, group=None):
         """Extract a LAMMPS variable.
 
@@ -404,8 +385,6 @@ class LAMMPS(object):
         Returns:
             float or numpy.ndarray
         """
-        ts.is_type((name, str, "name"), (t, int, "t"))
-        ts.is_type_any((group, [type(None), str], "group"))
         name_encoding = name.encode()
         if group:
             group_encoding = group.encode()
@@ -432,7 +411,6 @@ class LAMMPS(object):
         else:
             raise ValueError("`t` must be 0 or 1")
 
-    @ts.returns_type(int)
     def get_natoms(self):
         """Returns the total number of atoms in the system.
         
@@ -442,7 +420,6 @@ class LAMMPS(object):
         self._libc.lammps_get_natoms.restype = ct.c_int
         return self._libc.lammps_get_natoms(self._lammps_ptr)
 
-    @ts.returns_type(float)
     def get_thermo(self, name):
         """Returns current value of the thermo keyword.
         
@@ -452,7 +429,6 @@ class LAMMPS(object):
         Returns:
             float
         """
-        ts.is_type((name, str, "name"))
         encoding = name.encode()
         self._libc.lammps_get_thermo.restype = ct.c_double
         return self._libc.lammps_get_thermo(self._lammps_ptr, encoding)
@@ -464,7 +440,6 @@ class LAMMPS(object):
             name (str): Name of the variable to set.
             value (str): Value to assign.
         """
-        ts.is_type((name, str, "name"), (value, str, "value"))
         name_encoding = name.encode()
         value_encoding = value.encode()
         return self._libc.lammps_set_variable(self._lammps_ptr, name_encoding, value_encoding)
@@ -477,7 +452,6 @@ class LAMMPS(object):
             - keys: boxlo, boxhi, xy, yz, xz
             - all float values
         """
-        ts.is_type((params, dict, "params"))
         cboxlo = (3 * ct.c_double)(*params["boxlo"])
         cboxhi = (3 * ct.c_double)(*params["boxhi"])
         cxy = ct.c_double(params["xy"])
