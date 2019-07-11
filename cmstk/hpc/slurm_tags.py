@@ -1,5 +1,6 @@
 from cmstk.utils import BaseTag
 import datetime
+import math
 from typing import Any, Optional, Sequence, Tuple
 
 
@@ -73,7 +74,7 @@ class SlurmTag(BaseTag):
             - if the parsed name does not match the tag's name
             - If no value is found
         """
-        name = line.split()[1]
+        name = " ".join(line.split()[1:])  # TODO: this is not really the name
         name = name.replace("--", "")
         name, value = name.split("=")
         if name != self.name:
@@ -128,7 +129,14 @@ class SlurmTag(BaseTag):
         Returns:
             str
         """
-        return self._write(str(self.value))
+        total_seconds = self.value.total_seconds()
+        hours = total_seconds / (60*60)
+        minutes = (hours - math.floor(hours))*60
+        seconds = (minutes - math.floor(minutes))*60
+        s = "{:02d}:{:02d}:{:02d}".format(int(hours), 
+                                          int(minutes), 
+                                          int(seconds))
+        return self._write(s)
 
     def _write(self, str_value: str) -> str:
         """Writes a single line string from preprocessed tag info.
