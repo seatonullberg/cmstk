@@ -10,6 +10,7 @@ def test_poscar_file():
                         "vasp", 
                         "Fe75Cr25_BCC_bulk.poscar")
     poscar = PoscarFile(path)
+    poscar.lattice.parameters = np.array([5.7, 5.7, 5.7])  # not stored in POSCAR
     poscar.read()
     poscar_writer = PoscarFile(filepath="test.poscar", comment=poscar.comment,
                                direct=poscar.direct, lattice=poscar.lattice,
@@ -18,11 +19,13 @@ def test_poscar_file():
                                scaling_factor=poscar.scaling_factor)
     poscar_writer.write()
     poscar_reader = PoscarFile("test.poscar")
+    poscar_reader.lattice.parameters = np.array([5.7, 5.7, 5.7])  # not stored in POSCAR
     poscar_reader.read()
     assert poscar_reader.comment == poscar.comment
     assert poscar_reader.direct == poscar.direct
     assert np.array_equal(poscar_reader.lattice.positions_direct,
                           poscar.lattice.positions_direct)
+    assert poscar_reader.lattice.positions_direct.max() == 1.0
     assert poscar_reader.n_atoms_per_symbol == poscar.n_atoms_per_symbol
     assert np.array_equal(poscar_reader.relaxations,
                           poscar.relaxations)
