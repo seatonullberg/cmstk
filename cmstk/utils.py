@@ -1,5 +1,7 @@
+import importlib
+import inspect
 import os
-from typing import Any, Dict, Optional, Sequence, Union
+from typing import Any, Dict, List, Optional, Sequence, Union
 
 
 #====================#
@@ -124,6 +126,26 @@ class BaseTagSequence(object):
             raise ValueError(err)
         else:
             self._tags[tag.name] = tag
+
+    @staticmethod
+    def load_all_tags(base_class: Any, module_str: str) -> List[Any]:
+        """Loads all tags from the specified module.
+        
+        Args:
+            base_class: The base tag class.
+            module_str: Module to import from.
+
+        Returns:
+            List of instances of provided base class
+        """
+        module = importlib.import_module(module_str)
+        attrs = module.__dict__
+        classes = {name: obj for name, obj in attrs.items()
+                   if inspect.isclass(obj)}
+        tags = {name: obj for name, obj in classes.items()
+                if issubclass(obj, base_class)}
+        del tags[base_class.__name__]
+        return [v() for _, v in tags.items()]
 
     def __iter__(self):
         for _, v in self._tags.items():
