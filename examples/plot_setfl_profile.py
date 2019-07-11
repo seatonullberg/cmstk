@@ -1,4 +1,7 @@
-from cmstk.data.setfl import SetflReader
+
+# DEPRECATED
+
+from cmstk.eam import SetflFile
 from cmstk.visualization.potential import SetflProfilePlot
 import os
 from datetime import datetime
@@ -7,78 +10,34 @@ from datetime import datetime
 # https://pdfs.semanticscholar.org/b9c1/bcf83327f17942946b41381f9e72e5b77618.pdf
 
 if __name__ == "__main__":
-    print("Generating setfl plots...")
+    print("Generating setfl plot...")
     start = datetime.now()
 
-    # Single symbol plot
-    filename = os.path.join("potentials", "Mishin-Ni-1999.eam.alloy")
-    setfl_reader = SetflReader(filename)
-    setfl_plot = SetflProfilePlot(setfl_reader)
-    # viewport customization
-    setfl_plot.axes[0].set_xlim((0.0, 2.0))
-    setfl_plot.axes[0].set_ylim((-10.0, 5.0))
-    setfl_plot.axes[1].set_xlim((0.0, 5.0))
-    setfl_plot.axes[1].set_ylim((0.0, 1.0))
-    setfl_plot.axes[2].set_xlim((1.0, 5.0))
-    setfl_plot.axes[2].set_ylim((-0.75, 0.75))
-    setfl_plot.make()
-    print("Writing single symbol plot to file...")
-    filename1 = "Mishin-Ni-1999.eam.png"
-    setfl_plot.savefig(filename1)
-
-    # VALIDATION CODE <replace Mishin 2004 2 symbol section with this>
-    #custom = {"embedding_xlim": (0.0, 50.0),
-    #          "embedding_ylim": (-4.0, 12.0),
-    #          "density_xlim": (0.0, 5.0),
-    #          "density_ylim": (0.0, 5.0),
-    #          "pair_xlim": (1.0, 5.0),
-    #          "pair_ylim": (-1.0, 1.0)}
-    #filename = os.path.join("potentials", "Zhou-Pd-H-2008.eam.alloy")
-    #setfl_reader = SetflReader(filename)
-    #setfl_plot = SetflProfilePlot(setfl_reader)
-    #setfl_plot.custom = custom
-    #print("Writing double symbol plot to file...")
-    #filename2 = "Zhou-Pd-H-2008.eam.png"
-    #setfl_plot.generate_plot(filename2)
+    path = os.path.abspath(__file__)
+    path = os.path.dirname(path)
+    path = os.path.dirname(path)
+    path = os.path.join(path, "data", "potentials", 
+                        "Zhou-Pd-H-2008.eam.alloy")
+    setfl = SetflFile(path)
+    setfl.read()
+    setfl_plot = SetflProfilePlot(setfl)
     
-    # Double symbol plot
-    filename = os.path.join("potentials", "Mishin-Ni-Al-2004.eam.alloy")
-    setfl_reader = SetflReader(filename)
-    setfl_plot = SetflProfilePlot(setfl_reader)
     # viewport customization
-    setfl_plot.axes[0].set_xlim((0.0, 3.0))
-    setfl_plot.axes[0].set_ylim((-4.0, 6.0))
-    setfl_plot.axes[1].set_xlim((0.0, 6.0))
-    setfl_plot.axes[1].set_ylim((0.0, 0.2))
-    setfl_plot.axes[2].set_xlim((1.0, 6.0))
-    setfl_plot.axes[2].set_ylim((-0.75, 0.75))
-    setfl_plot.make()
-    print("Writing double symbol plot to file...")
-    filename2 = "Mishin-Ni-Al-2004.eam.png"
-    setfl_plot.savefig(filename2)
+    custom = {"embedding_xlim": (0.0, 50.0),
+              "embedding_ylim": (-4.0, 12.0),
+              "density_xlim": (0.0, 5.0),
+              "density_ylim": (0.0, 5.0),
+              "pair_xlim": (1.0, 5.0),
+              "pair_ylim": (-1.0, 1.0)}
 
-    # Triple symbol plot
-    filename = os.path.join("potentials", "Bonny-Fe-Ni-Cr-2011.eam.alloy")
-    setfl_reader = SetflReader(filename)
-    setfl_plot = SetflProfilePlot(setfl_reader)
-    # viewport customization
-    setfl_plot.axes[0].set_xlim((0.0, 3.0))
-    setfl_plot.axes[0].set_ylim((-4.0, 12.0))
-    setfl_plot.axes[1].set_xlim((3.25, 5.0))
-    setfl_plot.axes[1].set_ylim((0.0, 0.01))
-    setfl_plot.axes[2].set_xlim((1.0, 5.0))
-    setfl_plot.axes[2].set_ylim((-0.75, 0.75))
+    setfl_plot = SetflProfilePlot(setfl)
+    setfl_plot.custom = custom
+    filename = "Zhou-Pd-H-2008.eam.png"
     setfl_plot.make()
-    print("Writing triple symbol plot to file...")
-    filename3 = "Bonny-Fe-Ni-Cr-2011.eam.png"
-    setfl_plot.savefig(filename3)
+    setfl_plot.fig.savefig(filename)
 
     end = datetime.now()
     total_time = (end-start).total_seconds()
-    size1 = os.path.getsize(filename1)
-    size2 = os.path.getsize(filename2)
-    size3 = os.path.getsize(filename3)
+    size = os.path.getsize(filename)
     print("Total time: {} seconds".format(total_time))
-    print("Generated {} ({} bytes)".format(filename1, size1))
-    print("Generated {} ({} bytes)".format(filename2, size2))
-    print("Generated {} ({} bytes)".format(filename3, size3))
+    print("Generated {} ({} bytes)".format(filename, size))

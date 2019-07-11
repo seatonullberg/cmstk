@@ -1,41 +1,42 @@
-import type_sanity as ts
 from cmstk.units.base import BaseUnit
 from cmstk.units.area import AreaUnit, MeterSquared
 from cmstk.units.force import ForceUnit, Newton
+from cmstk.utils import Number
+from typing import Any
 
 
-class PressureUnit(BaseUnit, float):
+class PressureUnit(BaseUnit):
     """Representation of a pressure unit.
 
     The base unit of pressure is Pascal.
     
     Args:
-        base_value (float): Starting value to initialize the unit with.
+        base_value (float or int): Starting value to initialize the unit with.
         - Must be in terms of the base unit.
-
-    Attributes:
-        base_value (float): Value in terms of the base unit.
-        base_unit (type): The base unit type.
     """
 
-    def __init__(self, base_value):
-        ts.is_type((base_value, float, "base_value"))
-        super().__init__(value=base_value, kind=PressureUnit)
-        self.base_value = base_value
-        self.base_unit = Pascal
+    def __init__(self, base_value: Number) -> None:
+        super().__init__(Pascal, PressureUnit, base_value)
 
     @classmethod
-    def from_area_force(cls, a, f):
+    def from_area_force(cls, a: Any, f: Any) -> Any:  # unable to declare
         """Initializes PressureUnit from an arbitrary AreaUnit and ForceUnit.
         
         Args:
-            a (AreaUnit): The area.
-            f (ForceUnit): The force.
+            a (instance of AreaUnit): The area.
+            f (instance of ForceUnit): The force.
 
         Returns:
             PressureUnit
+
+        Raises:
+            TypeError:
+            - If `a` or `f` are not instances of the proper type
         """
-        ts.is_instance((a, AreaUnit, "a"), (f, ForceUnit, "f"))
+        if not isinstance(a, AreaUnit) or not isinstance(f, ForceUnit):
+            err = ("`a` and `f` must be an instance of type AreaUnit and \
+                    ForceUnit respectively")
+            raise TypeError(err)
         new_pressure = f.to(Newton).value / a.to(MeterSquared).value
         return cls(new_pressure)
 
@@ -44,44 +45,43 @@ class Bar(PressureUnit):
     """Representation of the Bar pressure unit.
     
     Args:
-        value (float): Starting value to initialize the unit with.
+        value (optional) (float or int): Starting value.
 
     Attributes:
-        value (float): Value of the unit.
+        value (float or int): Value of the unit.
     """
 
-    def __init__(self, value):
+    def __init__(self, value: Number = 0) -> None:
         super().__init__(self.convert(value))
         self.value = value
 
     @staticmethod
-    def convert(x):
+    def convert(x: Number) -> Number:
         return x * 100000
 
     @staticmethod
-    def convert_inverse(x):
+    def convert_inverse(x: Number) -> Number:
         return x / 100000
         
-
 
 class Pascal(PressureUnit):
     """Representation of the Pascal pressure unit.
     
     Args:
-        value (float): Starting value to initialize the unit with.
+        value (optional) (float or int): Starting value.
 
     Attributes:
-        value (float): Value of the unit.
+        value (float or int): Value of the unit.
     """
 
-    def __init__(self, value):
+    def __init__(self, value: Number = 0) -> None:
         super().__init__(self.convert(value))
         self.value = value
 
     @staticmethod
-    def convert(x):
+    def convert(x: Number) -> Number:
         return x
 
     @staticmethod
-    def convert_inverse(x):
+    def convert_inverse(x: Number) -> Number:
         return x

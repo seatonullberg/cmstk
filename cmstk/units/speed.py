@@ -1,42 +1,39 @@
-import type_sanity as ts
 from cmstk.units.base import BaseUnit
 from cmstk.units.distance import DistanceUnit, Meter
 from cmstk.units.time import TimeUnit, Second
+from cmstk.utils import Number
+from typing import Any
 
 
-class SpeedUnit(BaseUnit, float):
+class SpeedUnit(BaseUnit):
     """Representation of a speed unit.
     
     The base unit of Speed is MeterPerSecond.
     I use `speed` instead of `velocity` because these are not vector quantities.
 
     Args:
-        base_value (float): Starting value to initialize the unit with.
+        base_value (float or int): Starting value to initialize the unit with.
         - Must be in terms of the base unit.
-
-    Attributes:
-        base_value (float): Value in terms of the base unit.
-        base_unit (type): The base unit type.
     """
 
-    def __init__(self, base_value):
-        ts.is_type((base_value, float, "base_value"))
-        super().__init__(value=base_value, kind=SpeedUnit)
-        self.base_value = base_value
-        self.base_unit = MeterPerSecond
+    def __init__(self, base_value: Number) -> None:
+        super().__init__(MeterPerSecond, SpeedUnit, base_value)
 
     @classmethod
-    def from_distance_time(cls, d, t):
+    def from_distance_time(cls, d: Any, t: Any) -> Any:  # unable to declare
         """Initializes SpeedUnit from a DistanceUnit and a TimeUnit.
         
         Args:
-            d (DistanceUnit): The distance.
-            t (TimeUnit): The time.
+            d (instance of DistanceUnit): The distance.
+            t (instance of TimeUnit): The time.
 
         Returns:
             SpeedUnit
         """
-        ts.is_instance((d, DistanceUnit, "d"), (t, TimeUnit, "t"))
+        if not isinstance(d, DistanceUnit) or not isinstance(t, TimeUnit):
+            err = ("`d` and `t` must be instances of type DistanceUnit and \
+                    TimeUnit respectively")
+            raise ValueError(err)
         new_speed = d.to(Meter).value / t.to(Second).value
         return cls(new_speed)
 
@@ -45,22 +42,22 @@ class AngstromPerPicosecond(SpeedUnit):
     """Representation of the AngstromPerPicosecond Speed unit.
     
     Args:
-        value (numpy.ndarray): Starting value to initialize the unit with.
+        value (optional) (float or int): Starting value.
 
     Attributes:
-        value (numpy.ndarray): Value of the unit.
+        value (float or int): Value of the unit.
     """
 
-    def __init__(self, value):
+    def __init__(self, value: Number = 0) -> None:
         super().__init__(self.convert(value))
         self.value = value
 
     @staticmethod
-    def convert(x):
+    def convert(x: Number) -> Number:
         return x * 100.0
 
     @staticmethod
-    def convert_inverse(x):
+    def convert_inverse(x: Number) -> Number:
         return x / 100.0
 
 
@@ -68,20 +65,20 @@ class MeterPerSecond(SpeedUnit):
     """Representation of the MeterPerSecond Speed unit.
     
     Args:
-        value (numpy.ndarray): Starting value to initialize the unit with.
+        value (optional) (float or int): Starting value.
 
     Attributes:
-        value (numpy.ndarray): Value of the unit.
+        value (float or int): Value of the unit.
     """
 
-    def __init__(self, value):
+    def __init__(self, value: Number = 0) -> None:
         super().__init__(self.convert(value))
         self.value = value
 
     @staticmethod
-    def convert(x):
+    def convert(x: Number) -> Number:
         return x
 
     @staticmethod
-    def convert_inverse(x):
+    def convert_inverse(x: Number) -> Number:
         return x

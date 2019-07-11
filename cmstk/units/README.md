@@ -1,1 +1,2 @@
-Utility classes which act as a safety feature to prevent bugs due to unit conversion.
+Scientific unit wrappers which enable safe conversion between units of the same
+kind.

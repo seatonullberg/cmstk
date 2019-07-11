@@ -1,1 +1,0 @@
-Figures generated in the examples directory are stored here for future reference.

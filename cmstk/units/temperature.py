@@ -1,8 +1,8 @@
-import type_sanity as ts
 from cmstk.units.base import BaseUnit
+from cmstk.utils import Number
 
 
-class TemperatureUnit(BaseUnit, float):
+class TemperatureUnit(BaseUnit):
     """Representation of a temperature unit.
 
     The base unit of temperature is Celsius.
@@ -14,41 +14,34 @@ class TemperatureUnit(BaseUnit, float):
     BaseUnit class.
     
     Args:
-        base_value (float): Starting value to initialize the unit with.
+        base_value (float or int): Starting value to initialize the unit with.
         - Must be in terms of the base unit.
-
-    Attributes:
-        base_value (float): Value in terms of the base unit.
-        base_unit (type): The base unit type.
     """
 
-    def __init__(self, base_value):
-        ts.is_type((base_value, float, "base_value"))
-        super().__init__(value=base_value, kind=TemperatureUnit)
-        self.base_value = base_value
-        self.base_unit = Celsius
+    def __init__(self, base_value: Number) -> None:
+        super().__init__(Celsius, TemperatureUnit, base_value)
 
 
 class Celsius(TemperatureUnit):
     """Representation of the Celsius temperature unit.
     
     Args:
-        value (float): Starting value to initialize the unit with.
+        value (optional) (float or int): Starting value.
 
     Attributes:
-        value (float): Value of the unit.
+        value (float or int): Value of the unit.
     """
 
-    def __init__(self, value):
+    def __init__(self, value: Number = 0) -> None:
         super().__init__(self.convert(value))
         self.value = value
 
     @staticmethod
-    def convert(x):
+    def convert(x: Number) -> Number:
         return x
 
     @staticmethod
-    def convert_inverse(x):
+    def convert_inverse(x: Number) -> Number:
         return x
 
 
@@ -56,22 +49,22 @@ class Fahrenheit(TemperatureUnit):
     """Representation of the Fahrenheit temperature unit.
     
     Args:
-        value (float): Starting value to initialize the unit with.
+        value (optional) (float or int): Starting value.
 
     Attributes:
-        value (float): Value of the unit.
+        value (float or int): Value of the unit.
     """
 
-    def __init__(self, value):
+    def __init__(self, value: Number = 0) -> None:
         super().__init__(self.convert(value))
         self.value = value
 
     @staticmethod
-    def convert(x):
+    def convert(x: Number) -> Number:
         return (x - 32) * (5 / 9)
 
     @staticmethod
-    def convert_inverse(x):
+    def convert_inverse(x: Number) -> Number:
         return (x * (9 / 5)) + 32
 
 
@@ -79,20 +72,20 @@ class Kelvin(TemperatureUnit):
     """Representation of the Kelvin temperature unit.
     
     Args:
-        value (float): Starting value to initialize the unit with.
+        value (optional) (float or int): Starting value.
 
     Attributes:
-        value (float): Value of the unit.
+        value (float or int): Value of the unit.
     """
 
-    def __init__(self, value):
+    def __init__(self, value: Number = 0) -> None:
         super().__init__(self.convert(value))
         self.value = value
 
     @staticmethod
-    def convert(x):
+    def convert(x: Number) -> Number:
         return x - 273.15
 
     @staticmethod
-    def convert_inverse(x):
+    def convert_inverse(x: Number) -> Number:
         return x + 273.15

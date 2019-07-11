@@ -1,20 +1,20 @@
-import type_sanity as ts
 import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
 import numpy as np
-from cmstk.visualization.base import BasePlot
 
 
-class ParallelCoordinatesPlot(BasePlot):
-    """Implementation of a plot displaying multidimensional coordinates along a continuous axis.
+class ParallelCoordinatesPlot(object):
+    """Implementation of a plot displaying multidimensional coordinates along a 
+    continuous axis.
     
     Args:
         ncols (int): The dimensionality of the coordinates.
-        xlabels (optional) (list of str): The labels to assign to each dimension.
+        xlabels (optional) (list of str): The labels to assign to each 
+        dimension.
     """
 
     def __init__(self, ncols, xlabels=None):
-        ts.is_type((ncols, int, "ncols"))
+        assert type(ncols) is int
         self._ncols = ncols
         if xlabels is None:
             self._xlabels = [i for i in range(ncols)]
@@ -23,7 +23,8 @@ class ParallelCoordinatesPlot(BasePlot):
         self._data = []    # list of numpy.ndarrays
         self._colors = []  # list of colors to use for each member of self._data
         self._labels = []  # list of labels for each member of self._data
-        super().__init__(nrows=1, ncols=self._ncols-1, figsize=(10, 5), sharey=True)
+        self.fig, self.axes = plt.subplots(nrows=1, ncols=self._ncols-1,
+                                           figsize=(10, 5), sharey=True)
 
     def add_data(self, data, color, label):
         """Add a dataset to be plotted.
@@ -35,7 +36,8 @@ class ParallelCoordinatesPlot(BasePlot):
             - refer to https://matplotlib.org/users/colors.html for valid inputs.
             label (str): label to associate with data.
         """
-        ts.is_type((data, np.ndarray, "data"), (label, str, "label"))
+        assert type(data) is np.ndarray
+        assert type(label) is str
         ncols = data.shape[1]
         if ncols != self._ncols:
             raise ValueError("`data` must have {} columns".format(self._ncols))

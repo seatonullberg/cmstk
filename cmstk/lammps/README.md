@@ -1,1 +1,0 @@
-A collection of tools to make LAMMPS simulations easier. The primary value of this package is the custom LAMMPS interface which provides a convenient way to construct and execute simulations dynamically within python. The `simulations` sub-module builds upon this interface class to automate some common simulations.
