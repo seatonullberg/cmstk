@@ -15,7 +15,7 @@ def converge_encut(encut_values: List[int], incar: IncarFile,
 
     Notes:
         It is expected that each object is fully populated and ready to write.
-    
+
     Args:
         encut_values: The ENCUT values to test.
         incar: The INCAR file to use.
@@ -24,9 +24,7 @@ def converge_encut(encut_values: List[int], incar: IncarFile,
         poscar: The POSCAR file to use.
         potcar: The POTCAR file to use.
         submission_script: The job submission script to use.
-        - TODO: Should support any submission script from the hpc module.
-        - TODO: Do not yet have the inheritance architecture in place to
-                represent a generic submission script.
+        - any SubmissionScript type from the hpc module
         working_directory: The directory in which calculations are setup.
     
     Returns:
@@ -65,7 +63,6 @@ def converge_encut(encut_values: List[int], incar: IncarFile,
         # process submission script
         path = os.path.join(calc_dir, "runjob.sh")
         submission_script.write(path)
-        # TODO: store the command needed to run submit the script in the object
-        # something like:
-        # cmd = "{} {}".format(submission_script.cmd, path)
-        # os.system(cmd)
+        # submit the job
+        cmd = "{} {}".format(submission_script.exec_cmd, path)
+        os.system(cmd)

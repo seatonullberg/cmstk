@@ -16,6 +16,7 @@ class SubmissionScript(object):
 
     Properties:
         cmds: Commands to execute after the #SBATCH specification.
+        exec_cmd: The shell command used to execute this script.
         tags: Sequence of slurm tag objects which can be accessed like a dict.
     """
 
@@ -28,6 +29,7 @@ class SubmissionScript(object):
         if cmds is None:
             cmds = []
         self._cmds = cmds
+        self._exec_cmd = "sbatch"
         self._tags = BaseTagSequence(SlurmTag, tags)
 
     def read(self, path: Optional[str] = None) -> None:
@@ -77,6 +79,10 @@ class SubmissionScript(object):
     @property
     def cmds(self) -> Sequence[str]:
         return self._cmds
+
+    @property
+    def exec_cmd(self) -> str:
+        return self._exec_cmd
 
     @property
     def tags(self) -> BaseTagSequence:
