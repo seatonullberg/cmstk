@@ -8,7 +8,7 @@ import os
 
 
 def converge_encut(encut_values: List[int], incar: IncarFile,
-                   kpoints: KpointsFile, poscar: PoscarFile, 
+                   kpoints: KpointsFile, poscar: PoscarFile,
                    potcar: PotcarFile, submission_script: Any,
                    working_directory: Optional[str] = None) -> None:
     """Runs an ENCUT convergence calculation.
@@ -26,25 +26,26 @@ def converge_encut(encut_values: List[int], incar: IncarFile,
         submission_script: The job submission script to use.
         - any SubmissionScript type from the hpc module
         working_directory: The directory in which calculations are setup.
-    
+
     Returns:
         None
     """
     # setup directories
     if working_directory is None:
-        working_directory = ""
+        working_directory = os.getcwd()
     calculation_directories = []
     for encut in encut_values:
         dirname = "{}eV".format(encut)
         path = os.path.join(working_directory, dirname)
-        if not os.path.exists:
+        if not os.path.exists(path):
             os.makedirs(path)
         calculation_directories.append(path)
     # iterate through each directory
     for i, calc_dir in enumerate(calculation_directories):
         # process INCAR
         encut_value = encut_values[i]
-        if "ENCUT" in incar.tags:
+        tag_names = [tag.name for tag in incar.tags]
+        if "ENCUT" in tag_names:
             incar.tags["ENCUT"].value = encut_value
         else:
             encut_tag = EncutTag(value=encut_value)
@@ -66,3 +67,4 @@ def converge_encut(encut_values: List[int], incar: IncarFile,
         # submit the job
         cmd = "{} {}".format(submission_script.exec_cmd, path)
         os.system(cmd)
+
