@@ -9,6 +9,7 @@ def test_submission_script():
     """Tests initialization of a SLURM SubmissionScript object."""
     path = os.path.join(data_directory(), "hpc", "Fe_BCC.slurm")
     script = SubmissionScript(filepath=path)
+    assert script.exec_cmd == "sbatch"
     script.read()
     assert script.tags["job-name"].value == "FeBCC"
     assert script.tags["account"].value == "spearot"

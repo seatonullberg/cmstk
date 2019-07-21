@@ -62,8 +62,10 @@ def converge_encut(encut_values: List[int], incar: IncarFile,
         path = os.path.join(calc_dir, "runjob.sh")
         submission_script.write(path)
         # submit the job
+        os.chdir(calc_dir)
         cmd = "{} {}".format(submission_script.exec_cmd, path)
         os.system(cmd)
+
 
 def converge_kpoints(kpoint_sizes: List[List[int]], incar: IncarFile,
                      kpoints: KpointsFile, poscar: PoscarFile, 
@@ -114,5 +116,6 @@ def converge_kpoints(kpoint_sizes: List[List[int]], incar: IncarFile,
         path = os.path.join(calc_dir, "runjob.sh")
         submission_script.write(path)
         # submit the job
+        os.chdir(calc_dir)
         cmd = "{} {}".format(submission_script.exec_cmd, path)
         os.system(cmd)
