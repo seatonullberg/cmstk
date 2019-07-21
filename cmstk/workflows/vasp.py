@@ -41,7 +41,7 @@ def converge_encut(encut_values: List[int], incar: IncarFile,
     for i, calc_dir in enumerate(calculation_directories):
         # process INCAR
         encut_value = encut_values[i]
-        tag_names = [tag.name for tag in incar.tags]
+        tag_names = [tag_name for tag_name, _ in incar.tags]
         if "ENCUT" in tag_names:
             incar.tags["ENCUT"].value = encut_value
         else:
