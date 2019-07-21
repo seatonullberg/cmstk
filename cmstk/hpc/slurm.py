@@ -1,5 +1,5 @@
 from cmstk.hpc.slurm_tags import SlurmTag
-from cmstk.utils import BaseTagSequence
+from cmstk.utils import BaseTagCollection
 import datetime
 import importlib
 import inspect
@@ -32,7 +32,7 @@ class SubmissionScript(object):
         if cmds is None:
             cmds = []
         self._cmds = cmds
-        self._tags = BaseTagSequence(SlurmTag, tags)
+        self._tags = BaseTagCollection(SlurmTag, tags)
 
     def read(self, path: Optional[str] = None) -> None:
         if path is None:
@@ -69,7 +69,7 @@ class SubmissionScript(object):
             path = self.filepath
         with open(path, "w") as f:
             f.write("#!/bin/bash\n")
-            for tag in self.tags:
+            for _, tag in self.tags:
                 f.write(tag.write())
             f.write("\n")
             for cmd in self.cmds:
@@ -80,7 +80,7 @@ class SubmissionScript(object):
         return self._cmds
 
     @property
-    def tags(self) -> BaseTagSequence:
+    def tags(self) -> BaseTagCollection:
         return self._tags
 
     @staticmethod

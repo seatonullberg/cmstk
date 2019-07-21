@@ -1,4 +1,4 @@
-from cmstk.utils import BaseTagSequence
+from cmstk.utils import BaseTagCollection
 from cmstk.vasp.incar_tags import VaspTag
 import importlib
 import inspect
@@ -24,7 +24,7 @@ class IncarFile(object):
         if filepath is None:
             filepath = "INCAR"
         self.filepath = filepath
-        self._tags = BaseTagSequence(VaspTag, tags)
+        self._tags = BaseTagCollection(VaspTag, tags)
 
     def read(self, path: Optional[str] = None) -> None:
         if path is None:
@@ -53,11 +53,11 @@ class IncarFile(object):
         if path is None:
             path = self.filepath
         with open(path, "w") as f:
-            for tag in self.tags:
+            for _, tag in self.tags:
                 f.write(tag.write())
 
     @property
-    def tags(self) -> BaseTagSequence:
+    def tags(self) -> BaseTagCollection:
         return self._tags
 
     # TODO: maybe return a list instead

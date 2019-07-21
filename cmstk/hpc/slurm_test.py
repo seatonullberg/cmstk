@@ -32,10 +32,10 @@ def test_submission_script():
     script_reader = SubmissionScript(filepath="test.slurm")
     script_reader.read()
     assert script_reader.tags["job-name"].comment == "Name of the job."
-    for tag in script_reader.tags:
-        if tag.name == "job-name":
+    for tag_name, tag in script_reader.tags:
+        if tag_name == "job-name":
             assert tag.value == "test"
-        elif tag.name == "time":
+        elif tag_name == "time":
             assert tag.value.total_seconds() == 174252
         else:
             assert tag.value == script.tags[tag.name].value

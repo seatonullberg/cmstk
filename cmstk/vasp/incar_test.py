@@ -48,14 +48,14 @@ def test_incar_file():
     incar_reader = IncarFile(filepath="test.incar")
     incar_reader.read()
     assert incar_reader.tags["SYSTEM"].comment == "Description of the simulation."
-    for tag in incar_reader.tags:
-        if tag.name == "MAGMOM":
+    for tag_name, tag in incar_reader.tags:
+        if tag_name == "MAGMOM":
             assert np.array_equal(
                 incar.tags["MAGMOM"].value,
                 np.array([1.0, 1.0])
             )
             continue
-        elif tag.name == "SYSTEM":
+        elif tag_name == "SYSTEM":
             assert tag.value == "test"
             continue
         assert tag.value == incar.tags[tag.name].value

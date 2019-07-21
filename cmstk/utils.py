@@ -81,8 +81,8 @@ class BaseTag(object):
             raise ValueError(err)
 
 
-class BaseTagSequence(object):
-    """Generalized safe-access sequence to store instances of BaseTag.
+class BaseTagCollection(object):
+    """Generalized safe-access collection of instances of BaseTag.
     
     Args:
         base_class: The class which all members must be an instance of.
@@ -126,8 +126,8 @@ class BaseTagSequence(object):
             self._tags[tag.name] = tag
 
     def __iter__(self):
-        for _, v in self._tags.items():
-            yield v
+        for k, v in self._tags.items():
+            yield k, v
 
     def __getitem__(self, key):
         return self._tags[key]

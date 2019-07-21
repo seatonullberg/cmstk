@@ -1,4 +1,4 @@
-from cmstk.utils import BaseTag, BaseTagSequence, within_one_percent
+from cmstk.utils import BaseTag, BaseTagCollection, within_one_percent
 import pytest
 
 
@@ -37,28 +37,28 @@ def test_base_tag():
         base_tag.value = 1
 
 
-def test_base_tag_sequence():
-    """Tests initialization of a BaseTagSequence object."""
+def test_base_tag_collection():
+    """Tests initialization of a BaseTagCollection object."""
     test_tag0 = MockBaseTag()
     test_tag0.name = "zero"
     test_tag1 = MockBaseTag()
     test_tag1.name = "one"
-    sequence = BaseTagSequence(base_class=MockBaseTag, 
-                               tags=[test_tag0, test_tag1])
-    assert len(sequence._tags) == 2
+    collection = BaseTagCollection(base_class=MockBaseTag, 
+                                   tags=[test_tag0, test_tag1])
+    assert len(collection._tags) == 2
     test_tag2 = MockBaseTag()
     test_tag2.name = "two"
-    sequence.append(test_tag2)
-    assert len(sequence._tags) == 3
+    collection.append(test_tag2)
+    assert len(collection._tags) == 3
     with pytest.raises(ValueError):
-        sequence.append(test_tag0)
+        collection.append(test_tag0)
     test_tag4 = "not a tag"
     with pytest.raises(ValueError):
-        sequence.append(test_tag4)
-    assert len(sequence._tags) == 3
-    for tag in sequence:
+        collection.append(test_tag4)
+    assert len(collection._tags) == 3
+    for tag_name, tag in collection:
         assert type(tag) is MockBaseTag
-    tag = sequence["one"]
+    tag = collection["one"]
     assert tag.name == "one"
-    del sequence["one"]
-    assert len(sequence._tags) == 2
+    del collection["one"]
+    assert len(collection._tags) == 2
