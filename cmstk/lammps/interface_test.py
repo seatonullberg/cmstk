@@ -1,5 +1,4 @@
 from cmstk.lammps.interface import LAMMPS
-import ctypes as ct
 import numpy as np
 import pytest
 import os
@@ -31,7 +30,7 @@ def write_test_file(filename):
 
 def test_lammps_cmd_args():
     # test initialization with command line arguments
-    lammps = LAMMPS(cmd_args=["-log", "test.log"])
+    _ = LAMMPS(cmd_args=["-log", "test.log"])
     assert os.path.exists("test.log")
     os.remove("test.log")
 

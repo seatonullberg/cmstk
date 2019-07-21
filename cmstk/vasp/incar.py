@@ -1,7 +1,5 @@
 from cmstk.utils import BaseTagCollection
 from cmstk.vasp.incar_tags import VaspTag
-import importlib
-import inspect
 from typing import Any, Optional, Sequence
 
 
@@ -33,10 +31,13 @@ class IncarFile(object):
             lines = f.readlines()
             lines = list(map(lambda x: x.strip(), lines))  # remove newlines
             lines = list(filter(None, lines))  # remove empty strings
-        tags = self._load_all_tags()
+        tags = self.tags.load_all_tags(
+            base_class=VaspTag, 
+            module_str="cmstk.vasp.incar_tags"
+        )
         for line in lines:
             is_valid = False
-            for _, tag in tags.items():
+            for tag in tags:
                 try:
                     tag.read(line)
                 except ValueError:
@@ -59,17 +60,3 @@ class IncarFile(object):
     @property
     def tags(self) -> BaseTagCollection:
         return self._tags
-
-    # TODO: maybe return a list instead
-    @staticmethod
-    def _load_all_tags():
-        module_str = "cmstk.vasp.incar_tags"
-        module = importlib.import_module(module_str)
-        attrs = {name: obj for name, obj in module.__dict__.items()}
-        classes = {name: obj for name, obj in attrs.items() 
-                   if inspect.isclass(obj)}
-        tags = {name: obj for name, obj in classes.items() 
-                if issubclass(obj, VaspTag)}
-        del tags["VaspTag"]  # ignore the base class
-        tags = {k: v() for k, v in tags.items()}  # initialize the tags
-        return tags

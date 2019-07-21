@@ -1,9 +1,5 @@
 from cmstk.hpc.slurm_tags import SlurmTag
 from cmstk.utils import BaseTagCollection
-import datetime
-import importlib
-import inspect
-import os
 from typing import Any, Optional, Sequence
 
 
@@ -20,6 +16,7 @@ class SubmissionScript(object):
 
     Properties:
         cmds: Commands to execute after the #SBATCH specification.
+        exec_cmd: The shell command used to execute this script.
         tags: Sequence of slurm tag objects which can be accessed like a dict.
     """
 
@@ -33,6 +30,7 @@ class SubmissionScript(object):
             cmds = []
         self._cmds = cmds
         self._tags = BaseTagCollection(SlurmTag, tags)
+        self._exec_cmd = "sbatch"
 
     def read(self, path: Optional[str] = None) -> None:
         if path is None:
@@ -41,14 +39,17 @@ class SubmissionScript(object):
             lines = f.readlines()
             lines = list(map(lambda x: x.strip(), lines))  # remove newlines
             lines = list(filter(None, lines))  # remove empty strings
-        tags = self._load_all_tags()
+        tags = self.tags.load_all_tags(
+            base_class=SlurmTag,
+            module_str="cmstk.hpc.slurm_tags"
+        )
         cmds = []
         for line in lines:
             if line.startswith("#!"):
                 continue
             elif line.startswith("#SBATCH"):
                 is_valid = False
-                for _, tag in tags.items():
+                for tag in tags:
                     try:
                         tag.read(line)
                     except ValueError:
@@ -80,18 +81,9 @@ class SubmissionScript(object):
         return self._cmds
 
     @property
+    def exec_cmd(self) -> str:
+        return self._exec_cmd
+
+    @property
     def tags(self) -> BaseTagCollection:
         return self._tags
-
-    @staticmethod
-    def _load_all_tags():
-        module_str = "cmstk.hpc.slurm_tags"
-        module = importlib.import_module(module_str)
-        attrs = {name: obj for name, obj in module.__dict__.items()}
-        classes = {name: obj for name, obj in attrs.items() 
-                   if inspect.isclass(obj)}
-        tags = {name: obj for name, obj in classes.items() 
-                if issubclass(obj, SlurmTag)}
-        del tags["SlurmTag"]  # ignore the base class
-        tags = {k: v() for k, v in tags.items()}  # initialize the tags
-        return tags
