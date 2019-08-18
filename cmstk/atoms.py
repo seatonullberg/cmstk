@@ -1,3 +1,4 @@
+import copy
 import numpy as np
 from typing import Any, Generator, List, MutableSequence, Optional, Sequence
 
@@ -74,6 +75,18 @@ class AtomCollection(object):
             ValueError
             - An atom exists within the tolerance radius.
         """
+        if tolerance is None:
+            tolerance = 0.001
+        for a in self.atoms:
+            new_position = atom.position
+            existing_position = a.position
+            distance = np.sum(np.sqrt((new_position - existing_position)**2))
+            if distance < tolerance:
+                err = "An atom exists within the tolerance radius ({}).".format(
+                    tolerance
+                )
+                raise ValueError(err)
+        self._atoms.append(atom)
 
     def remove_atom(self, position: np.ndarray, 
                     tolerance: Optional[float] = None) -> Atom:
@@ -89,47 +102,58 @@ class AtomCollection(object):
                 There are no atoms in the collection.
                 No atoms exist within the tolerance radius.
         """
+        if tolerance is None:
+            tolerance = 0.001
+        if self.n_atoms == 0:
+            err = "There are no atoms in the collection."
+            raise ValueError(err)
+        removal_index = None
+        for i, a in enumerate(self.atoms):
+            distance = np.sum(np.sqrt((position - a.position)**2))
+            if distance < tolerance:
+                removal_index = i
+                break
+        if removal_index is None:
+            err = "No atoms exist within the tolerance radius ({}).".format(
+                tolerance
+            )
+            raise ValueError(err)
+        removed_atom = copy.deepcopy(self._atoms[removal_index])
+        del self._atoms[removal_index]
+        return removed_atom
 
-    def group_by_charge(self, hl: Optional[bool] = None, 
-                        lh: Optional[bool] = None) -> None:
+    def sort_by_charge(self, hl: Optional[bool] = None) -> None:
         """Groups atoms by their electronic charges.
         
         Args:
-            hl: Flag indicate high-to-low ordering.
-            lh: Flag indicating low-to-high ordering.
-
-        Raises:
-            ValueError
-            - Cannot order both high-to-low and low-to-high.
+            hl: Flag indicating high-to-low ordering.
         """
+        if hl is None:
+            hl = False
+        self._atoms.sort(key=lambda x: x.charge, reverse=hl)
 
-    def group_by_magnetic_moment(self, hl: Optional[bool] = None, 
-                                 lh: Optional[bool] = None) -> None:
+    def sort_by_magnetic_moment(self, hl: Optional[bool] = None) -> None:
         """Groups atoms by the magnitudes of their magnetic moments.
         
         Args:
             hl: Flag indicate high-to-low ordering.
-            lh: Flag indicating low-to-high ordering.
-
-        Raises:
-            ValueError
-            - Cannot order both high-to-low and low-to-high.
         """
+        if hl is None:
+            hl = False
+        self._atoms.sort(key=lambda x: np.linalg.norm(x.magnetic_moment), 
+                         reverse=hl)
 
-    def group_by_position(self, hl: Optional[bool] = None, 
-                          lh: Optional[bool] = None) -> None:
+    def sort_by_position(self, hl: Optional[bool] = None) -> None:
         """Groups atoms by the magnitudes of their positions.
         
         Args:
             hl: Flag indicate high-to-low ordering.
-            lh: Flag indicating low-to-high ordering.
-
-        Raises:
-            ValueError
-            - Cannot order both high-to-low and low-to-high.
         """
+        if hl is None:
+            hl = False
+        self._atoms.sort(key=lambda x: x.linalg.norm(x.position), reverse=hl)
 
-    def group_by_symbol(self, order: Sequence[str]) -> None:
+    def sort_by_symbol(self, order: Sequence[str]) -> None:
         """Groups atoms by their IUPAC chemical symbols in the given order.
         
         Args:
@@ -138,22 +162,40 @@ class AtomCollection(object):
         Raises:
             ValueError:
             - `order` must be a unique sequence.
-            - A symbol in `order` is not found in the collection.
             - A symbol in the collection is not found in `order`.
+            - A symbol in `order` is not found in the collection.
+            
         """
+        if len(order) != len(set(order)):
+            err = "`order` must be a unique sequence."
+            raise ValueError(err)
+        for symbol in self.symbols:
+            if symbol not in order:
+                err = "A symbol in the collection is not found in `order` ({})."
+                .format(symbol)
+                raise ValueError(err)
+        atoms = []
+        for symbol in order:
+            ok = False
+            for a in self.atoms:
+                if symbol == a.symbol:
+                    atoms.append(a)
+                    ok = True
+            if not ok:
+                err = "A symbol in `order` is not found in the collection ({})."
+                .format(symbol)
+                raise ValueError(err)
+        self._atoms = atoms
 
-    def group_by_velocity(self, hl: Optional[bool] = None, 
-                          lh: Optional[bool] = None) -> None:
+    def sort_by_velocity(self, hl: Optional[bool] = None) -> None:
         """Groups atoms by the magnitudes of their velocities.
         
         Args:
             hl: Flag indicate high-to-low ordering.
-            lh: Flag indicating low-to-high ordering.
-
-        Raises:
-            ValueError
-            - Cannot order both high-to-low and low-to-high.
         """
+        if hl is None:
+            hl = False
+        self._atoms.sort(key=lambda x: np.linalg.norm(x.velocity), reverse=hl)
 
     @property
     def atoms(self) -> Generator[Atom, None, None]:
