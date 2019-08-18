@@ -1,3 +1,4 @@
+from cmstk.utils import Number
 import copy
 import numpy as np
 from typing import Any, Generator, List, MutableSequence, Optional, Sequence
@@ -238,6 +239,7 @@ class Lattice(AtomCollection):
     
     Args:
         atoms: The atoms in the collection.
+        vacuum: The thickness of the vacuum layer.
 
     Attributes:
         angles: Defining angles of the lattice (alpha, beta, gamma).
@@ -250,10 +252,15 @@ class Lattice(AtomCollection):
         parameters: Defining dimensions of the lattice (a, b, c).
         positions: Position in space of each atom.
         symbols: IUPAC chemical symbol of each atom.
+        vacuum: The thickness of the vacuum layer.
         velocities: Velocity vector of each atom.
     """
 
-    def __init__(self, atoms: Optional[MutableSequence[Atom]] = None) -> None:
+    def __init__(self, atoms: Optional[MutableSequence[Atom]] = None,
+                 vacuum: Optional[Number] = None) -> None:
+        if vacuum is None:
+            vacuum = 0
+        self.vacuum = vacuum
         super().__init__(atoms)
 
     @property
