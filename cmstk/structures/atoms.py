@@ -1,7 +1,15 @@
+# TODO: UNITS
+# - SimulationCell() <- accepts any AtomCollection ?
+# - Lattice inherits from AtomCollection - no restraint on parameters, vectors or angles?
+from cmstk.units.charge import *
+from cmstk.units.distance import *
+from cmstk.units.magnetic_moment import *
+from cmstk.units.speed import *
+from cmstk.units.vector import *
 from cmstk.utils import Number
 import copy
 import numpy as np
-from typing import Any, Generator, List, MutableSequence, Optional, Sequence
+from typing import Any, Generator, List, Optional, Sequence
 
 
 class Atom(object):
@@ -22,25 +30,31 @@ class Atom(object):
         velocity: Velocity vector.
     """
 
-    def __init__(self, charge: Optional[Number] = None,
-                 magnetic_moment: Optional[np.ndarray] = None,
-                 position: Optional[np.ndarray] = None,
+    def __init__(self, charge: Optional[ChargeUnit] = None,
+                 magnetic_moment: Optional[MagneticMomentUnit] = None,
+                 position: Optional[Vector3D] = None,
                  symbol: Optional[str] = None,
-                 velocity: Optional[np.ndarray] = None) -> None:
+                 velocity: Optional[Vector3D] = None) -> None:
         if charge is None:
-            charge = 0
+            charge = ChargeUnit(base_value=0)
         self.charge = charge
         if magnetic_moment is None:
-            magnetic_moment = np.array([])
+            magnetic_moment = MagneticMomentUnit(base_value=0)
         self.magnetic_moment = magnetic_moment
         if position is None:
-            position = np.array([])
+            position = Vector3D(values=[])
+        if position.kind is not DistanceUnit:
+            err = "`position` must be a Vector3D with kind Distanceunit."
+            raise ValueError(err)
         self.position = position
         if symbol is None:
             symbol = ""
         self.symbol = symbol
         if velocity is None:
-            velocity = np.array([])
+            velocity = Vector3D(values=[])
+        if velocity.kind is not SpeedUnit:
+            err = "`velocity` must be a Vector3D with kind SpeedUnit."
+            raise ValueError(err)
         self.velocity = velocity
 
 
@@ -60,12 +74,12 @@ class AtomCollection(object):
         velocities: Velocity vector of each atom.
     """
 
-    def __init__(self, atoms: Optional[MutableSequence[Atom]] = None) -> None:
+    def __init__(self, atoms: Optional[List[Atom]] = None) -> None:
         if atoms is None:
             atoms = []
         self._atoms = atoms
 
-    def add_atom(self, atom: Atom, tolerance: Optional[float] = None) -> None:
+    def add_atom(self, atom: Atom, tolerance: Optional[DistanceUnit] = None) -> None:
         """Adds an atom to the collection if its position is not occupied.
 
         Args:
@@ -77,7 +91,7 @@ class AtomCollection(object):
             - An atom exists within the tolerance radius.
         """
         if tolerance is None:
-            tolerance = 0.001
+            tolerance = Angstrom(value=0.001)
         for a in self.atoms:
             new_position = atom.position
             existing_position = a.position
@@ -90,7 +104,7 @@ class AtomCollection(object):
         self._atoms.append(atom)
 
     def remove_atom(self, position: np.ndarray, 
-                    tolerance: Optional[float] = None) -> Atom:
+                    tolerance: Optional[DistanceUnit] = None) -> Atom:
         """Removes an atom from the collection if the position is occupied and 
            returns it
         
@@ -104,7 +118,7 @@ class AtomCollection(object):
                 No atoms exist within the tolerance radius.
         """
         if tolerance is None:
-            tolerance = 0.001
+            tolerance = Angstrom(value=0.001)
         if self.n_atoms == 0:
             err = "There are no atoms in the collection."
             raise ValueError(err)
@@ -152,7 +166,7 @@ class AtomCollection(object):
         """
         if hl is None:
             hl = False
-        self._atoms.sort(key=lambda x: x.linalg.norm(x.position), reverse=hl)
+        self._atoms.sort(key=lambda x: np.linalg.norm(x.position), reverse=hl)
 
     def sort_by_symbol(self, order: Sequence[str]) -> None:
         """Groups atoms by their IUPAC chemical symbols in the given order.
@@ -172,8 +186,10 @@ class AtomCollection(object):
             raise ValueError(err)
         for symbol in self.symbols:
             if symbol not in order:
-                err = "A symbol in the collection is not found in `order` ({})."
-                .format(symbol)
+                err = (
+                    "A symbol in the collection is not found in `order`"
+                    " ({}).".format(symbol)
+                )
                 raise ValueError(err)
         atoms = []
         for symbol in order:
@@ -183,8 +199,10 @@ class AtomCollection(object):
                     atoms.append(a)
                     ok = True
             if not ok:
-                err = "A symbol in `order` is not found in the collection ({})."
-                .format(symbol)
+                err = (
+                    "A symbol in `order` is not found in the collection" 
+                    " ({}).".format(symbol)
+                )
                 raise ValueError(err)
         self._atoms = atoms
 
@@ -204,18 +222,22 @@ class AtomCollection(object):
             yield a
 
     @property
-    def charges(self) -> Generator[float, None, None]:
+    def charges(self) -> Generator[ChargeUnit, None, None]:
         for a in self._atoms:
             yield a.charge
 
     @property
-    def magnetic_moments(self) -> Generator[np.ndarray, None, None]:
+    def magnetic_moments(self) -> Generator[MagneticMomentUnit, None, None]:
         for a in self._atoms:
             yield a.magnetic_moment
 
     @property
     def n_atoms(self) -> int:
         return len(self._atoms)
+
+    @property
+    def n_symbols(self) -> int:
+        return len(set([s for s in self.symbols]))
 
     @property
     def positions(self) -> Generator[np.ndarray, None, None]:
@@ -256,7 +278,7 @@ class Lattice(AtomCollection):
         velocities: Velocity vector of each atom.
     """
 
-    def __init__(self, atoms: Optional[MutableSequence[Atom]] = None,
+    def __init__(self, atoms: Optional[List[Atom]] = None,
                  vacuum: Optional[Number] = None) -> None:
         if vacuum is None:
             vacuum = 0
