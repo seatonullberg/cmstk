@@ -24,7 +24,7 @@ def test_joule_per_tesla():
     """Tests initialization and conversion of a JoulePerTesla object."""
     value = 1.0
     j = JoulePerTesla(value)
-    assert j.kind == JoulePerTesla
+    assert j.kind == MagneticMomentUnit
     assert j.value == value
     b = j.to(BohrMagneton)
     assert type(b) is BohrMagneton

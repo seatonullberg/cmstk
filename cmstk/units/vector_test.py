@@ -87,6 +87,37 @@ def test_vector_setitem():
     with pytest.raises(ValueError):
         position[0] = Radian()
 
+def test_vector_add():
+    """Tests the behavior of the Vector.__add__() method."""
+    position0 = [Angstrom(1), Angstrom(1), Picometer(1)]
+    position0 = Vector3D(position0)
+    position1 = [Angstrom(1), Angstrom(1), Angstrom(1)]
+    position1 = Vector3D(position1)
+    position_sum = position0 + position1
+    assert position_sum[2].to(Angstrom).value == 1.01
+    position2 = [Angstrom(1), Angstrom(1), Angstrom(1)]
+    with pytest.raises(ValueError):
+        _ = position0 + position2
+    position3 = position2 + [Angstrom(1)]
+    position3 = Vector(position3)
+    with pytest.raises(ValueError):
+        _ = position0 + position3
+
+def test_vector_sub():
+    """Tests the behavior of the Vector.__sub__() method."""
+    position0 = [Angstrom(1), Angstrom(1), Picometer(1)]
+    position0 = Vector3D(position0)
+    position1 = [Angstrom(1), Angstrom(1), Angstrom(1)]
+    position1 = Vector3D(position1)
+    position_sum = position0 - position1
+    assert position_sum[2].to(Angstrom).value == -0.99
+    position2 = [Angstrom(1), Angstrom(1), Angstrom(1)]
+    with pytest.raises(ValueError):
+        _ = position0 - position2
+    position3 = position2 + [Angstrom(1)]
+    position3 = Vector(position3)
+    with pytest.raises(ValueError):
+        _ = position0 - position3
 
 def test_vector_to_ndarray():
     """Tests behavior of the Vector.to_numpy() method."""

@@ -130,6 +130,40 @@ class Vector(object):
         root = math.sqrt(square)
         return t(root)
 
+    def __add__(self, other):
+        if not isinstance(other, Vector):
+            err = (
+                "Type ({}) cannot be added to Vector".format(type(other)),
+                " instance."
+            )
+            raise ValueError(err)
+        if self.size != other.size:
+            err = (
+                "Unable to add vectors: incompatible sizes"
+                " ({}) and ({}).".format(self.size, other.size)
+            )
+            raise ValueError(err)
+        for i, v in enumerate(other._values):
+            self._values[i] += v
+        return self
+
+    def __sub__(self, other):
+        if not isinstance(other, Vector):
+            err = (
+                "Type ({}) cannot be subtracted Vector".format(type(other)),
+                " instance."
+            )
+            raise ValueError(err)
+        if self.size != other.size:
+            err = (
+                "Unable to subtract vectors: incompatible sizes"
+                " ({}) and ({}).".format(self.size, other.size)
+            )
+            raise ValueError(err)
+        for i, v in enumerate(other._values):
+            self._values[i] -= v
+        return self
+
     def __iter__(self):
         return self._values.__iter__()
 

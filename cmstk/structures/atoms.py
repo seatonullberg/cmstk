@@ -36,13 +36,15 @@ class Atom(object):
                  symbol: Optional[str] = None,
                  velocity: Optional[Vector3D] = None) -> None:
         if charge is None:
-            charge = ChargeUnit(base_value=0)
+            charge = ChargeUnit(0)
         self.charge = charge
         if magnetic_moment is None:
-            magnetic_moment = MagneticMomentUnit(base_value=0)
+            magnetic_moment = MagneticMomentUnit(0)
         self.magnetic_moment = magnetic_moment
         if position is None:
-            position = Vector3D(values=[])
+            position = Vector3D(
+                values=[DistanceUnit(0), DistanceUnit(0), DistanceUnit(0)]
+            )
         if position.kind is not DistanceUnit:
             err = "`position` must be a Vector3D with kind Distanceunit."
             raise ValueError(err)
@@ -51,7 +53,9 @@ class Atom(object):
             symbol = ""
         self.symbol = symbol
         if velocity is None:
-            velocity = Vector3D(values=[])
+            velocity = Vector3D(
+                values=[SpeedUnit(0), SpeedUnit(0), SpeedUnit(0)]
+            )
         if velocity.kind is not SpeedUnit:
             err = "`velocity` must be a Vector3D with kind SpeedUnit."
             raise ValueError(err)
@@ -63,21 +67,27 @@ class AtomCollection(object):
     
     Args:
         atoms: The atoms in the collection.
+        tolerance: The radius in which to check for existing atoms
+        - only useful if initializing with a list of atoms.
 
     Attributes:
         atoms: The atoms in the collection.
         charges: Electronic charge of each atom.
         magnetic_moments: Magnetic moment vector of each atom.
         n_atoms: Number of atoms in the collection.
+        n_symbols: Number of symbols in the collection.
         positions: Position in space of each atom.
         symbols: IUPAC chemical symbol of each atom.
         velocities: Velocity vector of each atom.
     """
 
-    def __init__(self, atoms: Optional[List[Atom]] = None) -> None:
+    def __init__(self, atoms: Optional[List[Atom]] = None,
+                 tolerance: Optional[DistanceUnit] = None) -> None:
         if atoms is None:
             atoms = []
-        self._atoms = atoms
+        self._atoms = []
+        for a in atoms:
+            self.add_atom(a, tolerance)
 
     def add_atom(self, atom: Atom, tolerance: Optional[DistanceUnit] = None) -> None:
         """Adds an atom to the collection if its position is not occupied.
@@ -145,7 +155,7 @@ class AtomCollection(object):
         """
         if hl is None:
             hl = False
-        self._atoms.sort(key=lambda x: x.charge, reverse=hl)
+        self._atoms.sort(key=lambda x: x.charge.to_base().value, reverse=hl)
 
     def sort_by_magnetic_moment(self, hl: Optional[bool] = None) -> None:
         """Groups atoms by the magnitudes of their magnetic moments.
@@ -155,8 +165,10 @@ class AtomCollection(object):
         """
         if hl is None:
             hl = False
-        self._atoms.sort(key=lambda x: np.linalg.norm(x.magnetic_moment), 
-                         reverse=hl)
+        self._atoms.sort(
+            key=lambda x: x.magnetic_moment.to_base().value, 
+            reverse=hl
+        )
 
     def sort_by_position(self, hl: Optional[bool] = None) -> None:
         """Groups atoms by the magnitudes of their positions.
@@ -166,7 +178,10 @@ class AtomCollection(object):
         """
         if hl is None:
             hl = False
-        self._atoms.sort(key=lambda x: np.linalg.norm(x.position), reverse=hl)
+        self._atoms.sort(
+            key=lambda x: np.linalg.norm(x.position.to_base().value),
+            reverse=hl
+        )
 
     def sort_by_symbol(self, order: Sequence[str]) -> None:
         """Groups atoms by their IUPAC chemical symbols in the given order.
@@ -214,7 +229,10 @@ class AtomCollection(object):
         """
         if hl is None:
             hl = False
-        self._atoms.sort(key=lambda x: np.linalg.norm(x.velocity), reverse=hl)
+        self._atoms.sort(
+            key=lambda x: np.linalg.norm(x.velocity.to_base().value), 
+            reverse=hl
+        )
 
     @property
     def atoms(self) -> Generator[Atom, None, None]:
@@ -240,7 +258,7 @@ class AtomCollection(object):
         return len(set([s for s in self.symbols]))
 
     @property
-    def positions(self) -> Generator[np.ndarray, None, None]:
+    def positions(self) -> Generator[Vector3D, None, None]:
         for a in self._atoms:
             yield a.position
 
@@ -250,7 +268,7 @@ class AtomCollection(object):
             yield a.symbol
     
     @property
-    def velocities(self) -> Generator[np.ndarray, None, None]:
+    def velocities(self) -> Generator[Vector3D, None, None]:
         for a in self._atoms:
             yield a.velocity
 
