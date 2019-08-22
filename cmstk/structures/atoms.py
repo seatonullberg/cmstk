@@ -1,6 +1,3 @@
-# TODO: UNITS
-# - SimulationCell() <- accepts any AtomCollection ?
-# - Lattice inherits from AtomCollection - no restraint on parameters, vectors or angles?
 from cmstk.units.charge import *
 from cmstk.units.distance import *
 from cmstk.units.magnetic_moment import *
@@ -85,7 +82,7 @@ class AtomCollection(object):
                  tolerance: Optional[DistanceUnit] = None) -> None:
         if atoms is None:
             atoms = []
-        self._atoms = []
+        self._atoms: List[Atom] = []
         for a in atoms:
             self.add_atom(a, tolerance)
 
@@ -179,7 +176,7 @@ class AtomCollection(object):
         if hl is None:
             hl = False
         self._atoms.sort(
-            key=lambda x: np.linalg.norm(x.position.to_base().value),
+            key=lambda x: np.linalg.norm(x.position.to_base().to_ndarray()),
             reverse=hl
         )
 
@@ -230,7 +227,7 @@ class AtomCollection(object):
         if hl is None:
             hl = False
         self._atoms.sort(
-            key=lambda x: np.linalg.norm(x.velocity.to_base().value), 
+            key=lambda x: np.linalg.norm(x.velocity.to_base().to_ndarray()), 
             reverse=hl
         )
 
@@ -271,54 +268,3 @@ class AtomCollection(object):
     def velocities(self) -> Generator[Vector3D, None, None]:
         for a in self._atoms:
             yield a.velocity
-
-
-class Lattice(AtomCollection):
-    """Representation of a collection of atoms ordered in a crystalline 
-       structure.
-    
-    Args:
-        atoms: The atoms in the collection.
-        vacuum: The thickness of the vacuum layer.
-
-    Attributes:
-        angles: Defining angles of the lattice (alpha, beta, gamma).
-        atoms: The atoms in the collection.
-        charges: Electronic charge of each atom.
-        fractional_positions: Positions in space of each atom scaled to the 
-                              lattice.
-        magnetic_moments: Magnetic moment vector of each atom.
-        n_atoms: Number of atoms in the collection.
-        parameters: Defining dimensions of the lattice (a, b, c).
-        positions: Position in space of each atom.
-        symbols: IUPAC chemical symbol of each atom.
-        vacuum: The thickness of the vacuum layer.
-        velocities: Velocity vector of each atom.
-    """
-
-    def __init__(self, atoms: Optional[List[Atom]] = None,
-                 vacuum: Optional[Number] = None) -> None:
-        if vacuum is None:
-            vacuum = 0
-        self.vacuum = vacuum
-        super().__init__(atoms)
-
-    @property
-    def angles(self) -> np.ndarray:
-        raise NotImplementedError
-
-    @angles.setter
-    def angles(self, value: np.ndarray) -> None:
-        raise NotImplementedError
-
-    @property
-    def fractional_positions(self) -> Generator[np.ndarray, None, None]:
-        raise NotImplementedError
-
-    @property
-    def parameters(self) -> np.ndarray:
-        raise NotImplementedError
-
-    @parameters.setter
-    def parameters(self, value: np.ndarray) -> None:
-        raise NotImplementedError

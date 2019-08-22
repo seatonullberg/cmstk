@@ -119,6 +119,20 @@ def test_vector_sub():
     with pytest.raises(ValueError):
         _ = position0 - position3
 
+def test_vector_to():
+    """Tests the behavior of the Vector.to() method."""
+    vec0 = Vector([Angstrom(1), Picometer(1)])
+    vec1 = vec0.to(Angstrom)
+    for v in vec1:
+        assert type(v) is Angstrom
+
+def test_vector_to_base():
+    """Tests the behavior of the Vector.to_base() method."""
+    vec0 = Vector([Angstrom(1), Picometer(1)])    
+    vec1 = vec0.to_base()
+    for v in vec1:
+        assert type(v) is Meter
+
 def test_vector_to_ndarray():
     """Tests behavior of the Vector.to_numpy() method."""
     value = 1.0
@@ -129,8 +143,7 @@ def test_vector_to_ndarray():
     assert deg_arr[2] == 1.0
     rad_arr = vector.to_ndarray(t=Radian)
     assert type(rad_arr) is np.ndarray
-    assert rad_arr[0] == 1.0 
-
+    assert rad_arr[0] == 1.0
 
 def test_vector_2d():
     """Tests the initialization of a Vector2D ovject."""

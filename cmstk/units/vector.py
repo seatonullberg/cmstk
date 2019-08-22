@@ -130,6 +130,28 @@ class Vector(object):
         root = math.sqrt(square)
         return t(root)
 
+    def to(self, t: Any) -> Any:
+        """Converts all members to the specified unit.
+        
+        Args:
+            t: The unit to convert to.
+        """
+        values = []
+        for v in self._values:
+            values.append(v.to(t))
+        if isinstance(self, Vector3D):
+            return Vector3D(values)
+        elif isinstance(self, Vector2D):
+            return Vector2D(values)
+        else:
+            return Vector(values)
+
+    def to_base(self) -> Any:
+        """Converts all members to their base units."""
+        # all members have the same base unit because they are all the same kind
+        base_unit = self._values[0].base_unit
+        return self.to(base_unit)
+
     def __add__(self, other):
         if not isinstance(other, Vector):
             err = (

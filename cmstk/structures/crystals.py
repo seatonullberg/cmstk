@@ -1,9 +1,10 @@
-from cmstk.structures.atoms import AtomCollection
+from cmstk.structures.atoms import Atom, AtomCollection
 from cmstk.units.angle import *
 from cmstk.units.distance import *
 from cmstk.units.vector import *
+import numpy as np
+from typing import Generator, List, Optional
 
-# TODO: Maybe don't use defaults for angles and parameters?
 
 class Lattice(AtomCollection):
     """Representation of a collection of atoms with crystalline ordering.
@@ -16,8 +17,8 @@ class Lattice(AtomCollection):
 
     Attributes:
         angles: The defining angles (alpha, beta, gamma).
-        atoms: The atoms in the collection.
         parameters: The defining parameters (a, b, c).
+        atoms: The atoms in the collection.
         vectors: The defining vectors (coordinate system).
         charges: Electronic charge of each atom.
         magnetic_moments: Magnetic moment vector of each atom.
@@ -26,24 +27,18 @@ class Lattice(AtomCollection):
         positions: Position in space of each atom.
         symbols: IUPAC chemical symbol of each atom.
         velocities: Velocity vector of each atom.
+        fractional_positions: Positions scaled by the parameters (unitless).
     """
 
-    def __init__(self, angles: Optional[Vector3D] = None, 
+    def __init__(self, angles: Vector3D, parameters: Vector3D,
                  atoms: Optional[List[Atom]] = None,
-                 parameters: Optional[Vector3D] = None,
                  tolerance: Optional[DistanceUnit] = None,
                  vectors: Optional[np.ndarray] = None) -> None:
         super().__init__(atoms, tolerance)
-        if angles is None:
-            angles = [Degree(90), Degree(90), Degree(90)]
-            angles = Vector3D(angles)
         if angles.kind is not AngleUnit:
             err = "`angles` must be a Vector3D with kind AngleUnit."
             raise ValueError(err)
         self.angles = angles
-        if parameters is None:
-            parameters = [Angstrom(1), Angstrom(1), Angstrom(1)]
-            parameters = Vector3D(parameters)
         if parameters.kind is not DistanceUnit:
             err = "`parameters must be a Vector3D with kind DistanceUnit.`"
             raise ValueError(err)
@@ -51,3 +46,10 @@ class Lattice(AtomCollection):
         if vectors is None:
             vectors = np.identity(3)
         self.vectors = vectors
+
+    @property
+    def fractional_positions(self) -> Generator[np.ndarray, None, None]:
+        parameters_array = self.parameters.to_base().to_ndarray()
+        for position in self.positions:
+            position_array = position.to_base().to_ndarray()
+            yield position_array / parameters_array
