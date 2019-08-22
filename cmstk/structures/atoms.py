@@ -100,17 +100,17 @@ class AtomCollection(object):
         if tolerance is None:
             tolerance = Angstrom(value=0.001)
         for a in self.atoms:
-            new_position = atom.position
-            existing_position = a.position
+            new_position = atom.position.to_base().to_ndarray()
+            existing_position = a.position.to_base().to_ndarray()
             distance = np.sum(np.sqrt((new_position - existing_position)**2))
-            if distance < tolerance:
+            if distance < tolerance.to_base().value:
                 err = "An atom exists within the tolerance radius ({}).".format(
                     tolerance
                 )
                 raise ValueError(err)
         self._atoms.append(atom)
 
-    def remove_atom(self, position: np.ndarray, 
+    def remove_atom(self, position: Vector3D, 
                     tolerance: Optional[DistanceUnit] = None) -> Atom:
         """Removes an atom from the collection if the position is occupied and 
            returns it
@@ -124,15 +124,20 @@ class AtomCollection(object):
                 There are no atoms in the collection.
                 No atoms exist within the tolerance radius.
         """
+        if position.kind is not DistanceUnit:
+            err = "`position` must be a Vector3D of kind DistanceUnit."
+            raise ValueError(err)
         if tolerance is None:
             tolerance = Angstrom(value=0.001)
         if self.n_atoms == 0:
             err = "There are no atoms in the collection."
             raise ValueError(err)
         removal_index = None
+        position_array = position.to_base().to_ndarray()
         for i, a in enumerate(self.atoms):
-            distance = np.sum(np.sqrt((position - a.position)**2))
-            if distance < tolerance:
+            existing_position = a.position.to_base().to_ndarray()
+            distance = np.sum(np.sqrt((position_array - existing_position)**2))
+            if distance < tolerance.to_base().value:
                 removal_index = i
                 break
         if removal_index is None:
@@ -176,7 +181,7 @@ class AtomCollection(object):
         if hl is None:
             hl = False
         self._atoms.sort(
-            key=lambda x: np.linalg.norm(x.position.to_base().to_ndarray()),
+            key=lambda x: x.position.magnitude(Angstrom).value,
             reverse=hl
         )
 
