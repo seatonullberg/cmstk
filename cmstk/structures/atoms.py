@@ -64,7 +64,7 @@ class AtomCollection(object):
     
     Args:
         atoms: The atoms in the collection.
-        tolerance: The radius in which to check for existing atoms
+        tolerance: The radius in which to check for existing atoms.
         - only useful if initializing with a list of atoms.
 
     Attributes:
