@@ -11,7 +11,6 @@ class MassUnit(BaseUnit):
         base_value (float): Starting value to initialize the unit with.
         - Must be in terms of the base unit.
     """
-
     def __init__(self, base_value: Number) -> None:
         super().__init__(Kilogram, MassUnit, base_value)
 
@@ -25,7 +24,6 @@ class AtomicMassUnit(MassUnit):
     Attributes:
         value (float or int): Value of the unit.
     """
-
     def __init__(self, value: Number = 0) -> None:
         super().__init__(self.convert(value))
         self.value = value
@@ -48,7 +46,6 @@ class Gram(MassUnit):
     Attributes:
         value (float or int): Value of the unit.
     """
-
     def __init__(self, value: Number = 0) -> None:
         super().__init__(self.convert(value))
         self.value = value
@@ -71,7 +68,6 @@ class Kilogram(MassUnit):
     Attributes:
         value (float or int): Value of the unit.
     """
-
     def __init__(self, value: Number = 0) -> None:
         super().__init__(self.convert(value))
         self.value = value
@@ -83,7 +79,8 @@ class Kilogram(MassUnit):
     @staticmethod
     def convert_inverse(x: Number) -> Number:
         return x
-        
+
+
 class Picogram(MassUnit):
     """Representation of the Picogram mass unit.
 
@@ -93,7 +90,6 @@ class Picogram(MassUnit):
     Attributes:
         value (float or int): Value of the unit.
     """
-
     def __init__(self, value: Number = 0) -> None:
         super().__init__(self.convert(value))
         self.value = value

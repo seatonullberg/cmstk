@@ -1,5 +1,5 @@
 import pytest
-from cmstk.units.base import BaseUnit
+from cmstk.units.base import BaseUnit, UnitSchema
 from cmstk.units.distance import Angstrom, Nanometer, Meter, DistanceUnit
 from cmstk.units.angle import Radian
 from cmstk.utils import within_one_percent
@@ -10,6 +10,7 @@ def test_base_unit():
     for v in [1.0, 1]:
         b = BaseUnit(Meter, DistanceUnit, v)
         assert b.base_value == v
+
 
 def test_base_unit_operations():
     """Tests behavior of the overridden mathematical operators."""
@@ -72,3 +73,16 @@ def test_base_unit_operations():
     assert float(ang) == 1.0
     # int
     assert int(ang) == 1
+
+
+def test_unit_schema():
+    """Tests initialization of a UnitSchema object."""
+    schema = UnitSchema((DistanceUnit, Nanometer))
+    assert schema[DistanceUnit] is Nanometer
+    schema[DistanceUnit] = Angstrom
+    assert schema[DistanceUnit] is Angstrom
+    with pytest.raises(ValueError):
+        _ = UnitSchema((DistanceUnit, Radian))
+    with pytest.raises(ValueError):
+        schema = UnitSchema((DistanceUnit, Nanometer))
+        schema[DistanceUnit] = Radian

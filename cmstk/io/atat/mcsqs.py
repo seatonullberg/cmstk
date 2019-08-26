@@ -4,7 +4,7 @@ import numpy as np
 from typing import Optional, Sequence
 
 
-def bestsqs_to_poscar(bestsqs: BestsqsFile, 
+def bestsqs_to_poscar(bestsqs: BestsqsFile,
                       scaling_factor: float,
                       sym_order: Sequence[str],
                       direct: Optional[bool] = None,
@@ -29,10 +29,10 @@ def bestsqs_to_poscar(bestsqs: BestsqsFile,
     if len(sym_order) != len(set(sym_order)):
         err = "all members of `sym_order` must be unique"
         raise ValueError(err)
-    poscar = PoscarFile(
-        direct=direct, lattice=bestsqs.lattice,
-        relaxations=relaxations, scaling_factor=scaling_factor
-    )
+    poscar = PoscarFile(direct=direct,
+                        lattice=bestsqs.lattice,
+                        relaxations=relaxations,
+                        scaling_factor=scaling_factor)
     # group positions by symbol as required in POSCAR
     poscar.lattice.group_atoms_by_symbol(sym_order)
     # count up occurences of each symbol

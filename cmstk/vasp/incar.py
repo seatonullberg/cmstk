@@ -16,8 +16,8 @@ class IncarFile(object):
     Properties:
         tags: Sequence of vasp tag objects which can be accessed like a dict.
     """
-
-    def __init__(self, filepath: Optional[str] = None,
+    def __init__(self,
+                 filepath: Optional[str] = None,
                  tags: Optional[Sequence[Any]] = None) -> None:
         if filepath is None:
             filepath = "INCAR"
@@ -31,10 +31,8 @@ class IncarFile(object):
             lines = f.readlines()
             lines = list(map(lambda x: x.strip(), lines))  # remove newlines
             lines = list(filter(None, lines))  # remove empty strings
-        tags = self.tags.load_all_tags(
-            base_class=VaspTag, 
-            module_str="cmstk.vasp.incar_tags"
-        )
+        tags = self.tags.load_all_tags(base_class=VaspTag,
+                                       module_str="cmstk.vasp.incar_tags")
         for line in lines:
             is_valid = False
             for tag in tags:
@@ -50,7 +48,7 @@ class IncarFile(object):
                 err = "unable to parse the following line: {}".format(line)
                 raise ValueError(err)
 
-    def write(self, path: Optional[str] = None) -> None: 
+    def write(self, path: Optional[str] = None) -> None:
         if path is None:
             path = self.filepath
         with open(path, "w") as f:

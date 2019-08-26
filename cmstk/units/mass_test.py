@@ -23,7 +23,6 @@ def test_atomic_mass_unit():
     base = a.to_base()
     assert type(base) is Kilogram
     assert within_one_percent(1.66054e-27, base.value)
-    
 
 
 def test_gram():

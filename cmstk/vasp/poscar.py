@@ -29,8 +29,8 @@ class PoscarFile(object):
         relaxations: Selective dynamics relaxation parameters for each atom.
         scaling_factor: Lattice scaling factor (lattice constant)
     """
-
-    def __init__(self, filepath: Optional[str] = None,
+    def __init__(self,
+                 filepath: Optional[str] = None,
                  comment: Optional[str] = None,
                  direct: Optional[bool] = None,
                  lattice: Optional[Lattice] = None,
@@ -73,11 +73,9 @@ class PoscarFile(object):
         with open(path, "r") as f:
             lines = f.readlines()
         self.comment = lines[0].strip()
-        self.scaling_factor = float(lines[1].strip())        
+        self.scaling_factor = float(lines[1].strip())
         lattice_vectors = lines[2:5]
-        lattice_vectors = [
-            np.fromstring(l, sep=" ") for l in lattice_vectors
-        ]
+        lattice_vectors = [np.fromstring(l, sep=" ") for l in lattice_vectors]
         self.lattice_vectors = np.array(lattice_vectors)
         n_atoms_per_symbol = [int(n) for n in lines[5].split()]
         self.n_atoms_per_symbol = tuple(n_atoms_per_symbol)
@@ -94,19 +92,17 @@ class PoscarFile(object):
             self.direct = False
         else:
             self.direct = True
-        str_positions = lines[coord_sys_index+1:]
+        str_positions = lines[coord_sys_index + 1:]
         str_positions = [" ".join(p.split()[:3]) for p in str_positions]
-        arr_positions = [
-            np.fromstring(p, sep=" ") for p in str_positions
-        ]
+        arr_positions = [np.fromstring(p, sep=" ") for p in str_positions]
         for p in arr_positions:
             if self.direct:
                 a = Atom(position_direct=p)
             else:
-                a = Atom(position_cartesian=p)    
+                a = Atom(position_cartesian=p)
             self.lattice.add_atom(a)
         if selective_dynamics:
-            relaxations = lines[coord_sys_index+1:]
+            relaxations = lines[coord_sys_index + 1:]
             relaxations = [" ".join(r.split()[3:]) for r in relaxations]
             relaxations = [
                 np.fromstring(r, sep=" ", dtype=bool) for r in relaxations

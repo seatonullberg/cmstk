@@ -1,4 +1,4 @@
-from cmstk.units.distance import (DistanceUnit, Angstrom, Meter, Nanometer, 
+from cmstk.units.distance import (DistanceUnit, Angstrom, Meter, Nanometer,
                                   Picometer)
 from cmstk.utils import within_one_percent
 
@@ -24,7 +24,7 @@ def test_angstrom():
     base = a.to_base()
     assert type(base) is Meter
     assert within_one_percent(1e-10, base.value)
-    
+
 
 def test_meter():
     """Tests initialization and conversion of a Meter object."""

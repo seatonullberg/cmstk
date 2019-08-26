@@ -41,6 +41,7 @@ def test_fahrenheit():
     assert type(base) is Celsius
     assert within_one_percent(-17.22, base.value)
 
+
 def test_init_kelvin():
     """Tests initialization and conversion of a Kelvin object."""
     value = 1.0

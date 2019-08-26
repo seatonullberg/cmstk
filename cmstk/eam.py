@@ -37,7 +37,6 @@ class SetflFile(object):
         pair_function (dict: key: str, value: list of float): Tabulated values 
         of the interatomic potential between each symbol pair.
     """
-
     def __init__(self, filepath: str) -> None:
         self.filepath = filepath
         self.comments: Sequence[str]
@@ -71,7 +70,7 @@ class SetflFile(object):
         self._read_parameters(lines)
         self._read_body(lines)
 
-    def write(self, path: Optional[str] = None ) -> None:
+    def write(self, path: Optional[str] = None) -> None:
         """Writes a setfl file.
 
         Args:
@@ -84,9 +83,10 @@ class SetflFile(object):
             path = self.filepath
         with open(path, "w") as f:
             f.write("{}\n".format("\n".join(self.comments)))
-            f.write("{} {}\n".format(len(self.symbols), " ".join(self.symbols)))
-            f.write("{} {} {} {} {}\n".format(
-                self.n_rho, self.d_rho, self.n_r, self.d_r, self.cutoff))
+            f.write("{} {}\n".format(len(self.symbols),
+                                     " ".join(self.symbols)))
+            f.write("{} {} {} {} {}\n".format(self.n_rho, self.d_rho, self.n_r,
+                                              self.d_r, self.cutoff))
             for s in self.symbols:
                 f.write(self.symbol_descriptors[s] + "\n")
                 embedding_function = map(str, self.embedding_function[s])
@@ -101,7 +101,7 @@ class SetflFile(object):
         self.comments = [line.strip() for line in lines[:3]]
 
     def _read_symbols(self, lines: List[str]) -> None:
-        self.symbols = lines[3].split()[1:]        
+        self.symbols = lines[3].split()[1:]
         pairs = []
         for i, e1 in enumerate(self.symbols):
             for j, e2 in enumerate(self.symbols):
@@ -129,7 +129,7 @@ class SetflFile(object):
         start = 0  # now `start` references individual values not lines
         self.symbol_descriptors = {}
         for s in self.symbols:
-            symbol_descriptor = values[start: start + 4]
+            symbol_descriptor = values[start:start + 4]
             self.symbol_descriptors[s] = " ".join(symbol_descriptor)
             start += 4  # skip the descriptor section
             self.embedding_function[s] = []

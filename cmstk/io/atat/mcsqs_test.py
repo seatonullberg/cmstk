@@ -7,8 +7,7 @@ import os
 
 def test_bestsqs_to_poscar():
     """Tests the conversion of a BestsqsFile object to a PoscarFile object."""
-    path = os.path.join(data_directory(), 
-                        "atat", 
+    path = os.path.join(data_directory(), "atat",
                         "Fe75Cr25_BCC_bulk.bestsqs.out")
     bestsqs = BestsqsFile(filepath=path)
     bestsqs.read()

@@ -24,8 +24,8 @@ class KpointsFile(object):
         mesh_size: Size of the K-Point mesh in 3D.
         mesh_type: Mesh generation scheme.
     """
-
-    def __init__(self, filepath: Optional[str] = None,
+    def __init__(self,
+                 filepath: Optional[str] = None,
                  comment: Optional[str] = None,
                  n_kpoints: Optional[int] = None,
                  mesh_shift: Optional[Sequence[int]] = None,

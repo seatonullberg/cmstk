@@ -2,8 +2,9 @@ from cmstk.structures.atoms import Atom, AtomCollection
 from cmstk.units.angle import *
 from cmstk.units.distance import *
 from cmstk.units.vector import *
+import copy
 import numpy as np
-from typing import Generator, List, Optional
+from typing import Generator, List, Optional, Tuple
 
 
 class Lattice(AtomCollection):
@@ -11,8 +12,10 @@ class Lattice(AtomCollection):
 
     Args:
         angles: The defining angles (alpha, beta, gamma).
-        atoms: The atoms in the collection.
         parameters: The defining parameters (a, b, c).
+        atoms: The atoms in the collection.
+        coordinate_matrix: Parameters and angles combined into a 3x3 matrix.
+        tolerance: The radius in which to check from existing atoms.
         vectors: The defining vectors (coordinate system).
 
     Attributes:
@@ -29,9 +32,12 @@ class Lattice(AtomCollection):
         velocities: Velocity vector of each atom.
         fractional_positions: Positions scaled by the parameters (unitless).
     """
-
-    def __init__(self, angles: Vector3D, parameters: Vector3D,
+    def __init__(self,
+                 angles: Optional[Vector3D],
+                 parameters: Optional[Vector3D],
                  atoms: Optional[List[Atom]] = None,
+                 coordinate_matrix: Optional[
+                     Tuple[Vector3D, Vector3D, Vector3D]] = None,
                  tolerance: Optional[DistanceUnit] = None,
                  vectors: Optional[np.ndarray] = None) -> None:
         super().__init__(atoms, tolerance)
@@ -46,6 +52,13 @@ class Lattice(AtomCollection):
         if vectors is None:
             vectors = np.identity(3)
         self.vectors = vectors
+        self._coordinate_matrix = None  # stored copy to prevent reconstruction
+        if coordinate_matrix is not None:
+            for vector in coordinate_matrix:
+                if vector.kind is not DistanceUnit:
+                    err = "Vectors in `coordinate_matrix` must be of kind DistanceUnit."
+                    raise ValueError(err)
+        self.coordinate_matrix = coordinate_matrix
 
     @property
     def fractional_positions(self) -> Generator[np.ndarray, None, None]:

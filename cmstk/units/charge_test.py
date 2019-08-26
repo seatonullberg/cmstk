@@ -17,7 +17,7 @@ def test_coulomb():
     base = c.to_base()
     assert type(base) is Coulomb
     assert within_one_percent(value, base.value)
-    
+
 
 def test_electron_charge():
     # tests if ElectronCharge can be initialized

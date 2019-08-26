@@ -43,7 +43,7 @@ def test_base_tag_collection():
     test_tag0.name = "zero"
     test_tag1 = MockBaseTag()
     test_tag1.name = "one"
-    collection = BaseTagCollection(base_class=MockBaseTag, 
+    collection = BaseTagCollection(base_class=MockBaseTag,
                                    tags=[test_tag0, test_tag1])
     assert len(collection._tags) == 2
     test_tag2 = MockBaseTag()

@@ -8,7 +8,7 @@ def test_speed_from_distance_time():
     """Tests SpeedUnit initialization from an instance of a DistanceUnit and
     a TimeUnit."""
     value = 1.0
-    d = Angstrom(value)    # arbitrary distance
+    d = Angstrom(value)  # arbitrary distance
     t = Picosecond(value)  # arbitrary time
     s = SpeedUnit.from_distance_time(d, t)
     assert type(s) is SpeedUnit
@@ -31,7 +31,7 @@ def test_angstrom_per_picosecond():
     base = a.to_base()
     assert type(base) is MeterPerSecond
     assert within_one_percent(100.0, base.value)
-    
+
 
 def test_meter_per_second():
     """Tests initialization and conversion of a MeterPerSecond object."""

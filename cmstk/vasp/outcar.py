@@ -12,7 +12,6 @@ class OutcarFile(object):
         entropy: Entropy value of the system at each step.
         total_energy: Total (free energy) value of the system at each step.
     """
-
     def __init__(self, filepath: Optional[str] = None) -> None:
         if filepath is None:
             filepath = "OUTCAR"

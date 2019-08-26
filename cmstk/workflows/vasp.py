@@ -7,9 +7,12 @@ from typing import Any, List, Optional
 import os
 
 
-def converge_encut(encut_values: List[int], incar: IncarFile,
-                   kpoints: KpointsFile, poscar: PoscarFile,
-                   potcar: PotcarFile, submission_script: Any,
+def converge_encut(encut_values: List[int],
+                   incar: IncarFile,
+                   kpoints: KpointsFile,
+                   poscar: PoscarFile,
+                   potcar: PotcarFile,
+                   submission_script: Any,
                    working_directory: Optional[str] = None) -> None:
     """Runs an ENCUT convergence calculation.
 
@@ -67,9 +70,12 @@ def converge_encut(encut_values: List[int], incar: IncarFile,
         os.system(cmd)
 
 
-def converge_kpoints(kpoint_sizes: List[List[int]], incar: IncarFile,
-                     kpoints: KpointsFile, poscar: PoscarFile, 
-                     potcar: PotcarFile, submission_script: Any,
+def converge_kpoints(kpoint_sizes: List[List[int]],
+                     incar: IncarFile,
+                     kpoints: KpointsFile,
+                     poscar: PoscarFile,
+                     potcar: PotcarFile,
+                     submission_script: Any,
                      working_directory: Optional[str] = None) -> None:
     """Runs a KPOINTS convergence calculation.
     

@@ -1,4 +1,4 @@
-from cmstk.units.area import (AreaUnit, AngstromSquared, MeterSquared, 
+from cmstk.units.area import (AreaUnit, AngstromSquared, MeterSquared,
                               NanometerSquared, PicometerSquared)
 from cmstk.units.distance import Meter, Nanometer, Picometer
 from cmstk.utils import within_one_percent
@@ -35,7 +35,6 @@ def test_angstrom_squared():
     base = a.to_base()
     assert type(base) is MeterSquared
     assert within_one_percent(1e-20, base.value)
-
 
 
 def test_meter_squared():
@@ -83,7 +82,7 @@ def test_nanometer_squared():
     base = n.to_base()
     assert type(base) is MeterSquared
     assert within_one_percent(1e-18, base.value)
-    
+
 
 def test_picometer_squared():
     """Tests initialization and conversion of a PicometerSquared object."""

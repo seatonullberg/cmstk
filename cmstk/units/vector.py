@@ -1,7 +1,7 @@
 import math
 import numpy as np
 from scipy.spatial.transform import Rotation
-from typing import Any, MutableSequence
+from typing import Any, MutableSequence, Optional
 from cmstk.units.base import BaseUnit
 from cmstk.units.angle import AngleUnit
 
@@ -19,7 +19,6 @@ class Vector(object):
           (Angstrom, Meter...) but not instances of DistanceUnits and AngleUnits
           (Angstrom, Radian...) 
     """
-
     def __init__(self, values: MutableSequence[BaseUnit]) -> None:
         kind = values[0].kind
         for v in values[1:]:
@@ -34,36 +33,34 @@ class Vector(object):
         """(int): Return the size of the vector."""
         return len(self._values)
 
-    # TODO: init from a numpy.ndarray
-
     # TODO: This needs better type annotations
-    def to_ndarray(self, t: Any = None) -> np.ndarray:
+    def to_ndarray(self, t: Optional[Any] = None) -> np.ndarray:
         """Converts the values in vector to a numpy.ndarray.
         
         Args:
-            t (optional) (instance of BaseUnit): Unit type to convert to before
-            placing values in array.
-            - If t is None, the base_unit of self.kind will be used.
+            t (subclass of BaseUnit): Unit type to convert to before placing 
+            values in array.
+            - If t is None, no conversion is done.
 
         Returns:
             numpy.ndarray
         """
-
-        if t is None:
-            t = self.kind(0).base_unit
-        else:
-            if not t().kind == self.kind:
-                raise TypeError("`t` must be a subclass of {}".format(self.kind))
+        if t is not None and t().kind is not self.kind:
+            raise TypeError("`t` must be a subclass of {}".format(self.kind))
         values = []
-        for v in self:
-            values.append(v.to(t).value)
+        if t is None:
+            for v in self:
+                values.append(v.value)
+        else:
+            for v in self:
+                values.append(v.to(t).value)
         return np.array(values)
 
     # TODO:
     def cross(self):
         raise NotImplementedError()
 
-    # TODO:        
+    # TODO:
     def dot(self):
         raise NotImplementedError()
 
@@ -83,8 +80,10 @@ class Vector(object):
             raise ValueError("`vec` must have kind AngleUnit")
         rad_vec = vec.to_ndarray()  # Radians is base unit
         rotation = Rotation.from_rotvec(rad_vec)
-        original_units = [type(v) for v in self]  # store original units to convert back
-        new_vec = self.to_ndarray()  # this causes all units to be converted to base_unit
+        original_units = [type(v) for v in self
+                          ]  # store original units to convert back
+        new_vec = (self.to_ndarray()
+                   )  # this causes all units to be converted to base_unit
         new_vec = rotation.apply(new_vec)
         units = []
         for i, v in enumerate(new_vec):
@@ -156,14 +155,12 @@ class Vector(object):
         if not isinstance(other, Vector):
             err = (
                 "Type ({}) cannot be added to Vector".format(type(other)),
-                " instance."
+                " instance.",
             )
             raise ValueError(err)
         if self.size != other.size:
-            err = (
-                "Unable to add vectors: incompatible sizes"
-                " ({}) and ({}).".format(self.size, other.size)
-            )
+            err = "Unable to add vectors: incompatible sizes" " ({}) and ({}).".format(
+                self.size, other.size)
             raise ValueError(err)
         for i, v in enumerate(other._values):
             self._values[i] += v
@@ -173,14 +170,12 @@ class Vector(object):
         if not isinstance(other, Vector):
             err = (
                 "Type ({}) cannot be subtracted Vector".format(type(other)),
-                " instance."
+                " instance.",
             )
             raise ValueError(err)
         if self.size != other.size:
-            err = (
-                "Unable to subtract vectors: incompatible sizes"
-                " ({}) and ({}).".format(self.size, other.size)
-            )
+            err = ("Unable to subtract vectors: incompatible sizes"
+                   " ({}) and ({}).".format(self.size, other.size))
             raise ValueError(err)
         for i, v in enumerate(other._values):
             self._values[i] -= v
@@ -208,11 +203,11 @@ class Vector2D(Vector):
     Attributes:
         kind (type): The kind of all units in the vector.
     """
-
     def __init__(self, values: MutableSequence[BaseUnit]):
         if len(values) != 2:
             raise ValueError("`values` must have length 2")
         super().__init__(values)
+
 
 class Vector3D(Vector):
     """Vector with a constraint of having strictly 3 members.
@@ -224,7 +219,6 @@ class Vector3D(Vector):
     Attributes:
         kind (type): The kind of all units in the vector.
     """
-
     def __init__(self, values: MutableSequence[BaseUnit]):
         if len(values) != 3:
             raise ValueError("`values` must have length 3")

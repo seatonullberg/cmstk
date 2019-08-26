@@ -14,7 +14,6 @@ class PressureUnit(BaseUnit):
         base_value (float or int): Starting value to initialize the unit with.
         - Must be in terms of the base unit.
     """
-
     def __init__(self, base_value: Number) -> None:
         super().__init__(Pascal, PressureUnit, base_value)
 
@@ -50,7 +49,6 @@ class Bar(PressureUnit):
     Attributes:
         value (float or int): Value of the unit.
     """
-
     def __init__(self, value: Number = 0) -> None:
         super().__init__(self.convert(value))
         self.value = value
@@ -62,7 +60,7 @@ class Bar(PressureUnit):
     @staticmethod
     def convert_inverse(x: Number) -> Number:
         return x / 100000
-        
+
 
 class Pascal(PressureUnit):
     """Representation of the Pascal pressure unit.
@@ -73,7 +71,6 @@ class Pascal(PressureUnit):
     Attributes:
         value (float or int): Value of the unit.
     """
-
     def __init__(self, value: Number = 0) -> None:
         super().__init__(self.convert(value))
         self.value = value

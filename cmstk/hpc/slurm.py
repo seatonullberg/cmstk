@@ -19,8 +19,8 @@ class SubmissionScript(object):
         exec_cmd: The shell command used to execute this script.
         tags: Sequence of slurm tag objects which can be accessed like a dict.
     """
-
-    def __init__(self, filepath: Optional[str] = None,
+    def __init__(self,
+                 filepath: Optional[str] = None,
                  cmds: Optional[Sequence[str]] = None,
                  tags: Optional[Sequence[Any]] = None) -> None:
         if filepath is None:
@@ -39,10 +39,8 @@ class SubmissionScript(object):
             lines = f.readlines()
             lines = list(map(lambda x: x.strip(), lines))  # remove newlines
             lines = list(filter(None, lines))  # remove empty strings
-        tags = self.tags.load_all_tags(
-            base_class=SlurmTag,
-            module_str="cmstk.hpc.slurm_tags"
-        )
+        tags = self.tags.load_all_tags(base_class=SlurmTag,
+                                       module_str="cmstk.hpc.slurm_tags")
         cmds = []
         for line in lines:
             if line.startswith("#!"):
@@ -64,7 +62,7 @@ class SubmissionScript(object):
             else:
                 cmds.append(line)
         self._cmds = cmds
-    
+
     def write(self, path: Optional[str] = None) -> None:
         if path is None:
             path = self.filepath

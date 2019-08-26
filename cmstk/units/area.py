@@ -4,7 +4,7 @@ from cmstk.units.distance import DistanceUnit, Meter
 from cmstk.utils import Number
 
 
-class AreaUnit(BaseUnit): 
+class AreaUnit(BaseUnit):
     """Representation of a distance unit.
 
     The base unit of area is MeterSquared.
@@ -13,7 +13,6 @@ class AreaUnit(BaseUnit):
         base_value (float or int): Starting value to initialize the unit with.
         - Must be in terms of the base unit.
     """
-
     def __init__(self, base_value: Number) -> None:
         super().__init__(MeterSquared, AreaUnit, base_value)
 
@@ -28,7 +27,8 @@ class AreaUnit(BaseUnit):
         Returns:
             AreaUnit
         """
-        if not isinstance(d0, DistanceUnit) or not isinstance(d1, DistanceUnit):
+        if not isinstance(d0, DistanceUnit) or not isinstance(
+                d1, DistanceUnit):
             err = "`d0` and `d1` must be instances of type DistanceUnit"
             raise ValueError(err)
         new_area = d0.to(Meter).value * d1.to(Meter).value
@@ -44,7 +44,6 @@ class AngstromSquared(AreaUnit):
     Attributes:
         value (float or int): Value of the unit.
     """
-
     def __init__(self, value: Number = 0) -> None:
         super().__init__(self.convert(value))
         self.value = value
@@ -67,7 +66,6 @@ class MeterSquared(AreaUnit):
     Attributes:
         value (float or int): Value of the unit.
     """
-
     def __init__(self, value: Number = 0) -> None:
         super().__init__(self.convert(value))
         self.value = value
@@ -90,7 +88,6 @@ class NanometerSquared(AreaUnit):
     Attributes:
         value (float or int): Value of the unit.
     """
-
     def __init__(self, value: Number = 0) -> None:
         super().__init__(self.convert(value))
         self.value = value
@@ -113,7 +110,6 @@ class PicometerSquared(AreaUnit):
     Attributes:
         value (float or int): Value of the unit.
     """
-
     def __init__(self, value: Number = 0) -> None:
         super().__init__(self.convert(value))
         self.value = value

@@ -6,7 +6,6 @@ import numpy as np
 import os
 
 
-
 def test_incar_file():
     """Tests initialization of an IncarFile object."""
     path = os.path.join(data_directory(), "vasp", "Fe_BCC.incar")
@@ -25,10 +24,7 @@ def test_incar_file():
     assert incar.tags["ENCUT"].value == 400
     assert incar.tags["NELM"].value == 40
     assert incar.tags["ISPIN"].value == 2
-    assert np.array_equal(
-        incar.tags["MAGMOM"].value,
-        np.array([1.0, 1.0])
-    )
+    assert np.array_equal(incar.tags["MAGMOM"].value, np.array([1.0, 1.0]))
     assert incar.tags["IBRION"].value == 2
     assert incar.tags["ISIF"].value == 3
     assert incar.tags["POTIM"].value == 0.5
@@ -47,13 +43,12 @@ def test_incar_file():
 
     incar_reader = IncarFile(filepath="test.incar")
     incar_reader.read()
-    assert incar_reader.tags["SYSTEM"].comment == "Description of the simulation."
+    assert incar_reader.tags[
+        "SYSTEM"].comment == "Description of the simulation."
     for tag_name, tag in incar_reader.tags:
         if tag_name == "MAGMOM":
-            assert np.array_equal(
-                incar.tags["MAGMOM"].value,
-                np.array([1.0, 1.0])
-            )
+            assert np.array_equal(incar.tags["MAGMOM"].value,
+                                  np.array([1.0, 1.0]))
             continue
         elif tag_name == "SYSTEM":
             assert tag.value == "test"

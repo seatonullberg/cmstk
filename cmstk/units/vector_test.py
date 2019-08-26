@@ -19,7 +19,7 @@ def test_vector():
 
 def test_vector_rotate():
     """Tests behavior of the Vector.rotate() method."""
-    rotation_vec = [Degree(0), Radian(0), Radian(np.pi/4)]
+    rotation_vec = [Degree(0), Radian(0), Radian(np.pi / 4)]
     rotation_vec = Vector(rotation_vec)
     position = [Meter(1), Meter(0), Nanometer(0)]
     position = Vector(position)
@@ -69,6 +69,7 @@ def test_vector_iter():
     for v in vector:
         assert v.kind == AngleUnit
 
+
 def test_vector_getitem():
     """"Tests behavior of the Vector.__getitem__() method."""
     value = 1.0
@@ -87,6 +88,7 @@ def test_vector_setitem():
     with pytest.raises(ValueError):
         position[0] = Radian()
 
+
 def test_vector_add():
     """Tests the behavior of the Vector.__add__() method."""
     position0 = [Angstrom(1), Angstrom(1), Picometer(1)]
@@ -102,6 +104,7 @@ def test_vector_add():
     position3 = Vector(position3)
     with pytest.raises(ValueError):
         _ = position0 + position3
+
 
 def test_vector_sub():
     """Tests the behavior of the Vector.__sub__() method."""
@@ -119,6 +122,7 @@ def test_vector_sub():
     with pytest.raises(ValueError):
         _ = position0 - position3
 
+
 def test_vector_to():
     """Tests the behavior of the Vector.to() method."""
     vec0 = Vector([Angstrom(1), Picometer(1)])
@@ -126,12 +130,14 @@ def test_vector_to():
     for v in vec1:
         assert type(v) is Angstrom
 
+
 def test_vector_to_base():
     """Tests the behavior of the Vector.to_base() method."""
-    vec0 = Vector([Angstrom(1), Picometer(1)])    
+    vec0 = Vector([Angstrom(1), Picometer(1)])
     vec1 = vec0.to_base()
     for v in vec1:
         assert type(v) is Meter
+
 
 def test_vector_to_ndarray():
     """Tests behavior of the Vector.to_numpy() method."""
@@ -144,6 +150,10 @@ def test_vector_to_ndarray():
     rad_arr = vector.to_ndarray(t=Radian)
     assert type(rad_arr) is np.ndarray
     assert rad_arr[0] == 1.0
+    arr = vector.to_ndarray()
+    assert arr[0] == 1.0
+    assert arr[2] == 1.0
+
 
 def test_vector_2d():
     """Tests the initialization of a Vector2D ovject."""
@@ -154,6 +164,7 @@ def test_vector_2d():
     with pytest.raises(ValueError):
         values = [Radian(value), Radian(value), Degree(value)]
         v = Vector2D(values)
+
 
 def test_vector_3d():
     """Tests the initialization of a Vector3D object."""

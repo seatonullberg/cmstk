@@ -5,9 +5,7 @@ import os
 
 def test_outcar_file():
     """Tests the initialization of an OutcarFile object."""
-    path = os.path.join(data_directory(), 
-                        "vasp", 
-                        "Fe75Cr25_BCC_bulk.outcar")
+    path = os.path.join(data_directory(), "vasp", "Fe75Cr25_BCC_bulk.outcar")
     outcar = OutcarFile(path)
     outcar.read()
     assert type(outcar.entropy) is tuple

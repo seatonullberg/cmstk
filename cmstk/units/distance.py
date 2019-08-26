@@ -2,7 +2,7 @@ from cmstk.units.base import BaseUnit
 from cmstk.utils import Number
 
 
-class DistanceUnit(BaseUnit): 
+class DistanceUnit(BaseUnit):
     """Representation of a distance unit.
 
     The base unit of distance is Meter.
@@ -11,7 +11,6 @@ class DistanceUnit(BaseUnit):
         base_value (float or int): Starting value to initialize the unit with.
         - Must be in terms of the base unit.
     """
-
     def __init__(self, base_value: Number) -> None:
         super().__init__(Meter, DistanceUnit, base_value)
 
@@ -25,7 +24,6 @@ class Angstrom(DistanceUnit):
     Attributes:
         value (float or int): Value of the unit.
     """
-
     def __init__(self, value: Number = 0) -> None:
         super().__init__(self.convert(value))
         self.value = value
@@ -48,7 +46,6 @@ class Meter(DistanceUnit):
     Attributes:
         value (float or int): Value of the unit.
     """
-
     def __init__(self, value: Number = 0) -> None:
         super().__init__(self.convert(value))
         self.value = value
@@ -71,7 +68,6 @@ class Nanometer(DistanceUnit):
     Attributes:
         value (float or int): Value of the unit.
     """
-
     def __init__(self, value: Number = 0) -> None:
         super().__init__(self.convert(value))
         self.value = value
@@ -84,6 +80,7 @@ class Nanometer(DistanceUnit):
     def convert_inverse(x: Number) -> Number:
         return x / 1e-9
 
+
 class Picometer(DistanceUnit):
     """Representation of the Picometer distance unit.
 
@@ -93,7 +90,6 @@ class Picometer(DistanceUnit):
     Attributes:
         value (float or int): Value of the unit.
     """
-
     def __init__(self, value: Number = 0) -> None:
         super().__init__(self.convert(value))
         self.value = value

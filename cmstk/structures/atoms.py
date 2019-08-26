@@ -26,8 +26,8 @@ class Atom(object):
         symbol: IUPAC chemical symbol.
         velocity: Velocity vector.
     """
-
-    def __init__(self, charge: Optional[ChargeUnit] = None,
+    def __init__(self,
+                 charge: Optional[ChargeUnit] = None,
                  magnetic_moment: Optional[MagneticMomentUnit] = None,
                  position: Optional[Vector3D] = None,
                  symbol: Optional[str] = None,
@@ -40,8 +40,9 @@ class Atom(object):
         self.magnetic_moment = magnetic_moment
         if position is None:
             position = Vector3D(
-                values=[DistanceUnit(0), DistanceUnit(0), DistanceUnit(0)]
-            )
+                values=[DistanceUnit(0),
+                        DistanceUnit(0),
+                        DistanceUnit(0)])
         if position.kind is not DistanceUnit:
             err = "`position` must be a Vector3D with kind Distanceunit."
             raise ValueError(err)
@@ -51,8 +52,8 @@ class Atom(object):
         self.symbol = symbol
         if velocity is None:
             velocity = Vector3D(
-                values=[SpeedUnit(0), SpeedUnit(0), SpeedUnit(0)]
-            )
+                values=[SpeedUnit(0), SpeedUnit(0),
+                        SpeedUnit(0)])
         if velocity.kind is not SpeedUnit:
             err = "`velocity` must be a Vector3D with kind SpeedUnit."
             raise ValueError(err)
@@ -77,8 +78,8 @@ class AtomCollection(object):
         symbols: IUPAC chemical symbol of each atom.
         velocities: Velocity vector of each atom.
     """
-
-    def __init__(self, atoms: Optional[List[Atom]] = None,
+    def __init__(self,
+                 atoms: Optional[List[Atom]] = None,
                  tolerance: Optional[DistanceUnit] = None) -> None:
         if atoms is None:
             atoms = []
@@ -86,7 +87,8 @@ class AtomCollection(object):
         for a in atoms:
             self.add_atom(a, tolerance)
 
-    def add_atom(self, atom: Atom, tolerance: Optional[DistanceUnit] = None) -> None:
+    def add_atom(self, atom: Atom,
+                 tolerance: Optional[DistanceUnit] = None) -> None:
         """Adds an atom to the collection if its position is not occupied.
 
         Args:
@@ -105,12 +107,12 @@ class AtomCollection(object):
             distance = np.sum(np.sqrt((new_position - existing_position)**2))
             if distance < tolerance.to_base().value:
                 err = "An atom exists within the tolerance radius ({}).".format(
-                    tolerance
-                )
+                    tolerance)
                 raise ValueError(err)
         self._atoms.append(atom)
 
-    def remove_atom(self, position: Vector3D, 
+    def remove_atom(self,
+                    position: Vector3D,
                     tolerance: Optional[DistanceUnit] = None) -> Atom:
         """Removes an atom from the collection if the position is occupied and 
            returns it
@@ -142,8 +144,7 @@ class AtomCollection(object):
                 break
         if removal_index is None:
             err = "No atoms exist within the tolerance radius ({}).".format(
-                tolerance
-            )
+                tolerance)
             raise ValueError(err)
         removed_atom = copy.deepcopy(self._atoms[removal_index])
         del self._atoms[removal_index]
@@ -167,10 +168,8 @@ class AtomCollection(object):
         """
         if hl is None:
             hl = False
-        self._atoms.sort(
-            key=lambda x: x.magnetic_moment.to_base().value, 
-            reverse=hl
-        )
+        self._atoms.sort(key=lambda x: x.magnetic_moment.to_base().value,
+                         reverse=hl)
 
     def sort_by_position(self, hl: Optional[bool] = None) -> None:
         """Groups atoms by the magnitudes of their positions.
@@ -180,10 +179,8 @@ class AtomCollection(object):
         """
         if hl is None:
             hl = False
-        self._atoms.sort(
-            key=lambda x: x.position.magnitude(Angstrom).value,
-            reverse=hl
-        )
+        self._atoms.sort(key=lambda x: x.position.magnitude(Angstrom).value,
+                         reverse=hl)
 
     def sort_by_symbol(self, order: Sequence[str]) -> None:
         """Groups atoms by their IUPAC chemical symbols in the given order.
@@ -203,10 +200,8 @@ class AtomCollection(object):
             raise ValueError(err)
         for symbol in self.symbols:
             if symbol not in order:
-                err = (
-                    "A symbol in the collection is not found in `order`"
-                    " ({}).".format(symbol)
-                )
+                err = ("A symbol in the collection is not found in `order`"
+                       " ({}).".format(symbol))
                 raise ValueError(err)
         atoms = []
         for symbol in order:
@@ -216,10 +211,8 @@ class AtomCollection(object):
                     atoms.append(a)
                     ok = True
             if not ok:
-                err = (
-                    "A symbol in `order` is not found in the collection" 
-                    " ({}).".format(symbol)
-                )
+                err = ("A symbol in `order` is not found in the collection"
+                       " ({}).".format(symbol))
                 raise ValueError(err)
         self._atoms = atoms
 
@@ -232,9 +225,8 @@ class AtomCollection(object):
         if hl is None:
             hl = False
         self._atoms.sort(
-            key=lambda x: np.linalg.norm(x.velocity.to_base().to_ndarray()), 
-            reverse=hl
-        )
+            key=lambda x: np.linalg.norm(x.velocity.to_base().to_ndarray()),
+            reverse=hl)
 
     @property
     def atoms(self) -> Generator[Atom, None, None]:
@@ -268,7 +260,7 @@ class AtomCollection(object):
     def symbols(self) -> Generator[str, None, None]:
         for a in self._atoms:
             yield a.symbol
-    
+
     @property
     def velocities(self) -> Generator[Vector3D, None, None]:
         for a in self._atoms:

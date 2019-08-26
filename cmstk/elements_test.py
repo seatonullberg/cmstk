@@ -1,5 +1,6 @@
 from cmstk.elements import Database
 
+
 def test_database():
     """Test the initialization of an elements.Database class."""
     db = Database()
