@@ -29,6 +29,7 @@ class PoscarFile(object):
         relaxations: Selective dynamics relaxation parameters for each atom.
         scaling_factor: Lattice scaling factor (lattice constant)
     """
+
     def __init__(self,
                  filepath: Optional[str] = None,
                  comment: Optional[str] = None,

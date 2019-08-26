@@ -12,6 +12,7 @@ class AngleUnit(BaseUnit):
         base_value (float or int): Starting value to initialize the unit with.
         - must be in terms of the base unit.
     """
+
     def __init__(self, base_value: Number) -> None:
         super().__init__(Radian, AngleUnit, base_value)
 
@@ -25,6 +26,7 @@ class Degree(AngleUnit):
     Attributes:
         value (float or int): Value of the unit.
     """
+
     def __init__(self, value: Number = 0) -> None:
         super().__init__(self.convert(value))
         self.value = value
@@ -47,6 +49,7 @@ class Radian(AngleUnit):
     Attributes:
         value (float): Value of the unit.
     """
+
     def __init__(self, value: Number = 0) -> None:
         super().__init__(self.convert(value))
         self.value = value

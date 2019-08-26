@@ -26,6 +26,7 @@ class BestcorrFile(object):
         clusters: Information about each cluster at every iteration.
         objective_functions: Value of the objective function at each iteration.
     """
+
     def __init__(self, filepath: Optional[str] = None) -> None:
         if filepath is None:
             filepath = "bestcorr.out"
@@ -100,14 +101,14 @@ class BestsqsFile(object):
         filepath: Filepath to a bestsqs.out file.
         lattice: Underlying lattice structure data.
     """
+
     def __init__(self, filepath: Optional[str] = None) -> None:
         if filepath is None:
             filepath = "bestsqs.out"
         self.filepath = filepath
         self.lattice = Lattice()
 
-    def read(self, unit_schema: UnitSchema,
-             path: Optional[str] = None) -> None:
+    def read(self, unit_schema: UnitSchema, path: Optional[str] = None) -> None:
         """Reads a bestsqs.out file.
         
         Args:
@@ -123,12 +124,16 @@ class BestsqsFile(object):
         coordinate_matrix = [
             np.fromstring(vec, sep=" ") for vec in coordinate_matrix
         ]
-        coordinate_matrix = [
-            Vector3D([
-                unit_schema[DistanceUnit](x) for x in vec
-                for vec in coordinate_matrix
-            ])
-        ]
+        coordinate_matrix_vecs = []
+        for vec in coordinate_matrix:
+            vector = Vector3D([unit_schema[DistanceUnit](x) for x in vec])
+            coordinate_matrix_vecs.append(vector)
+        coordinate_matrix_tuple = (
+            coordinate_matrix_vecs[0],
+            coordinate_matrix_vecs[1],
+            coordinate_matrix_vecs[2]
+        )
+
         vectors = lines[3:6]
         vectors = [np.fromstring(vec, sep=" ") for vec in vectors]
         vectors = np.array(vectors)
@@ -136,17 +141,17 @@ class BestsqsFile(object):
         positions = lines[6:]
         positions = [" ".join(p.split()[:3]) for p in positions]
         positions = [np.fromstring(p, sep=" ") for p in positions]
-        positions = [
-            Vector3D(
-                [unit_schema[DistanceUnit](x) for x in p for p in positions])
+        positions_vecs = [
+            Vector3D([unit_schema[DistanceUnit](x) for x in p])
+            for p in positions
         ]
 
         symbols = lines[6:]
         symbols = [s.split()[-1] for s in symbols]
 
-        self.lattice.coordinate_matrix = coordinate_matrix
+        self.lattice.coordinate_matrix = coordinate_matrix_tuple
         self.lattice.vectors = vectors
-        for position, symbol in zip(positions, symbols):
+        for position, symbol in zip(positions_vecs, symbols):
             self.lattice.add_atom(Atom(position=position, symbol=symbol))
 
 
@@ -170,6 +175,7 @@ class RndstrFile(object):
         lattice: The lattice structure being represented.
         probabilities: Probability of occupation by any symbols at each site.
     """
+
     def __init__(
             self,
             filepath: Optional[str] = None,
@@ -186,16 +192,12 @@ class RndstrFile(object):
             probabilities = []
         self.probabilities = probabilities
 
-    def read(self, unit_schema: UnitSchema,
-             path: Optional[str] = None) -> None:
+    def read(self, unit_schema: UnitSchema, path: Optional[str] = None) -> None:
         """Reads a rndstr.in file.
         
         Args:
             unit_schema: Rules on how to interpret quantities with units.
             path: The filepath to read from.
-
-        Returns:
-            None
         """
         if path is None:
             path = self.filepath
@@ -204,33 +206,34 @@ class RndstrFile(object):
         self.lattice = Lattice()
 
         parameters = lines[0].split()[:3]
-        parameters = Vector3D(
+        parameters_vec = Vector3D(
             [unit_schema[DistanceUnit](float(x)) for x in parameters])
 
         angles = lines[0].split()[3:]
-        angles = Vector3D([unit_schema[AngleUnit](float(x)) for x in angles])
+        angles_vec = Vector3D(
+            [unit_schema[AngleUnit](float(x)) for x in angles])
 
         vectors = lines[1:4]
-        vectors = [np.fromstring(l, sep=" ") for l in lattice_vectors]
+        vectors = [np.fromstring(vec, sep=" ") for vec in vectors]
         vectors = np.array(vectors)
 
         positions = [" ".join(l.split()[:3]) for l in lines[4:]]
         positions = [np.fromstring(p, sep=" ") for p in positions]
-        positions = [
-            Vector3D(
-                [unit_schema[DistanceUnit](x) for x in p for p in positions])
+        positions_vecs = [
+            Vector3D([unit_schema[DistanceUnit](x) for x in p]) 
+            for p in positions
         ]
 
-        self.lattice.angles = angles
-        self.lattice.parameters = parameters
+        self.lattice.angles = angles_vec
+        self.lattice.parameters = parameters_vec
         self.lattice.vectors = vectors
-        for position in positions:
+        for position in positions_vecs:
             self.lattice.add_atom(Atom(position=position))
 
         probabilities = [l.split()[3] for l in lines[4:]]  # no spaces
-        probabilities = [p.split(",") for p in probabilities]
+        probabilities_split = [p.split(",") for p in probabilities]
         formatted_probabilities = []
-        for probability in probabilities:
+        for probability in probabilities_split:
             d = {}
             for prob in probability:
                 symbol, value = prob.split("=")
@@ -244,15 +247,23 @@ class RndstrFile(object):
         Args:
             path: The filepath to write to.
 
-        Returns:
-            None
+        Raises:
+            ValueError:
+            - `lattice.parameters` is not set.
+            - `lattice.angles` is not set.
         """
         if path is None:
             path = self.filepath
         with open(path, "w") as f:
+            if self.lattice.parameters is None:
+                err = "`lattice.parameters` is not set."
+                raise  ValueError(err)
             parameters = " ".join(
                 self.lattice.parameters.to_ndarray().astype(str))
             f.write(parameters)
+            if self.lattice.angles is None:
+                err = "`lattice.angles` is not set."
+                raise ValueError(err)
             angles = " ".join(self.lattice.angles.to_ndarray().astype(str))
             f.write(" {}\n".format(angles))
 
@@ -262,7 +273,7 @@ class RndstrFile(object):
 
             zipper = zip(self.lattice.positions, self.probabilities)
             for position, probability in zipper:
-                position = " ".join(position.to_ndarray().astype(str))
+                position_str = " ".join(position.to_ndarray().astype(str))
                 prob_str = ",".join(
                     ["{}={}".format(k, v) for k, v in probability.items()])
-                f.write("{} {}\n".format(position, prob_str))
+                f.write("{} {}\n".format(position_str, prob_str))

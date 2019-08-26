@@ -11,6 +11,7 @@ class MagneticMomentUnit(BaseUnit):
         base_value: Starting value to initialize the unit with.
         - Must be in terms of the base unit.
     """
+
     def __init__(self, base_value: Number) -> None:
         super().__init__(JoulePerTesla, MagneticMomentUnit, base_value)
 
@@ -24,6 +25,7 @@ class BohrMagneton(MagneticMomentUnit):
     Attributes:
         value: Value of the unit.
     """
+
     def __init__(self, value: Number = 0) -> None:
         super().__init__(self.convert(value))
         self.value = value
@@ -46,6 +48,7 @@ class JoulePerTesla(MagneticMomentUnit):
     Attributes:
         value: Value of the unit.
     """
+
     def __init__(self, value: Number = 0) -> None:
         super().__init__(self.convert(value))
         self.value = value

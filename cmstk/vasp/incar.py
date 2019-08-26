@@ -16,6 +16,7 @@ class IncarFile(object):
     Properties:
         tags: Sequence of vasp tag objects which can be accessed like a dict.
     """
+
     def __init__(self,
                  filepath: Optional[str] = None,
                  tags: Optional[Sequence[Any]] = None) -> None:

@@ -26,6 +26,7 @@ class Atom(object):
         symbol: IUPAC chemical symbol.
         velocity: Velocity vector.
     """
+
     def __init__(self,
                  charge: Optional[ChargeUnit] = None,
                  magnetic_moment: Optional[MagneticMomentUnit] = None,
@@ -78,6 +79,7 @@ class AtomCollection(object):
         symbols: IUPAC chemical symbol of each atom.
         velocities: Velocity vector of each atom.
     """
+
     def __init__(self,
                  atoms: Optional[List[Atom]] = None,
                  tolerance: Optional[DistanceUnit] = None) -> None:

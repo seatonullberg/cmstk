@@ -45,6 +45,7 @@ class BaseTag(object):
     Properties:
         value: The value of the tag.
     """
+
     def __init__(self,
                  name: str,
                  valid_options: Sequence[Any],
@@ -87,6 +88,7 @@ class BaseTagCollection(object):
         base_class: The class which all members must be an instance of.
         tags: The tag instances to store.
     """
+
     def __init__(self,
                  base_class: Optional[Any] = None,
                  tags: Optional[Sequence[Any]] = None) -> None:
@@ -138,12 +140,12 @@ class BaseTagCollection(object):
         module = importlib.import_module(module_str)
         attrs = module.__dict__
         classes = {
-            name: obj
-            for name, obj in attrs.items() if inspect.isclass(obj)
+            name: obj for name, obj in attrs.items() if inspect.isclass(obj)
         }
         tags = {
             name: obj
-            for name, obj in classes.items() if issubclass(obj, base_class)
+            for name, obj in classes.items()
+            if issubclass(obj, base_class)
         }
         del tags[base_class.__name__]
         return [v() for _, v in tags.items()]

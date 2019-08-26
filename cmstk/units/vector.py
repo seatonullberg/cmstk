@@ -19,6 +19,7 @@ class Vector(object):
           (Angstrom, Meter...) but not instances of DistanceUnits and AngleUnits
           (Angstrom, Radian...) 
     """
+
     def __init__(self, values: MutableSequence[BaseUnit]) -> None:
         kind = values[0].kind
         for v in values[1:]:
@@ -80,10 +81,10 @@ class Vector(object):
             raise ValueError("`vec` must have kind AngleUnit")
         rad_vec = vec.to_ndarray()  # Radians is base unit
         rotation = Rotation.from_rotvec(rad_vec)
-        original_units = [type(v) for v in self
-                          ]  # store original units to convert back
-        new_vec = (self.to_ndarray()
-                   )  # this causes all units to be converted to base_unit
+        # store original units to convert back
+        original_units = [type(v) for v in self]
+        # this causes all units to be converted to base_unit
+        new_vec = (self.to_ndarray())
         new_vec = rotation.apply(new_vec)
         units = []
         for i, v in enumerate(new_vec):
@@ -159,8 +160,8 @@ class Vector(object):
             )
             raise ValueError(err)
         if self.size != other.size:
-            err = "Unable to add vectors: incompatible sizes" " ({}) and ({}).".format(
-                self.size, other.size)
+            err = ("Unable to add vectors: incompatible sizes"
+                   " ({}) and ({}).".format(self.size, other.size))
             raise ValueError(err)
         for i, v in enumerate(other._values):
             self._values[i] += v
@@ -203,6 +204,7 @@ class Vector2D(Vector):
     Attributes:
         kind (type): The kind of all units in the vector.
     """
+
     def __init__(self, values: MutableSequence[BaseUnit]):
         if len(values) != 2:
             raise ValueError("`values` must have length 2")
@@ -219,6 +221,7 @@ class Vector3D(Vector):
     Attributes:
         kind (type): The kind of all units in the vector.
     """
+
     def __init__(self, values: MutableSequence[BaseUnit]):
         if len(values) != 3:
             raise ValueError("`values` must have length 3")

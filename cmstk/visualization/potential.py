@@ -8,6 +8,7 @@ class SetflProfilePlot(object):
     Args:
         reader (SetflReader): The setfl format eam potential reader.
     """
+
     def __init__(self, setfl):
         assert type(setfl) is SetflFile
         self._setfl = setfl

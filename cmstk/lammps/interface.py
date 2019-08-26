@@ -13,6 +13,7 @@ class LAMMPS(object):
     Attributes:
         opened (bool): Indicates if the underlying LAMMPS library is open.
     """
+
     def __init__(self, libc_path=None, cmd_args=None):
         # load shared lib from environment variable
         if libc_path is None:
@@ -176,8 +177,8 @@ class LAMMPS(object):
         """
         encoding = name.encode()
         self._libc.lammps_extract_setting.restype = ct.c_int
-        return int(
-            self._libc.lammps_extract_setting(self._lammps_ptr, encoding))
+        return int(self._libc.lammps_extract_setting(self._lammps_ptr,
+                                                     encoding))
 
     def extract_atom(self, name, t, shape):
         """Extract a per-atom quantity.
@@ -217,8 +218,7 @@ class LAMMPS(object):
             self._libc.lammps_extract_atom.restype = ct.POINTER(
                 ct.POINTER(ct.c_double))
             ptr = self._libc.lammps_extract_atom(self._lammps_ptr, encoding)
-            ptr = ct.cast(ptr[0],
-                          ct.POINTER(ct.c_double * shape[0] * shape[1]))
+            ptr = ct.cast(ptr[0], ct.POINTER(ct.c_double * shape[0] * shape[1]))
             numpy_type = np.double
         else:
             raise ValueError("`t` must be 0, 1, 2, or 3")
@@ -262,8 +262,8 @@ class LAMMPS(object):
             if t == 0:
                 self._libc.lammps_extract_compute.restype = ct.POINTER(
                     ct.c_double)
-                ptr = self._libc.lammps_extract_compute(
-                    self._lammps_ptr, encoding, style, t)
+                ptr = self._libc.lammps_extract_compute(self._lammps_ptr,
+                                                        encoding, style, t)
                 return float(ptr[0])
             else:
                 raise ValueError(
@@ -273,14 +273,14 @@ class LAMMPS(object):
             if t == 1:
                 self._libc.lammps_extract_compute.restype = ct.POINTER(
                     ct.c_double)
-                ptr = self._libc.lammps_extract_compute(
-                    self._lammps_ptr, encoding, style, t)
+                ptr = self._libc.lammps_extract_compute(self._lammps_ptr,
+                                                        encoding, style, t)
                 ptr = ct.cast(ptr, ct.POINTER(ct.c_double * shape[0]))
             elif t == 2:
                 self._libc.lammps_extract_compute.restype = ct.POINTER(
                     ct.POINTER(ct.c_double))
-                ptr = self._libc.lammps_extract_compute(
-                    self._lammps_ptr, encoding, style, t)
+                ptr = self._libc.lammps_extract_compute(self._lammps_ptr,
+                                                        encoding, style, t)
                 ptr = ct.cast(ptr[0],
                               ct.POINTER(ct.c_double * shape[0] * shape[1]))
             else:
@@ -289,21 +289,20 @@ class LAMMPS(object):
                         style, t))
         if style == 2:
             if t == 0:
-                self._libc.lammps_extract_compute.restype = ct.POINTER(
-                    ct.c_int)
-                ptr = self._libc.lammps_extract_compute(
-                    self._lammps_ptr, encoding, style, t)
+                self._libc.lammps_extract_compute.restype = ct.POINTER(ct.c_int)
+                ptr = self._libc.lammps_extract_compute(self._lammps_ptr,
+                                                        encoding, style, t)
                 return int(ptr[0])
             if t == 1:
                 self._libc.extract_compute.restype = ct.POINTER(ct.c_double)
-                ptr = self._libc.lammps_extract_compute(
-                    self._lammps_ptr, encoding, style, t)
+                ptr = self._libc.lammps_extract_compute(self._lammps_ptr,
+                                                        encoding, style, t)
                 ptr = ct.cast(ptr, ct.POINTER(ct.c_double * shape[0]))
             if t == 2:
                 self._libc.lammps_extract_compute.restype = ct.POINTER(
                     ct.POINTER(ct.c_double))
-                ptr = self._libc.lammps_extract_compute(
-                    self._lammps_ptr, encoding, style, t)
+                ptr = self._libc.lammps_extract_compute(self._lammps_ptr,
+                                                        encoding, style, t)
                 ptr = ct.cast(ptr[0],
                               ct.POINTER(ct.c_double * shape[0] * shape[1]))
 
@@ -425,8 +424,7 @@ class LAMMPS(object):
             group_encoding = None
 
         if t == 0:
-            self._libc.lammps_extract_variable.restype = ct.POINTER(
-                ct.c_double)
+            self._libc.lammps_extract_variable.restype = ct.POINTER(ct.c_double)
             ptr = self._libc.lammps_extract_variable(self._lammps_ptr,
                                                      name_encoding,
                                                      group_encoding)
@@ -439,8 +437,7 @@ class LAMMPS(object):
                 self._lammps_ptr, "nlocal".encode())
             nlocal = nlocalptr[0]
             result = (ct.c_double * nlocal)()
-            self._libc.lammps_extract_variable.restype = ct.POINTER(
-                ct.c_double)
+            self._libc.lammps_extract_variable.restype = ct.POINTER(ct.c_double)
             ptr = self._libc.lammps_extract_variable(self._lammps_ptr,
                                                      name_encoding,
                                                      group_encoding)

@@ -22,10 +22,9 @@ def test_atom_collection_add_atom():
     atom0 = Atom(position=Vector3D([Angstrom(0), Angstrom(0), Angstrom(0)]))
     collection.add_atom(atom0)
     assert collection.n_atoms == 1
-    atom1 = Atom(position=Vector3D([
-        Angstrom(0.0001), Angstrom(0.0001),
-        Angstrom(0.0001)
-    ]))
+    atom1 = Atom(position=Vector3D(
+        [Angstrom(0.0001), Angstrom(0.0001),
+         Angstrom(0.0001)]))
     with pytest.raises(ValueError):
         collection.add_atom(atom1)
     assert collection.n_atoms == 1

@@ -13,6 +13,7 @@ class VaspTag(BaseTag):
         comment: Description of the tag.
         value: Value assigned to the tag.
     """
+
     def __init__(self,
                  name: str,
                  valid_options: Sequence[Any],
@@ -227,6 +228,7 @@ class VaspTag(BaseTag):
 
 
 class AlgoTag(VaspTag):
+
     def __init__(self, value=None):
         comment = ("""Determines the electronic minimization algorithm and/or 
                    GW calculation type.""")
@@ -250,6 +252,7 @@ class AlgoTag(VaspTag):
 
 
 class EdiffTag(VaspTag):
+
     def __init__(self, value=None):
         comment = "The global break condition for the electronic SC-loop."
         name = "EDIFF"
@@ -267,6 +270,7 @@ class EdiffTag(VaspTag):
 
 
 class EdiffgTag(VaspTag):
+
     def __init__(self, value=None):
         comment = ("""Determines the break condition for the ionic relaxation 
                    loop.""")
@@ -285,6 +289,7 @@ class EdiffgTag(VaspTag):
 
 
 class EncutTag(VaspTag):
+
     def __init__(self, value=None):
         comment = "Cutoff energy for the planewave basis set in eV."
         name = "ENCUT"
@@ -302,6 +307,7 @@ class EncutTag(VaspTag):
 
 
 class IbrionTag(VaspTag):
+
     def __init__(self, value=None):
         comment = "Determines how the ions are updated and moved."
         name = "IBRION"
@@ -319,6 +325,7 @@ class IbrionTag(VaspTag):
 
 
 class IchargTag(VaspTag):
+
     def __init__(self, value=None):
         comment = "Determines construction of the initial charge density."
         name = "ICHARG"
@@ -336,6 +343,7 @@ class IchargTag(VaspTag):
 
 
 class IsifTag(VaspTag):
+
     def __init__(self, value=None):
         comment = ("""Determines whether the stress tensor is calculated and 
                    which degrees of freedom are allowed to change.""")
@@ -354,6 +362,7 @@ class IsifTag(VaspTag):
 
 
 class IsmearTag(VaspTag):
+
     def __init__(self, value=None):
         comment = "Determines how partial occupancies are set for each orbital."
         name = "ISMEAR"
@@ -371,6 +380,7 @@ class IsmearTag(VaspTag):
 
 
 class IspinTag(VaspTag):
+
     def __init__(self, value=None):
         comment = "Specifies spin polarization."
         name = "ISPIN"
@@ -388,6 +398,7 @@ class IspinTag(VaspTag):
 
 
 class IstartTag(VaspTag):
+
     def __init__(self, value=None):
         comment = "Determines whether or not to read the WAVECAR file."
         name = "ISTART"
@@ -405,6 +416,7 @@ class IstartTag(VaspTag):
 
 
 class IsymTag(VaspTag):
+
     def __init__(self, value=None):
         comment = "Determines how symmetry is treated."
         name = "ISYM"
@@ -422,6 +434,7 @@ class IsymTag(VaspTag):
 
 
 class LchargTag(VaspTag):
+
     def __init__(self, value=None):
         comment = "Determines whether or not a CHARGCAR/CHG file is written."
         name = "LCHARG"
@@ -439,9 +452,9 @@ class LchargTag(VaspTag):
 
 
 class LrealTag(VaspTag):
+
     def __init__(self, value=None):
-        comment = (
-            """Determines whether the projection operators are evaluated 
+        comment = ("""Determines whether the projection operators are evaluated 
                    in real space or reciprocal space.""")
         name = "LREAL"
         valid_options = [bool, "On", "O", "Auto", "A"]
@@ -464,6 +477,7 @@ class LrealTag(VaspTag):
 
 
 class LvtotTag(VaspTag):
+
     def __init__(self, value=None):
         comment = "Determines whether or not a LOCPOT file is written."
         name = "LVTOT"
@@ -481,6 +495,7 @@ class LvtotTag(VaspTag):
 
 
 class LwaveTag(VaspTag):
+
     def __init__(self, value=None):
         comment = "Determines whether or not a WAVECAR file is written."
         name = "LWAVE"
@@ -498,6 +513,7 @@ class LwaveTag(VaspTag):
 
 
 class MagmomTag(VaspTag):
+
     def __init__(self, value=None):
         comment = "Specifies the initial magnetic moment for each atom."
         name = "MAGMOM"
@@ -515,6 +531,7 @@ class MagmomTag(VaspTag):
 
 
 class NcoreTag(VaspTag):
+
     def __init__(self, value=None):
         comment = "Determines the number of compute nodes per orbital."
         name = "NCORE"
@@ -532,6 +549,7 @@ class NcoreTag(VaspTag):
 
 
 class NelmTag(VaspTag):
+
     def __init__(self, value=None):
         comment = "The maximum number of electronic SC steps."
         name = "NELM"
@@ -549,6 +567,7 @@ class NelmTag(VaspTag):
 
 
 class NswTag(VaspTag):
+
     def __init__(self, value=None):
         comment = "Maximum number of ionic steps."
         name = "NSW"
@@ -566,6 +585,7 @@ class NswTag(VaspTag):
 
 
 class PotimTag(VaspTag):
+
     def __init__(self, value=None):
         comment = "Specifies the time step or step width scaling."
         name = "POTIM"
@@ -583,6 +603,7 @@ class PotimTag(VaspTag):
 
 
 class PrecTag(VaspTag):
+
     def __init__(self, value=None):
         comment = "Determines the precision mode."
         name = "PREC"
@@ -602,6 +623,7 @@ class PrecTag(VaspTag):
 
 
 class SigmaTag(VaspTag):
+
     def __init__(self, value=None):
         comment = "The width of the smearing in eV."
         name = "SIGMA"
@@ -619,6 +641,7 @@ class SigmaTag(VaspTag):
 
 
 class SymprecTag(VaspTag):
+
     def __init__(self, value=None):
         comment = "Determines accuracy with which positions must be specified."
         name = "SYMPREC"
@@ -636,6 +659,7 @@ class SymprecTag(VaspTag):
 
 
 class SystemTag(VaspTag):
+
     def __init__(self, value=None):
         comment = "Description of the simulation."
         name = "SYSTEM"

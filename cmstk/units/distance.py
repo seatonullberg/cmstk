@@ -11,6 +11,7 @@ class DistanceUnit(BaseUnit):
         base_value (float or int): Starting value to initialize the unit with.
         - Must be in terms of the base unit.
     """
+
     def __init__(self, base_value: Number) -> None:
         super().__init__(Meter, DistanceUnit, base_value)
 
@@ -24,6 +25,7 @@ class Angstrom(DistanceUnit):
     Attributes:
         value (float or int): Value of the unit.
     """
+
     def __init__(self, value: Number = 0) -> None:
         super().__init__(self.convert(value))
         self.value = value
@@ -46,6 +48,7 @@ class Meter(DistanceUnit):
     Attributes:
         value (float or int): Value of the unit.
     """
+
     def __init__(self, value: Number = 0) -> None:
         super().__init__(self.convert(value))
         self.value = value
@@ -68,6 +71,7 @@ class Nanometer(DistanceUnit):
     Attributes:
         value (float or int): Value of the unit.
     """
+
     def __init__(self, value: Number = 0) -> None:
         super().__init__(self.convert(value))
         self.value = value
@@ -90,6 +94,7 @@ class Picometer(DistanceUnit):
     Attributes:
         value (float or int): Value of the unit.
     """
+
     def __init__(self, value: Number = 0) -> None:
         super().__init__(self.convert(value))
         self.value = value

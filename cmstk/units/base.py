@@ -16,8 +16,8 @@ class BaseUnit(object):
         base_value (float or int): Value of the unit in terms of its base.
         kind (type): The intermediate unit description.
     """
-    def __init__(self, base_unit: type, kind: type,
-                 base_value: Number) -> None:
+
+    def __init__(self, base_unit: type, kind: type, base_value: Number) -> None:
         self.base_unit = base_unit
         self.base_value = base_value
         self.kind = kind
@@ -186,6 +186,7 @@ class UnitSchema(object):
         args: Tuples of unit kinds and their particular value
         - ex: (DistanceUnit, Angstrom), (ChargeUnit, Coulomb).
     """
+
     def __init__(self, *args):
         self._pairs = {}
         for a in args:
