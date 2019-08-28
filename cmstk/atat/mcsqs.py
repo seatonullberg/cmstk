@@ -92,17 +92,21 @@ class BestsqsFile(object):
     
     Args:
         filepath: Filepath to a bestsqs.out file.
+        lattice: Underlying lattice structure data.
 
     Attributes:
         filepath: Filepath to a bestsqs.out file.
         lattice: Underlying lattice structure data.
     """
 
-    def __init__(self, filepath: Optional[str] = None) -> None:
+    def __init__(self, filepath: Optional[str] = None,
+                 lattice: Optional[Lattice] = None) -> None:
         if filepath is None:
             filepath = "bestsqs.out"
         self.filepath = filepath
-        self.lattice = Lattice()
+        if lattice is None:
+            lattice = Lattice()
+        self.lattice = lattice
 
     def read(self, path: Optional[str] = None) -> None:
         """Reads a bestsqs.out file.
@@ -183,7 +187,6 @@ class RndstrFile(object):
             path = self.filepath
         with open(path, "r") as f:
             lines = [line.strip() for line in f.readlines()]
-        self.lattice = Lattice()
 
         parameters = np.array([float(x) for x in lines[0].split()[:3]])
 
