@@ -1,8 +1,3 @@
-from cmstk.units.charge import *
-from cmstk.units.distance import *
-from cmstk.units.magnetic_moment import *
-from cmstk.units.speed import *
-from cmstk.units.vector import *
 from cmstk.utils import Number
 import copy
 import numpy as np
@@ -28,36 +23,25 @@ class Atom(object):
     """
 
     def __init__(self,
-                 charge: Optional[ChargeUnit] = None,
-                 magnetic_moment: Optional[MagneticMomentUnit] = None,
-                 position: Optional[Vector3D] = None,
+                 charge: Optional[Number] = None,
+                 magnetic_moment: Optional[Number] = None,
+                 position: Optional[np.ndarray] = None,
                  symbol: Optional[str] = None,
-                 velocity: Optional[Vector3D] = None) -> None:
+                 velocity: Optional[np.ndarray] = None) -> None:
         if charge is None:
-            charge = ChargeUnit(0)
+            charge = 0
         self.charge = charge
         if magnetic_moment is None:
-            magnetic_moment = MagneticMomentUnit(0)
+            magnetic_moment = 0
         self.magnetic_moment = magnetic_moment
         if position is None:
-            position = Vector3D(
-                values=[DistanceUnit(0),
-                        DistanceUnit(0),
-                        DistanceUnit(0)])
-        if position.kind is not DistanceUnit:
-            err = "`position` must be a Vector3D with kind Distanceunit."
-            raise ValueError(err)
+            position = np.array([])
         self.position = position
         if symbol is None:
             symbol = ""
         self.symbol = symbol
         if velocity is None:
-            velocity = Vector3D(
-                values=[SpeedUnit(0), SpeedUnit(0),
-                        SpeedUnit(0)])
-        if velocity.kind is not SpeedUnit:
-            err = "`velocity` must be a Vector3D with kind SpeedUnit."
-            raise ValueError(err)
+            velocity = np.array([])
         self.velocity = velocity
 
 
@@ -66,8 +50,7 @@ class AtomCollection(object):
     
     Args:
         atoms: The atoms in the collection.
-        tolerance: The radius in which to check for existing atoms.
-        - only useful if initializing with a list of atoms.
+        tolerance: The radius in which to check for atoms on add or remove.
 
     Attributes:
         atoms: The atoms in the collection.
@@ -82,71 +65,59 @@ class AtomCollection(object):
 
     def __init__(self,
                  atoms: Optional[List[Atom]] = None,
-                 tolerance: Optional[DistanceUnit] = None) -> None:
+                 tolerance: Optional[Number] = None) -> None:
+        if tolerance is None:
+            tolerance = 0
+        self.tolerance = tolerance
         if atoms is None:
             atoms = []
         self._atoms: List[Atom] = []
         for a in atoms:
-            self.add_atom(a, tolerance)
+            self.add_atom(a)
 
-    def add_atom(self, atom: Atom,
-                 tolerance: Optional[DistanceUnit] = None) -> None:
+    def add_atom(self, atom: Atom) -> None:
         """Adds an atom to the collection if its position is not occupied.
 
         Args:
             atom: The atom to be added.
-            tolerance: The radius in which to check for existing atoms.
 
         Raises:
             ValueError
             - An atom exists within the tolerance radius.
         """
-        if tolerance is None:
-            tolerance = Angstrom(value=0.001)
         for a in self.atoms:
-            new_position = atom.position.to_base().to_ndarray()
-            existing_position = a.position.to_base().to_ndarray()
-            distance = np.sum(np.sqrt((new_position - existing_position)**2))
-            if distance < tolerance.to_base().value:
+            distance = np.sum(np.sqrt((atom.position - a.position)**2))
+            if distance < self.tolerance:
                 err = "An atom exists within the tolerance radius ({}).".format(
-                    tolerance)
+                    self.tolerance)
                 raise ValueError(err)
         self._atoms.append(atom)
 
-    def remove_atom(self,
-                    position: Vector3D,
-                    tolerance: Optional[DistanceUnit] = None) -> Atom:
+    def remove_atom(self, position: np.ndarray) -> Atom:
         """Removes an atom from the collection if the position is occupied and 
            returns it
         
         Args:
             position: The position to remove an atom from.
-            tolerance: The raidus in which to check for existing atoms.
 
         Raises:
             ValueError:
                 There are no atoms in the collection.
                 No atoms exist within the tolerance radius.
         """
-        if position.kind is not DistanceUnit:
-            err = "`position` must be a Vector3D of kind DistanceUnit."
-            raise ValueError(err)
-        if tolerance is None:
-            tolerance = Angstrom(value=0.001)
         if self.n_atoms == 0:
             err = "There are no atoms in the collection."
             raise ValueError(err)
         removal_index = None
-        position_array = position.to_base().to_ndarray()
         for i, a in enumerate(self.atoms):
-            existing_position = a.position.to_base().to_ndarray()
-            distance = np.sum(np.sqrt((position_array - existing_position)**2))
-            if distance < tolerance.to_base().value:
+            existing_position = a.position
+            distance = np.sum(np.sqrt((position - existing_position)**2))
+            if distance < self.tolerance:
                 removal_index = i
                 break
         if removal_index is None:
             err = "No atoms exist within the tolerance radius ({}).".format(
-                tolerance)
+                self.tolerance)
             raise ValueError(err)
         removed_atom = copy.deepcopy(self._atoms[removal_index])
         del self._atoms[removal_index]
@@ -160,7 +131,7 @@ class AtomCollection(object):
         """
         if hl is None:
             hl = False
-        self._atoms.sort(key=lambda x: x.charge.to_base().value, reverse=hl)
+        self._atoms.sort(key=lambda x: x.charge, reverse=hl)
 
     def sort_by_magnetic_moment(self, hl: Optional[bool] = None) -> None:
         """Groups atoms by the magnitudes of their magnetic moments.
@@ -170,8 +141,7 @@ class AtomCollection(object):
         """
         if hl is None:
             hl = False
-        self._atoms.sort(key=lambda x: x.magnetic_moment.to_base().value,
-                         reverse=hl)
+        self._atoms.sort(key=lambda x: x.magnetic_moment, reverse=hl)
 
     def sort_by_position(self, hl: Optional[bool] = None) -> None:
         """Groups atoms by the magnitudes of their positions.
@@ -181,8 +151,7 @@ class AtomCollection(object):
         """
         if hl is None:
             hl = False
-        self._atoms.sort(key=lambda x: x.position.magnitude(Angstrom).value,
-                         reverse=hl)
+        self._atoms.sort(key=lambda x: np.linalg.norm(x.position), reverse=hl)
 
     def sort_by_symbol(self, order: Sequence[str]) -> None:
         """Groups atoms by their IUPAC chemical symbols in the given order.
@@ -226,9 +195,7 @@ class AtomCollection(object):
         """
         if hl is None:
             hl = False
-        self._atoms.sort(
-            key=lambda x: np.linalg.norm(x.velocity.to_base().to_ndarray()),
-            reverse=hl)
+        self._atoms.sort(key=lambda x: np.linalg.norm(x.velocity), reverse=hl)
 
     @property
     def atoms(self) -> Generator[Atom, None, None]:
@@ -236,12 +203,12 @@ class AtomCollection(object):
             yield a
 
     @property
-    def charges(self) -> Generator[ChargeUnit, None, None]:
+    def charges(self) -> Generator[Number, None, None]:
         for a in self._atoms:
             yield a.charge
 
     @property
-    def magnetic_moments(self) -> Generator[MagneticMomentUnit, None, None]:
+    def magnetic_moments(self) -> Generator[Number, None, None]:
         for a in self._atoms:
             yield a.magnetic_moment
 
@@ -254,7 +221,7 @@ class AtomCollection(object):
         return len(set([s for s in self.symbols]))
 
     @property
-    def positions(self) -> Generator[Vector3D, None, None]:
+    def positions(self) -> Generator[np.ndarray, None, None]:
         for a in self._atoms:
             yield a.position
 
@@ -264,6 +231,6 @@ class AtomCollection(object):
             yield a.symbol
 
     @property
-    def velocities(self) -> Generator[Vector3D, None, None]:
+    def velocities(self) -> Generator[np.ndarray, None, None]:
         for a in self._atoms:
             yield a.velocity
