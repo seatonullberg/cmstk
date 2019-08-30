@@ -6,8 +6,7 @@ import os
 
 def test_bestcorr_file():
     """Tests initialization of a BestcorrFile object."""
-    path = os.path.join(data_directory(),
-                        "atat", 
+    path = os.path.join(data_directory(), "atat",
                         "Fe75Cr25_BCC_bulk.bestcorr.out")
     bestcorr = BestcorrFile(filepath=path)
     bestcorr.read()
@@ -18,26 +17,22 @@ def test_bestcorr_file():
 
 def test_bestsqs_file():
     """Tests initialization of a BestsqsFile object."""
-    path = os.path.join(data_directory(), 
-                        "atat", 
+    path = os.path.join(data_directory(), "atat",
                         "Fe75Cr25_BCC_bulk.bestsqs.out")
     bestsqs = BestsqsFile(filepath=path)
     bestsqs.read()
-    lattice_parameters = np.array([5.7, 5.7, 5.7])
-    assert np.array_equal(bestsqs.lattice.parameters, lattice_parameters)
-    lattice_vectors = np.array([[1.0, 0.0, 0.0],
-                                [0.0, 1.0, 0.0],
-                                [0.0, 0.0, 1.0]])
-    assert np.array_equal(bestsqs.lattice.axes, lattice_vectors)
-    assert bestsqs.lattice.positions_cartesian.shape == (16, 3)
-    assert bestsqs.lattice.positions_direct.shape == (16, 3)
-    assert len(bestsqs.lattice.symbols) == 16
+    coordinate_matrix = np.array([[5.7, 0, 0], [0, 5.7, 0], [0, 0, 5.7]])
+    assert np.array_equal(bestsqs.lattice.coordinate_matrix, coordinate_matrix)
+    lattice_vectors = np.array([[0, 0, -1], [0, -1, 0], [-1, 0, 0]])
+    assert np.array_equal(bestsqs.lattice.vectors, lattice_vectors)
+    positions = [p for p in bestsqs.lattice.positions]
+    assert len(positions) == 16
+    assert bestsqs.lattice.n_atoms == 16
 
 
 def test_rndstr_file():
     """Tests the initialization of a RndstrFile object."""
-    path = os.path.join(data_directory(), 
-                        "atat", 
+    path = os.path.join(data_directory(), "atat",
                         "Fe75Cr25_BCC_bulk.rndstr.in")
     rndstr = RndstrFile(filepath=path)
     rndstr.read()
@@ -49,16 +44,14 @@ def test_rndstr_file():
 
     rndstr_reader = RndstrFile(filepath="test.in")
     rndstr_reader.read()
-    assert np.array_equal(rndstr_reader.lattice.angles, 
-                          rndstr.lattice.angles)
-    assert np.array_equal(rndstr_reader.lattice.parameters, 
+    assert np.array_equal(rndstr_reader.lattice.angles, rndstr.lattice.angles)
+    assert np.array_equal(rndstr_reader.lattice.parameters,
                           rndstr.lattice.parameters)
-    assert np.array_equal(rndstr_reader.lattice.axes,
-                          rndstr.lattice.axes)
-    assert np.array_equal(rndstr_reader.lattice.positions_cartesian,
-                          rndstr.lattice.positions_cartesian)
-    assert np.array_equal(rndstr_reader.lattice.positions_direct,
-                          rndstr.lattice.positions_direct)              
+    assert np.array_equal(rndstr_reader.lattice.vectors,
+                          rndstr.lattice.vectors)
+    reader_positions = np.array([p for p in rndstr_reader.lattice.positions])
+    positions = np.array([p for p in rndstr.lattice.positions])
+    assert np.array_equal(reader_positions, positions)
     assert rndstr_reader.probabilities == rndstr.probabilities
 
     os.remove("test.in")

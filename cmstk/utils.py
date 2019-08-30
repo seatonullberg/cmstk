@@ -3,21 +3,18 @@ import inspect
 import os
 from typing import Any, Dict, List, Optional, Sequence, Union
 
-
 #====================#
 #    Type Aliases    #
 #====================#
 
-
 Number = Union[float, int]
 
-
 #========================#
-#    Helper Functions    #    
+#    Helper Functions    #
 #========================#
 
 
-def  data_directory() -> str:
+def data_directory() -> str:
     """Returns the absolute path to the data directory."""
     path = os.path.abspath(__file__)
     path = os.path.dirname(path)
@@ -48,9 +45,9 @@ class BaseTag(object):
     Properties:
         value: The value of the tag.
     """
-
-    def __init__(self, name: str, 
-                 valid_options: Sequence[Any], 
+    def __init__(self,
+                 name: str,
+                 valid_options: Sequence[Any],
                  comment: Optional[str] = None,
                  value: Optional[Any] = None) -> None:
         self.comment = comment
@@ -83,15 +80,15 @@ class BaseTag(object):
             raise ValueError(err)
 
 
-class BaseTagSequence(object):
-    """Generalized safe-access sequence to store instances of BaseTag.
+class BaseTagCollection(object):
+    """Generalized safe-access collection of instances of BaseTag.
     
     Args:
         base_class: The class which all members must be an instance of.
         tags: The tag instances to store.
     """
-
-    def __init__(self, base_class: Optional[Any] = None,
+    def __init__(self,
+                 base_class: Optional[Any] = None,
                  tags: Optional[Sequence[Any]] = None) -> None:
         if base_class is None:
             base_class = BaseTag
@@ -104,7 +101,7 @@ class BaseTagSequence(object):
         self._tags: Dict[str, Any] = {}
         for tag in tags:
             self.append(tag)
-            
+
     def append(self, tag: Any) -> None:
         """Appends a tag to the sequence if it is valid.
         
@@ -140,16 +137,20 @@ class BaseTagSequence(object):
         """
         module = importlib.import_module(module_str)
         attrs = module.__dict__
-        classes = {name: obj for name, obj in attrs.items()
-                   if inspect.isclass(obj)}
-        tags = {name: obj for name, obj in classes.items()
-                if issubclass(obj, base_class)}
+        classes = {
+            name: obj
+            for name, obj in attrs.items() if inspect.isclass(obj)
+        }
+        tags = {
+            name: obj
+            for name, obj in classes.items() if issubclass(obj, base_class)
+        }
         del tags[base_class.__name__]
         return [v() for _, v in tags.items()]
 
     def __iter__(self):
-        for _, v in self._tags.items():
-            yield v
+        for k, v in self._tags.items():
+            yield k, v
 
     def __getitem__(self, key):
         return self._tags[key]

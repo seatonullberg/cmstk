@@ -12,7 +12,6 @@ class ParallelCoordinatesPlot(object):
         xlabels (optional) (list of str): The labels to assign to each 
         dimension.
     """
-
     def __init__(self, ncols, xlabels=None):
         assert type(ncols) is int
         self._ncols = ncols
@@ -20,11 +19,14 @@ class ParallelCoordinatesPlot(object):
             self._xlabels = [i for i in range(ncols)]
         else:
             self._xlabels = xlabels
-        self._data = []    # list of numpy.ndarrays
-        self._colors = []  # list of colors to use for each member of self._data
+        self._data = []  # list of numpy.ndarrays
+        self._colors = [
+        ]  # list of colors to use for each member of self._data
         self._labels = []  # list of labels for each member of self._data
-        self.fig, self.axes = plt.subplots(nrows=1, ncols=self._ncols-1,
-                                           figsize=(10, 5), sharey=True)
+        self.fig, self.axes = plt.subplots(nrows=1,
+                                           ncols=self._ncols - 1,
+                                           figsize=(10, 5),
+                                           sharey=True)
 
     def add_data(self, data, color, label):
         """Add a dataset to be plotted.
@@ -56,7 +58,8 @@ class ParallelCoordinatesPlot(object):
         # iterate over the axes
         for i, ax in enumerate(self.axes):
             # iterate over datasets and their corresponding colors/labels
-            for dataset, color, label in zip(self._data, self._colors, self._labels):
+            for dataset, color, label in zip(self._data, self._colors,
+                                             self._labels):
                 # only add legend on the first axis
                 if i == 0:
                     patch = mpatches.Patch(color=color, label=label)
@@ -67,7 +70,7 @@ class ParallelCoordinatesPlot(object):
                 # plot central reference line
                 ax.plot(x, [0 for _ in x], color="black")
             # alter the xtick labels and style
-            ax.set_xlim((x[i], x[i+1]))
+            ax.set_xlim((x[i], x[i + 1]))
             ax.set_xticks([x[i]], minor=False)
             ax.set_xticklabels([self._xlabels[i]])
 

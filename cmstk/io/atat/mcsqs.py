@@ -4,7 +4,7 @@ import numpy as np
 from typing import Optional, Sequence
 
 
-def bestsqs_to_poscar(bestsqs: BestsqsFile, 
+def bestsqs_to_poscar(bestsqs: BestsqsFile,
                       scaling_factor: float,
                       sym_order: Sequence[str],
                       direct: Optional[bool] = None,
@@ -16,25 +16,22 @@ def bestsqs_to_poscar(bestsqs: BestsqsFile,
         scaling_factor: Universal lattice scaling factor.
         - Interpreted as total volume if negative
         sym_order: IUPAC symbols in the order they should appear.
-        direct: Specifies a direct coordinate system.
+        direct: Specifies a direct (fractional) coordinate system.
         relaxations: Selective dynamics parameters of each atom in the lattice.
-    
-    Returns:
-        PoscarFile
     
     Raises:
         ValueError:
-        - If `sym_order` contains non-unique members
+        - All members of `sym_order` must be unique.
     """
     if len(sym_order) != len(set(sym_order)):
-        err = "all members of `sym_order` must be unique"
+        err = "All members of `sym_order` must be unique."
         raise ValueError(err)
-    poscar = PoscarFile(
-        direct=direct, lattice=bestsqs.lattice,
-        relaxations=relaxations, scaling_factor=scaling_factor
-    )
+    poscar = PoscarFile(direct=direct,
+                        lattice=bestsqs.lattice,
+                        relaxations=relaxations,
+                        scaling_factor=scaling_factor)
     # group positions by symbol as required in POSCAR
-    poscar.lattice.group_atoms_by_symbol(sym_order)
+    poscar.lattice.sort_by_symbol(sym_order)
     # count up occurences of each symbol
     sym_counts = {sym: 0 for sym in sym_order}
     for sym in bestsqs.lattice.symbols:
@@ -43,5 +40,5 @@ def bestsqs_to_poscar(bestsqs: BestsqsFile,
     n_atoms_per_symbol = []
     for sym in sym_order:
         n_atoms_per_symbol.append(sym_counts[sym])
-    poscar.n_atoms_per_symbol = tuple(n_atoms_per_symbol)
+    poscar.n_atoms_per_symbol = n_atoms_per_symbol
     return poscar

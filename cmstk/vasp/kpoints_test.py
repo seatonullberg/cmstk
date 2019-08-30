@@ -5,9 +5,7 @@ import os
 
 def test_kpoints_file():
     """Tests the initialization of a vasp.KpointsFile object."""
-    path = os.path.join(data_directory(), 
-                        "vasp", 
-                        "Fe75Cr25_BCC_bulk.kpoints")
+    path = os.path.join(data_directory(), "vasp", "Fe75Cr25_BCC_bulk.kpoints")
     kpoints = KpointsFile(path)
     kpoints.read()
 

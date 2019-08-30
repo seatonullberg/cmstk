@@ -6,22 +6,23 @@ import os
 
 def test_setfl_file():
     """Test the initialization of an eam.SetflFile class."""
-    path = os.path.join(data_directory(),
-                        "potentials",
+    path = os.path.join(data_directory(), "potentials",
                         "Bonny-Fe-Ni-Cr-2011.eam.alloy")
     setfl = SetflFile(path)
     setfl.read()
     assert setfl.comments == [
-            "Source: G. Bonny et al., Modelling Simul. Mater. Sci. Eng. 19 (2011) 085008",
-            "Potential to model dislocatons: WP2-2 of PERFORM60",
-            "Contact information: gbonny@sckcen.be"
+        "Source: G. Bonny et al., Modelling Simul. Mater. Sci. Eng. 19 (2011) 085008",
+        "Potential to model dislocatons: WP2-2 of PERFORM60",
+        "Contact information: gbonny@sckcen.be"
     ]
     assert setfl.symbols == ["Fe", "Ni", "Cr"]
-    assert setfl.symbol_pairs == ["FeFe", "FeNi", "FeCr", "NiNi", "NiCr", "CrCr"]
+    assert setfl.symbol_pairs == [
+        "FeFe", "FeNi", "FeCr", "NiNi", "NiCr", "CrCr"
+    ]
     assert setfl.symbol_descriptors == {
-            "Fe": "26 55.845 3.49869656 fcc",
-            "Ni": "28 58.6934 3.51929445 fcc",
-            "Cr": "24 51.9961 3.58437967 fcc"
+        "Fe": "26 55.845 3.49869656 fcc",
+        "Ni": "28 58.6934 3.51929445 fcc",
+        "Cr": "24 51.9961 3.58437967 fcc"
     }
     assert setfl.n_rho == 5000
     assert setfl.d_rho == 0.001

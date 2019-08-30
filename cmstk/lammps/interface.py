@@ -13,12 +13,11 @@ class LAMMPS(object):
     Attributes:
         opened (bool): Indicates if the underlying LAMMPS library is open.
     """
-
     def __init__(self, libc_path=None, cmd_args=None):
         # load shared lib from environment variable
         if libc_path is None:
             libc_path = os.getenv("LIBLAMMPS_SERIAL")
-        
+
         # load the shared library
         self._libc = ct.CDLL(libc_path, ct.RTLD_GLOBAL)
 
@@ -29,14 +28,15 @@ class LAMMPS(object):
             for i, arg in enumerate(cmd_args):
                 if type(arg) is str:
                     cmd_args[i] = arg.encode()
-            c_args = (ct.c_char_p*n_args)(*cmd_args)
+            c_args = (ct.c_char_p * n_args)(*cmd_args)
         else:
             c_args = None
             n_args = 0
 
         # open a LAMMPS instance
         self._lammps_ptr = ct.c_void_p()
-        self._libc.lammps_open_no_mpi(n_args, c_args, ct.byref(self._lammps_ptr))
+        self._libc.lammps_open_no_mpi(n_args, c_args,
+                                      ct.byref(self._lammps_ptr))
 
         # indicate that the instance has been opened
         self.opened = True
@@ -106,7 +106,8 @@ class LAMMPS(object):
         encoding = cmd.encode()
         self._libc.lammps_command(self._lammps_ptr, encoding)
         # error handling
-        if self.has_exceptions and self._libc.lammps_has_error(self._lammps_ptr):
+        if self.has_exceptions and self._libc.lammps_has_error(
+                self._lammps_ptr):
             buff_size = 100
             str_buff = ct.create_string_buffer(buff_size)
             # err_type = self._libc.lammps_get_last_error_message(self._lammps_ptr, str_buff, buff_size)
@@ -121,7 +122,8 @@ class LAMMPS(object):
             cmd_list (list): List of LAMMPS commands to execute.
         """
         cmds = [cmd.encode() for cmd in cmd_list if type(cmd) is str]
-        args = (ct.c_char_p * len(cmd_list))(*cmds)  # not really sure what this line does
+        args = (ct.c_char_p * len(cmd_list))(
+            *cmds)  # not really sure what this line does
         self._libc.lammps_commands_list(self._lammps_ptr, len(cmd_list), args)
 
     def commands_string(self, multi_cmd):
@@ -131,7 +133,8 @@ class LAMMPS(object):
             multi_cmd (str): Single string containing multiple commands
         """
         encoding = multi_cmd.encode()
-        self._libc.lammps_commands_string(self._lammps_ptr, ct.c_char_p(encoding))
+        self._libc.lammps_commands_string(self._lammps_ptr,
+                                          ct.c_char_p(encoding))
 
     def extract_box(self):
         """Extract the LAMMPS simulation box.
@@ -139,12 +142,12 @@ class LAMMPS(object):
         Returns:
             dict
         """
-        boxlo = (3*ct.c_double)()
-        boxhi = (3*ct.c_double)()
+        boxlo = (3 * ct.c_double)()
+        boxhi = (3 * ct.c_double)()
         xy = ct.c_double()
         yz = ct.c_double()
         xz = ct.c_double()
-        periodicity = (3*ct.c_int)()
+        periodicity = (3 * ct.c_int)()
         box_change = ct.c_int()
 
         self._libc.lammps_extract_box(self._lammps_ptr, boxlo, boxhi,
@@ -173,7 +176,8 @@ class LAMMPS(object):
         """
         encoding = name.encode()
         self._libc.lammps_extract_setting.restype = ct.c_int
-        return int(self._libc.lammps_extract_setting(self._lammps_ptr, encoding))
+        return int(
+            self._libc.lammps_extract_setting(self._lammps_ptr, encoding))
 
     def extract_atom(self, name, t, shape):
         """Extract a per-atom quantity.
@@ -199,7 +203,8 @@ class LAMMPS(object):
             ptr = ct.cast(ptr, ct.POINTER(ct.c_int * shape[0]))
             numpy_type = np.int32
         elif t == 1:
-            self._libc.lammps_extract_atom.restype = ct.POINTER(ct.POINTER(ct.c_int))
+            self._libc.lammps_extract_atom.restype = ct.POINTER(
+                ct.POINTER(ct.c_int))
             ptr = self._libc.lammps_extract_atom(self._lammps_ptr, encoding)
             ptr = ct.cast(ptr[0], ct.POINTER(ct.c_int * shape[0] * shape[1]))
             numpy_type = np.int32
@@ -209,9 +214,11 @@ class LAMMPS(object):
             ptr = ct.cast(ptr, ct.POINTER(ct.c_double * shape[0]))
             numpy_type = np.double
         elif t == 3:
-            self._libc.lammps_extract_atom.restype = ct.POINTER(ct.POINTER(ct.c_double))
+            self._libc.lammps_extract_atom.restype = ct.POINTER(
+                ct.POINTER(ct.c_double))
             ptr = self._libc.lammps_extract_atom(self._lammps_ptr, encoding)
-            ptr = ct.cast(ptr[0], ct.POINTER(ct.c_double * shape[0] * shape[1]))
+            ptr = ct.cast(ptr[0],
+                          ct.POINTER(ct.c_double * shape[0] * shape[1]))
             numpy_type = np.double
         else:
             raise ValueError("`t` must be 0, 1, 2, or 3")
@@ -250,38 +257,55 @@ class LAMMPS(object):
         encoding = id_.encode()
         if style not in [0, 1, 2] or t not in [0, 1, 2]:
             raise ValueError("`style` and `t` must be 0, 1, or 2")
-        
+
         if style == 0:
             if t == 0:
-                self._libc.lammps_extract_compute.restype = ct.POINTER(ct.c_double)
-                ptr = self._libc.lammps_extract_compute(self._lammps_ptr, encoding, style, t)
+                self._libc.lammps_extract_compute.restype = ct.POINTER(
+                    ct.c_double)
+                ptr = self._libc.lammps_extract_compute(
+                    self._lammps_ptr, encoding, style, t)
                 return float(ptr[0])
             else:
-                raise ValueError("invalid style/t combination: style={}, t={}".format(style, t))
+                raise ValueError(
+                    "invalid style/t combination: style={}, t={}".format(
+                        style, t))
         if style == 1:
             if t == 1:
-                self._libc.lammps_extract_compute.restype = ct.POINTER(ct.c_double)
-                ptr = self._libc.lammps_extract_compute(self._lammps_ptr, encoding, style, t)
+                self._libc.lammps_extract_compute.restype = ct.POINTER(
+                    ct.c_double)
+                ptr = self._libc.lammps_extract_compute(
+                    self._lammps_ptr, encoding, style, t)
                 ptr = ct.cast(ptr, ct.POINTER(ct.c_double * shape[0]))
             elif t == 2:
-                self._libc.lammps_extract_compute.restype = ct.POINTER(ct.POINTER(ct.c_double))
-                ptr = self._libc.lammps_extract_compute(self._lammps_ptr, encoding, style, t)
-                ptr = ct.cast(ptr[0], ct.POINTER(ct.c_double * shape[0] * shape[1]))
+                self._libc.lammps_extract_compute.restype = ct.POINTER(
+                    ct.POINTER(ct.c_double))
+                ptr = self._libc.lammps_extract_compute(
+                    self._lammps_ptr, encoding, style, t)
+                ptr = ct.cast(ptr[0],
+                              ct.POINTER(ct.c_double * shape[0] * shape[1]))
             else:
-                raise ValueError("invalid style/t combination: style={}, t={}".format(style, t))
+                raise ValueError(
+                    "invalid style/t combination: style={}, t={}".format(
+                        style, t))
         if style == 2:
             if t == 0:
-                self._libc.lammps_extract_compute.restype = ct.POINTER(ct.c_int)
-                ptr = self._libc.lammps_extract_compute(self._lammps_ptr, encoding, style, t)
+                self._libc.lammps_extract_compute.restype = ct.POINTER(
+                    ct.c_int)
+                ptr = self._libc.lammps_extract_compute(
+                    self._lammps_ptr, encoding, style, t)
                 return int(ptr[0])
             if t == 1:
                 self._libc.extract_compute.restype = ct.POINTER(ct.c_double)
-                ptr = self._libc.lammps_extract_compute(self._lammps_ptr, encoding, style, t)
+                ptr = self._libc.lammps_extract_compute(
+                    self._lammps_ptr, encoding, style, t)
                 ptr = ct.cast(ptr, ct.POINTER(ct.c_double * shape[0]))
             if t == 2:
-                self._libc.lammps_extract_compute.restype = ct.POINTER(ct.POINTER(ct.c_double))
-                ptr = self._libc.lammps_extract_compute(self._lammps_ptr, encoding, style, t)
-                ptr = ct.cast(ptr[0], ct.POINTER(ct.c_double * shape[0] * shape[1]))
+                self._libc.lammps_extract_compute.restype = ct.POINTER(
+                    ct.POINTER(ct.c_double))
+                ptr = self._libc.lammps_extract_compute(
+                    self._lammps_ptr, encoding, style, t)
+                ptr = ct.cast(ptr[0],
+                              ct.POINTER(ct.c_double * shape[0] * shape[1]))
 
         arr = np.frombuffer(ptr.contents, dtype=np.double)
         arr.shape = shape
@@ -324,24 +348,33 @@ class LAMMPS(object):
         if style == 0:
             if t == 0:
                 self._libc.lammps_extract_fix.restype = ct.POINTER(ct.c_double)
-                ptr = self._libc.lammps_extract_fix(self._lammps_ptr, encoding, style, t, i, j)
+                ptr = self._libc.lammps_extract_fix(self._lammps_ptr, encoding,
+                                                    style, t, i, j)
                 result = float(ptr[0])
                 self._libc.lammps_free(ptr)
                 return result
             else:
-                raise ValueError("invalid style/t combination: style={}, t={}".format(style, t))
+                raise ValueError(
+                    "invalid style/t combination: style={}, t={}".format(
+                        style, t))
         if style == 1 or style == 2:
             if t == 1:
                 self._libc.lammps_extract_fix.restype = ct.POINTER(ct.c_double)
-                ptr = self._libc.lammps_extract_fix(self._lammps_ptr, encoding, style, t, i, j)
+                ptr = self._libc.lammps_extract_fix(self._lammps_ptr, encoding,
+                                                    style, t, i, j)
                 result = ct.cast(ptr, ct.POINTER(ct.c_double * shape[0]))
             elif t == 2:
-                self._libc.lammps_extract_fix.restype = ct.POINTER(ct.POINTER(ct.c_double))
-                ptr = self._libc.lammps_extract_fix(self._lammps_ptr, encoding, style, t, i, j)
-                result = ct.cast(ptr[0], ct.POINTER(ct.c_double * shape[0] * shape[1]))
+                self._libc.lammps_extract_fix.restype = ct.POINTER(
+                    ct.POINTER(ct.c_double))
+                ptr = self._libc.lammps_extract_fix(self._lammps_ptr, encoding,
+                                                    style, t, i, j)
+                result = ct.cast(ptr[0],
+                                 ct.POINTER(ct.c_double * shape[0] * shape[1]))
             else:
-                raise ValueError("invalid style/t combination: style={}, t={}".format(style, t))
-        
+                raise ValueError(
+                    "invalid style/t combination: style={}, t={}".format(
+                        style, t))
+
         arr = np.frombuffer(result.contents, dtype=np.double)
         self._libc.lammps_free(ptr)
         arr.shape = shape
@@ -392,18 +425,25 @@ class LAMMPS(object):
             group_encoding = None
 
         if t == 0:
-            self._libc.lammps_extract_variable.restype = ct.POINTER(ct.c_double)
-            ptr = self._libc.lammps_extract_variable(self._lammps_ptr, name_encoding, group_encoding)
+            self._libc.lammps_extract_variable.restype = ct.POINTER(
+                ct.c_double)
+            ptr = self._libc.lammps_extract_variable(self._lammps_ptr,
+                                                     name_encoding,
+                                                     group_encoding)
             result = ptr[0]
             self._libc.lammps_free(ptr)
             return float(result)
         elif t == 1:
             self._libc.lammps_extract_global.restype = ct.POINTER(ct.c_int)
-            nlocalptr = self._libc.lammps_extract_global(self._lammps_ptr, "nlocal".encode())
+            nlocalptr = self._libc.lammps_extract_global(
+                self._lammps_ptr, "nlocal".encode())
             nlocal = nlocalptr[0]
             result = (ct.c_double * nlocal)()
-            self._libc.lammps_extract_variable.restype = ct.POINTER(ct.c_double)
-            ptr = self._libc.lammps_extract_variable(self._lammps_ptr, name_encoding, group_encoding)
+            self._libc.lammps_extract_variable.restype = ct.POINTER(
+                ct.c_double)
+            ptr = self._libc.lammps_extract_variable(self._lammps_ptr,
+                                                     name_encoding,
+                                                     group_encoding)
             for i in range(nlocal):
                 result[i] = float(ptr[i])
             self._libc.lammps_free(ptr)
@@ -442,7 +482,8 @@ class LAMMPS(object):
         """
         name_encoding = name.encode()
         value_encoding = value.encode()
-        return self._libc.lammps_set_variable(self._lammps_ptr, name_encoding, value_encoding)
+        return self._libc.lammps_set_variable(self._lammps_ptr, name_encoding,
+                                              value_encoding)
 
     def reset_box(self, params):
         """Reset the size of the simulation box.
@@ -457,11 +498,12 @@ class LAMMPS(object):
         cxy = ct.c_double(params["xy"])
         cyz = ct.c_double(params["yz"])
         cxz = ct.c_double(params["xz"])
-        self._libc.lammps_reset_box(self._lammps_ptr, cboxlo, cboxhi, cxy, cyz, cxz)
+        self._libc.lammps_reset_box(self._lammps_ptr, cboxlo, cboxhi, cxy, cyz,
+                                    cxz)
 
     # The following are MPI related commands.
     # This interface is currently limited to serial operation.
-    # Therefore, these methods are included as stubs to indicate 
+    # Therefore, these methods are included as stubs to indicate
     # that the related functionality is intentionally excluded.
 
     def create_atoms(self):
@@ -469,7 +511,7 @@ class LAMMPS(object):
 
     def gather_atoms(self):
         raise NotImplementedError
-        
+
     def gather_atoms_concat(self):
         raise NotImplementedError
 
