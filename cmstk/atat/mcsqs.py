@@ -18,11 +18,10 @@ class BestcorrFile(object):
         filepath: Filepath to a bestcorr.out file.
 
     Attributes:
-        filepath: Filepath to a bestcorr.out file.
         clusters: Information about each cluster at every iteration.
+        filepath: Filepath to a bestcorr.out file.
         objective_functions: Value of the objective function at each iteration.
     """
-
     def __init__(self, filepath: Optional[str] = None) -> None:
         if filepath is None:
             filepath = "bestcorr.out"
@@ -98,8 +97,8 @@ class BestsqsFile(object):
         filepath: Filepath to a bestsqs.out file.
         lattice: Underlying lattice structure data.
     """
-
-    def __init__(self, filepath: Optional[str] = None,
+    def __init__(self,
+                 filepath: Optional[str] = None,
                  lattice: Optional[Lattice] = None) -> None:
         if filepath is None:
             filepath = "bestsqs.out"
@@ -120,23 +119,24 @@ class BestsqsFile(object):
             lines = [line.strip() for line in f.readlines()]
 
         coordinate_matrix = lines[:3]
-        coordinate_matrix = np.array([
-            np.fromstring(vec, sep=" ") for vec in coordinate_matrix
-        ])
+        coordinate_matrix_arr = np.array(
+            [np.fromstring(vec, sep=" ") for vec in coordinate_matrix])
 
         vectors = lines[3:6]
-        vectors = np.array([np.fromstring(vec, sep=" ") for vec in vectors])
+        vectors_arr = np.array(
+            [np.fromstring(vec, sep=" ") for vec in vectors])
 
         positions = lines[6:]
         positions = [" ".join(p.split()[:3]) for p in positions]
-        positions = np.array([np.fromstring(p, sep=" ") for p in positions])
+        positions_arr = np.array(
+            [np.fromstring(p, sep=" ") for p in positions])
 
         symbols = lines[6:]
         symbols = [s.split()[-1] for s in symbols]
 
-        self.lattice.coordinate_matrix = coordinate_matrix
-        self.lattice.vectors = vectors
-        for position, symbol in zip(positions, symbols):
+        self.lattice.coordinate_matrix = coordinate_matrix_arr
+        self.lattice.vectors = vectors_arr
+        for position, symbol in zip(positions_arr, symbols):
             self.lattice.add_atom(Atom(position=position, symbol=symbol))
 
 
@@ -160,7 +160,6 @@ class RndstrFile(object):
         lattice: The lattice structure being represented.
         probabilities: Probability of occupation by any symbols at each site.
     """
-
     def __init__(
             self,
             filepath: Optional[str] = None,
@@ -193,15 +192,17 @@ class RndstrFile(object):
         angles = np.array([float(x) for x in lines[0].split()[3:]])
 
         vectors = lines[1:4]
-        vectors = np.array([np.fromstring(vec, sep=" ") for vec in vectors])
+        vectors_arr = np.array(
+            [np.fromstring(vec, sep=" ") for vec in vectors])
 
         positions = [" ".join(l.split()[:3]) for l in lines[4:]]
-        positions = [np.fromstring(p, sep=" ") for p in positions]
+        positions_arr = np.array(
+            [np.fromstring(p, sep=" ") for p in positions])
 
         self.lattice.angles = angles
         self.lattice.parameters = parameters
-        self.lattice.vectors = vectors
-        for position in positions:
+        self.lattice.vectors = vectors_arr
+        for position in positions_arr:
             self.lattice.add_atom(Atom(position=position))
 
         probabilities = [l.split()[3] for l in lines[4:]]  # no spaces
@@ -220,22 +221,13 @@ class RndstrFile(object):
         
         Args:
             path: The filepath to write to.
-
-        Raises:
-            ValueError:
-            - `lattice.parameters` is not set.
-            - `lattice.angles` is not set.
         """
         if path is None:
             path = self.filepath
         with open(path, "w") as f:
             parameters = " ".join(self.lattice.parameters.astype(str))
-            f.write(parameters)
-            if self.lattice.angles is None:
-                err = "`lattice.angles` is not set."
-                raise ValueError(err)
             angles = " ".join(self.lattice.angles.astype(str))
-            f.write(" {}\n".format(angles))
+            f.write("{} {}\n".format(parameters, angles))
 
             for row in self.lattice.vectors:
                 row = " ".join(row.astype(str))

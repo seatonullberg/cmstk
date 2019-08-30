@@ -1,7 +1,7 @@
 from cmstk.utils import Number
 import copy
 import numpy as np
-from typing import Any, Generator, List, Optional, Sequence
+from typing import Generator, List, Optional, Sequence
 
 
 class Atom(object):
@@ -9,19 +9,18 @@ class Atom(object):
     
     Args:
         charge: Electronic charge.
-        magnetic_moment: Magnetic moment vector.
+        magnetic_moment: Magnetic moment scalar.
         position: Position in space.
         symbol: IUPAC chemical symbol.
         velocity: Velocity vector.
 
     Attributes:
         charge: Electronic charge.
-        magnetic_moment: Magnetic moment vector.
+        magnetic_moment: Magnetic moment scalar.
         position: Position in space.
         symbol: IUPAC chemical symbol.
         velocity: Velocity vector.
     """
-
     def __init__(self,
                  charge: Optional[Number] = None,
                  magnetic_moment: Optional[Number] = None,
@@ -55,14 +54,14 @@ class AtomCollection(object):
     Attributes:
         atoms: The atoms in the collection.
         charges: Electronic charge of each atom.
-        magnetic_moments: Magnetic moment vector of each atom.
+        magnetic_moments: Magnetic moment of each atom.
         n_atoms: Number of atoms in the collection.
         n_symbols: Number of symbols in the collection.
         positions: Position in space of each atom.
         symbols: IUPAC chemical symbol of each atom.
+        tolerance: The radius in which to check for atoms on add or remove.
         velocities: Velocity vector of each atom.
     """
-
     def __init__(self,
                  atoms: Optional[List[Atom]] = None,
                  tolerance: Optional[Number] = None) -> None:

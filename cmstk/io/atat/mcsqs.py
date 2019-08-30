@@ -16,7 +16,7 @@ def bestsqs_to_poscar(bestsqs: BestsqsFile,
         scaling_factor: Universal lattice scaling factor.
         - Interpreted as total volume if negative
         sym_order: IUPAC symbols in the order they should appear.
-        direct: Specifies a direct coordinate system.
+        direct: Specifies a direct (fractional) coordinate system.
         relaxations: Selective dynamics parameters of each atom in the lattice.
     
     Raises:

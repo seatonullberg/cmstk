@@ -8,9 +8,13 @@ def test_slurm_tags():
     module_str = "cmstk.hpc.slurm_tags"
     module = importlib.import_module(module_str)
     attrs = {name: obj for name, obj in module.__dict__.items()}
-    classes = {name: obj for name, obj in attrs.items() if inspect.isclass(obj)}
+    classes = {
+        name: obj
+        for name, obj in attrs.items() if inspect.isclass(obj)
+    }
     tags = {
-        name: obj for name, obj in classes.items() if issubclass(obj, SlurmTag)
+        name: obj
+        for name, obj in classes.items() if issubclass(obj, SlurmTag)
     }
     del tags["SlurmTag"]  # ignore the base class
     # simply check that attributes are present and populated

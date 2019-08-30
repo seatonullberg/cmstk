@@ -17,7 +17,6 @@ def test_within_one_percent():
 
 
 class MockBaseTag(BaseTag):
-
     def __init__(self):
         comment = "test"
         name = "TestTag"

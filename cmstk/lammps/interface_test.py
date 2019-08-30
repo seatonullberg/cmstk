@@ -127,17 +127,17 @@ def test_lammps_extract_atom():
     write_test_file(filename)
     lammps.run_file(filename)
     # extract id
-    id_ = lammps.extract_atom("id", 0, (lammps.get_natoms(),))
+    id_ = lammps.extract_atom("id", 0, (lammps.get_natoms(), ))
     assert type(id_) is np.ndarray
-    assert id_.shape == (4000,)
-    type_ = lammps.extract_atom("type", 0, (lammps.get_natoms(),))
+    assert id_.shape == (4000, )
+    type_ = lammps.extract_atom("type", 0, (lammps.get_natoms(), ))
     assert type(type_) is np.ndarray
-    assert type_.shape == (4000,)
+    assert type_.shape == (4000, )
     mass = lammps.extract_atom("mass", 2,
-                               (len(set(type_)) + 1,))  # +1 for index 1
+                               (len(set(type_)) + 1, ))  # +1 for index 1
     assert type(mass) is np.ndarray
     assert mass.shape == (
-        2,)  # could be filtered out to one by iterating over indices
+        2, )  # could be filtered out to one by iterating over indices
     # it seems like x actually represents x,y,z ???
     x = lammps.extract_atom("x", 3, (lammps.get_natoms(), 3))
     assert type(x) is np.ndarray
@@ -154,9 +154,9 @@ def test_lammps_extract_compute():
     write_test_file(filename)
     lammps.run_file(filename)
     # extract a per-atom compute
-    test2 = lammps.extract_compute(id_="test2", style=1, t=1, shape=(4000,))
+    test2 = lammps.extract_compute(id_="test2", style=1, t=1, shape=(4000, ))
     assert type(test2) is np.ndarray
-    assert test2.shape == (4000,)
+    assert test2.shape == (4000, )
     os.remove(filename)
     os.remove("log.lammps")
 
@@ -205,7 +205,7 @@ def test_lammps_extract_variable():
     assert test0 == 1.0
     test1 = lammps.extract_variable("test1", 1, group="all")
     assert type(test1) is np.ndarray
-    assert test1.shape == (4000,)
+    assert test1.shape == (4000, )
     assert test1[0] == 1.0
     os.remove(filename)
     os.remove("log.lammps")

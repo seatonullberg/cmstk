@@ -30,7 +30,6 @@ class PoscarFile(object):
         relaxations: Selective dynamics relaxation parameters for each atom.
         scaling_factor: Lattice scaling factor (lattice constant)
     """
-
     def __init__(self,
                  filepath: Optional[str] = None,
                  comment: Optional[str] = None,
@@ -92,8 +91,9 @@ class PoscarFile(object):
             self.direct = True
         positions = lines[coord_sys_index + 1:]
         positions = [" ".join(p.split()[:3]) for p in positions]
-        positions = [np.fromstring(p, sep=" ") for p in positions]
-        for p in positions:
+        positions_arr = np.array(
+            [np.fromstring(p, sep=" ") for p in positions])
+        for p in positions_arr:
             self.lattice.add_atom(Atom(position=p))
         if selective_dynamics:
             relaxations = lines[coord_sys_index + 1:]
@@ -130,7 +130,7 @@ class PoscarFile(object):
             for i, row in enumerate(self.lattice.positions):
                 row = " ".join(row.astype(str))
                 if self.relaxations.size != 0:
-                    relax_row = " ".join([("T" if x else "F") 
+                    relax_row = " ".join([("T" if x else "F")
                                           for x in self.relaxations[i]])
                     f.write("{} {}\n".format(row, relax_row))
                 else:

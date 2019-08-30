@@ -19,7 +19,6 @@ class SubmissionScript(object):
         exec_cmd: The shell command used to execute this script.
         tags: Sequence of slurm tag objects which can be accessed like a dict.
     """
-
     def __init__(self,
                  filepath: Optional[str] = None,
                  cmds: Optional[Sequence[str]] = None,

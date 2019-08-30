@@ -21,9 +21,7 @@ def test_bestsqs_file():
                         "Fe75Cr25_BCC_bulk.bestsqs.out")
     bestsqs = BestsqsFile(filepath=path)
     bestsqs.read()
-    coordinate_matrix = np.array([[5.7, 0, 0],
-                                  [0, 5.7, 0],
-                                  [0, 0, 5.7]])
+    coordinate_matrix = np.array([[5.7, 0, 0], [0, 5.7, 0], [0, 0, 5.7]])
     assert np.array_equal(bestsqs.lattice.coordinate_matrix, coordinate_matrix)
     lattice_vectors = np.array([[0, 0, -1], [0, -1, 0], [-1, 0, 0]])
     assert np.array_equal(bestsqs.lattice.vectors, lattice_vectors)
@@ -34,7 +32,8 @@ def test_bestsqs_file():
 
 def test_rndstr_file():
     """Tests the initialization of a RndstrFile object."""
-    path = os.path.join(data_directory(), "atat", "Fe75Cr25_BCC_bulk.rndstr.in")
+    path = os.path.join(data_directory(), "atat",
+                        "Fe75Cr25_BCC_bulk.rndstr.in")
     rndstr = RndstrFile(filepath=path)
     rndstr.read()
 
@@ -45,11 +44,10 @@ def test_rndstr_file():
 
     rndstr_reader = RndstrFile(filepath="test.in")
     rndstr_reader.read()
-    assert np.array_equal(rndstr_reader.lattice.angles, 
-                          rndstr.lattice.angles)
+    assert np.array_equal(rndstr_reader.lattice.angles, rndstr.lattice.angles)
     assert np.array_equal(rndstr_reader.lattice.parameters,
                           rndstr.lattice.parameters)
-    assert np.array_equal(rndstr_reader.lattice.vectors, 
+    assert np.array_equal(rndstr_reader.lattice.vectors,
                           rndstr.lattice.vectors)
     reader_positions = np.array([p for p in rndstr_reader.lattice.positions])
     positions = np.array([p for p in rndstr.lattice.positions])

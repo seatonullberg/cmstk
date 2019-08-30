@@ -1,11 +1,11 @@
-from cmstk.elements import Database
+from cmstk.elements import PeriodicTable
 
 
 def test_database():
-    """Test the initialization of an elements.Database class."""
-    db = Database()
-    assert db.atomic_number("C") == 6
-    assert db.atomic_radius("C") == 67
-    assert db.atomic_weight("C") == 12.001
-    assert db.covalent_radius("C") == 76
-    assert db.lattice_constants("C", "hcp") == [246.4, 246.4, 671.1]
+    """Test the initialization of an elements.PeriodicTable object."""
+    pt = PeriodicTable()
+    assert pt.atomic_number("C") == 6
+    assert pt.atomic_radius("C") == 67
+    assert pt.atomic_weight("C") == 12.001
+    assert pt.covalent_radius("C") == 76
+    assert pt.lattice_constants("C", "hcp") == [246.4, 246.4, 671.1]

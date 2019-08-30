@@ -13,7 +13,6 @@ class SlurmTag(BaseTag):
         comment: Description of the tag.
         value: Value assigned to the tag.
     """
-
     def __init__(self,
                  name: str,
                  valid_options: Sequence[Any],
@@ -29,9 +28,6 @@ class SlurmTag(BaseTag):
         
         Args:
             line: The string to parse.
-
-        Returns:
-            None
         """
         value, self.comment = self._read(line)
         self.value = int(value)
@@ -41,9 +37,6 @@ class SlurmTag(BaseTag):
         
         Args:
             line: The string to parse.
-
-        Returns:
-            None
         """
         self.value, self.comment = self._read(line)
 
@@ -52,9 +45,6 @@ class SlurmTag(BaseTag):
         
         Args:
             line: The string to parse.
-
-        Returns:
-            None
         """
         value, self.comment = self._read(line)
         hours, mins, secs = value.split(":")
@@ -63,14 +53,10 @@ class SlurmTag(BaseTag):
                                         seconds=int(secs))
 
     def _read(self, line: str) -> Tuple[str, Optional[str]]:
-        """Reads raw tag content from a line of text.
+        """Reads raw tag content (value, comment) from a line of text.
         
         Args:
             line: The string to parse.
-
-        Returns:
-            Tuple[str, Optional[str]]
-            - The raw value and comment
 
         Raises:
             ValueError:
@@ -97,41 +83,16 @@ class SlurmTag(BaseTag):
         return (value, comment)
 
     def _write_int(self) -> str:
-        """Writes a line of tag info with the value interpreted as int.
-        
-        Args:
-            None
-
-        Returns:
-            str
-        """
+        """Writes a line of tag info with the value interpreted as int."""
         str_value = str(self.value)
         return self._write(str_value)
 
     def _write_str(self) -> str:
-        """Writes a line of tag info with the value interpreted as str.
-        
-        Args:
-            None
-
-        Returns:
-            str
-        """
+        """Writes a line of tag info with the value interpreted as str."""
         return self._write(self.value)
 
     def _write_time(self) -> str:
-        """Writes a line of tag info with the value interpreted as a duration.
-        
-        Notes:
-            timedelta objects conveniently already format their str
-            representation in a SLURM compatible format.
-
-        Args:
-            None
-        
-        Returns:
-            str
-        """
+        """Writes a line of tag info with the value interpreted as duration."""
         total_seconds = self.value.total_seconds()
         hours = total_seconds / (60 * 60)
         minutes = (hours - math.floor(hours)) * 60
@@ -145,9 +106,6 @@ class SlurmTag(BaseTag):
 
         Args:
             str_value: The tag's value formatted as SLURM compliant text.
-
-        Returns:
-            str
 
         Raises:
             ValueError
@@ -170,7 +128,6 @@ class SlurmTag(BaseTag):
 
 
 class AccountTag(SlurmTag):
-
     def __init__(self, value=None):
         name = "account"
         comment = "User account name."
@@ -188,7 +145,6 @@ class AccountTag(SlurmTag):
 
 
 class DistributionTag(SlurmTag):
-
     def __init__(self, value=None):
         name = "distribution"
         comment = "Distribution method for remote processes."
@@ -211,7 +167,6 @@ class DistributionTag(SlurmTag):
 
 
 class ErrorTag(SlurmTag):
-
     def __init__(self, value=None):
         name = "error"
         comment = "Filename to write stderr to."
@@ -229,7 +184,6 @@ class ErrorTag(SlurmTag):
 
 
 class JobNameTag(SlurmTag):
-
     def __init__(self, value=None):
         name = "job-name"
         comment = "Name of the job."
@@ -247,7 +201,6 @@ class JobNameTag(SlurmTag):
 
 
 class MailTypeTag(SlurmTag):
-
     def __init__(self, value=None):
         name = "mail-type"
         comment = "Email event triggers."
@@ -266,7 +219,6 @@ class MailTypeTag(SlurmTag):
 
 
 class MailUserTag(SlurmTag):
-
     def __init__(self, value=None):
         name = "mail-user"
         comment = "Email address to send to."
@@ -284,7 +236,6 @@ class MailUserTag(SlurmTag):
 
 
 class MemPerCpuTag(SlurmTag):
-
     def __init__(self, value=None):
         name = "mem-per-cpu"
         comment = "Memory to allocate on each CPU (in MB)."
@@ -302,7 +253,6 @@ class MemPerCpuTag(SlurmTag):
 
 
 class NtasksTag(SlurmTag):
-
     def __init__(self, value=None):
         name = "ntasks"
         comment = "Number of tasks to run."
@@ -320,7 +270,6 @@ class NtasksTag(SlurmTag):
 
 
 class OutputTag(SlurmTag):
-
     def __init__(self, value=None):
         name = "output"
         comment = "Filename to write stdout to."
@@ -338,7 +287,6 @@ class OutputTag(SlurmTag):
 
 
 class QosTag(SlurmTag):
-
     def __init__(self, value=None):
         name = "qos"
         comment = "QOS account name."
@@ -356,7 +304,6 @@ class QosTag(SlurmTag):
 
 
 class TimeTag(SlurmTag):
-
     def __init__(self, value=None):
         name = "time"
         comment = "Maximum duration of the job."
