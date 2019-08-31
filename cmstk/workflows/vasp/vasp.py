@@ -3,8 +3,8 @@ from cmstk.vasp.incar_tags import EncutTag
 from cmstk.vasp.kpoints import KpointsFile
 from cmstk.vasp.poscar import PoscarFile
 from cmstk.vasp.potcar import PotcarFile
-from typing import Any, List, Optional
 import os
+from typing import Any, List, Optional
 
 
 def converge_encut(encut_values: List[int],
@@ -19,16 +19,13 @@ def converge_encut(encut_values: List[int],
     Args:
         encut_values: The ENCUT values to test.
         incar: The INCAR file to use.
-        - Any value of ENCUT will be overwritten
+        - Any value of ENCUT will be overwritten.
         kpoints: The KPOINTS file to use.
         poscar: The POSCAR file to use.
         potcar: The POTCAR file to use.
         submission_script: The job submission script to use.
-        - any SubmissionScript type from the hpc module
+        - Any SubmissionScript type from the hpc module.
         working_directory: The directory in which calculations are setup.
-
-    Returns:
-        None
     """
     # setup directories
     if working_directory is None:
@@ -50,24 +47,8 @@ def converge_encut(encut_values: List[int],
         else:
             encut_tag = EncutTag(value=encut_value)
             incar.tags.append(encut_tag)
-        path = os.path.join(calc_dir, "INCAR")
-        incar.write(path)
-        # process KPOINTS
-        path = os.path.join(calc_dir, "KPOINTS")
-        kpoints.write(path)
-        # process POSCAR
-        path = os.path.join(calc_dir, "POSCAR")
-        poscar.write(path)
-        # process POTCAR
-        path = os.path.join(calc_dir, "POTCAR")
-        potcar.write(path)
-        # process submission script
-        path = os.path.join(calc_dir, "runjob.sh")
-        submission_script.write(path)
-        # submit the job
-        os.chdir(calc_dir)
-        cmd = "{} {}".format(submission_script.exec_cmd, path)
-        os.system(cmd)
+        _submit_vasp_calculation(incar, kpoints, poscar, potcar, 
+                                 submission_script, calc_dir)
 
 
 def converge_kpoints(kpoint_sizes: List[List[int]],
@@ -88,9 +69,6 @@ def converge_kpoints(kpoint_sizes: List[List[int]],
         potcar: The POTCAR file to use.
         submission_script: The job submission script to use.
         working_directory: The directory in which calculations are setup.
-
-    Returns:
-        None
     """
     # setup directories
     if working_directory is None:
@@ -104,24 +82,22 @@ def converge_kpoints(kpoint_sizes: List[List[int]],
         calculation_directories.append(path)
     # iterate through each directory
     for i, calc_dir in enumerate(calculation_directories):
-        # process INCAR
-        path = os.path.join(calc_dir, "INCAR")
-        incar.write(path)
         # process KPOINTS
         mesh_size = kpoint_sizes[i]
         kpoints.mesh_size = mesh_size
-        path = os.path.join(calc_dir, "KPOINTS")
-        kpoints.write(path)
-        # process POSCAR
-        path = os.path.join(calc_dir, "POSCAR")
-        poscar.write(path)
-        # process POTCAR
-        path = os.path.join(calc_dir, "POTCAR")
-        potcar.write(path)
-        # process submission script
-        path = os.path.join(calc_dir, "runjob.sh")
-        submission_script.write(path)
-        # submit the job
-        os.chdir(calc_dir)
-        cmd = "{} {}".format(submission_script.exec_cmd, path)
-        os.system(cmd)
+        _submit_vasp_calculation(incar, kpoints, poscar, potcar, 
+                                 submission_script, calc_dir)
+
+
+def _submit_vasp_calculation(incar: IncarFile, kpoints: KpointsFile,
+                             poscar: PoscarFile, potcar: PotcarFile,
+                             script: Any, calc_dir: str) -> None: # NEED ABSTRACT SubmissionScript
+    incar.write(os.path.join(calc_dir, "INCAR"))
+    kpoints.write(os.path.join(calc_dir, "KPOINTS"))
+    poscar.write(os.path.join(calc_dir, "POSCAR"))
+    potcar.write(os.path.join(calc_dir, "POTCAR"))
+    path = os.path.join(calc_dir, "runjob.sh")
+    script.write(os.path.join(calc_dir, path))
+    os.chdir(calc_dir)
+    cmd = "{} {}".format(script.exec_cmd, path)
+    os.system(cmd)
