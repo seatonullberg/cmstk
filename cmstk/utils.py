@@ -13,11 +13,13 @@ Number = Union[float, int]
 #    Helper Functions    #
 #========================#
 
+
 def consecutive_percent_difference(x: Sequence) -> List:
     """Returns a list of the percent difference between each consecutive member 
        of the sequence `x`.
     """
-    return [((_x - x[i-1])/x[i-1])*100 if i > 0 else 0 for i, _x in enumerate(x)]
+    return [((_x - x[i - 1]) / x[i - 1]) * 100 if i > 0 else 0
+            for i, _x in enumerate(x)]
 
 
 def data_directory() -> str:

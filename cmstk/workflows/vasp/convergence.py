@@ -9,8 +9,7 @@ import os
 from typing import Any, List, Optional, Tuple
 
 
-def converge_encut(calculation: VaspCalculation,
-                   encut_values: List[int],
+def converge_encut(calculation: VaspCalculation, encut_values: List[int],
                    working_directory: str) -> None:
     """Runs an ENCUT convergence calculation.
 
@@ -20,10 +19,7 @@ def converge_encut(calculation: VaspCalculation,
         working_directory: Path to the working directory.
     """
     # This needs work
-    d = {
-        encut: copy.deepcopy(calculation) 
-        for encut in encut_values
-    }
+    d = {encut: copy.deepcopy(calculation) for encut in encut_values}
     # setup directories
     for encut, calc in d.items():
         dirname = "{}eV".format(encut)
@@ -60,7 +56,7 @@ def converge_kpoints(calculation: VaspCalculation,
         working_directory: Path to the working directory.
     """
     d = {
-        kpoint_size: copy.deepcopy(calculation) 
+        kpoint_size: copy.deepcopy(calculation)
         for kpoint_size in kpoint_sizes
     }
     # setup directories

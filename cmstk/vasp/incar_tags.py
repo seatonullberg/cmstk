@@ -229,9 +229,8 @@ class IncarTag(BaseTag):
 class AlgoTag(IncarTag):
     def __init__(self, value=None):
         comment = (
-            "Determines the electronic minimization algorithm and/or GW " 
-            "calculation type."
-        )
+            "Determines the electronic minimization algorithm and/or GW "
+            "calculation type.")
         name = "ALGO"
         valid_options = [
             "Normal", "VeryFast", "Fast", "Conjugate", "All", "Damped",
@@ -341,8 +340,7 @@ class IsifTag(IncarTag):
     def __init__(self, value=None):
         comment = (
             "Determines whether the stress tensor is calculated and which "
-            "degrees of freedom are allowed to change."
-        )
+            "degrees of freedom are allowed to change.")
         name = "ISIF"
         valid_options = [0, 1, 2, 3, 4, 5, 6, 7]
         super().__init__(name=name,
@@ -444,10 +442,8 @@ class LchargTag(IncarTag):
 
 class LrealTag(IncarTag):
     def __init__(self, value=None):
-        comment = (
-            "Determines whether the projection operators are evaluated "
-            "in real space or reciprocal space."
-        )
+        comment = ("Determines whether the projection operators are evaluated "
+                   "in real space or reciprocal space.")
         name = "LREAL"
         valid_options = [bool, "On", "O", "Auto", "A"]
         super().__init__(name=name,
