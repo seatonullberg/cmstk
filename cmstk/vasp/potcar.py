@@ -29,7 +29,7 @@ class PotcarFile(object):
 
     def read(self, *paths: str) -> None:
         """Reads one or many POTCAR files.
-        
+
         Args:
             paths: The filepaths to read
 
@@ -39,6 +39,8 @@ class PotcarFile(object):
         self._titles = []  # reset the existing titles each read
         if len(paths) == 0:
             paths = self.filepaths
+        else:
+            self.filepaths = paths
         for path in paths:
             with open(path, "r") as f:
                 lines = f.readlines()
@@ -49,7 +51,7 @@ class PotcarFile(object):
 
     def write(self, path: Optional[str] = None) -> None:
         """Writes a POTCAR file.
-        
+
         Args:
             path: The filepath to write to.
 
@@ -67,3 +69,4 @@ class PotcarFile(object):
         potcar_out = "".join(potcars_in)
         with open(write_path, "w") as f:
             f.write(potcar_out)
+

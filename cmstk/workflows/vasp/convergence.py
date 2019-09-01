@@ -13,7 +13,7 @@ def converge_encut(calculation: VaspCalculation,
                    encut_values: List[int],
                    working_directory: str) -> None:
     """Runs an ENCUT convergence calculation.
-    
+
     Args:
         calculation: The VaspCalculation object to clone and converge.
         encut_values: The ENCUT values to test.
@@ -23,7 +23,10 @@ def converge_encut(calculation: VaspCalculation,
     # setup directories
     for encut, calc in d.items():
         dirname = "{}eV".format(encut)
-        calc.calculation_directory = os.path.join(working_directory, dirname)
+        calc_dir = os.path.join(working_directory, dirname)
+        if not os.path.exists(calc_dir):
+            os.makedirs(calc_dir)
+        calc.calculation_directory = calc_dir
         if calc.incar is None:
             err = "Missing required input file (INCAR)."
             raise ValueError(err)
@@ -33,11 +36,11 @@ def converge_encut(calculation: VaspCalculation,
         else:
             calc.incar.tags.append(EncutTag(encut))
         calc.write()
-        os.chdir(calc.calculation_directory)
+        os.chdir(calc_dir)
         if calc.submission_script is None:
             err = "Missing required input file (submission script)."
             raise ValueError(err)
-        path = os.path.join(calc.calculation_directory, "runjob.sh")
+        path = os.path.join(calc_dir, "runjob.sh")
         cmd = "{} {}".format(calc.submission_script.exec_cmd, path)
         os.system(cmd)
 
