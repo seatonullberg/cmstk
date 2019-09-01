@@ -1,7 +1,7 @@
 from cmstk.elements import PeriodicTable
 
 
-def test_database():
+def test_periodic_table():
     """Test the initialization of an elements.PeriodicTable object."""
     pt = PeriodicTable()
     assert pt.atomic_number("C") == 6

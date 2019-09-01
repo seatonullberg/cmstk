@@ -19,9 +19,7 @@ class PotcarFile(object):
         - Note: length of `titles` will be greater than `filepaths` if reading
           from an already concatenated POTCAR.
     """
-    def __init__(self, filepaths: Optional[Sequence[str]] = None) -> None:
-        if filepaths is None:
-            filepaths = []
+    def __init__(self, *filepaths: str) -> None:
         self.filepaths = filepaths
         self._titles: List[str] = []
 
@@ -29,9 +27,9 @@ class PotcarFile(object):
     def titles(self) -> List[str]:
         return self._titles
 
-    def read(self, paths: Optional[Sequence[str]] = None) -> None:
+    def read(self, *paths: str) -> None:
         """Reads one or many POTCAR files.
-        
+
         Args:
             paths: The filepaths to read
 
@@ -39,8 +37,10 @@ class PotcarFile(object):
             None
         """
         self._titles = []  # reset the existing titles each read
-        if paths is None:
+        if len(paths) == 0:
             paths = self.filepaths
+        else:
+            self.filepaths = paths
         for path in paths:
             with open(path, "r") as f:
                 lines = f.readlines()
@@ -51,7 +51,7 @@ class PotcarFile(object):
 
     def write(self, path: Optional[str] = None) -> None:
         """Writes a POTCAR file.
-        
+
         Args:
             path: The filepath to write to.
 

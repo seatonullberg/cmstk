@@ -1,10 +1,10 @@
-from cmstk.vasp.incar_tags import VaspTag
+from cmstk.vasp.incar_tags import IncarTag
 import importlib
 import inspect
 
 
 def test_incar_tags():
-    """Tests behavior of all vasp tags dynamically."""
+    """Tests behavior of all incar tags dynamically."""
     module_str = "cmstk.vasp.incar_tags"
     module = importlib.import_module(module_str)
     attrs = {name: obj for name, obj in module.__dict__.items()}
@@ -14,9 +14,9 @@ def test_incar_tags():
     }
     tags = {
         name: obj
-        for name, obj in classes.items() if issubclass(obj, VaspTag)
+        for name, obj in classes.items() if issubclass(obj, IncarTag)
     }
-    del tags["VaspTag"]  # ignore the base class
+    del tags["IncarTag"]  # ignore the base class
     # simply check that attributes are present and populated
     for _, v in tags.items():
         tag = v()

@@ -1,5 +1,12 @@
-from cmstk.utils import BaseTag, BaseTagCollection, within_one_percent
+from cmstk.utils import BaseTag, BaseTagCollection, within_one_percent, consecutive_percent_difference
 import pytest
+
+
+def test_consecutive_percent_difference():
+    """Tests behavior of the utility function consecutive_percent_difference."""
+    x = [100, 50, 10, 1]
+    deltas = consecutive_percent_difference(x)
+    assert deltas == [0, -50, -80, -90]
 
 
 def test_within_one_percent():

@@ -1,5 +1,5 @@
 from cmstk.utils import BaseTagCollection
-from cmstk.vasp.incar_tags import VaspTag
+from cmstk.vasp.incar_tags import IncarTag
 from typing import Any, Optional, Sequence
 
 
@@ -22,7 +22,7 @@ class IncarFile(object):
         if filepath is None:
             filepath = "INCAR"
         self.filepath = filepath
-        self._tags = BaseTagCollection(VaspTag, tags)
+        self._tags = BaseTagCollection(IncarTag, tags)
 
     def read(self, path: Optional[str] = None) -> None:
         if path is None:
@@ -31,7 +31,7 @@ class IncarFile(object):
             lines = f.readlines()
             lines = list(map(lambda x: x.strip(), lines))  # remove newlines
             lines = list(filter(None, lines))  # remove empty strings
-        tags = self.tags.load_all_tags(base_class=VaspTag,
+        tags = self.tags.load_all_tags(base_class=IncarTag,
                                        module_str="cmstk.vasp.incar_tags")
         for line in lines:
             is_valid = False
