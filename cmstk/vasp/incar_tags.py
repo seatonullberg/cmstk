@@ -4,7 +4,7 @@ import re
 from typing import Any, Optional, Sequence, Tuple
 
 
-class VaspTag(BaseTag):
+class IncarTag(BaseTag):
     """Representation of a generic INCAR tag.
     
     Args:
@@ -217,7 +217,7 @@ class VaspTag(BaseTag):
         if self.comment is None:
             s = "{} = {}\n".format(self.name, str_value)
         else:
-            s = "{} = {}\t! {}\n".format(self.name, str_value, self.comment)
+            s = "{} = {}    ! {}\n".format(self.name, str_value, self.comment)
         return s
 
 
@@ -226,10 +226,12 @@ class VaspTag(BaseTag):
 #===============================#
 
 
-class AlgoTag(VaspTag):
+class AlgoTag(IncarTag):
     def __init__(self, value=None):
-        comment = ("""Determines the electronic minimization algorithm and/or 
-                   GW calculation type.""")
+        comment = (
+            "Determines the electronic minimization algorithm and/or GW " 
+            "calculation type."
+        )
         name = "ALGO"
         valid_options = [
             "Normal", "VeryFast", "Fast", "Conjugate", "All", "Damped",
@@ -249,7 +251,7 @@ class AlgoTag(VaspTag):
         return self._write_str()
 
 
-class EdiffTag(VaspTag):
+class EdiffTag(IncarTag):
     def __init__(self, value=None):
         comment = "The global break condition for the electronic SC-loop."
         name = "EDIFF"
@@ -266,7 +268,7 @@ class EdiffTag(VaspTag):
         return self._write_float()
 
 
-class EdiffgTag(VaspTag):
+class EdiffgTag(IncarTag):
     def __init__(self, value=None):
         comment = ("""Determines the break condition for the ionic relaxation 
                    loop.""")
@@ -284,7 +286,7 @@ class EdiffgTag(VaspTag):
         return self._write_float()
 
 
-class EncutTag(VaspTag):
+class EncutTag(IncarTag):
     def __init__(self, value=None):
         comment = "Cutoff energy for the planewave basis set in eV."
         name = "ENCUT"
@@ -301,7 +303,7 @@ class EncutTag(VaspTag):
         return self._write_int()
 
 
-class IbrionTag(VaspTag):
+class IbrionTag(IncarTag):
     def __init__(self, value=None):
         comment = "Determines how the ions are updated and moved."
         name = "IBRION"
@@ -318,7 +320,7 @@ class IbrionTag(VaspTag):
         return self._write_int()
 
 
-class IchargTag(VaspTag):
+class IchargTag(IncarTag):
     def __init__(self, value=None):
         comment = "Determines construction of the initial charge density."
         name = "ICHARG"
@@ -335,10 +337,12 @@ class IchargTag(VaspTag):
         return self._write_int()
 
 
-class IsifTag(VaspTag):
+class IsifTag(IncarTag):
     def __init__(self, value=None):
-        comment = ("""Determines whether the stress tensor is calculated and 
-                   which degrees of freedom are allowed to change.""")
+        comment = (
+            "Determines whether the stress tensor is calculated and which "
+            "degrees of freedom are allowed to change."
+        )
         name = "ISIF"
         valid_options = [0, 1, 2, 3, 4, 5, 6, 7]
         super().__init__(name=name,
@@ -353,7 +357,7 @@ class IsifTag(VaspTag):
         return self._write_int()
 
 
-class IsmearTag(VaspTag):
+class IsmearTag(IncarTag):
     def __init__(self, value=None):
         comment = "Determines how partial occupancies are set for each orbital."
         name = "ISMEAR"
@@ -370,7 +374,7 @@ class IsmearTag(VaspTag):
         return self._write_int()
 
 
-class IspinTag(VaspTag):
+class IspinTag(IncarTag):
     def __init__(self, value=None):
         comment = "Specifies spin polarization."
         name = "ISPIN"
@@ -387,7 +391,7 @@ class IspinTag(VaspTag):
         return self._write_int()
 
 
-class IstartTag(VaspTag):
+class IstartTag(IncarTag):
     def __init__(self, value=None):
         comment = "Determines whether or not to read the WAVECAR file."
         name = "ISTART"
@@ -404,7 +408,7 @@ class IstartTag(VaspTag):
         return self._write_int()
 
 
-class IsymTag(VaspTag):
+class IsymTag(IncarTag):
     def __init__(self, value=None):
         comment = "Determines how symmetry is treated."
         name = "ISYM"
@@ -421,7 +425,7 @@ class IsymTag(VaspTag):
         return self._write_int()
 
 
-class LchargTag(VaspTag):
+class LchargTag(IncarTag):
     def __init__(self, value=None):
         comment = "Determines whether or not a CHARGCAR/CHG file is written."
         name = "LCHARG"
@@ -438,11 +442,12 @@ class LchargTag(VaspTag):
         return self._write_bool()
 
 
-class LrealTag(VaspTag):
+class LrealTag(IncarTag):
     def __init__(self, value=None):
         comment = (
-            """Determines whether the projection operators are evaluated 
-                   in real space or reciprocal space.""")
+            "Determines whether the projection operators are evaluated "
+            "in real space or reciprocal space."
+        )
         name = "LREAL"
         valid_options = [bool, "On", "O", "Auto", "A"]
         super().__init__(name=name,
@@ -463,7 +468,7 @@ class LrealTag(VaspTag):
             return self._write_str()
 
 
-class LvtotTag(VaspTag):
+class LvtotTag(IncarTag):
     def __init__(self, value=None):
         comment = "Determines whether or not a LOCPOT file is written."
         name = "LVTOT"
@@ -480,7 +485,7 @@ class LvtotTag(VaspTag):
         return self._write_bool()
 
 
-class LwaveTag(VaspTag):
+class LwaveTag(IncarTag):
     def __init__(self, value=None):
         comment = "Determines whether or not a WAVECAR file is written."
         name = "LWAVE"
@@ -497,7 +502,7 @@ class LwaveTag(VaspTag):
         return self._write_bool()
 
 
-class MagmomTag(VaspTag):
+class MagmomTag(IncarTag):
     def __init__(self, value=None):
         comment = "Specifies the initial magnetic moment for each atom."
         name = "MAGMOM"
@@ -514,7 +519,7 @@ class MagmomTag(VaspTag):
         return self._write_array()
 
 
-class NcoreTag(VaspTag):
+class NcoreTag(IncarTag):
     def __init__(self, value=None):
         comment = "Determines the number of compute nodes per orbital."
         name = "NCORE"
@@ -531,7 +536,7 @@ class NcoreTag(VaspTag):
         return self._write_int()
 
 
-class NelmTag(VaspTag):
+class NelmTag(IncarTag):
     def __init__(self, value=None):
         comment = "The maximum number of electronic SC steps."
         name = "NELM"
@@ -548,7 +553,7 @@ class NelmTag(VaspTag):
         return self._write_int()
 
 
-class NswTag(VaspTag):
+class NswTag(IncarTag):
     def __init__(self, value=None):
         comment = "Maximum number of ionic steps."
         name = "NSW"
@@ -565,7 +570,7 @@ class NswTag(VaspTag):
         return self._write_int()
 
 
-class PotimTag(VaspTag):
+class PotimTag(IncarTag):
     def __init__(self, value=None):
         comment = "Specifies the time step or step width scaling."
         name = "POTIM"
@@ -582,7 +587,7 @@ class PotimTag(VaspTag):
         return self._write_float()
 
 
-class PrecTag(VaspTag):
+class PrecTag(IncarTag):
     def __init__(self, value=None):
         comment = "Determines the precision mode."
         name = "PREC"
@@ -601,7 +606,7 @@ class PrecTag(VaspTag):
         return self._write_str()
 
 
-class SigmaTag(VaspTag):
+class SigmaTag(IncarTag):
     def __init__(self, value=None):
         comment = "The width of the smearing in eV."
         name = "SIGMA"
@@ -618,7 +623,7 @@ class SigmaTag(VaspTag):
         return self._write_float()
 
 
-class SymprecTag(VaspTag):
+class SymprecTag(IncarTag):
     def __init__(self, value=None):
         comment = "Determines accuracy with which positions must be specified."
         name = "SYMPREC"
@@ -635,7 +640,7 @@ class SymprecTag(VaspTag):
         return self._write_float()
 
 
-class SystemTag(VaspTag):
+class SystemTag(IncarTag):
     def __init__(self, value=None):
         comment = "Description of the simulation."
         name = "SYSTEM"
