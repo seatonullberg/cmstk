@@ -69,4 +69,3 @@ class PotcarFile(object):
         potcar_out = "".join(potcars_in)
         with open(write_path, "w") as f:
             f.write(potcar_out)
-
