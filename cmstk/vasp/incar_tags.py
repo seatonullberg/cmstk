@@ -250,6 +250,108 @@ class AlgoTag(IncarTag):
         return self._write_str()
 
 
+class AminTag(IncarTag):
+    def __init__(self, value=None):
+        comment = (
+            "Minimal mixing parameter in Kerker's initial approximation to the "
+            "charge dielectric function used in the Broyden/Pulay mixing "
+            "scheme."
+        )
+        name = "AMIN"
+        valid_options = [float]
+        super().__init__(
+            name=name,
+            comment=comment,
+            valid_options=valid_options,
+            value=value
+        )
+
+    def read(self, line: str):
+        return self._read_float(line)
+
+    def write(self):
+        return self._write_float()
+
+
+class AmixTag(IncarTag):
+    def __init__(self, value=None):
+        comment = "Linear mixing parameter."
+        name = "AMIX"
+        valid_options = [float]
+        super().__init__(
+            name=name,
+            comment=comment,
+            valid_options=valid_options,
+            value=value
+        )
+
+    def read(self, line: str):
+        return self._read_float(line)
+
+    def write(self):
+        return self._write_float()
+
+
+class AmixMagTag(IncarTag):
+    def __init__(self, value=None):
+        comment = "Linear mixing parameter for magnetization density."
+        name = "AMIX_MAG"
+        valid_options = [float]
+        super().__init__(
+            name=name,
+            comment=comment,
+            valid_options=valid_options,
+            value=value
+        )
+
+    def read(self, line: str):
+        return self._read_float(line)
+
+    def write(self):
+        return self._write_float()
+
+
+class BmixTag(IncarTag):
+    def __init__(self, value=None):
+        comment = "Cutoff wave vector for Kerker mixing scheme."
+        name = "BMIX"
+        valid_options = [float]
+        super().__init__(
+            name=name,
+            comment=comment,
+            valid_options=valid_options,
+            value=value
+        )
+
+    def read(self, line: str):
+        return self._read_float(line)
+
+    def write(self):
+        return self._write_float()
+
+
+class BmixMagTag(IncarTag):
+    def __init__(self, value=None):
+        comment = (
+            "Cutoff wave vector for Kerker mixing scheme for the magnetization "
+            "density."
+        )
+        name = "BMIX_MAG"
+        valid_options = [float]
+        super().__init__(
+            name=name,
+            comment=comment,
+            valid_options=valid_options,
+            value=value
+        )
+
+    def read(self, line: str):
+        return self._read_float(line)
+
+    def write(self):
+        return self._write_float()
+
+
 class EdiffTag(IncarTag):
     def __init__(self, value=None):
         comment = "The global break condition for the electronic SC-loop."
@@ -440,6 +542,25 @@ class LchargTag(IncarTag):
         return self._write_bool()
 
 
+class LorbitTag(IncarTag):
+    def __init__(self, value=None):
+        comment = "Determines whether PROCAR or PROOUT files are written."
+        name = "LORBIT"
+        valid_options = [0, 1, 2, 5, 10, 11, 12]
+        super().__init__(
+            name=name,
+            comment=comment,
+            valid_options=valid_options,
+            value=value
+        )
+
+    def read(self, line: str):
+        return self._read_int(line)
+
+    def write(self):
+        return self._write_int()
+
+
 class LrealTag(IncarTag):
     def __init__(self, value=None):
         comment = ("Determines whether the projection operators are evaluated "
@@ -542,6 +663,40 @@ class NelmTag(IncarTag):
                          valid_options=valid_options,
                          value=value)
 
+    def read(self, line: str):
+        return self._read_int(line)
+
+    def write(self):
+        return self._write_int()
+
+
+class NelminTag(IncarTag):
+    def __init__(self, value=None):
+        comment = "Specifies minimum number of electronic SCF steps."
+        name = "NELMIN"
+        valid_options = [int]
+        super().__init__(name=name,
+                         comment=comment,
+                         valid_options=valid_options,
+                         value=value)
+    
+    def read(self, line: str):
+        return self._read_int(line)
+
+    def write(self):
+        return self._write_int()
+
+
+class NparTag(IncarTag):
+    def __init__(self, value=None):
+        comment = "Determine the number of bands treated in parallel."
+        name = "NPAR"
+        valid_options = [int]
+        super().__init__(name=name,
+                         comment=comment,
+                         valid_options=valid_options,
+                         value=value)
+        
     def read(self, line: str):
         return self._read_int(line)
 
