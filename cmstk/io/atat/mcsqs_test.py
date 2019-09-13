@@ -17,6 +17,8 @@ def test_bestsqs_to_poscar():
     poscar_positions = np.array([p for p in poscar.lattice.positions])
     bestsqs_positions = np.array([p for p in bestsqs.lattice.positions])
     assert np.array_equal(poscar_positions, bestsqs_positions)
+    assert np.array_equal(poscar.lattice.coordinate_matrix,
+                          bestsqs.lattice.coordinate_matrix)
     assert sum(poscar.n_atoms_per_symbol) == bestsqs.lattice.n_atoms
     poscar.write("test.poscar")
     assert os.path.exists("test.poscar")

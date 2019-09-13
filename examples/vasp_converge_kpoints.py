@@ -4,7 +4,7 @@ from cmstk.hpc.slurm_tags import *
 from cmstk.structures.atoms import Atom
 from cmstk.structures.crystals import Lattice
 from cmstk.workflows.vasp.base import VaspCalculation
-from cmstk.workflows.vasp.convergence import converge_encut
+from cmstk.workflows.vasp.convergence import converge_kpoints
 from cmstk.vasp.incar import IncarFile
 from cmstk.vasp.incar_tags import *
 from cmstk.vasp.kpoints import KpointsFile
@@ -14,15 +14,22 @@ import datetime
 import os
 
 
-# Example of a verbose ENCUT convergence calculation automation script
+# Example of a verbose KPOINTS convergence calculation automation script
 
 
 working_directory = "YOUR/WORKING/DIRECTORY/HERE"  # replace with your working directory
-encut_values = [300, 350, 400, 450, 500, 550]  # replace with the ENCUT values you want to test
+# replace with the KPOINTS mesh sizes you want to test
+kpoint_sizes = [
+    (10, 10, 10),
+    (11, 11, 11),
+    (12, 12, 12),
+    (13, 13, 13),
+    (14, 14, 14),
+    (15, 15, 15)
+]  
 
 # Define the KPOINTS file
-kpoints = KpointsFile()
-kpoints.mesh_size = (12, 12, 12)
+kpoints = KpointsFile()  # use all defaults
 
 # Define the underlying lattice structure
 # ase for structure generation until it can be brought in-house
@@ -50,6 +57,7 @@ incar_tags = [
     AlgoTag("Normal"),
     EdiffTag(1e-06),
     EdiffgTag(-0.001),
+    EncutTag(400),
     IbrionTag(2),
     IchargTag(2),
     IsifTag(3),
@@ -75,7 +83,7 @@ slurm_tags = [
     AccountTag("phillpot"),
     DistributionTag("cyclic:cyclic"),
     ErrorTag("job.err"),
-    JobNameTag("converge_encut"),
+    JobNameTag("converge_kpoints"),
     MemPerCpuTag(100),
     NtasksTag(16),
     OutputTag("job.out"),
@@ -96,4 +104,4 @@ calculation = VaspCalculation(
     potcar=potcar,
     submission_script=submission_script
 )
-converge_encut(calculation, encut_values, working_directory)
+converge_kpoints(calculation, kpoint_sizes, working_directory)
