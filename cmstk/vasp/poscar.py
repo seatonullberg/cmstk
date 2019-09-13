@@ -1,7 +1,8 @@
 from cmstk.structures.atoms import Atom
 from cmstk.structures.crystals import Lattice
+from collections import OrderedDict
 import numpy as np
-from typing import Sequence, Optional
+from typing import Dict, Sequence, Optional
 
 
 class PoscarFile(object):
@@ -51,7 +52,13 @@ class PoscarFile(object):
             lattice = Lattice()
         self.lattice = lattice
         if n_atoms_per_symbol is None:
-            n_atoms_per_symbol = []
+            symbol_counts: Dict[str, int] = OrderedDict()
+            for symbol in self.lattice.symbols:
+                if symbol in symbol_counts:
+                    symbol_counts[symbol] += 1
+                else:
+                    symbol_counts[symbol] = 1
+            n_atoms_per_symbol = list(symbol_counts.values())
         self.n_atoms_per_symbol = n_atoms_per_symbol
         if relaxations is None:
             relaxations = np.array([], dtype=bool)
@@ -72,9 +79,11 @@ class PoscarFile(object):
             lines = [line.strip() for line in f.readlines()]
         self.comment = lines[0]
         self.scaling_factor = float(lines[1])
-        lattice_vectors = lines[2:5]
-        lattice_vectors = [np.fromstring(l, sep=" ") for l in lattice_vectors]
-        self.lattice.vectors = np.array(lattice_vectors)
+        coordinate_matrix = lines[2:5]
+        coordinate_matrix = [
+            np.fromstring(row, sep=" ") for row in coordinate_matrix
+        ]
+        self.lattice.coordinate_matrix = np.array(coordinate_matrix)
         self.n_atoms_per_symbol = [int(n) for n in lines[5].split()]
         if lines[6][0] in ["S", "s"]:
             selective_dynamics = True
@@ -115,7 +124,7 @@ class PoscarFile(object):
         with open(path, "w") as f:
             f.write("{}\n".format(self.comment))
             f.write("{}\n".format(self.scaling_factor))
-            for row in self.lattice.vectors:
+            for row in self.lattice.coordinate_matrix:
                 row = row.astype(str)
                 row = " ".join(row)
                 f.write("{}\n".format(row))
