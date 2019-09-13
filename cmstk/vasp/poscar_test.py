@@ -21,6 +21,8 @@ def test_poscar_file():
     poscar_reader.read()
     assert poscar_reader.comment == poscar.comment
     assert poscar_reader.direct == poscar.direct
+    assert np.array_equal(poscar_reader.lattice.coordinate_matrix,
+                          poscar.lattice.coordinate_matrix)
     for reader_position, position in zip(poscar_reader.lattice.positions,
                                          poscar.lattice.positions):
         assert np.array_equal(reader_position, position)

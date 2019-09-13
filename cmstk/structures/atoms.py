@@ -133,7 +133,7 @@ class AtomCollection(object):
         self._atoms.sort(key=lambda x: x.charge, reverse=hl)
 
     def sort_by_magnetic_moment(self, hl: Optional[bool] = None) -> None:
-        """Groups atoms by the magnitudes of their magnetic moments.
+        """Groups atoms by their magnetic moments.
         
         Args:
             hl: Flag indicate high-to-low ordering.
@@ -143,7 +143,7 @@ class AtomCollection(object):
         self._atoms.sort(key=lambda x: x.magnetic_moment, reverse=hl)
 
     def sort_by_position(self, hl: Optional[bool] = None) -> None:
-        """Groups atoms by the magnitudes of their positions.
+        """Groups atoms by the magnitude of their positions.
         
         Args:
             hl: Flag indicate high-to-low ordering.
@@ -187,7 +187,7 @@ class AtomCollection(object):
         self._atoms = atoms
 
     def sort_by_velocity(self, hl: Optional[bool] = None) -> None:
-        """Groups atoms by the magnitudes of their velocities.
+        """Groups atoms by the magnitude of their velocities.
         
         Args:
             hl: Flag indicate high-to-low ordering.

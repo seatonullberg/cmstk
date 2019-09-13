@@ -22,9 +22,11 @@ def test_bestsqs_file():
     bestsqs = BestsqsFile(filepath=path)
     bestsqs.read()
     coordinate_matrix = np.array([[5.7, 0, 0], [0, 5.7, 0], [0, 0, 5.7]])
+    print(bestsqs.lattice.coordinate_matrix)
+    print(coordinate_matrix)
     assert np.array_equal(bestsqs.lattice.coordinate_matrix, coordinate_matrix)
     lattice_vectors = np.array([[0, 0, -1], [0, -1, 0], [-1, 0, 0]])
-    assert np.array_equal(bestsqs.lattice.vectors, lattice_vectors)
+    assert np.array_equal(bestsqs.vectors, lattice_vectors)
     positions = [p for p in bestsqs.lattice.positions]
     assert len(positions) == 16
     assert bestsqs.lattice.n_atoms == 16
@@ -44,11 +46,9 @@ def test_rndstr_file():
 
     rndstr_reader = RndstrFile(filepath="test.in")
     rndstr_reader.read()
-    assert np.array_equal(rndstr_reader.lattice.angles, rndstr.lattice.angles)
-    assert np.array_equal(rndstr_reader.lattice.parameters,
-                          rndstr.lattice.parameters)
-    assert np.array_equal(rndstr_reader.lattice.vectors,
-                          rndstr.lattice.vectors)
+    assert np.array_equal(rndstr_reader.lattice.coordinate_matrix,
+                          rndstr.lattice.coordinate_matrix)
+    assert np.array_equal(rndstr_reader.vectors, rndstr.vectors)
     reader_positions = np.array([p for p in rndstr_reader.lattice.positions])
     positions = np.array([p for p in rndstr.lattice.positions])
     assert np.array_equal(reader_positions, positions)

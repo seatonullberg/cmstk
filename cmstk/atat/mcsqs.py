@@ -92,20 +92,26 @@ class BestsqsFile(object):
     Args:
         filepath: Filepath to a bestsqs.out file.
         lattice: Underlying lattice structure data.
+        vectors: Lattice vectors.
 
     Attributes:
         filepath: Filepath to a bestsqs.out file.
         lattice: Underlying lattice structure data.
+        vectors: Lattice vectors.
     """
     def __init__(self,
                  filepath: Optional[str] = None,
-                 lattice: Optional[Lattice] = None) -> None:
+                 lattice: Optional[Lattice] = None,
+                 vectors: Optional[np.ndarray] = None) -> None:
         if filepath is None:
             filepath = "bestsqs.out"
         self.filepath = filepath
         if lattice is None:
             lattice = Lattice()
         self.lattice = lattice
+        if vectors is None:
+            vectors = np.identity(3)
+        self.vectors = vectors
 
     def read(self, path: Optional[str] = None) -> None:
         """Reads a bestsqs.out file.
@@ -119,12 +125,12 @@ class BestsqsFile(object):
             lines = [line.strip() for line in f.readlines()]
 
         coordinate_matrix = lines[:3]
-        coordinate_matrix_arr = np.array(
-            [np.fromstring(vec, sep=" ") for vec in coordinate_matrix])
+        coordinate_matrix = [
+            np.fromstring(row, sep=" ") for row in coordinate_matrix
+        ]
 
         vectors = lines[3:6]
-        vectors_arr = np.array(
-            [np.fromstring(vec, sep=" ") for vec in vectors])
+        vectors = [np.fromstring(vec, sep=" ") for vec in vectors]
 
         positions = lines[6:]
         positions = [" ".join(p.split()[:3]) for p in positions]
@@ -134,8 +140,8 @@ class BestsqsFile(object):
         symbols = lines[6:]
         symbols = [s.split()[-1] for s in symbols]
 
-        self.lattice.coordinate_matrix = coordinate_matrix_arr
-        self.lattice.vectors = vectors_arr
+        self.lattice.coordinate_matrix = np.array(coordinate_matrix)
+        self.vectors = np.array(vectors)
         for position, symbol in zip(positions_arr, symbols):
             self.lattice.add_atom(Atom(position=position, symbol=symbol))
 
@@ -144,9 +150,9 @@ class RndstrFile(object):
     """File wrapper for a rndstr.in input file.
     
     Notes:
-        This implementation does not support the (ax, ay, az...) format for
-        specifying tilt angles in the lattice! Any files formatted as such will
-        be read improperly and may fail silently!
+        This implementation only supports the [ax, ay, az...] tilt angle format.
+        Any files formatted differently will be read improperly and may fail 
+        silently!
         File specification:
         https://www.brown.edu/Departments/Engineering/Labs/avdw/atat/manual/node47.html
 
@@ -154,18 +160,19 @@ class RndstrFile(object):
         filepath: Filepath to a rndstr.in file.
         lattice: The lattice structure to represent.
         probabilities: Probability of occupation by any symbols at each site.
+        vectors: Lattice vectors.
 
     Attributes:
         filepath: Filepath to a rndstr.in file.
         lattice: The lattice structure being represented.
         probabilities: Probability of occupation by any symbols at each site.
+        vectors: Lattice vectors.
     """
-    def __init__(
-            self,
-            filepath: Optional[str] = None,
-            lattice: Optional[Lattice] = None,
-            probabilities: Optional[List[Dict[str, float]]] = None,
-    ) -> None:
+    def __init__(self,
+                 filepath: Optional[str] = None,
+                 lattice: Optional[Lattice] = None,
+                 probabilities: Optional[List[Dict[str, float]]] = None,
+                 vectors: Optional[np.ndarray] = None) -> None:
         if filepath is None:
             filepath = "rndstr.in"
         self.filepath = filepath
@@ -175,6 +182,9 @@ class RndstrFile(object):
         if probabilities is None:
             probabilities = []
         self.probabilities = probabilities
+        if vectors is None:
+            vectors = np.identity(3)
+        self.vectors = vectors
 
     def read(self, path: Optional[str] = None) -> None:
         """Reads a rndstr.in file.
@@ -187,25 +197,23 @@ class RndstrFile(object):
         with open(path, "r") as f:
             lines = [line.strip() for line in f.readlines()]
 
-        parameters = np.array([float(x) for x in lines[0].split()[:3]])
+        coordinate_matrix = lines[:3]
+        coordinate_matrix = [
+            np.fromstring(row, sep=" ") for row in coordinate_matrix
+        ]
 
-        angles = np.array([float(x) for x in lines[0].split()[3:]])
+        vectors = lines[3:6]
+        vectors = [np.fromstring(vec, sep=" ") for vec in vectors]
 
-        vectors = lines[1:4]
-        vectors_arr = np.array(
-            [np.fromstring(vec, sep=" ") for vec in vectors])
+        positions = [" ".join(l.split()[:3]) for l in lines[6:]]
+        positions = [np.fromstring(p, sep=" ") for p in positions]
 
-        positions = [" ".join(l.split()[:3]) for l in lines[4:]]
-        positions_arr = np.array(
-            [np.fromstring(p, sep=" ") for p in positions])
+        self.lattice.coordinate_matrix = np.array(coordinate_matrix)
+        self.vectors = np.array(vectors)
+        for position in positions:
+            self.lattice.add_atom(Atom(position=np.array(position)))
 
-        self.lattice.angles = angles
-        self.lattice.parameters = parameters
-        self.lattice.vectors = vectors_arr
-        for position in positions_arr:
-            self.lattice.add_atom(Atom(position=position))
-
-        probabilities = [l.split()[3] for l in lines[4:]]  # no spaces
+        probabilities = [l.split()[3] for l in lines[6:]]  # no spaces
         probabilities_split = [p.split(",") for p in probabilities]
         formatted_probabilities = []
         for probability in probabilities_split:
@@ -225,11 +233,11 @@ class RndstrFile(object):
         if path is None:
             path = self.filepath
         with open(path, "w") as f:
-            parameters = " ".join(self.lattice.parameters.astype(str))
-            angles = " ".join(self.lattice.angles.astype(str))
-            f.write("{} {}\n".format(parameters, angles))
+            for row in self.lattice.coordinate_matrix:
+                row = " ".join(row.astype(str))
+                f.write("{}\n".format(row))
 
-            for row in self.lattice.vectors:
+            for row in self.vectors:
                 row = " ".join(row.astype(str))
                 f.write("{}\n".format(row))
 
