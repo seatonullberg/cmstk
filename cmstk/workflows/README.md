@@ -1,0 +1,1 @@
+Package `workflows` provides higher level interfaces to enable automation.
