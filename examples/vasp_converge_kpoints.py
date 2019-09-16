@@ -1,4 +1,7 @@
-from ase.build import bulk
+# ====================================================================== #
+# Example of a verbose KPOINTS convergence calculation automation script #
+# ====================================================================== #
+
 from cmstk.hpc.slurm import SubmissionScript
 from cmstk.hpc.slurm_tags import *
 from cmstk.structures.atoms import Atom
@@ -14,11 +17,7 @@ import datetime
 import os
 
 
-# Example of a verbose KPOINTS convergence calculation automation script
-
-
-working_directory = "YOUR/WORKING/DIRECTORY/HERE"  # replace with your working directory
-# replace with the KPOINTS mesh sizes you want to test
+working_directory = "YOUR/WORKING/DIRECTORY/HERE"
 kpoint_sizes = [
     (10, 10, 10),
     (11, 11, 11),
@@ -31,24 +30,20 @@ kpoint_sizes = [
 # Define the KPOINTS file
 kpoints = KpointsFile()  # use all defaults
 
-# Define the underlying lattice structure
-# ase for structure generation until it can be brought in-house
+# Define the lattice structure in a POSCAR
 a0 = 2.856
-ase_atoms = bulk(name="Fe", crystalstructure="bcc", a=a0, cubic=True)
-lattice = Lattice(vectors=np.array(
-    [[a0, 0, 0],
-     [0, a0, 0],
-     [0, 0, a0]]
-))
-for position in ase_atoms.positions:
-    lattice.add_atom(Atom(position=position, symbol="Fe"))
-poscar = PoscarFile(
-    direct=False,
-    lattice=lattice
-)
+symbol = "Fe"
+cm = np.array([[a0, 0, 0], [0, a0, 0], [0, 0, a0]])
+atoms = [
+    Atom(position=np.array([0, 0, 0]), symbol=symbol),
+    Atom(position=np.array([a0/2, a0/2, a0/2]), symbol=symbol)
+]
+lattice = Lattice(atoms=atoms, coordinate_matrix=cm)
+poscar = PoscarFile(lattice=lattice)
 
 # Load in a POTCAR
-path = os.path.join(working_directory, "POTCAR")  # Can load multiple POTCARS from anywhere
+# Multiple can be loaded together (variadic args)
+path = os.path.join(working_directory, "POTCAR")
 potcar = PotcarFile(path)
 potcar.read()
 
@@ -68,17 +63,16 @@ incar_tags = [
     LrealTag(False),
     LvtotTag(False),
     LwaveTag(False),
-    NcoreTag(4),
     NelmTag(40),
-    NswTag(40),
+    NswTag(1),
     PrecTag("High"),
     SigmaTag(0.05),
     SystemTag("Fe BCC Unit")
 ]
+# Tags can also be loaded from a json file with IncarFile.from_default()
 incar = IncarFile(tags=incar_tags)
 
 # Define the SubmissionScript
-# Replace these tag values with yours
 slurm_tags = [
     AccountTag("phillpot"),
     DistributionTag("cyclic:cyclic"),
@@ -90,7 +84,6 @@ slurm_tags = [
     QosTag("phillpot"),
     TimeTag(datetime.timedelta(hours=1))
 ]
-# Replace these commands with yours
 slurm_cmds = [
     "module load intel/2016.0.109",
     "module load impi/5.1.1",
@@ -104,4 +97,7 @@ calculation = VaspCalculation(
     potcar=potcar,
     submission_script=submission_script
 )
+
+# Finally, submit the series of jobs
+# They will all run simultaneously barring queue limits
 converge_kpoints(calculation, kpoint_sizes, working_directory)
