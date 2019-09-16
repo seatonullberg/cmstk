@@ -55,3 +55,14 @@ def test_incar_file():
             continue
         assert tag.value == incar.tags[tag.name].value
     os.remove("test.incar")
+
+
+def test_incar_file_from_default():
+    """Tests initialization of an IncarFile object from json defaults."""
+    name = "test_set"
+    json_path = os.path.join(data_directory(), "vasp", "incar_defaults.json")
+    incar = IncarFile.from_default(name=name, json_path=json_path)
+    assert incar.tags["ENCUT"].value == 400
+    assert incar.tags["EDIFF"].value == 1e-06
+    assert incar.tags["ALGO"].value == "Fast"
+    assert incar.tags["LORBIT"].value == False

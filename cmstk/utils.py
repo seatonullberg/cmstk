@@ -1,5 +1,6 @@
 import importlib
 import inspect
+import json
 import os
 from typing import Any, Dict, List, Optional, Sequence, Union
 
@@ -109,6 +110,41 @@ class BaseTagCollection(object):
         self._tags: Dict[str, Any] = {}
         for tag in tags:
             self.append(tag)
+
+    @classmethod
+    def from_default(cls, 
+                     base_class: Optional[Any], 
+                     module_str: str,
+                     name: str, 
+                     path: str):
+        """Initializes a BaseTagCollection from a predefined json file.
+
+        Args:
+            base_class: The class which all members must be an instance of.
+            module_str: Module to import from.
+            name: Name of the default setting to load.
+            path: Path to the json file.
+
+        Raises:
+            KeyError:
+            - `{key}` is not a valid key for any tag in `{module}`.
+        """
+        with open(path, "r") as f:
+            json_data = json.load(f)[name]  # only load the desired default
+        valid_tags = {
+            tag.name: tag for tag in cls.load_all_tags(base_class, module_str)
+        }
+        tags = []
+        for k, v in json_data.items():
+            if k not in valid_tags.keys():
+                err = "`{k}` is not a valid key for any tag in `{m}`".format(
+                    k=k, m=module_str
+                )
+                raise KeyError(err)
+            tag = valid_tags[k]
+            tag.value = v
+            tags.append(tag)
+        return cls(base_class=base_class, tags=tags)
 
     def append(self, tag: Any) -> None:
         """Appends a tag to the sequence if it is valid.
