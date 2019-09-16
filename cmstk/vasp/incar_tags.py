@@ -371,8 +371,8 @@ class EdiffTag(IncarTag):
 
 class EdiffgTag(IncarTag):
     def __init__(self, value=None):
-        comment = ("""Determines the break condition for the ionic relaxation 
-                   loop.""")
+        comment = ("Determines the break condition for the ionic relaxation "
+                   "loop.")
         name = "EDIFFG"
         valid_options = [float]
         super().__init__(name=name,
