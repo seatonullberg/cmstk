@@ -10,7 +10,8 @@ pace of computational research.
 ## Optional Environment Variables
 
 **CMSTK_INCAR_DEFAULTS** - Path to a json file containing sets of default INCAR tag values. The json file should look something like the following example:
-```
+
+```json
 {
     "spin": {
         "ISPIN": 2,
