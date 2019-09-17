@@ -67,5 +67,9 @@ def test_base_tag_collection():
         assert type(tag) is MockBaseTag
     tag = collection["one"]
     assert tag.name == "one"
+    collection["one"] = 1.0
+    assert collection["one"].value == 1.0
     del collection["one"]
     assert len(collection._tags) == 2
+    with pytest.raises(KeyError):
+        collection["invalid"] = 1.0

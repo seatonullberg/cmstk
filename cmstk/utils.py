@@ -199,5 +199,12 @@ class BaseTagCollection(object):
     def __getitem__(self, key):
         return self._tags[key]
 
+    def __setitem__(self, key, value):
+        if key in self._tags:
+            self._tags[key].value = value
+        else:
+            err = "`{}` is not a valid key in self._tags".format(key)
+            raise KeyError(err)
+
     def __delitem__(self, key):
         del self._tags[key]
