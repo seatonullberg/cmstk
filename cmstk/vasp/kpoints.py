@@ -55,9 +55,6 @@ class KpointsFile(object):
         
         Args:
             path: The filepath to read from.
-
-        Returns:
-            None
         """
         if path is None:
             path = self.filepath
@@ -74,9 +71,6 @@ class KpointsFile(object):
         
         Args:
             path: The filepath to write to.
-    
-        Returns:
-            None
         """
         if path is None:
             path = self.filepath

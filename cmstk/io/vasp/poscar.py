@@ -19,10 +19,8 @@ def poscar_to_rndstr(poscar: PoscarFile,
         - `probabilities` must have length equal to `poscar.lattice.n_atoms`.
     """
     if len(probabilities) != poscar.lattice.n_atoms:
-        err = (
-            "`probabilities` must have length equal to "
-            "`poscar.lattice.n_atoms`."
-        )
+        err = ("`probabilities` must have length equal to "
+               "`poscar.lattice.n_atoms`.")
         raise ValueError(err)
     rndstr = RndstrFile(lattice=poscar.lattice,
                         probabilities=probabilities,

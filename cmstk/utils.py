@@ -96,7 +96,6 @@ class TagCollection(object):
         common_class: The class which all members must be an instance of.
         tags: The tag objects to store.
     """
-
     def __init__(self, common_class: type,
                  tags: Optional[List[Any]] = None) -> None:
         if not issubclass(common_class, BaseTag):
@@ -109,9 +108,7 @@ class TagCollection(object):
                 self.insert(tag)
 
     @classmethod
-    def from_default(cls, common_class: type, 
-                     json_path: str,
-                     module: str,
+    def from_default(cls, common_class: type, json_path: str, module: str,
                      setting_name: str):
         """Initializes from a predefined json file.
         
@@ -122,16 +119,16 @@ class TagCollection(object):
             setting_name: Name of the setting to read from the json file.
         """
         with open(json_path, "r") as f:
-            json_data = json.load(f)[setting_name] 
+            json_data = json.load(f)[setting_name]
         valid_tags = {
-            tag.name: tag for tag in cls.import_tags(common_class, module)
+            tag.name: tag
+            for tag in cls.import_tags(common_class, module)
         }
         tags = []
         for k, v in json_data.items():
             if k not in valid_tags:
                 err = "`{}` is not a valid key for any tag in `{}`".format(
-                    k, module
-                )
+                    k, module)
                 raise KeyError(err)
             tag = valid_tags[k]
             tag.value = v
@@ -148,12 +145,12 @@ class TagCollection(object):
         """
         attributes = importlib.import_module(module).__dict__
         classes = {
-            name: obj for name, obj in attributes.items()
-            if inspect.isclass(obj)
+            name: obj
+            for name, obj in attributes.items() if inspect.isclass(obj)
         }
         tags = {
-            name: obj for name, obj in classes.items()
-            if issubclass(obj, common_class)
+            name: obj
+            for name, obj in classes.items() if issubclass(obj, common_class)
         }
         del tags[common_class.__name__]  # do not import the base class
         return [v() for v in tags.values()]
@@ -177,10 +174,11 @@ class TagCollection(object):
             - `value` must be an instance of {common_class}.
         """
         if not isinstance(value, self._common_class):
-            err = "`value` must be an instance of {}".format(self._common_class)
+            err = "`value` must be an instance of {}".format(
+                self._common_class)
             raise ValueError(err)
         self._tags[value.name] = value
-    
+
     # dict interface wrappers
 
     def get(self, key, default=None):

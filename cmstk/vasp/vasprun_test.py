@@ -17,7 +17,6 @@ def test_vasprun_file():
     fermi_energy = vasprun.fermi_energy()
     assert fermi_energy == 9.09133775
     initial_reciprocal_lattice = vasprun.reciprocal_lattice(initial=True)
-    print(initial_reciprocal_lattice)
     assert initial_reciprocal_lattice.shape == (3, 3)
     final_reciprocal_lattice = vasprun.reciprocal_lattice(initial=False)
     assert final_reciprocal_lattice.shape == (3, 3)

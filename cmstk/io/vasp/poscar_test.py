@@ -10,14 +10,11 @@ def test_poscar_to_rndstr():
     path = os.path.join(data_directory(), "vasp", "Fe75Cr25_BCC_bulk.poscar")
     poscar = PoscarFile(filepath=path)
     poscar.read()
-    probabilities = [
-        {"Fe": 0.75, "Cr": 0.25} for _ in range(poscar.lattice.n_atoms)
-    ]
-    vectors = np.array([
-        [1.0, 0.0, 0.0],
-        [0.0, 1.0, 0.0],
-        [0.0, 0.0, 1.0]
-    ])
+    probabilities = [{
+        "Fe": 0.75,
+        "Cr": 0.25
+    } for _ in range(poscar.lattice.n_atoms)]
+    vectors = np.array([[1.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 1.0]])
     rndstr = poscar_to_rndstr(poscar=poscar,
                               probabilities=probabilities,
                               vectors=vectors)

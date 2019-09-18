@@ -24,8 +24,8 @@ class IncarFile(object):
         self._tags = TagCollection(IncarTag, tags)
 
     @classmethod
-    def from_default(cls, 
-                     setting_name: str, 
+    def from_default(cls,
+                     setting_name: str,
                      filepath: Optional[str] = None,
                      json_path: Optional[str] = None):
         """Initializes from predefined settings.
@@ -48,19 +48,15 @@ class IncarFile(object):
         if json_path is None:
             json_path = os.getenv("CMSTK_INCAR_DEFAULTS")
         if json_path is None:
-            err = (
-                "Unable to load defaults without value for "
-                "CMSTK_INCAR_DEFAULTS."
-            )
+            err = ("Unable to load defaults without value for "
+                   "CMSTK_INCAR_DEFAULTS.")
             raise ValueError(err)
         common_class = IncarTag
         module = "cmstk.vasp.incar_tags"
-        tags = TagCollection.from_default(
-            common_class=common_class,
-            module=module,
-            setting_name=setting_name,
-            json_path=json_path
-        ).values()
+        tags = TagCollection.from_default(common_class=common_class,
+                                          module=module,
+                                          setting_name=setting_name,
+                                          json_path=json_path).values()
         return cls(filepath=filepath, tags=tags)
 
     def read(self, path: Optional[str] = None) -> None:

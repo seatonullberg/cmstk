@@ -32,9 +32,6 @@ class PotcarFile(object):
 
         Args:
             paths: The filepaths to read
-
-        Returns:
-            None
         """
         self._titles = []  # reset the existing titles each read
         if len(paths) == 0:
@@ -54,9 +51,6 @@ class PotcarFile(object):
 
         Args:
             path: The filepath to write to.
-
-        Returns:
-            None
         """
         if path is None:
             write_path = "POTCAR"

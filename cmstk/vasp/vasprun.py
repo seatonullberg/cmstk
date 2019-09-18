@@ -20,7 +20,6 @@ class VasprunFile(object):
     Attributes:
         filepath: Filepath to a vasprun.xml file.
     """
-
     def __init__(self, filepath: Optional[str] = None) -> None:
         if filepath is None:
             filepath = "vasprun.xml"
@@ -65,16 +64,13 @@ class VasprunFile(object):
         n_ions = len(projection[0][0][0])
         n_orbitals = len(projection[0][0][0][0].text.split())  # type: ignore
         eigenvectors = np.zeros(
-            (n_spins, n_kpoints, n_bands, n_ions, n_orbitals)
-        )
+            (n_spins, n_kpoints, n_bands, n_ions, n_orbitals))
         for i in range(n_spins):
             for j in range(n_kpoints):
                 for k in range(n_bands):
                     for l in range(n_ions):
                         for m in range(n_orbitals):
-                            eigenvectors[i, j, k, l, m] = float(  # type: ignore
-                                projection[i][j][k][l].text.split()[m]  # type: ignore
-                            )
+                            eigenvectors[i, j, k, l, m] = float(projection[i][j][k][l].text.split()[m])  # type: ignore
         return eigenvectors
 
     def fermi_energy(self) -> float:
@@ -89,7 +85,7 @@ class VasprunFile(object):
         """
         index = (0 if initial else -1)
         lattice = np.zeros((3, 3))
-        lattice_entry = self._root.findall("structure")[index].find("crystal").findall("varray")[1]  # type: ignore        
+        lattice_entry = self._root.findall("structure")[index].find("crystal").findall("varray")[1]  # type: ignore
         for i in range(3):
             temp = lattice_entry[i].text.split()  # type: ignore
             for j in range(3):

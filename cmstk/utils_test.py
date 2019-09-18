@@ -75,7 +75,7 @@ def test_tag_collection():
     assert len(collection) == 2
     test_tag4 = "not a tag"
     with pytest.raises(ValueError):
-        collection.insert(test_tag4)    
+        collection.insert(test_tag4)
     assert len(collection) == 2
     # items
     for key, value in collection.items():
