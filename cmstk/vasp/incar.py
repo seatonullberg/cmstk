@@ -1,7 +1,7 @@
 from cmstk.utils import BaseTag, TagCollection
 from cmstk.vasp.incar_tags import IncarTag
 import os
-from typing import Any, List, Optional
+from typing import List, Optional
 
 
 class IncarFile(object):
@@ -13,11 +13,12 @@ class IncarFile(object):
 
     Attributes:
         filepath: Filepath to an INCAR file.
-        tags: List of vasp tag objects which can be accessed like a dict.
+        tags: TagCollection which can be accessed like a dict.
     """
     def __init__(self,
                  filepath: Optional[str] = None,
-                 tags: Optional[List[BaseTag]] = None) -> None:
+                 tags: Optional[List[BaseTag]]= None
+                ) -> None:
         if filepath is None:
             filepath = "INCAR"
         self.filepath = filepath
@@ -32,9 +33,8 @@ class IncarFile(object):
 
         Notes:
             The predefined settings are assumed to be in a json file located at
-            the environment variable CMSTK_INCAR_DEFAULTS or passed absolutely 
-            in the parameter `json_path`. The `json_path` parameter takes
-            precedence.
+            the environment variable CMSTK_INCAR_DEFAULTS or passed directly in
+            the parameter `json_path`. The `json_path` parameter takes priority.
         
         Args:
             setting_name: The name of the default setting to use.
@@ -93,3 +93,11 @@ class IncarFile(object):
     @property
     def tags(self) -> TagCollection:
         return self._tags
+
+    @tags.setter
+    def tags(self, value: TagCollection) -> None:
+        if value.common_class is IncarTag:
+            self._tags = value
+        else:
+            err = "`value.common_class` must be IncarTag"
+            raise ValueError(err)

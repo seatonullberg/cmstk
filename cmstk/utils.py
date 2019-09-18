@@ -111,7 +111,7 @@ class TagCollection(object):
     def from_default(cls, common_class: type, json_path: str, module: str,
                      setting_name: str):
         """Initializes from a predefined json file.
-        
+
         Args:
             common_class: The class which all members must be an instance of.
             json_path: Path to the json file to read.
@@ -178,6 +178,10 @@ class TagCollection(object):
                 self._common_class)
             raise ValueError(err)
         self._tags[value.name] = value
+
+    @property
+    def common_class(self) -> type:
+        return self._common_class
 
     # dict interface wrappers
 

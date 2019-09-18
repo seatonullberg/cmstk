@@ -1,6 +1,7 @@
 from cmstk.hpc.slurm_tags import SlurmTag
-from cmstk.utils import TagCollection
-from typing import Any, List, Optional
+from cmstk.utils import BaseTag, TagCollection
+import os
+from typing import List, Optional
 
 
 class SubmissionScript(object):
@@ -13,16 +14,14 @@ class SubmissionScript(object):
 
     Attributes:
         filepath: Filepath to an INCAR file.
-
-    Properties:
         cmds: Commands to execute after the #SBATCH specification.
         exec_cmd: The shell command used to execute this script.
-        tags: Sequence of slurm tag objects which can be accessed like a dict.
+        tags: TagCollection which can be accessed like a dict.
     """
     def __init__(self,
                  filepath: Optional[str] = None,
                  cmds: Optional[List[str]] = None,
-                 tags: Optional[List[Any]] = None) -> None:
+                 tags: Optional[List[BaseTag]] = None) -> None:
         if filepath is None:
             filepath = "runjob.slurm"
         self.filepath = filepath
@@ -85,3 +84,11 @@ class SubmissionScript(object):
     @property
     def tags(self) -> TagCollection:
         return self._tags
+
+    @tags.setter
+    def tags(self, value: TagCollection) -> None:
+        if value.common_class is SlurmTag:
+            self._tags = value
+        else:
+            err = "`value.common_class` must be SlurmTag"
+            raise ValueError(err)

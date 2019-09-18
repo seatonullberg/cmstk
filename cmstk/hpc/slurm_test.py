@@ -1,8 +1,9 @@
-from cmstk.utils import data_directory
+from cmstk.utils import data_directory, BaseTag, TagCollection
 from cmstk.hpc.slurm import SubmissionScript
-from cmstk.hpc.slurm_tags import JobNameTag
+from cmstk.hpc.slurm_tags import JobNameTag, SlurmTag
 import copy
 import os
+import pytest
 
 
 def test_submission_script():
@@ -40,4 +41,12 @@ def test_submission_script():
             assert tag.value.total_seconds() == 174252
         else:
             assert tag.value == script.tags[tag.name].value
+
+    # test ability to set tag attribute
+    tags = TagCollection(common_class=SlurmTag)
+    script.tags = tags
+    assert len(script.tags) == 0
+    tags = TagCollection(common_class=BaseTag)
+    with pytest.raises(ValueError):
+        script.tags = tags
     os.remove("test.slurm")

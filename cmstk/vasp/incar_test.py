@@ -1,9 +1,10 @@
-from cmstk.utils import data_directory
+from cmstk.utils import data_directory, TagCollection, BaseTag
 from cmstk.vasp.incar import IncarFile
-from cmstk.vasp.incar_tags import SystemTag
+from cmstk.vasp.incar_tags import SystemTag, IncarTag
 import copy
 import numpy as np
 import os
+import pytest
 
 
 def test_incar_file():
@@ -54,6 +55,14 @@ def test_incar_file():
             assert tag.value == "test"
             continue
         assert tag.value == incar.tags[tag.name].value
+
+    # test ability to set tag attribute
+    tags = TagCollection(common_class=IncarTag)
+    incar.tags = tags
+    assert len(incar.tags) == 0
+    tags = TagCollection(common_class=BaseTag)
+    with pytest.raises(ValueError):
+        incar.tags = tags
     os.remove("test.incar")
 
 
