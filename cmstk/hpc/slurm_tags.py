@@ -64,7 +64,6 @@ class SlurmTag(BaseTag):
             - If no value is found
         """
         name = " ".join(line.split()[1:])  # TODO: this is not really the name
-        name = name.replace("--", "")
         name, value = name.split("=")
         if name != self.name:
             err = ("tag with name `{}` cannot be parsed by {}".format(
@@ -115,9 +114,9 @@ class SlurmTag(BaseTag):
             err = "writing a None value may have unforseen consequences"
             raise ValueError(err)
         if self.comment is None:
-            s = "#SBATCH --{}={}\n".format(self.name, str_value)
+            s = "#SBATCH {}={}\n".format(self.name, str_value)
         else:
-            s = "#SBATCH --{}={}\t# {}\n".format(self.name, str_value,
+            s = "#SBATCH {}={}\t# {}\n".format(self.name, str_value,
                                                  self.comment)
         return s
 
@@ -129,7 +128,7 @@ class SlurmTag(BaseTag):
 
 class AccountTag(SlurmTag):
     def __init__(self, value=None):
-        name = "account"
+        name = "--account"
         comment = "User account name."
         valid_options = [str]
         super().__init__(name=name,
@@ -146,7 +145,7 @@ class AccountTag(SlurmTag):
 
 class DistributionTag(SlurmTag):
     def __init__(self, value=None):
-        name = "distribution"
+        name = "--distribution"
         comment = "Distribution method for remote processes."
         valid_options = [
             "block:block", "block:cyclic", "block:fcyclic", "cyclic:block",
@@ -168,7 +167,7 @@ class DistributionTag(SlurmTag):
 
 class ErrorTag(SlurmTag):
     def __init__(self, value=None):
-        name = "error"
+        name = "--error"
         comment = "Filename to write stderr to."
         valid_options = [str]
         super().__init__(name=name,
@@ -185,7 +184,7 @@ class ErrorTag(SlurmTag):
 
 class JobNameTag(SlurmTag):
     def __init__(self, value=None):
-        name = "job-name"
+        name = "--job-name"
         comment = "Name of the job."
         valid_options = [str]
         super().__init__(name=name,
@@ -202,7 +201,7 @@ class JobNameTag(SlurmTag):
 
 class MailTypeTag(SlurmTag):
     def __init__(self, value=None):
-        name = "mail-type"
+        name = "--mail-type"
         comment = "Email event triggers."
         # any combination of NONE,BEGIN,END,FAIL,REQUEUE,ALL
         valid_options = [str]
@@ -220,7 +219,7 @@ class MailTypeTag(SlurmTag):
 
 class MailUserTag(SlurmTag):
     def __init__(self, value=None):
-        name = "mail-user"
+        name = "--mail-user"
         comment = "Email address to send to."
         valid_options = [str]
         super().__init__(name=name,
@@ -237,7 +236,7 @@ class MailUserTag(SlurmTag):
 
 class MemPerCpuTag(SlurmTag):
     def __init__(self, value=None):
-        name = "mem-per-cpu"
+        name = "--mem-per-cpu"
         comment = "Memory to allocate on each CPU (in MB)."
         valid_options = [int]
         super().__init__(name=name,
@@ -254,7 +253,7 @@ class MemPerCpuTag(SlurmTag):
 
 class NtasksTag(SlurmTag):
     def __init__(self, value=None):
-        name = "ntasks"
+        name = "--ntasks"
         comment = "Number of tasks to run."
         valid_options = [int]
         super().__init__(name=name,
@@ -271,7 +270,7 @@ class NtasksTag(SlurmTag):
 
 class OutputTag(SlurmTag):
     def __init__(self, value=None):
-        name = "output"
+        name = "--output"
         comment = "Filename to write stdout to."
         valid_options = [str]
         super().__init__(name=name,
@@ -288,7 +287,7 @@ class OutputTag(SlurmTag):
 
 class QosTag(SlurmTag):
     def __init__(self, value=None):
-        name = "qos"
+        name = "--qos"
         comment = "QOS account name."
         valid_options = [str]
         super().__init__(name=name,
@@ -305,7 +304,7 @@ class QosTag(SlurmTag):
 
 class TimeTag(SlurmTag):
     def __init__(self, value=None):
-        name = "time"
+        name = "--time"
         comment = "Maximum duration of the job."
         valid_options = [datetime.timedelta]
         super().__init__(name=name,
