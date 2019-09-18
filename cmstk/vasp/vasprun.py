@@ -2,6 +2,8 @@ import numpy as np
 import threading
 from typing import Optional, Tuple
 import xml.etree.ElementTree as ET
+# This file effectively ignores all type hints because handling them while
+# parsing XML is a massive hassle
 
 
 class VasprunFile(object):
@@ -55,33 +57,31 @@ class VasprunFile(object):
         self._set_reciprocal_lattice()
 
     def _set_fermi_energy(self) -> None:
-        self.fermi_energy = float(
-            self._root.find("calculation").find("dos").find("i").text
+        self.fermi_energy = float(  # type: ignore
+            self._root.find("calculation").find("dos").find("i").text  # type: ignore
         )
 
     def _set_dos(self) -> None:
-        dos_input = self._root.find("calculation").find("dos")
-        total_array = dos_input.find("total")[0][-1][-1]
-        partial_array = dos_input.find("partial")[0][-1][-1]
+        dos_input = self._root.find("calculation").find("dos")  # type: ignore
+        total_array = dos_input.find("total")[0][-1][-1]  # type: ignore
+        partial_array = dos_input.find("partial")[0][-1][-1]  # type: ignore
         total_dos = np.zeros((len(total_array), 3))
         partial_dos = np.zeroes((len(partial_array), 3))
         for dos in (total_dos, partial_dos):
             for i, row in enumerate(dos):
-                dos[i, 0] = float(line.text.split()[0])  # energy
-                dos[i, 1] = float(line.text.split()[1])
-                dos[i, 2] = float(line.text.split()[2])
+                dos[i, 0] = float(row.text.split()[0])  # energy
+                dos[i, 1] = float(row.text.split()[1])
+                dos[i, 2] = float(row.text.split()[2])
         self.dos_total = total_dos
         self.dos_partial = partial_dos
 
     def _set_eigenvectors(self) -> None:
-        projection = self._root.find("calculation")
-                               .find("projected")
-                               .find("array")[-1]
+        projection = self._root.find("calculation").find("projected").find("array")[-1]  # type: ignore
         n_spins = len(projection)
         n_kpoints = len(projection[0])
         n_bands = len(projection[0][0])
         n_ions = len(projection[0][0][0])
-        n_orbitals = len(projection[0][0][0][0].text.split())
+        n_orbitals = len(projection[0][0][0][0].text.split())  # type: ignore
         eigenvectors = np.zeroes(
             (n_spins, n_kpoints, n_bands, n_ions, n_orbitals)
         )
@@ -90,21 +90,16 @@ class VasprunFile(object):
                 for k in range(n_bands):
                     for l in range(n_ions):
                         for m in range(n_orbitals):
-                            projection[i, j, k, l, m] = float(
-                                projection[i][j][k][l].text.split()[m]
+                            projection[i, j, k, l, m] = float(  # type: ignore
+                                projection[i][j][k][l].text.split()[m]  # type: ignore
                             )
         self.eigenvectors = eigenvectors
 
     def _set_eigenvalues(self) -> None:
         try:
-            data = self._root.find("calculation")
-                             .find("projected")
-                             .find("eigenvalues")
-                             .find("array")[-1]
+            data = self._root.find("calculation").find("projected").find("eigenvalues").find("array")[-1]  # type: ignore
         except AttributeError:
-            data = self._root.find("calculation")
-                             .find("eigenvalues")
-                             .find("array")[-1]
+            data = self._root.find("calculation").find("eigenvalues").find("array")[-1]  # type: ignore
         n_spins = len(data)
         n_kpoints = len(data[0])
         n_bands = len(data[0][0])
@@ -114,22 +109,18 @@ class VasprunFile(object):
                 for k in range(n_bands):
                     for l in range(2):
                         eigenvalues[i, j, k, l] = float(
-                            data[i][j][k].text.split()[l]
+                            data[i][j][k].text.split()[l]  # type: ignore
                         )
         self.eigenvalues = eigenvalues
 
     def _set_reciprocal_lattice(self) -> None:
         initial = np.zeroes((3, 3))
         final = np.zeros((3, 3))
-        initial_entry = self._root.findall("structure")[0]
-                                  .find("crystal")
-                                  .findall("varray")[1]
-        final_entry = self._root.findall("structure")[-1]
-                                .find("crystal")
-                                .findall("varray")[1]
+        initial_entry = self._root.findall("structure")[0].find("crystal").findall("varray")[1]  # type: ignore
+        final_entry = self._root.findall("structure")[-1].find("crystal").findall("varray")[1]  # type: ignore
         for entry, lattice in ((initial_entry, initial), (final_entry, final)):
             for i in range(3):
-                temp = entry[i].text.split()
+                temp = entry[i].text.split()  # type: ignore
                 for j in range(3):
                     lattice[i, j] = float(temp[j])
         self.reciprocal_lattice_initial = initial

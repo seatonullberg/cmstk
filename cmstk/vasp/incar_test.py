@@ -38,14 +38,14 @@ def test_incar_file():
     incar_writer = copy.deepcopy(incar)
     del incar_writer.tags["SYSTEM"]
     system_tag = SystemTag(value="test")
-    incar_writer.tags.append(system_tag)
+    incar_writer.tags.insert(system_tag)
     incar_writer.write("test.incar")
 
     incar_reader = IncarFile(filepath="test.incar")
     incar_reader.read()
     assert incar_reader.tags[
         "SYSTEM"].comment == "Description of the simulation."
-    for tag_name, tag in incar_reader.tags:
+    for tag_name, tag in incar_reader.tags.items():
         if tag_name == "MAGMOM":
             assert np.array_equal(incar.tags["MAGMOM"].value,
                                   np.array([1.0, 1.0]))
@@ -61,7 +61,7 @@ def test_incar_file_from_default():
     """Tests initialization of an IncarFile object from json defaults."""
     name = "test_set"
     json_path = os.path.join(data_directory(), "vasp", "incar_defaults.json")
-    incar = IncarFile.from_default(name=name, json_path=json_path)
+    incar = IncarFile.from_default(setting_name=name, json_path=json_path)
     assert incar.tags["ENCUT"].value == 400
     assert incar.tags["EDIFF"].value == 1e-06
     assert incar.tags["ALGO"].value == "Fast"

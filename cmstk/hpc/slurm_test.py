@@ -27,13 +27,13 @@ def test_submission_script():
     script_writer = copy.deepcopy(script)
     del script_writer.tags["job-name"]
     job_name_tag = JobNameTag(value="test")
-    script_writer.tags.append(job_name_tag)
+    script_writer.tags.insert(job_name_tag)
     script_writer.write("test.slurm")
 
     script_reader = SubmissionScript(filepath="test.slurm")
     script_reader.read()
     assert script_reader.tags["job-name"].comment == "Name of the job."
-    for tag_name, tag in script_reader.tags:
+    for tag_name, tag in script_reader.tags.items():
         if tag_name == "job-name":
             assert tag.value == "test"
         elif tag_name == "time":

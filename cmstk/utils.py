@@ -89,122 +89,92 @@ class BaseTag(object):
             raise ValueError(err)
 
 
-class BaseTagCollection(object):
-    """Generalized safe-access collection of instances of BaseTag.
-    
-    Args:
-        base_class: The class which all members must be an instance of.
-        tags: The tag instances to store.
-    """
-    def __init__(self,
-                 base_class: Optional[Any] = None,
-                 tags: Optional[Sequence[Any]] = None) -> None:
-        if base_class is None:
-            base_class = BaseTag
-        if not issubclass(base_class, BaseTag):
-            err = "`base_class` must be a subclass of BaseTag"
+class TagCollection(object):
+
+    def __init__(self, common_class: type,
+                 tags: Optional[List[Any]] = None) -> None:
+        if not issubclass(common_class, BaseTag):
+            err = "`common_class` must be a subclass of BaseTag"
             raise ValueError(err)
-        self._base_class = base_class
-        if tags is None:
-            tags = []
-        self._tags: Dict[str, Any] = {}
-        for tag in tags:
-            self.append(tag)
+        self._common_class = common_class
+        self._tags: Dict[str, BaseTag] = {}
+        if tags is not None:
+            for tag in tags:
+                self.insert(tag)
 
     @classmethod
-    def from_default(cls, 
-                     base_class: Optional[Any], 
-                     module_str: str,
-                     name: str, 
-                     path: str):
-        """Initializes a BaseTagCollection from a predefined json file.
-
-        Args:
-            base_class: The class which all members must be an instance of.
-            module_str: Module to import from.
-            name: Name of the default setting to load.
-            path: Path to the json file.
-
-        Raises:
-            KeyError:
-            - `{key}` is not a valid key for any tag in `{module}`.
-        """
-        with open(path, "r") as f:
-            json_data = json.load(f)[name]  # only load the desired default
+    def from_default(cls, common_class: type, 
+                     json_path: str,
+                     module: str,
+                     setting_name: str):
+        with open(json_path, "r") as f:
+            json_data = json.load(f)[setting_name] 
         valid_tags = {
-            tag.name: tag for tag in cls.load_all_tags(base_class, module_str)
+            tag.name: tag for tag in cls.import_tags(common_class, module)
         }
         tags = []
         for k, v in json_data.items():
-            if k not in valid_tags.keys():
-                err = "`{k}` is not a valid key for any tag in `{m}`".format(
-                    k=k, m=module_str
+            if k not in valid_tags:
+                err = "`{}` is not a valid key for any tag in `{}`".format(
+                    k, module
                 )
                 raise KeyError(err)
             tag = valid_tags[k]
             tag.value = v
             tags.append(tag)
-        return cls(base_class=base_class, tags=tags)
-
-    def append(self, tag: Any) -> None:
-        """Appends a tag to the sequence if it is valid.
-        
-        Args:
-            tag: The tag to add
-        
-        Returns:
-            None
-
-        Raises:
-            ValueError
-            - If the tag is invalid
-        """
-        if not isinstance(tag, self._base_class):
-            err = "`{}` is not a valid tag".format(tag)
-            raise ValueError(err)
-        elif tag.name in self._tags:
-            err = "`{}` is already in the sequence".format(tag.name)
-            raise ValueError(err)
-        else:
-            self._tags[tag.name] = tag
+        return cls(common_class=common_class, tags=tags)
 
     @staticmethod
-    def load_all_tags(base_class: Any, module_str: str) -> List[Any]:
-        """Loads all tags from the specified module.
-        
-        Args:
-            base_class: The base tag class.
-            module_str: Module to import from.
-
-        Returns:
-            List of instances of provided base class
-        """
-        module = importlib.import_module(module_str)
-        attrs = module.__dict__
+    def import_tags(common_class: type, module: str) -> List[Any]:
+        attributes = importlib.import_module(module).__dict__
         classes = {
-            name: obj
-            for name, obj in attrs.items() if inspect.isclass(obj)
+            name: obj for name, obj in attributes.items()
+            if inspect.isclass(obj)
         }
         tags = {
-            name: obj
-            for name, obj in classes.items() if issubclass(obj, base_class)
+            name: obj for name, obj in classes.items()
+            if issubclass(obj, common_class)
         }
-        del tags[base_class.__name__]
-        return [v() for _, v in tags.items()]
-
-    def __iter__(self):
-        for k, v in self._tags.items():
-            yield k, v
-
-    def __getitem__(self, key):
-        return self._tags[key]
+        del tags[common_class.__name__]  # do not import the base class
+        return [v() for v in tags.values()]
 
     def __setitem__(self, key, value):
         if key in self._tags:
+            # set the `value` attribute of the item rather than the item itself
             self._tags[key].value = value
         else:
-            err = "`{}` is not a valid key in self._tags".format(key)
+            err = "key `{}` not found in self._tags".format(key)
             raise KeyError(err)
 
+    def __contains__(self, key):
+        return self._tags.__contains__(key)
+
+    def __getitem__(self, key):
+        return self._tags.__getitem__(key)
+
     def __delitem__(self, key):
-        del self._tags[key]
+        return self._tags.__delitem__(key)
+
+    def __iter__(self):
+        return self._tags.__iter__()
+
+    def __len__(self):
+        return self._tags.__len__()
+
+    def insert(self, value: BaseTag) -> None:
+        if not isinstance(value, self._common_class):
+            err = "`value` must be an instance of {}".format(self._common_class)
+            raise ValueError(err)
+        self._tags[value.name] = value
+    
+    def get(self, key, default=None):
+        return self._tags.get(key, default)
+
+    def items(self):
+        return self._tags.items()
+
+    def keys(self):
+        return self._tags.keys()
+
+    def values(self):
+        return self._tags.values()
