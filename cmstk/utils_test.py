@@ -1,4 +1,4 @@
-from cmstk.utils import BaseTag, BaseTagCollection, within_one_percent, consecutive_percent_difference
+from cmstk.utils import BaseTag, TagCollection, within_one_percent, consecutive_percent_difference
 import pytest
 
 
@@ -44,28 +44,46 @@ def test_base_tag():
         base_tag.value = 1
 
 
-def test_base_tag_collection():
-    """Tests initialization of a BaseTagCollection object."""
+def test_tag_collection():
+    """Tests initialization of a TagCollection object."""
     test_tag0 = MockBaseTag()
     test_tag0.name = "zero"
     test_tag1 = MockBaseTag()
     test_tag1.name = "one"
-    collection = BaseTagCollection(base_class=MockBaseTag,
-                                   tags=[test_tag0, test_tag1])
-    assert len(collection._tags) == 2
+    # basic initialization
+    collection = TagCollection(common_class=MockBaseTag,
+                               tags=[test_tag0, test_tag1])
+    with pytest.raises(ValueError):
+        _ = TagCollection(common_class=object)
+    # len
+    assert len(collection) == 2
+    # setitem/getitem
+    collection["zero"] = 0.0
+    assert type(collection["zero"]) is MockBaseTag
+    assert collection["zero"].value == 0.0
+    # contains
+    assert "zero" in collection
+    # delitem
+    del collection["zero"]
+    assert "zero" not in collection
+    # iter
+    assert len([key for key in collection]) == 1
+    # insert
     test_tag2 = MockBaseTag()
     test_tag2.name = "two"
-    collection.append(test_tag2)
-    assert len(collection._tags) == 3
-    with pytest.raises(ValueError):
-        collection.append(test_tag0)
+    collection.insert(test_tag2)
+    assert len(collection) == 2
     test_tag4 = "not a tag"
     with pytest.raises(ValueError):
-        collection.append(test_tag4)
-    assert len(collection._tags) == 3
-    for tag_name, tag in collection:
-        assert type(tag) is MockBaseTag
-    tag = collection["one"]
-    assert tag.name == "one"
-    del collection["one"]
-    assert len(collection._tags) == 2
+        collection.insert(test_tag4)
+    assert len(collection) == 2
+    # items
+    for key, value in collection.items():
+        assert type(key) is str
+        assert type(value) is MockBaseTag
+    # keys
+    for key in collection.keys():
+        assert type(key) is str
+    # values
+    for value in collection.values():
+        assert type(value) is MockBaseTag

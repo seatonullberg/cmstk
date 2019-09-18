@@ -8,10 +8,10 @@ class PeriodicTable(object):
     """A collection of elemental data.
     
     Args:
-        filepath (optional) (str): Filepath to a json database.
+        filepath: Filepath to a json database.
 
     Attributes:
-        filepath (optional) (str): Filepath to a json database.
+        filepath: Filepath to a json database.
     """
     def __init__(self, filepath: Optional[str] = None) -> None:
         if filepath is None:
@@ -45,10 +45,7 @@ class PeriodicTable(object):
         """Reads a json database.
         
         Args:
-            path (optional) (str): Filepath to read from.
-
-        Returns:
-            None
+            path: Filepath to read from.
         """
         if path is None:
             path = self.filepath
@@ -59,10 +56,7 @@ class PeriodicTable(object):
         """Writes a json database.
         
         Args:
-            path (optional) (str): Filepath to write to.
-
-        Returns:
-            None
+            path: Filepath to write to.
         """
         if path is None:
             path = self.filepath

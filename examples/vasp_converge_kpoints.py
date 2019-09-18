@@ -1,13 +1,13 @@
-# ==================================================================== #
-# Example of a verbose ENCUT convergence calculation automation script #
-# ==================================================================== #
+# ====================================================================== #
+# Example of a verbose KPOINTS convergence calculation automation script #
+# ====================================================================== #
 
 from cmstk.hpc.slurm import SubmissionScript
 from cmstk.hpc.slurm_tags import *
 from cmstk.structures.atoms import Atom
 from cmstk.structures.crystals import Lattice
 from cmstk.workflows.vasp.base import VaspCalculation
-from cmstk.workflows.vasp.convergence import converge_encut
+from cmstk.workflows.vasp.convergence import converge_kpoints
 from cmstk.vasp.incar import IncarFile
 from cmstk.vasp.incar_tags import *
 from cmstk.vasp.kpoints import KpointsFile
@@ -18,10 +18,17 @@ import os
 
 
 working_directory = "YOUR/WORKING/DIRECTORY/HERE"
-encut_values = [300, 350, 400, 450, 500, 550]
+kpoint_sizes = [
+    (10, 10, 10),
+    (11, 11, 11),
+    (12, 12, 12),
+    (13, 13, 13),
+    (14, 14, 14),
+    (15, 15, 15)
+]  
 
 # Define the KPOINTS file
-kpoints = KpointsFile(mesh_size=(12, 12, 12))
+kpoints = KpointsFile()  # use all defaults
 
 # Define the lattice structure in a POSCAR
 a0 = 2.856
@@ -45,6 +52,7 @@ incar_tags = [
     AlgoTag("Normal"),
     EdiffTag(1e-06),
     EdiffgTag(-0.001),
+    EncutTag(400),
     IbrionTag(2),
     IchargTag(2),
     IsifTag(3),
@@ -69,7 +77,7 @@ slurm_tags = [
     AccountTag("phillpot"),
     DistributionTag("cyclic:cyclic"),
     ErrorTag("job.err"),
-    JobNameTag("converge_encut"),
+    JobNameTag("converge_kpoints"),
     MemPerCpuTag(100),
     NtasksTag(16),
     OutputTag("job.out"),
@@ -91,5 +99,5 @@ calculation = VaspCalculation(
 )
 
 # Finally, submit the series of jobs
-# They will all run simultaneously barring local queue limits
-converge_encut(calculation, encut_values, working_directory)
+# They will all run simultaneously barring queue limits
+converge_kpoints(calculation, kpoint_sizes, working_directory)

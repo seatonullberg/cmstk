@@ -1,6 +1,6 @@
 from cmstk.hpc.slurm_tags import SlurmTag
-from cmstk.utils import BaseTagCollection
-from typing import Any, Optional, Sequence
+from cmstk.utils import TagCollection
+from typing import Any, List, Optional
 
 
 class SubmissionScript(object):
@@ -21,15 +21,15 @@ class SubmissionScript(object):
     """
     def __init__(self,
                  filepath: Optional[str] = None,
-                 cmds: Optional[Sequence[str]] = None,
-                 tags: Optional[Sequence[Any]] = None) -> None:
+                 cmds: Optional[List[str]] = None,
+                 tags: Optional[List[Any]] = None) -> None:
         if filepath is None:
             filepath = "runjob.slurm"
         self.filepath = filepath
         if cmds is None:
             cmds = []
         self._cmds = cmds
-        self._tags = BaseTagCollection(SlurmTag, tags)
+        self._tags = TagCollection(SlurmTag, tags)
         self._exec_cmd = "sbatch"
 
     def read(self, path: Optional[str] = None) -> None:
@@ -39,8 +39,8 @@ class SubmissionScript(object):
             lines = f.readlines()
             lines = list(map(lambda x: x.strip(), lines))  # remove newlines
             lines = list(filter(None, lines))  # remove empty strings
-        tags = self.tags.load_all_tags(base_class=SlurmTag,
-                                       module_str="cmstk.hpc.slurm_tags")
+        tags = self.tags.import_tags(common_class=SlurmTag,
+                                     module="cmstk.hpc.slurm_tags")
         cmds = []
         for line in lines:
             if line.startswith("#!"):
@@ -54,7 +54,7 @@ class SubmissionScript(object):
                         continue
                     else:
                         is_valid = True
-                        self.tags.append(tag)
+                        self.tags.insert(tag)
                         break
                 if not is_valid:
                     err = "unable to parse the following line: {}".format(line)
@@ -68,14 +68,14 @@ class SubmissionScript(object):
             path = self.filepath
         with open(path, "w") as f:
             f.write("#!/bin/bash\n")
-            for _, tag in self.tags:
+            for tag in self.tags.values():
                 f.write(tag.write())
             f.write("\n")
             for cmd in self.cmds:
                 f.write("{}\n".format(cmd))
 
     @property
-    def cmds(self) -> Sequence[str]:
+    def cmds(self) -> List[str]:
         return self._cmds
 
     @property
@@ -83,5 +83,5 @@ class SubmissionScript(object):
         return self._exec_cmd
 
     @property
-    def tags(self) -> BaseTagCollection:
+    def tags(self) -> TagCollection:
         return self._tags

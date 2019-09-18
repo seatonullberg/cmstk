@@ -255,16 +255,13 @@ class AminTag(IncarTag):
         comment = (
             "Minimal mixing parameter in Kerker's initial approximation to the "
             "charge dielectric function used in the Broyden/Pulay mixing "
-            "scheme."
-        )
+            "scheme.")
         name = "AMIN"
         valid_options = [float]
-        super().__init__(
-            name=name,
-            comment=comment,
-            valid_options=valid_options,
-            value=value
-        )
+        super().__init__(name=name,
+                         comment=comment,
+                         valid_options=valid_options,
+                         value=value)
 
     def read(self, line: str):
         return self._read_float(line)
@@ -278,12 +275,10 @@ class AmixTag(IncarTag):
         comment = "Linear mixing parameter."
         name = "AMIX"
         valid_options = [float]
-        super().__init__(
-            name=name,
-            comment=comment,
-            valid_options=valid_options,
-            value=value
-        )
+        super().__init__(name=name,
+                         comment=comment,
+                         valid_options=valid_options,
+                         value=value)
 
     def read(self, line: str):
         return self._read_float(line)
@@ -297,12 +292,10 @@ class AmixMagTag(IncarTag):
         comment = "Linear mixing parameter for magnetization density."
         name = "AMIX_MAG"
         valid_options = [float]
-        super().__init__(
-            name=name,
-            comment=comment,
-            valid_options=valid_options,
-            value=value
-        )
+        super().__init__(name=name,
+                         comment=comment,
+                         valid_options=valid_options,
+                         value=value)
 
     def read(self, line: str):
         return self._read_float(line)
@@ -316,12 +309,10 @@ class BmixTag(IncarTag):
         comment = "Cutoff wave vector for Kerker mixing scheme."
         name = "BMIX"
         valid_options = [float]
-        super().__init__(
-            name=name,
-            comment=comment,
-            valid_options=valid_options,
-            value=value
-        )
+        super().__init__(name=name,
+                         comment=comment,
+                         valid_options=valid_options,
+                         value=value)
 
     def read(self, line: str):
         return self._read_float(line)
@@ -334,16 +325,13 @@ class BmixMagTag(IncarTag):
     def __init__(self, value=None):
         comment = (
             "Cutoff wave vector for Kerker mixing scheme for the magnetization "
-            "density."
-        )
+            "density.")
         name = "BMIX_MAG"
         valid_options = [float]
-        super().__init__(
-            name=name,
-            comment=comment,
-            valid_options=valid_options,
-            value=value
-        )
+        super().__init__(name=name,
+                         comment=comment,
+                         valid_options=valid_options,
+                         value=value)
 
     def read(self, line: str):
         return self._read_float(line)
@@ -371,8 +359,8 @@ class EdiffTag(IncarTag):
 
 class EdiffgTag(IncarTag):
     def __init__(self, value=None):
-        comment = ("""Determines the break condition for the ionic relaxation 
-                   loop.""")
+        comment = ("Determines the break condition for the ionic relaxation "
+                   "loop.")
         name = "EDIFFG"
         valid_options = [float]
         super().__init__(name=name,
@@ -547,12 +535,10 @@ class LorbitTag(IncarTag):
         comment = "Determines whether PROCAR or PROOUT files are written."
         name = "LORBIT"
         valid_options = [0, 1, 2, 5, 10, 11, 12]
-        super().__init__(
-            name=name,
-            comment=comment,
-            valid_options=valid_options,
-            value=value
-        )
+        super().__init__(name=name,
+                         comment=comment,
+                         valid_options=valid_options,
+                         value=value)
 
     def read(self, line: str):
         return self._read_int(line)
@@ -679,7 +665,7 @@ class NelminTag(IncarTag):
                          comment=comment,
                          valid_options=valid_options,
                          value=value)
-    
+
     def read(self, line: str):
         return self._read_int(line)
 
@@ -696,7 +682,7 @@ class NparTag(IncarTag):
                          comment=comment,
                          valid_options=valid_options,
                          value=value)
-        
+
     def read(self, line: str):
         return self._read_int(line)
 

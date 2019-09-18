@@ -1,0 +1,8 @@
+{
+    "test_set": {
+        "ENCUT": 400,
+        "EDIFF": 1e-06,
+        "ALGO": "Fast",
+        "LORBIT": false
+    }
+}

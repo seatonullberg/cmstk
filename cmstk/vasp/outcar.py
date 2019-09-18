@@ -24,9 +24,6 @@ class OutcarFile(object):
         
         Args:
             path: The filepath to read from.
-
-        Returns:
-            None
         """
         if path is None:
             path = self.filepath

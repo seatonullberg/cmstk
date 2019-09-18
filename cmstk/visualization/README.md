@@ -1,1 +1,1 @@
-A colection of objects which generate plots.
+Package `visualization` provides a selection of commonly used plot types.

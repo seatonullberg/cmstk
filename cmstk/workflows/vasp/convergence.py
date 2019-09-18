@@ -30,11 +30,10 @@ def converge_encut(calculation: VaspCalculation, encut_values: List[int],
         if calc.incar is None:
             err = "Missing required input file (INCAR)."
             raise ValueError(err)
-        tag_names = [name for name, _ in calc.incar.tags]
-        if "ENCUT" in tag_names:
-            calc.incar.tags["ENCUT"].value = encut
+        if "ENCUT" in calc.incar.tags:
+            calc.incar.tags["ENCUT"] = encut
         else:
-            calc.incar.tags.append(EncutTag(encut))
+            calc.incar.tags.insert(EncutTag(encut))
         calc.write()
         os.chdir(calc_dir)
         if calc.submission_script is None:

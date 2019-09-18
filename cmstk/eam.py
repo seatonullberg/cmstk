@@ -9,33 +9,31 @@ class SetflFile(object):
         https://sites.google.com/a/ncsu.edu/cjobrien/tutorials-and-guides/eam
     
     Args:
-        filepath (str): Filepath to a setfl file.
+        filepath: Filepath to a setfl file.
     
     Attributes:
-        filepath (str): Filepath to a setfl file.
-        comments (sequence of str): Comments at the top of the file.
-        symbols (sequence of str): IUPAC chemical symbols specified in the file.
-        symbol_pairs (sequence of str): Pairs of IUPAC chemical symbols 
-        specified in the file.
-        symbol_descriptors (dict: key: str, value: str): Descriptive information
-        to insert between tabulation sections of each symbol.
+        filepath: Filepath to a setfl file.
+        comments: Comments at the top of the file.
+        symbols: IUPAC chemical symbols specified in the file.
+        symbol_pairs: Pairs of IUPAC chemical symbols specified in the file.
+        symbol_descriptors: Descriptive information to insert between tabulation 
+        sections of each symbol.
         - Format:
             {atomic number} {atomic mass} {lattice parameter} {structure}
-        n_rho (int): Number of points at which the electron density is 
+        n_rho: Number of points at which the electron density is evaluated.
+        d_rho: Distance between points at which the electron density is 
         evaluated.
-        d_rho (float): Distance between points at which the electron density is 
-        evaluated.
-        n_r (int): Number of points at which the interatomic potential and
-        embedding function are evaluated.
-        d_r (float): Distance between points at which the interatomic and 
-        embedding function are evaluated.
-        cutoff (float): Cutoff distance for all functions.
-        embedding_function (dict: key: str, value: list of float): Tabulated 
-        values of the embedding function for each symbol.
-        density_function (dict: key: str, value: list of float): Tabulated 
-        values of the density function for each symbol.
-        pair_function (dict: key: str, value: list of float): Tabulated values 
-        of the interatomic potential between each symbol pair.
+        n_r: Number of points at which the interatomic potential and embedding 
+        function are evaluated.
+        d_r: Distance between points at which the interatomic and embedding 
+        function are evaluated.
+        cutoff: Cutoff distance for all functions.
+        embedding_function: Tabulated values of the embedding function for each 
+        symbol.
+        density_function: Tabulated values of the density function for each 
+        symbol.
+        pair_function: Tabulated values of the interatomic potential between 
+        each symbol pair.
     """
     def __init__(self, filepath: str) -> None:
         self.filepath = filepath
@@ -56,10 +54,7 @@ class SetflFile(object):
         """Reads a setfl file.
         
         Args:
-            path (optional) (str): Filepath to read.
-
-        Returns:
-            None 
+            path: Filepath to read. 
         """
         if path is None:
             path = self.filepath
@@ -74,10 +69,7 @@ class SetflFile(object):
         """Writes a setfl file.
 
         Args:
-            path (optional) (str): Filepath to write.
-
-        Returns:
-            None
+            path: Filepath to write.
         """
         if path is None:
             path = self.filepath
