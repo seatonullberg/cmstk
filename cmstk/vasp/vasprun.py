@@ -27,16 +27,12 @@ class VasprunFile(object):
         self.filepath = filepath
         self._root = ET.parse(self.filepath).getroot()
 
-    def density_of_states(self, total: bool = True) -> np.ndarray:
-        """Returns the total or partial density of states.
-        
-        Args:
-            total: Bool flag to determine total or partial density of states.
-        """
-        flag = ("total" if total else "partial")
+    def density_of_states(self) -> np.ndarray:
+        """Returns the total density of states."""
+        flag = "total"
         dos_input = self._root.find("calculation").find("dos").find(flag)[0][-1][-1]  # type: ignore
         dos = np.zeros((len(dos_input), 3))
-        for i, row in enumerate(dos):
+        for i, row in enumerate(dos_input):
             dos[i, 0] = float(row.text.split()[0])  # energy
             dos[i, 1] = float(row.text.split()[1])
             dos[i, 2] = float(row.text.split()[2])
@@ -50,7 +46,7 @@ class VasprunFile(object):
         n_spins = len(data)
         n_kpoints = len(data[0])
         n_bands = len(data[0][0])
-        eigenvalues = np.zeroes((n_spins, n_kpoints, n_bands, 2))
+        eigenvalues = np.zeros((n_spins, n_kpoints, n_bands, 2))
         for i in range(n_spins):
             for j in range(n_kpoints):
                 for k in range(n_bands):
@@ -68,7 +64,7 @@ class VasprunFile(object):
         n_bands = len(projection[0][0])
         n_ions = len(projection[0][0][0])
         n_orbitals = len(projection[0][0][0][0].text.split())  # type: ignore
-        eigenvectors = np.zeroes(
+        eigenvectors = np.zeros(
             (n_spins, n_kpoints, n_bands, n_ions, n_orbitals)
         )
         for i in range(n_spins):
@@ -76,7 +72,7 @@ class VasprunFile(object):
                 for k in range(n_bands):
                     for l in range(n_ions):
                         for m in range(n_orbitals):
-                            projection[i, j, k, l, m] = float(  # type: ignore
+                            eigenvectors[i, j, k, l, m] = float(  # type: ignore
                                 projection[i][j][k][l].text.split()[m]  # type: ignore
                             )
         return eigenvectors
@@ -92,7 +88,7 @@ class VasprunFile(object):
             initial: Bool flag to determine initial or final lattice vectors.
         """
         index = (0 if initial else -1)
-        lattice = np.zeroes((3, 3))
+        lattice = np.zeros((3, 3))
         lattice_entry = self._root.findall("structure")[index].find("crystal").findall("varray")[1]  # type: ignore        
         for i in range(3):
             temp = lattice_entry[i].text.split()  # type: ignore
