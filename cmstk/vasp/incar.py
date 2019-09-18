@@ -23,7 +23,6 @@ class IncarFile(object):
         self.filepath = filepath
         self._tags = TagCollection(IncarTag, tags)
 
-    # TODO: FIX IN TAG COLLECTION
     @classmethod
     def from_default(cls, 
                      setting_name: str, 
@@ -61,10 +60,8 @@ class IncarFile(object):
             module=module,
             setting_name=setting_name,
             json_path=json_path
-        )
-        incar = cls(filepath=filepath)
-        incar._tags = tags  # this is sort of gross
-        return incar
+        ).values()
+        return cls(filepath=filepath, tags=tags)
 
     def read(self, path: Optional[str] = None) -> None:
         if path is None:

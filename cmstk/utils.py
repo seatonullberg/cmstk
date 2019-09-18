@@ -90,6 +90,12 @@ class BaseTag(object):
 
 
 class TagCollection(object):
+    """Collection of tags which closely mimics the interface of a dict.
+    
+    Args:
+        common_class: The class which all members must be an instance of.
+        tags: The tag objects to store.
+    """
 
     def __init__(self, common_class: type,
                  tags: Optional[List[Any]] = None) -> None:
@@ -107,6 +113,14 @@ class TagCollection(object):
                      json_path: str,
                      module: str,
                      setting_name: str):
+        """Initializes from a predefined json file.
+        
+        Args:
+            common_class: The class which all members must be an instance of.
+            json_path: Path to the json file to read.
+            module: Name of the module to import tags from.
+            setting_name: Name of the setting to read from the json file.
+        """
         with open(json_path, "r") as f:
             json_data = json.load(f)[setting_name] 
         valid_tags = {
@@ -126,6 +140,12 @@ class TagCollection(object):
 
     @staticmethod
     def import_tags(common_class: type, module: str) -> List[Any]:
+        """Imports tag objects from a module.
+        
+        Args:
+            common_class: The class which all members must be an instance of.
+            module: Name of the module to import from.
+        """
         attributes = importlib.import_module(module).__dict__
         classes = {
             name: obj for name, obj in attributes.items()
@@ -146,6 +166,35 @@ class TagCollection(object):
             err = "key `{}` not found in self._tags".format(key)
             raise KeyError(err)
 
+    def insert(self, value: BaseTag) -> None:
+        """Inserts a tag object into the collection.
+        
+        Args:
+            value: The tag to be inserted.
+
+        Raises:
+            ValueError:
+            - `value` must be an instance of {common_class}.
+        """
+        if not isinstance(value, self._common_class):
+            err = "`value` must be an instance of {}".format(self._common_class)
+            raise ValueError(err)
+        self._tags[value.name] = value
+    
+    # dict interface wrappers
+
+    def get(self, key, default=None):
+        return self._tags.get(key, default)
+
+    def items(self):
+        return self._tags.items()
+
+    def keys(self):
+        return self._tags.keys()
+
+    def values(self):
+        return self._tags.values()
+
     def __contains__(self, key):
         return self._tags.__contains__(key)
 
@@ -160,21 +209,3 @@ class TagCollection(object):
 
     def __len__(self):
         return self._tags.__len__()
-
-    def insert(self, value: BaseTag) -> None:
-        if not isinstance(value, self._common_class):
-            err = "`value` must be an instance of {}".format(self._common_class)
-            raise ValueError(err)
-        self._tags[value.name] = value
-    
-    def get(self, key, default=None):
-        return self._tags.get(key, default)
-
-    def items(self):
-        return self._tags.items()
-
-    def keys(self):
-        return self._tags.keys()
-
-    def values(self):
-        return self._tags.values()
