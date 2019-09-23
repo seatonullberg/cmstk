@@ -1,5 +1,6 @@
 from cmstk.utils import BaseTag, TagCollection
 from cmstk.vasp.incar_tags import IncarTag
+import json
 import os
 from typing import List, Optional
 
@@ -25,8 +26,7 @@ class IncarFile(object):
         self._tags = TagCollection(IncarTag, tags)
 
     @classmethod
-    def from_default(cls,
-                     setting_name: str,
+    def from_default(cls, setting_name: str,
                      filepath: Optional[str] = None,
                      json_path: Optional[str] = None):
         """Initializes from predefined settings.
@@ -53,10 +53,11 @@ class IncarFile(object):
             raise ValueError(err)
         common_class = IncarTag
         module = "cmstk.vasp.incar_tags"
+        with open(json_path, "r") as f:
+            data = json.load(f)[setting_name]
         tags = TagCollection.from_default(common_class=common_class,
                                           module=module,
-                                          setting_name=setting_name,
-                                          json_path=json_path).values()
+                                          json_data=data).values()
         return cls(filepath=filepath, tags=tags)
 
     def read(self, path: Optional[str] = None) -> None:

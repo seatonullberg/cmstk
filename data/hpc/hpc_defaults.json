@@ -1,0 +1,12 @@
+{
+    "slurm_test_set": {
+        "tags": {
+            "--job-name": "test",
+            "--distribution": "cyclic:cyclic"
+        },
+        "cmds": [
+            "test cmd",
+            "another test cmd"
+        ]
+    }
+}

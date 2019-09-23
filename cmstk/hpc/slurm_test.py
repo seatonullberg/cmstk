@@ -50,3 +50,14 @@ def test_submission_script():
     with pytest.raises(ValueError):
         script.tags = tags
     os.remove("test.slurm")
+
+
+def test_submission_script_from_default():
+    """Tests initialization of a SubmissionScript object from json defaults."""
+    name = "slurm_test_set"
+    json_path = os.path.join(data_directory(), "hpc", "hpc_defaults.json")
+    script = SubmissionScript.from_default(setting_name=name, json_path=json_path)
+    assert script.tags["--job-name"].value == "test"
+    assert script.tags["--distribution"].value == "cyclic:cyclic"
+    assert script.cmds[0] == "test cmd"
+    assert script.cmds[1] == "another test cmd"

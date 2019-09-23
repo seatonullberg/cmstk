@@ -108,18 +108,20 @@ class TagCollection(object):
                 self.insert(tag)
 
     @classmethod
-    def from_default(cls, common_class: type, json_path: str, module: str,
-                     setting_name: str):
+    def from_default(cls, common_class: type, 
+                     json_data: Dict[str, Any], 
+                     module: str):
         """Initializes from a predefined json file.
 
         Args:
             common_class: The class which all members must be an instance of.
-            json_path: Path to the json file to read.
+            json_input: Dict of raw json data.
             module: Name of the module to import tags from.
-            setting_name: Name of the setting to read from the json file.
+        
+        Raises:
+            ValueError:
+            - `setting_name` is required when loading from file.
         """
-        with open(json_path, "r") as f:
-            json_data = json.load(f)[setting_name]
         valid_tags = {
             tag.name: tag
             for tag in cls.import_tags(common_class, module)
