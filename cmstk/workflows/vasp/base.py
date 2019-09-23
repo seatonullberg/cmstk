@@ -75,11 +75,11 @@ class VaspCalculation(object):
         if self.oszicar is None:
             self.oszicar = OszicarFile()
         self.oszicar.read(path)
-        # read outcar
-        path = os.path.join(calculation_directory, "OUTCAR")
-        if self.outcar is None:
-            self.outcar = OutcarFile()
-        self.outcar.read(path)
+        # read outcar (OUTCAR does not follow read/write interface)
+        # path = os.path.join(calculation_directory, "OUTCAR")
+        # if self.outcar is None:
+        #    self.outcar = OutcarFile()
+        # self.outcar.read(path)
         # read poscar
         path = os.path.join(calculation_directory, "POSCAR")
         if self.poscar is None:
