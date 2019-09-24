@@ -1,9 +1,12 @@
+from cmstk.hpc.base import BaseScript
 from cmstk.hpc.slurm_tags import SlurmTag
-from cmstk.utils import TagCollection
-from typing import Any, List, Optional
+from cmstk.utils import BaseTag, TagCollection
+import json
+import os
+from typing import List, Optional
 
 
-class SubmissionScript(object):
+class SlurmScript(BaseScript):
     """File wrapper for a SLURM submission script.
     
     Args:
@@ -12,25 +15,63 @@ class SubmissionScript(object):
         tags: The slurm tags to be included in the submission script.
 
     Attributes:
-        filepath: Filepath to an INCAR file.
-
-    Properties:
+        filepath: Filepath to a SLURM script.
         cmds: Commands to execute after the #SBATCH specification.
         exec_cmd: The shell command used to execute this script.
-        tags: Sequence of slurm tag objects which can be accessed like a dict.
+        tags: TagCollection which can be accessed like a dict.
     """
     def __init__(self,
                  filepath: Optional[str] = None,
                  cmds: Optional[List[str]] = None,
-                 tags: Optional[List[Any]] = None) -> None:
+                 tags: Optional[List[BaseTag]] = None) -> None:
         if filepath is None:
             filepath = "runjob.slurm"
-        self.filepath = filepath
         if cmds is None:
             cmds = []
-        self._cmds = cmds
-        self._tags = TagCollection(SlurmTag, tags)
-        self._exec_cmd = "sbatch"
+        if tags is None:
+            tags = []
+        super().__init__(filepath=filepath,
+                         cmds=cmds,
+                         common_class=SlurmTag,
+                         exec_cmd="sbatch",
+                         tags=tags)
+
+    @classmethod
+    def from_default(cls, setting_name: str,
+                     filepath: Optional[str] = None,
+                     json_path: Optional[str] = None):
+        """Initializes from predefined settings.
+        
+        Notes:
+            The predefined settings are assumed to be in a json file located at
+            the environment variable CMSTK_HPC_DEFAULTS or passed directly in
+            the parameter `json_path`. The `json_path` parameter takes priority.
+        
+        Args:
+            setting_name: The name of the default setting to use.
+            filepath: Filepath to a SLURM script.
+            json_path: Filepath to the json defaults file.
+
+        Raises:
+            ValueError:
+            - Unable to load defaults without value for CMSTK_HPC_DEFAULTS.
+        """
+        if json_path is None:
+            json_path = os.getenv("CMSTK_HPC_DEFAULTS")
+        if json_path is None:
+            err = ("Unable to load defaults without value for "
+                   "CMSTK_HPC_DEFAULTS.")
+            raise ValueError(err)
+        common_class = SlurmTag
+        module = "cmstk.hpc.slurm_tags"
+        with open(json_path, "r") as f:
+            data = json.load(f)[setting_name]
+        tag_data = data["tags"]
+        cmd_data = data["cmds"]
+        tags = TagCollection.from_default(common_class=common_class,
+                                          module=module,
+                                          json_data=tag_data).values()
+        return cls(filepath=filepath, cmds=cmd_data, tags=tags)
 
     def read(self, path: Optional[str] = None) -> None:
         if path is None:
@@ -62,26 +103,3 @@ class SubmissionScript(object):
             else:
                 cmds.append(line)
         self._cmds = cmds
-
-    def write(self, path: Optional[str] = None) -> None:
-        if path is None:
-            path = self.filepath
-        with open(path, "w") as f:
-            f.write("#!/bin/bash\n")
-            for tag in self.tags.values():
-                f.write(tag.write())
-            f.write("\n")
-            for cmd in self.cmds:
-                f.write("{}\n".format(cmd))
-
-    @property
-    def cmds(self) -> List[str]:
-        return self._cmds
-
-    @property
-    def exec_cmd(self) -> str:
-        return self._exec_cmd
-
-    @property
-    def tags(self) -> TagCollection:
-        return self._tags

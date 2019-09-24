@@ -1,3 +1,4 @@
+from cmstk.hpc.base import BaseScript
 from cmstk.vasp.incar import IncarFile
 from cmstk.vasp.kpoints import KpointsFile
 from cmstk.vasp.oszicar import OszicarFile
@@ -17,7 +18,7 @@ class VaspCalculation(object):
         kpoints: VASP KpointsFile.
         poscar: VASP PoscarFile.
         potcar: VASP PotcarFile.
-        submission_script: HPC SubmissionScript.
+        submission_script: HPC job submission script.
 
     Attributes:
         calculation_directory: Path to the calculation directory.
@@ -27,7 +28,7 @@ class VaspCalculation(object):
         outcar: VASP OutcarFile.
         poscar: VASP PoscarFile.
         potcar: VASP PotcarFile.
-        submission_script: HPC SubmissionScript.
+        submission_script: HPC job submission script.
     """
     def __init__(self,
                  calculation_directory: Optional[str] = None,
@@ -35,7 +36,7 @@ class VaspCalculation(object):
                  kpoints: Optional[KpointsFile] = None,
                  poscar: Optional[PoscarFile] = None,
                  potcar: Optional[PotcarFile] = None,
-                 submission_script: Optional[Any] = None) -> None:
+                 submission_script: Optional[BaseScript] = None) -> None:
         self.calculation_directory = calculation_directory
         self.incar = incar
         self.kpoints = kpoints
@@ -75,11 +76,11 @@ class VaspCalculation(object):
         if self.oszicar is None:
             self.oszicar = OszicarFile()
         self.oszicar.read(path)
-        # read outcar
-        path = os.path.join(calculation_directory, "OUTCAR")
-        if self.outcar is None:
-            self.outcar = OutcarFile()
-        self.outcar.read(path)
+        # read outcar (OUTCAR does not follow read/write interface)
+        # path = os.path.join(calculation_directory, "OUTCAR")
+        # if self.outcar is None:
+        #    self.outcar = OutcarFile()
+        # self.outcar.read(path)
         # read poscar
         path = os.path.join(calculation_directory, "POSCAR")
         if self.poscar is None:

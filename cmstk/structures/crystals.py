@@ -19,7 +19,6 @@ class Lattice(AtomCollection):
         
         Inhereted:
             charges: Electronic charge of each atom.
-            fractional_positions: Positions scaled by the parameters.
             magnetic_moments: Magnetic moment of each atom.
             n_atoms: Number of atoms in the collection.
             n_symbols: Number of symbols in the collection.
@@ -36,9 +35,20 @@ class Lattice(AtomCollection):
             coordinate_matrix = np.identity(3)
         self.coordinate_matrix = coordinate_matrix
 
-    @property
     def fractional_positions(self) -> Generator[np.ndarray, None, None]:
+        """Returns the position of each atom in the lattice scaled by the length
+           of the lattice parameters."""
         parameters = np.array(
             [np.linalg.norm(row) for row in self.coordinate_matrix])
         for position in self.positions:
             yield position / parameters
+
+    def surface_area(self) -> float:
+        """Returns the surface area of the lattice."""
+        x, y = self.coordinate_matrix[0], self.coordinate_matrix[1]
+        magx = np.linalg.norm(x)
+        magy = np.linalg.norm(y)
+        ux = x / magx
+        uy = y / magy
+        theta = np.arccos(np.clip(np.dot(ux, uy), -1.0, 1.0))
+        return magx * magy * np.sin(theta)

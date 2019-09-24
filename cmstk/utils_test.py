@@ -53,7 +53,7 @@ def test_tag_collection():
     # basic initialization
     collection = TagCollection(common_class=MockBaseTag,
                                tags=[test_tag0, test_tag1])
-    with pytest.raises(ValueError):
+    with pytest.raises(TypeError):
         _ = TagCollection(common_class=object)
     # len
     assert len(collection) == 2
@@ -74,7 +74,7 @@ def test_tag_collection():
     collection.insert(test_tag2)
     assert len(collection) == 2
     test_tag4 = "not a tag"
-    with pytest.raises(ValueError):
+    with pytest.raises(TypeError):
         collection.insert(test_tag4)
     assert len(collection) == 2
     # items

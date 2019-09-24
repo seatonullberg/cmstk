@@ -11,6 +11,7 @@ def test_lattice():
     ]
     cm = np.array([[2, 0, 0], [0, 2, 0], [0, 0, 2]])
     lattice = Lattice(atoms=atoms, coordinate_matrix=cm)
-    fractional_positions = [f for f in lattice.fractional_positions]
+    fractional_positions = [f for f in lattice.fractional_positions()]
     assert fractional_positions[0][0] == 0
     assert fractional_positions[1][0] == 0.5
+    assert lattice.surface_area() == 4.0

@@ -51,7 +51,7 @@ class BaseTag(object):
         comment: Description of the tag's purpose.
         value: The value of the tag.
 
-    Properties:
+    Attributes:
         value: The value of the tag.
     """
     def __init__(self,
@@ -100,7 +100,7 @@ class TagCollection(object):
                  tags: Optional[List[Any]] = None) -> None:
         if not issubclass(common_class, BaseTag):
             err = "`common_class` must be a subclass of BaseTag"
-            raise ValueError(err)
+            raise TypeError(err)
         self._common_class = common_class
         self._tags: Dict[str, BaseTag] = {}
         if tags is not None:
@@ -108,18 +108,16 @@ class TagCollection(object):
                 self.insert(tag)
 
     @classmethod
-    def from_default(cls, common_class: type, json_path: str, module: str,
-                     setting_name: str):
+    def from_default(cls, common_class: type, 
+                     json_data: Dict[str, Any], 
+                     module: str):
         """Initializes from a predefined json file.
-        
+
         Args:
             common_class: The class which all members must be an instance of.
-            json_path: Path to the json file to read.
+            json_input: Dict of raw json data.
             module: Name of the module to import tags from.
-            setting_name: Name of the setting to read from the json file.
         """
-        with open(json_path, "r") as f:
-            json_data = json.load(f)[setting_name]
         valid_tags = {
             tag.name: tag
             for tag in cls.import_tags(common_class, module)
@@ -170,14 +168,18 @@ class TagCollection(object):
             value: The tag to be inserted.
 
         Raises:
-            ValueError:
+            TypeError:
             - `value` must be an instance of {common_class}.
         """
         if not isinstance(value, self._common_class):
             err = "`value` must be an instance of {}".format(
                 self._common_class)
-            raise ValueError(err)
+            raise TypeError(err)
         self._tags[value.name] = value
+
+    @property
+    def common_class(self) -> type:
+        return self._common_class
 
     # dict interface wrappers
 
