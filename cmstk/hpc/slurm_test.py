@@ -1,15 +1,15 @@
 from cmstk.utils import data_directory, BaseTag, TagCollection
-from cmstk.hpc.slurm import SubmissionScript
+from cmstk.hpc.slurm import SlurmScript
 from cmstk.hpc.slurm_tags import JobNameTag, SlurmTag
 import copy
 import os
 import pytest
 
 
-def test_submission_script():
-    """Tests initialization of a SLURM SubmissionScript object."""
+def test_slurm_script():
+    """Tests initialization of a SlurmScript object."""
     path = os.path.join(data_directory(), "hpc", "Fe_BCC.slurm")
-    script = SubmissionScript(filepath=path)
+    script = SlurmScript(filepath=path)
     assert script.exec_cmd == "sbatch"
     script.read()
     assert script.tags["--job-name"].value == "FeBCC"
@@ -31,7 +31,7 @@ def test_submission_script():
     script_writer.tags.insert(job_name_tag)
     script_writer.write("test.slurm")
 
-    script_reader = SubmissionScript(filepath="test.slurm")
+    script_reader = SlurmScript(filepath="test.slurm")
     script_reader.read()
     assert script_reader.tags["--job-name"].comment == "Name of the job."
     for tag_name, tag in script_reader.tags.items():
@@ -47,16 +47,16 @@ def test_submission_script():
     script.tags = tags
     assert len(script.tags) == 0
     tags = TagCollection(common_class=BaseTag)
-    with pytest.raises(ValueError):
+    with pytest.raises(TypeError):
         script.tags = tags
     os.remove("test.slurm")
 
 
-def test_submission_script_from_default():
-    """Tests initialization of a SubmissionScript object from json defaults."""
+def test_slurm_script_from_default():
+    """Tests initialization of a SlurmScript object from json defaults."""
     name = "slurm_test_set"
     json_path = os.path.join(data_directory(), "hpc", "hpc_defaults.json")
-    script = SubmissionScript.from_default(setting_name=name, json_path=json_path)
+    script = SlurmScript.from_default(setting_name=name, json_path=json_path)
     assert script.tags["--job-name"].value == "test"
     assert script.tags["--distribution"].value == "cyclic:cyclic"
     assert script.cmds[0] == "test cmd"

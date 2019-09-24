@@ -1,3 +1,4 @@
+from cmstk.hpc.base import BaseScript
 from cmstk.hpc.slurm_tags import SlurmTag
 from cmstk.utils import BaseTag, TagCollection
 import json
@@ -5,7 +6,7 @@ import os
 from typing import List, Optional
 
 
-class SubmissionScript(object):
+class SlurmScript(BaseScript):
     """File wrapper for a SLURM submission script.
     
     Args:
@@ -25,12 +26,15 @@ class SubmissionScript(object):
                  tags: Optional[List[BaseTag]] = None) -> None:
         if filepath is None:
             filepath = "runjob.slurm"
-        self.filepath = filepath
         if cmds is None:
             cmds = []
-        self._cmds = cmds
-        self._tags = TagCollection(SlurmTag, tags)
-        self._exec_cmd = "sbatch"
+        if tags is None:
+            tags = []
+        super().__init__(filepath=filepath,
+                         cmds=cmds,
+                         common_class=SlurmTag,
+                         exec_cmd="sbatch",
+                         tags=tags)
 
     @classmethod
     def from_default(cls, setting_name: str,
@@ -99,34 +103,3 @@ class SubmissionScript(object):
             else:
                 cmds.append(line)
         self._cmds = cmds
-
-    def write(self, path: Optional[str] = None) -> None:
-        if path is None:
-            path = self.filepath
-        with open(path, "w") as f:
-            f.write("#!/bin/bash\n")
-            for tag in self.tags.values():
-                f.write(tag.write())
-            f.write("\n")
-            for cmd in self.cmds:
-                f.write("{}\n".format(cmd))
-
-    @property
-    def cmds(self) -> List[str]:
-        return self._cmds
-
-    @property
-    def exec_cmd(self) -> str:
-        return self._exec_cmd
-
-    @property
-    def tags(self) -> TagCollection:
-        return self._tags
-
-    @tags.setter
-    def tags(self, value: TagCollection) -> None:
-        if value.common_class is SlurmTag:
-            self._tags = value
-        else:
-            err = "`value.common_class` must be SlurmTag"
-            raise ValueError(err)

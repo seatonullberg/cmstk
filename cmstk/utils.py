@@ -51,7 +51,7 @@ class BaseTag(object):
         comment: Description of the tag's purpose.
         value: The value of the tag.
 
-    Properties:
+    Attributes:
         value: The value of the tag.
     """
     def __init__(self,
@@ -100,7 +100,7 @@ class TagCollection(object):
                  tags: Optional[List[Any]] = None) -> None:
         if not issubclass(common_class, BaseTag):
             err = "`common_class` must be a subclass of BaseTag"
-            raise ValueError(err)
+            raise TypeError(err)
         self._common_class = common_class
         self._tags: Dict[str, BaseTag] = {}
         if tags is not None:
@@ -117,10 +117,6 @@ class TagCollection(object):
             common_class: The class which all members must be an instance of.
             json_input: Dict of raw json data.
             module: Name of the module to import tags from.
-        
-        Raises:
-            ValueError:
-            - `setting_name` is required when loading from file.
         """
         valid_tags = {
             tag.name: tag
@@ -172,13 +168,13 @@ class TagCollection(object):
             value: The tag to be inserted.
 
         Raises:
-            ValueError:
+            TypeError:
             - `value` must be an instance of {common_class}.
         """
         if not isinstance(value, self._common_class):
             err = "`value` must be an instance of {}".format(
                 self._common_class)
-            raise ValueError(err)
+            raise TypeError(err)
         self._tags[value.name] = value
 
     @property
