@@ -36,6 +36,30 @@ def within_one_percent(a: Number, b: Number) -> bool:
     diff = abs(a - b)
     return abs(diff / b) < 0.01
 
+# temporary
+def surface_directions_100():
+    return [
+        [1, 0, 0],
+        [0, 1, 0],
+        [0, 0, 1]
+    ]
+
+# temporary
+def surface_directions_110():
+    return [
+        [0, -1, 0],
+        [0, 0, -1],
+        [1, 1, 0]
+    ]
+
+# temporary
+def surface_directions_111():
+    return [
+        [1, -1, 0],
+        [1, 1, -2],
+        [1, 1, 1]
+    ]
+
 
 #==============================#
 #    Input Script Utilities    #
