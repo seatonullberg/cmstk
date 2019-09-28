@@ -1,12 +1,13 @@
 from cmstk.atat.mcsqs import BestsqsFile
 from cmstk.vasp.poscar import PoscarFile
+from collections import OrderedDict
 import numpy as np
-from typing import Optional, Sequence
+from typing import List, Optional
 
 
 def bestsqs_to_poscar(bestsqs: BestsqsFile,
                       scaling_factor: float,
-                      sym_order: Sequence[str],
+                      symbol_order: List[str],
                       direct: Optional[bool] = None,
                       relaxations: Optional[np.ndarray] = None) -> PoscarFile:
     """Converts a BestsqsFile object into a PoscarFile object.
@@ -15,30 +16,19 @@ def bestsqs_to_poscar(bestsqs: BestsqsFile,
         bestsqs: File object to convert.
         scaling_factor: Universal lattice scaling factor.
         - Interpreted as total volume if negative
-        sym_order: IUPAC symbols in the order they should appear.
+        symbol_order: The order in which symbols should be arranged.
         direct: Specifies a direct (fractional) coordinate system.
         relaxations: Selective dynamics parameters of each atom in the lattice.
     
-    Raises:
+    Raise:
         ValueError:
-        - All members of `sym_order` must be unique.
+        - all members of `symbol_order` must be unique
     """
-    if len(sym_order) != len(set(sym_order)):
-        err = "All members of `sym_order` must be unique."
+    if len(symbol_order) != len(set(symbol_order)):
+        err = "all members or `symbol_order` must be unique"
         raise ValueError(err)
-    poscar = PoscarFile(direct=direct,
-                        lattice=bestsqs.lattice,
-                        relaxations=relaxations,
-                        scaling_factor=scaling_factor)
-    # group positions by symbol as required in POSCAR
-    poscar.lattice.sort_by_symbol(sym_order)
-    # count up occurences of each symbol
-    sym_counts = {sym: 0 for sym in sym_order}
-    for sym in bestsqs.lattice.symbols:
-        sym_counts[sym] += 1
-    # store the counts in order
-    n_atoms_per_symbol = []
-    for sym in sym_order:
-        n_atoms_per_symbol.append(sym_counts[sym])
-    poscar.n_atoms_per_symbol = n_atoms_per_symbol
-    return poscar
+    bestsqs.lattice.sort_by_symbol(symbol_order)
+    return PoscarFile(direct=direct,
+                      lattice=bestsqs.lattice,
+                      relaxations=relaxations,
+                      scaling_factor=scaling_factor)
