@@ -34,13 +34,13 @@ class Atom(object):
             magnetic_moment = 0
         self.magnetic_moment = magnetic_moment
         if position is None:
-            position = np.array([])
+            position = np.array([0, 0, 0])
         self.position = position
         if symbol is None:
             symbol = ""
         self.symbol = symbol
         if velocity is None:
-            velocity = np.array([])
+            velocity = np.array([0, 0, 0])
         self.velocity = velocity
 
 
