@@ -121,8 +121,13 @@ class PoscarFile(object):
         velocities_arr = np.array(
             [np.fromstring(v, sep=" ") for v in velocities]
         )
-        for p, v in zip(positions_arr, velocities_arr):
-            self.lattice.add_atom(Atom(position=p, velocity=v))
+        # contcars have velocity, poscars don't
+        if len(velocities_arr) == 0:
+            for p in positions_arr:
+                self.lattice.add_atom(Atom(position=p))
+        else:
+            for p, v in zip(positions_arr, velocities_arr):
+                self.lattice.add_atom(Atom(position=p, velocity=v))
 
     def write(self, path: Optional[str] = None) -> None:
         """Writes a POSCAR file.
