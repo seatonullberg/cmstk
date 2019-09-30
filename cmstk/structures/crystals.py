@@ -43,9 +43,10 @@ class Lattice(AtomCollection):
         for position in self.positions:
             yield position / parameters
 
-    def surface_area(self) -> float:
+    def surface_area(self, scaling_factor: float = 1.0) -> float:
         """Returns the surface area of the lattice."""
-        x, y = self.coordinate_matrix[0], self.coordinate_matrix[1]
+        x = self.coordinate_matrix[0] * scaling_factor
+        y = self.coordinate_matrix[1] * scaling_factor
         magx = np.linalg.norm(x)
         magy = np.linalg.norm(y)
         ux = x / magx
