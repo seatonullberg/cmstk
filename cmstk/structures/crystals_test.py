@@ -15,3 +15,6 @@ def test_lattice():
     assert fractional_positions[0][0] == 0
     assert fractional_positions[1][0] == 0.5
     assert lattice.surface_area() == 4.0
+    # now use scaling factor
+    surface_area = lattice.surface_area(scaling_factor=2.0)
+    assert surface_area == 16.0

@@ -10,3 +10,4 @@
 *.potcar filter=lfs diff=lfs merge=lfs -text
 *.incar filter=lfs diff=lfs merge=lfs -text
 *.slurm filter=lfs diff=lfs merge=lfs -text
+*.contcar filter=lfs diff=lfs merge=lfs -text

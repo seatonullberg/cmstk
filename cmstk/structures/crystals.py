@@ -17,7 +17,7 @@ class Lattice(AtomCollection):
         coordinate_matrix: Parameters and angles combined into a 3x3 matrix.
         tolerance: The radius in which to check for atoms on add or remove.
         
-        Inhereted:
+        Inherited:
             charges: Electronic charge of each atom.
             magnetic_moments: Magnetic moment of each atom.
             n_atoms: Number of atoms in the collection.
@@ -43,9 +43,15 @@ class Lattice(AtomCollection):
         for position in self.positions:
             yield position / parameters
 
-    def surface_area(self) -> float:
-        """Returns the surface area of the lattice."""
-        x, y = self.coordinate_matrix[0], self.coordinate_matrix[1]
+    def surface_area(self, scaling_factor: float = 1.0) -> float:
+        """Returns the surface area of the lattice.
+        
+        Args:
+            scaling_factor: Multiplicative scaling factor applied to both the x 
+            and y vectors.
+        """
+        x = self.coordinate_matrix[0] * scaling_factor
+        y = self.coordinate_matrix[1] * scaling_factor
         magx = np.linalg.norm(x)
         magy = np.linalg.norm(y)
         ux = x / magx
