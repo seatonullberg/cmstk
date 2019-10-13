@@ -18,8 +18,7 @@ class IncarFile(object):
     """
     def __init__(self,
                  filepath: Optional[str] = None,
-                 tags: Optional[List[BaseTag]]= None
-                ) -> None:
+                 tags: Optional[List[BaseTag]] = None) -> None:
         if filepath is None:
             filepath = "INCAR"
         self.filepath = filepath
