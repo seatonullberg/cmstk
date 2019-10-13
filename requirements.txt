@@ -1,3 +1,5 @@
 matplotlib
+mypy
 numpy
+pytest
 scipy
