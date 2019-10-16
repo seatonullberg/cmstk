@@ -13,6 +13,7 @@ class PeriodicTable(object):
     Attributes:
         filepath: Filepath to a json database.
     """
+
     def __init__(self, filepath: Optional[str] = None) -> None:
         if filepath is None:
             filepath = os.path.join(data_directory(), "elements.json")

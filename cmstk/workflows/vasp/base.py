@@ -30,6 +30,7 @@ class VaspCalculation(object):
         potcar: VASP PotcarFile.
         submission_script: HPC job submission script.
     """
+
     def __init__(self,
                  calculation_directory: Optional[str] = None,
                  incar: Optional[IncarFile] = None,

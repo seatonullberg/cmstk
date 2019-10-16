@@ -26,6 +26,7 @@ class Lattice(AtomCollection):
             symbols: IUPAC chemical symbol of each atom.
             velocities: Velocity vector of each atom.
     """
+
     def __init__(self,
                  atoms: Optional[List[Atom]] = None,
                  coordinate_matrix: Optional[np.ndarray] = None,

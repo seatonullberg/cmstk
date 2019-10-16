@@ -32,6 +32,7 @@ class PoscarFile(object):
         relaxations: Selective dynamics relaxation parameters for each atom.
         scaling_factor: Lattice scaling factor (lattice constant)
     """
+
     def __init__(self,
                  filepath: Optional[str] = None,
                  comment: Optional[str] = None,
@@ -86,9 +87,9 @@ class PoscarFile(object):
         self.lattice.coordinate_matrix = np.array(coordinate_matrix)
         symbols = [s for s in lines[5].split()]
         symbol_counts = [int(sc) for sc in lines[6].split()]
-        self.n_atoms_per_symbol = OrderedDict(
-            [(s, sc) for s, sc in zip(symbols, symbol_counts)]
-        )
+        self.n_atoms_per_symbol = OrderedDict([
+            (s, sc) for s, sc in zip(symbols, symbol_counts)
+        ])
         if lines[7][0] in ["S", "s"]:
             selective_dynamics = True
         else:
@@ -104,12 +105,11 @@ class PoscarFile(object):
             self.direct = True
         start = coord_sys_index + 1
         end = start + sum(self.n_atoms_per_symbol.values())
-        positions = lines[start: end]
+        positions = lines[start:end]
         positions = [" ".join(p.split()[:3]) for p in positions]
-        positions_arr = np.array(
-            [np.fromstring(p, sep=" ") for p in positions])
+        positions_arr = np.array([np.fromstring(p, sep=" ") for p in positions])
         if selective_dynamics:
-            relaxations = lines[start: end]
+            relaxations = lines[start:end]
             relaxations_list = []
             for row in relaxations:
                 row_str = row.split()[3:]
@@ -119,8 +119,7 @@ class PoscarFile(object):
         start = end + 1
         velocities = lines[start:]
         velocities_arr = np.array(
-            [np.fromstring(v, sep=" ") for v in velocities]
-        )
+            [np.fromstring(v, sep=" ") for v in velocities])
         # contcars have velocity, poscars don't
         if len(velocities_arr) == 0:
             for p in positions_arr:
@@ -145,7 +144,9 @@ class PoscarFile(object):
                 row = " ".join(row)
                 f.write("{}\n".format(row))
             f.write(" ".join(self.n_atoms_per_symbol.keys()) + "\n")
-            f.write(" ".join([str(v) for v in self.n_atoms_per_symbol.values()]) + "\n")
+            f.write(" ".join([str(v)
+                              for v in self.n_atoms_per_symbol.values()]) +
+                    "\n")
             if self.relaxations.size != 0:
                 f.write("Selective dynamics\n")
             if self.direct:
@@ -155,8 +156,9 @@ class PoscarFile(object):
             for i, row in enumerate(self.lattice.positions):
                 row = " ".join(row.astype(str))
                 if self.relaxations.size != 0:
-                    relax_row = " ".join([("T" if x else "F")
-                                          for x in self.relaxations[i]])
+                    relax_row = " ".join([
+                        ("T" if x else "F") for x in self.relaxations[i]
+                    ])
                     f.write("{} {}\n".format(row, relax_row))
                 else:
                     f.write("{}\n".format(row))

@@ -36,18 +36,19 @@ def test_poscar_file():
     assert os.path.exists("test.poscar")
     os.remove("test.poscar")
 
+
 def test_contcar_file():
     """Tests the initialization of a vasp.PoscarFile object reading a CONTCAR."""
     path = os.path.join(data_directory(), "vasp", "Fe75Cr25_BCC_bulk.contcar")
     contcar = PoscarFile(path)
     contcar.read()
     contcar_writer = PoscarFile(filepath="test.contcar",
-                               comment=contcar.comment,
-                               direct=contcar.direct,
-                               lattice=contcar.lattice,
-                               n_atoms_per_symbol=contcar.n_atoms_per_symbol,
-                               relaxations=contcar.relaxations,
-                               scaling_factor=contcar.scaling_factor)
+                                comment=contcar.comment,
+                                direct=contcar.direct,
+                                lattice=contcar.lattice,
+                                n_atoms_per_symbol=contcar.n_atoms_per_symbol,
+                                relaxations=contcar.relaxations,
+                                scaling_factor=contcar.scaling_factor)
     contcar_writer.write()
     contcar_reader = PoscarFile("test.contcar")
     contcar_reader.read()

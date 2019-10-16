@@ -35,6 +35,7 @@ class SetflFile(object):
         pair_function: Tabulated values of the interatomic potential between 
         each symbol pair.
     """
+
     def __init__(self, filepath: str) -> None:
         self.filepath = filepath
         self.comments: Sequence[str]
@@ -75,8 +76,7 @@ class SetflFile(object):
             path = self.filepath
         with open(path, "w") as f:
             f.write("{}\n".format("\n".join(self.comments)))
-            f.write("{} {}\n".format(len(self.symbols),
-                                     " ".join(self.symbols)))
+            f.write("{} {}\n".format(len(self.symbols), " ".join(self.symbols)))
             f.write("{} {} {} {} {}\n".format(self.n_rho, self.d_rho, self.n_r,
                                               self.d_r, self.cutoff))
             for s in self.symbols:

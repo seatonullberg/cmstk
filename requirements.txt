@@ -3,3 +3,4 @@ mypy
 numpy
 pytest
 scipy
+yapf

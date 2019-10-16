@@ -12,6 +12,7 @@ class ParallelCoordinatesPlot(object):
         xlabels (optional) (list of str): The labels to assign to each 
         dimension.
     """
+
     def __init__(self, ncols, xlabels=None):
         assert type(ncols) is int
         self._ncols = ncols
@@ -20,8 +21,7 @@ class ParallelCoordinatesPlot(object):
         else:
             self._xlabels = xlabels
         self._data = []  # list of numpy.ndarrays
-        self._colors = [
-        ]  # list of colors to use for each member of self._data
+        self._colors = []  # list of colors to use for each member of self._data
         self._labels = []  # list of labels for each member of self._data
         self.fig, self.axes = plt.subplots(nrows=1,
                                            ncols=self._ncols - 1,

@@ -15,6 +15,7 @@ class OutcarFile(object):
         entropy: Entropy value of the system at each step.
         total_energy: Total (free energy) value of the system at each step.
     """
+
     def __init__(self, filepath: Optional[str] = None) -> None:
         if filepath is None:
             filepath = "OUTCAR"
@@ -45,7 +46,8 @@ class OutcarFile(object):
             if "Solvation" in line and "Ediel_sol" in line:
                 d["Ediel_sol"] = read(line)
             if "free energy" in line and "TOTEN" in line:
-                d["TOTEN"] = float(line.split("=")[-1].replace("eV", "").strip())
+                d["TOTEN"] = float(
+                    line.split("=")[-1].replace("eV", "").strip())
             if "energy without entropy =" in line:
                 result.append(copy.deepcopy(d))
         return result

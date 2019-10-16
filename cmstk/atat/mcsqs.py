@@ -23,6 +23,7 @@ class BestcorrFile(object):
         filepath: Filepath to a bestcorr.out file.
         objective_functions: Value of the objective function at each iteration.
     """
+
     def __init__(self, filepath: Optional[str] = None) -> None:
         if filepath is None:
             filepath = "bestcorr.out"
@@ -99,6 +100,7 @@ class BestsqsFile(object):
         lattice: Underlying lattice structure data.
         vectors: Lattice vectors.
     """
+
     def __init__(self, filepath: Optional[str] = None) -> None:
         if filepath is None:
             filepath = "bestsqs.out"
@@ -144,8 +146,7 @@ class BestsqsFile(object):
         if self._vectors is None:
             vectors = self._lines[3:6]
             self._vectors = np.array(
-                [np.fromstring(vec, sep=" ") for vec in vectors]
-            )
+                [np.fromstring(vec, sep=" ") for vec in vectors])
         return self._vectors
 
 
@@ -172,6 +173,7 @@ class RndstrFile(object):
         probabilities: Probability of occupation by any symbols at each site.
         vectors: Lattice vectors.
     """
+
     def __init__(self,
                  filepath: Optional[str] = None,
                  lattice: Optional[Lattice] = None,
@@ -241,8 +243,7 @@ class RndstrFile(object):
         if self._vectors is None:
             vectors = self._lines[3:6]
             self._vectors = np.array(
-                [np.fromstring(vec, sep=" ") for vec in vectors]
-            )
+                [np.fromstring(vec, sep=" ") for vec in vectors])
         return self._vectors
 
     @vectors.setter

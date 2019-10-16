@@ -36,20 +36,17 @@ def within_one_percent(a: Number, b: Number) -> bool:
     diff = abs(a - b)
     return abs(diff / b) < 0.01
 
+
 def surface_directions_100():
-    return [[1, 0, 0],
-            [0, 1, 0],
-            [0, 0, 1]]
+    return [[1, 0, 0], [0, 1, 0], [0, 0, 1]]
+
 
 def surface_directions_110():
-    return [[-1, 1, 0],
-            [0, 0, 1],
-            [1, 1, 0]]
+    return [[-1, 1, 0], [0, 0, 1], [1, 1, 0]]
+
 
 def surface_directions_111():
-    return [[1, -1, 0],
-            [1, 1, -2],
-            [1, 1, 1]]
+    return [[1, -1, 0], [1, 1, -2], [1, 1, 1]]
 
 
 #==============================#
@@ -69,6 +66,7 @@ class BaseTag(object):
     Attributes:
         value: The value of the tag.
     """
+
     def __init__(self,
                  name: str,
                  valid_options: Sequence[Any],
@@ -111,6 +109,7 @@ class TagCollection(object):
         common_class: The class which all members must be an instance of.
         tags: The tag objects to store.
     """
+
     def __init__(self, common_class: type,
                  tags: Optional[List[Any]] = None) -> None:
         if not issubclass(common_class, BaseTag):
@@ -123,8 +122,7 @@ class TagCollection(object):
                 self.insert(tag)
 
     @classmethod
-    def from_default(cls, common_class: type, 
-                     json_data: Dict[str, Any], 
+    def from_default(cls, common_class: type, json_data: Dict[str, Any],
                      module: str):
         """Initializes from a predefined json file.
 
@@ -134,8 +132,7 @@ class TagCollection(object):
             module: Name of the module to import tags from.
         """
         valid_tags = {
-            tag.name: tag
-            for tag in cls.import_tags(common_class, module)
+            tag.name: tag for tag in cls.import_tags(common_class, module)
         }
         tags = []
         for k, v in json_data.items():
@@ -159,11 +156,13 @@ class TagCollection(object):
         attributes = importlib.import_module(module).__dict__
         classes = {
             name: obj
-            for name, obj in attributes.items() if inspect.isclass(obj)
+            for name, obj in attributes.items()
+            if inspect.isclass(obj)
         }
         tags = {
             name: obj
-            for name, obj in classes.items() if issubclass(obj, common_class)
+            for name, obj in classes.items()
+            if issubclass(obj, common_class)
         }
         del tags[common_class.__name__]  # do not import the base class
         return [v() for v in tags.values()]
@@ -187,8 +186,7 @@ class TagCollection(object):
             - `value` must be an instance of {common_class}.
         """
         if not isinstance(value, self._common_class):
-            err = "`value` must be an instance of {}".format(
-                self._common_class)
+            err = "`value` must be an instance of {}".format(self._common_class)
             raise TypeError(err)
         self._tags[value.name] = value
 

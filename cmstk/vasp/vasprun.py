@@ -29,7 +29,8 @@ class VasprunFile(object):
     def density_of_states(self) -> np.ndarray:
         """Returns the total density of states."""
         flag = "total"
-        dos_input = self._root.find("calculation").find("dos").find(flag)[0][-1][-1]  # type: ignore
+        dos_input = self._root.find("calculation").find("dos").find(
+            flag)[0][-1][-1]  # type: ignore
         dos = np.zeros((len(dos_input), 3))
         for i, row in enumerate(dos_input):
             dos[i, 0] = float(row.text.split()[0])  # energy
@@ -39,9 +40,11 @@ class VasprunFile(object):
 
     def eigenvalues(self) -> np.ndarray:
         try:
-            data = self._root.find("calculation").find("projected").find("eigenvalues").find("array")[-1]  # type: ignore
+            data = self._root.find("calculation").find("projected").find(
+                "eigenvalues").find("array")[-1]  # type: ignore
         except AttributeError:
-            data = self._root.find("calculation").find("eigenvalues").find("array")[-1]  # type: ignore
+            data = self._root.find("calculation").find("eigenvalues").find(
+                "array")[-1]  # type: ignore
         n_spins = len(data)
         n_kpoints = len(data[0])
         n_bands = len(data[0][0])
@@ -57,7 +60,8 @@ class VasprunFile(object):
 
     def eigenvectors(self) -> np.ndarray:
         """Returns the electron eigenvectors projected onto atomic orbitals."""
-        projection = self._root.find("calculation").find("projected").find("array")[-1]  # type: ignore
+        projection = self._root.find("calculation").find("projected").find(
+            "array")[-1]  # type: ignore
         n_spins = len(projection)
         n_kpoints = len(projection[0])
         n_bands = len(projection[0][0])
@@ -70,12 +74,16 @@ class VasprunFile(object):
                 for k in range(n_bands):
                     for l in range(n_ions):
                         for m in range(n_orbitals):
-                            eigenvectors[i, j, k, l, m] = float(projection[i][j][k][l].text.split()[m])  # type: ignore
+                            eigenvectors[i, j, k, l, m] = float(
+                                projection[i][j][k][l].text.split()
+                                [m])  # type: ignore
         return eigenvectors
 
     def fermi_energy(self) -> float:
         """Returns the calculated fermi energy."""
-        return float(self._root.find("calculation").find("dos").find("i").text)  # type: ignore
+        return float(
+            self._root.find("calculation").find("dos").find(
+                "i").text)  # type: ignore
 
     def reciprocal_lattice(self, initial: bool = True) -> np.ndarray:
         """Returns the initial or final reciprocal lattice vectors.
@@ -85,7 +93,8 @@ class VasprunFile(object):
         """
         index = (0 if initial else -1)
         lattice = np.zeros((3, 3))
-        lattice_entry = self._root.findall("structure")[index].find("crystal").findall("varray")[1]  # type: ignore
+        lattice_entry = self._root.findall("structure")[index].find(
+            "crystal").findall("varray")[1]  # type: ignore
         for i in range(3):
             temp = lattice_entry[i].text.split()  # type: ignore
             for j in range(3):

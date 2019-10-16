@@ -13,6 +13,7 @@ class IncarTag(BaseTag):
         comment: Description of the tag.
         value: Value assigned to the tag.
     """
+
     def __init__(self,
                  name: str,
                  valid_options: Sequence[Any],
@@ -227,10 +228,10 @@ class IncarTag(BaseTag):
 
 
 class AlgoTag(IncarTag):
+
     def __init__(self, value=None):
-        comment = (
-            "Determines the electronic minimization algorithm and/or GW "
-            "calculation type.")
+        comment = ("Determines the electronic minimization algorithm and/or GW "
+                   "calculation type.")
         name = "ALGO"
         valid_options = [
             "Normal", "VeryFast", "Fast", "Conjugate", "All", "Damped",
@@ -251,6 +252,7 @@ class AlgoTag(IncarTag):
 
 
 class AminTag(IncarTag):
+
     def __init__(self, value=None):
         comment = (
             "Minimal mixing parameter in Kerker's initial approximation to the "
@@ -271,6 +273,7 @@ class AminTag(IncarTag):
 
 
 class AmixTag(IncarTag):
+
     def __init__(self, value=None):
         comment = "Linear mixing parameter."
         name = "AMIX"
@@ -288,6 +291,7 @@ class AmixTag(IncarTag):
 
 
 class AmixMagTag(IncarTag):
+
     def __init__(self, value=None):
         comment = "Linear mixing parameter for magnetization density."
         name = "AMIX_MAG"
@@ -305,6 +309,7 @@ class AmixMagTag(IncarTag):
 
 
 class BmixTag(IncarTag):
+
     def __init__(self, value=None):
         comment = "Cutoff wave vector for Kerker mixing scheme."
         name = "BMIX"
@@ -322,6 +327,7 @@ class BmixTag(IncarTag):
 
 
 class BmixMagTag(IncarTag):
+
     def __init__(self, value=None):
         comment = (
             "Cutoff wave vector for Kerker mixing scheme for the magnetization "
@@ -341,6 +347,7 @@ class BmixMagTag(IncarTag):
 
 
 class EdiffTag(IncarTag):
+
     def __init__(self, value=None):
         comment = "The global break condition for the electronic SC-loop."
         name = "EDIFF"
@@ -358,6 +365,7 @@ class EdiffTag(IncarTag):
 
 
 class EdiffgTag(IncarTag):
+
     def __init__(self, value=None):
         comment = ("Determines the break condition for the ionic relaxation "
                    "loop.")
@@ -376,6 +384,7 @@ class EdiffgTag(IncarTag):
 
 
 class EncutTag(IncarTag):
+
     def __init__(self, value=None):
         comment = "Cutoff energy for the planewave basis set in eV."
         name = "ENCUT"
@@ -393,6 +402,7 @@ class EncutTag(IncarTag):
 
 
 class IbrionTag(IncarTag):
+
     def __init__(self, value=None):
         comment = "Determines how the ions are updated and moved."
         name = "IBRION"
@@ -410,6 +420,7 @@ class IbrionTag(IncarTag):
 
 
 class IchargTag(IncarTag):
+
     def __init__(self, value=None):
         comment = "Determines construction of the initial charge density."
         name = "ICHARG"
@@ -427,6 +438,7 @@ class IchargTag(IncarTag):
 
 
 class IsifTag(IncarTag):
+
     def __init__(self, value=None):
         comment = (
             "Determines whether the stress tensor is calculated and which "
@@ -446,6 +458,7 @@ class IsifTag(IncarTag):
 
 
 class IsmearTag(IncarTag):
+
     def __init__(self, value=None):
         comment = "Determines how partial occupancies are set for each orbital."
         name = "ISMEAR"
@@ -463,6 +476,7 @@ class IsmearTag(IncarTag):
 
 
 class IspinTag(IncarTag):
+
     def __init__(self, value=None):
         comment = "Specifies spin polarization."
         name = "ISPIN"
@@ -480,6 +494,7 @@ class IspinTag(IncarTag):
 
 
 class IstartTag(IncarTag):
+
     def __init__(self, value=None):
         comment = "Determines whether or not to read the WAVECAR file."
         name = "ISTART"
@@ -497,6 +512,7 @@ class IstartTag(IncarTag):
 
 
 class IsymTag(IncarTag):
+
     def __init__(self, value=None):
         comment = "Determines how symmetry is treated."
         name = "ISYM"
@@ -514,6 +530,7 @@ class IsymTag(IncarTag):
 
 
 class LchargTag(IncarTag):
+
     def __init__(self, value=None):
         comment = "Determines whether or not a CHARGCAR/CHG file is written."
         name = "LCHARG"
@@ -531,6 +548,7 @@ class LchargTag(IncarTag):
 
 
 class LorbitTag(IncarTag):
+
     def __init__(self, value=None):
         comment = "Determines whether PROCAR or PROOUT files are written."
         name = "LORBIT"
@@ -548,6 +566,7 @@ class LorbitTag(IncarTag):
 
 
 class LrealTag(IncarTag):
+
     def __init__(self, value=None):
         comment = ("Determines whether the projection operators are evaluated "
                    "in real space or reciprocal space.")
@@ -572,6 +591,7 @@ class LrealTag(IncarTag):
 
 
 class LvtotTag(IncarTag):
+
     def __init__(self, value=None):
         comment = "Determines whether or not a LOCPOT file is written."
         name = "LVTOT"
@@ -589,6 +609,7 @@ class LvtotTag(IncarTag):
 
 
 class LwaveTag(IncarTag):
+
     def __init__(self, value=None):
         comment = "Determines whether or not a WAVECAR file is written."
         name = "LWAVE"
@@ -606,6 +627,7 @@ class LwaveTag(IncarTag):
 
 
 class MagmomTag(IncarTag):
+
     def __init__(self, value=None):
         comment = "Specifies the initial magnetic moment for each atom."
         name = "MAGMOM"
@@ -623,6 +645,7 @@ class MagmomTag(IncarTag):
 
 
 class NcoreTag(IncarTag):
+
     def __init__(self, value=None):
         comment = "Determines the number of compute nodes per orbital."
         name = "NCORE"
@@ -640,6 +663,7 @@ class NcoreTag(IncarTag):
 
 
 class NelmTag(IncarTag):
+
     def __init__(self, value=None):
         comment = "The maximum number of electronic SC steps."
         name = "NELM"
@@ -657,6 +681,7 @@ class NelmTag(IncarTag):
 
 
 class NelminTag(IncarTag):
+
     def __init__(self, value=None):
         comment = "Specifies minimum number of electronic SCF steps."
         name = "NELMIN"
@@ -674,6 +699,7 @@ class NelminTag(IncarTag):
 
 
 class NparTag(IncarTag):
+
     def __init__(self, value=None):
         comment = "Determine the number of bands treated in parallel."
         name = "NPAR"
@@ -691,6 +717,7 @@ class NparTag(IncarTag):
 
 
 class NswTag(IncarTag):
+
     def __init__(self, value=None):
         comment = "Maximum number of ionic steps."
         name = "NSW"
@@ -708,6 +735,7 @@ class NswTag(IncarTag):
 
 
 class PotimTag(IncarTag):
+
     def __init__(self, value=None):
         comment = "Specifies the time step or step width scaling."
         name = "POTIM"
@@ -725,6 +753,7 @@ class PotimTag(IncarTag):
 
 
 class PrecTag(IncarTag):
+
     def __init__(self, value=None):
         comment = "Determines the precision mode."
         name = "PREC"
@@ -744,6 +773,7 @@ class PrecTag(IncarTag):
 
 
 class SigmaTag(IncarTag):
+
     def __init__(self, value=None):
         comment = "The width of the smearing in eV."
         name = "SIGMA"
@@ -761,6 +791,7 @@ class SigmaTag(IncarTag):
 
 
 class SymprecTag(IncarTag):
+
     def __init__(self, value=None):
         comment = "Determines accuracy with which positions must be specified."
         name = "SYMPREC"
@@ -778,6 +809,7 @@ class SymprecTag(IncarTag):
 
 
 class SystemTag(IncarTag):
+
     def __init__(self, value=None):
         comment = "Description of the simulation."
         name = "SYSTEM"

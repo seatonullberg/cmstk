@@ -13,6 +13,7 @@ class SlurmTag(BaseTag):
         comment: Description of the tag.
         value: Value assigned to the tag.
     """
+
     def __init__(self,
                  name: str,
                  valid_options: Sequence[Any],
@@ -117,7 +118,7 @@ class SlurmTag(BaseTag):
             s = "#SBATCH {}={}\n".format(self.name, str_value)
         else:
             s = "#SBATCH {}={}\t# {}\n".format(self.name, str_value,
-                                                 self.comment)
+                                               self.comment)
         return s
 
 
@@ -127,6 +128,7 @@ class SlurmTag(BaseTag):
 
 
 class AccountTag(SlurmTag):
+
     def __init__(self, value=None):
         name = "--account"
         comment = "User account name."
@@ -144,6 +146,7 @@ class AccountTag(SlurmTag):
 
 
 class DistributionTag(SlurmTag):
+
     def __init__(self, value=None):
         name = "--distribution"
         comment = "Distribution method for remote processes."
@@ -166,6 +169,7 @@ class DistributionTag(SlurmTag):
 
 
 class ErrorTag(SlurmTag):
+
     def __init__(self, value=None):
         name = "--error"
         comment = "Filename to write stderr to."
@@ -183,6 +187,7 @@ class ErrorTag(SlurmTag):
 
 
 class JobNameTag(SlurmTag):
+
     def __init__(self, value=None):
         name = "--job-name"
         comment = "Name of the job."
@@ -200,6 +205,7 @@ class JobNameTag(SlurmTag):
 
 
 class MailTypeTag(SlurmTag):
+
     def __init__(self, value=None):
         name = "--mail-type"
         comment = "Email event triggers."
@@ -218,6 +224,7 @@ class MailTypeTag(SlurmTag):
 
 
 class MailUserTag(SlurmTag):
+
     def __init__(self, value=None):
         name = "--mail-user"
         comment = "Email address to send to."
@@ -235,6 +242,7 @@ class MailUserTag(SlurmTag):
 
 
 class MemPerCpuTag(SlurmTag):
+
     def __init__(self, value=None):
         name = "--mem-per-cpu"
         comment = "Memory to allocate on each CPU (in MB)."
@@ -252,6 +260,7 @@ class MemPerCpuTag(SlurmTag):
 
 
 class NtasksTag(SlurmTag):
+
     def __init__(self, value=None):
         name = "--ntasks"
         comment = "Number of tasks to run."
@@ -269,6 +278,7 @@ class NtasksTag(SlurmTag):
 
 
 class OutputTag(SlurmTag):
+
     def __init__(self, value=None):
         name = "--output"
         comment = "Filename to write stdout to."
@@ -286,6 +296,7 @@ class OutputTag(SlurmTag):
 
 
 class QosTag(SlurmTag):
+
     def __init__(self, value=None):
         name = "--qos"
         comment = "QOS account name."
@@ -303,6 +314,7 @@ class QosTag(SlurmTag):
 
 
 class TimeTag(SlurmTag):
+
     def __init__(self, value=None):
         name = "--time"
         comment = "Maximum duration of the job."
