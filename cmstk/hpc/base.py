@@ -19,11 +19,9 @@ class BaseScript(object):
         exec_cmd: The shell command used to execute the script.
         tags: Tags used to configure the job manager.
     """
-    def __init__(self, filepath: str,
-                 cmds: List[str],
-                 common_class: type,
-                 exec_cmd: str,
-                 tags: List[BaseTag]) -> None:
+
+    def __init__(self, filepath: str, cmds: List[str], common_class: type,
+                 exec_cmd: str, tags: List[BaseTag]) -> None:
         self.filepath = filepath
         self._cmds = cmds
         self._common_class = common_class

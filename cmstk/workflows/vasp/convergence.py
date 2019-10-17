@@ -55,8 +55,7 @@ def converge_kpoints(calculation: VaspCalculation,
         working_directory: Path to the working directory.
     """
     d = {
-        kpoint_size: copy.deepcopy(calculation)
-        for kpoint_size in kpoint_sizes
+        kpoint_size: copy.deepcopy(calculation) for kpoint_size in kpoint_sizes
     }
     # setup directories
     for kpoint_size, calc in d.items():

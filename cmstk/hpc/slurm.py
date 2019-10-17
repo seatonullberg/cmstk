@@ -20,6 +20,7 @@ class SlurmScript(BaseScript):
         exec_cmd: The shell command used to execute this script.
         tags: TagCollection which can be accessed like a dict.
     """
+
     def __init__(self,
                  filepath: Optional[str] = None,
                  cmds: Optional[List[str]] = None,
@@ -37,7 +38,8 @@ class SlurmScript(BaseScript):
                          tags=tags)
 
     @classmethod
-    def from_default(cls, setting_name: str,
+    def from_default(cls,
+                     setting_name: str,
                      filepath: Optional[str] = None,
                      json_path: Optional[str] = None):
         """Initializes from predefined settings.

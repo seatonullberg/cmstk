@@ -22,8 +22,6 @@ def test_bestsqs_file():
     bestsqs = BestsqsFile(filepath=path)
     bestsqs.read()
     coordinate_matrix = np.array([[5.7, 0, 0], [0, 5.7, 0], [0, 0, 5.7]])
-    print(bestsqs.lattice.coordinate_matrix)
-    print(coordinate_matrix)
     assert np.array_equal(bestsqs.lattice.coordinate_matrix, coordinate_matrix)
     lattice_vectors = np.array([[0, 0, -1], [0, -1, 0], [-1, 0, 0]])
     assert np.array_equal(bestsqs.vectors, lattice_vectors)
@@ -34,14 +32,14 @@ def test_bestsqs_file():
 
 def test_rndstr_file():
     """Tests the initialization of a RndstrFile object."""
-    path = os.path.join(data_directory(), "atat",
-                        "Fe75Cr25_BCC_bulk.rndstr.in")
+    path = os.path.join(data_directory(), "atat", "Fe75Cr25_BCC_bulk.rndstr.in")
     rndstr = RndstrFile(filepath=path)
     rndstr.read()
 
     rndstr_writer = RndstrFile(filepath="test.in")
     rndstr_writer.lattice = rndstr.lattice
     rndstr_writer.probabilities = rndstr.probabilities
+    rndstr_writer.vectors = rndstr.vectors
     rndstr_writer.write()
 
     rndstr_reader = RndstrFile(filepath="test.in")
@@ -53,5 +51,4 @@ def test_rndstr_file():
     positions = np.array([p for p in rndstr.lattice.positions])
     assert np.array_equal(reader_positions, positions)
     assert rndstr_reader.probabilities == rndstr.probabilities
-
     os.remove("test.in")

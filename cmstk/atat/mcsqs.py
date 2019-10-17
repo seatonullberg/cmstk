@@ -10,6 +10,7 @@ class BestcorrFile(object):
     
     Notes:
         This is a read-only wrapper.
+
         File specification:
         https://www.brown.edu/Departments/Engineering/Labs/avdw/atat/manual/node47.html
 
@@ -22,12 +23,14 @@ class BestcorrFile(object):
         filepath: Filepath to a bestcorr.out file.
         objective_functions: Value of the objective function at each iteration.
     """
+
     def __init__(self, filepath: Optional[str] = None) -> None:
         if filepath is None:
             filepath = "bestcorr.out"
         self.filepath = filepath
-        self.clusters: List[List[Dict[str, Number]]]
-        self.objective_functions: List[float]
+        self._lines: List[str] = []
+        self._clusters: Optional[List[List[Dict[str, Number]]]] = None
+        self._objective_functions: Optional[List[float]] = None
 
     def read(self, path: Optional[str] = None) -> None:
         """Reads a bestcorr.out file.
@@ -38,46 +41,43 @@ class BestcorrFile(object):
         if path is None:
             path = self.filepath
         with open(path, "r") as f:
-            lines = f.readlines()
-        self._read_clusters(lines)
-        self._read_objective_functions(lines)
+            self._lines = [line.strip() for line in f.readlines()]
+        # reset the attributes
+        self._clusters = None
+        self._objective_functions = None
 
-    def _read_clusters(self, lines: List[str]) -> None:
-        """Reads cluster information.
-        
-        Args:
-            lines: Lines in the file separated by `\n`.
-        """
-        clusters: List[List[Dict[str, Number]]] = []
-        current_cluster: List[Dict[str, Number]] = []
-        for line in lines:
-            if line.startswith("Objective_function"):
-                clusters.append(current_cluster)
-                current_cluster = []
-            else:
-                segments = [l.strip() for l in line.split()]
-                d = {
-                    "n_points": int(segments[0]),
-                    "diameter": float(segments[1]),
-                    "correlation": float(segments[2]),
-                    "target": float(segments[3]),
-                    "difference": float(segments[4]),
-                }
-                current_cluster.append(d)
-        self.clusters = clusters
+    @property
+    def clusters(self) -> List[List[Dict[str, Number]]]:
+        if self._clusters is None:
+            clusters: List[List[Dict[str, Number]]] = []
+            current_cluster: List[Dict[str, Number]] = []
+            for line in self._lines:
+                if line.startswith("Objective_function"):
+                    clusters.append(current_cluster)
+                    current_cluster = []
+                else:
+                    segments = [l.strip() for l in line.split()]
+                    d = {
+                        "n_points": int(segments[0]),
+                        "diameter": float(segments[1]),
+                        "correlation": float(segments[2]),
+                        "target": float(segments[3]),
+                        "difference": float(segments[4]),
+                    }
+                    current_cluster.append(d)
+            self._clusters = clusters
+        return self._clusters
 
-    def _read_objective_functions(self, lines: List[str]) -> None:
-        """Reads objective function information.
-        
-        Args:
-            lines: Lines in the file separated by `\n`.
-        """
-        objective_functions: List[float] = []
-        for line in lines:
-            if line.startswith("Objective_function"):
-                value = float(line.split("=")[1])
-                objective_functions.append(value)
-        self.objective_functions = objective_functions
+    @property
+    def objective_functions(self) -> List[float]:
+        if self._objective_functions is None:
+            objective_functions: List[float] = []
+            for line in self._lines:
+                if line.startswith("Objective_function"):
+                    value = float(line.split("=")[1])
+                    objective_functions.append(value)
+            self._objective_functions = objective_functions
+        return self._objective_functions
 
 
 class BestsqsFile(object):
@@ -85,6 +85,7 @@ class BestsqsFile(object):
     
     Notes:
         This is a read-only wrapper.
+
         File specification:
         https://www.brown.edu/Departments/Engineering/Labs/avdw/atat/manual/node47.html
 
@@ -99,19 +100,14 @@ class BestsqsFile(object):
         lattice: Underlying lattice structure data.
         vectors: Lattice vectors.
     """
-    def __init__(self,
-                 filepath: Optional[str] = None,
-                 lattice: Optional[Lattice] = None,
-                 vectors: Optional[np.ndarray] = None) -> None:
+
+    def __init__(self, filepath: Optional[str] = None) -> None:
         if filepath is None:
             filepath = "bestsqs.out"
         self.filepath = filepath
-        if lattice is None:
-            lattice = Lattice()
-        self.lattice = lattice
-        if vectors is None:
-            vectors = np.identity(3)
-        self.vectors = vectors
+        self._lines: List[str] = []
+        self._lattice: Optional[Lattice] = None
+        self._vectors: Optional[np.ndarray] = None
 
     def read(self, path: Optional[str] = None) -> None:
         """Reads a bestsqs.out file.
@@ -122,28 +118,36 @@ class BestsqsFile(object):
         if path is None:
             path = self.filepath
         with open(path, "r") as f:
-            lines = [line.strip() for line in f.readlines()]
+            self._lines = [line.strip() for line in f.readlines()]
+        # reset attributes
+        self._lattice = None
+        self._vectors = None
 
-        coordinate_matrix = lines[:3]
-        coordinate_matrix = [
-            np.fromstring(row, sep=" ") for row in coordinate_matrix
-        ]
+    @property
+    def lattice(self) -> Lattice:
+        if self._lattice is None:
+            coordinate_matrix = self._lines[:3]
+            coordinate_matrix = [
+                np.fromstring(row, sep=" ") for row in coordinate_matrix
+            ]
+            positions = self._lines[6:]
+            positions = [" ".join(p.split()[:3]) for p in positions]
+            positions = [np.fromstring(p, sep=" ") for p in positions]
+            symbols = self._lines[6:]
+            symbols = [s.split()[-1] for s in symbols]
+            lattice = Lattice(coordinate_matrix=np.array(coordinate_matrix))
+            for p, s in zip(positions, symbols):
+                lattice.add_atom(Atom(position=np.array(p), symbol=s))
+            self._lattice = lattice
+        return self._lattice
 
-        vectors = lines[3:6]
-        vectors = [np.fromstring(vec, sep=" ") for vec in vectors]
-
-        positions = lines[6:]
-        positions = [" ".join(p.split()[:3]) for p in positions]
-        positions_arr = np.array(
-            [np.fromstring(p, sep=" ") for p in positions])
-
-        symbols = lines[6:]
-        symbols = [s.split()[-1] for s in symbols]
-
-        self.lattice.coordinate_matrix = np.array(coordinate_matrix)
-        self.vectors = np.array(vectors)
-        for position, symbol in zip(positions_arr, symbols):
-            self.lattice.add_atom(Atom(position=position, symbol=symbol))
+    @property
+    def vectors(self) -> np.ndarray:
+        if self._vectors is None:
+            vectors = self._lines[3:6]
+            self._vectors = np.array(
+                [np.fromstring(vec, sep=" ") for vec in vectors])
+        return self._vectors
 
 
 class RndstrFile(object):
@@ -153,6 +157,7 @@ class RndstrFile(object):
         This implementation only supports the [ax, ay, az...] tilt angle format.
         Any files formatted differently will be read improperly and may fail 
         silently!
+
         File specification:
         https://www.brown.edu/Departments/Engineering/Labs/avdw/atat/manual/node47.html
 
@@ -168,6 +173,7 @@ class RndstrFile(object):
         probabilities: Probability of occupation by any symbols at each site.
         vectors: Lattice vectors.
     """
+
     def __init__(self,
                  filepath: Optional[str] = None,
                  lattice: Optional[Lattice] = None,
@@ -176,53 +182,73 @@ class RndstrFile(object):
         if filepath is None:
             filepath = "rndstr.in"
         self.filepath = filepath
-        if lattice is None:
-            lattice = Lattice()
-        self.lattice = lattice
-        if probabilities is None:
-            probabilities = []
-        self.probabilities = probabilities
+        self._lines: List[str] = []
+        self._lattice = lattice
+        self._probabilities = probabilities
         if vectors is None:
             vectors = np.identity(3)
-        self.vectors = vectors
+        self._vectors = vectors
 
-    def read(self, path: Optional[str] = None) -> None:
+    def read(self, path: Optional[str] = None):
         """Reads a rndstr.in file.
-        
+
         Args:
             path: The filepath to read from.
         """
         if path is None:
             path = self.filepath
         with open(path, "r") as f:
-            lines = [line.strip() for line in f.readlines()]
+            self._lines = [line.strip() for line in f.readlines()]
 
-        coordinate_matrix = lines[:3]
-        coordinate_matrix = [
-            np.fromstring(row, sep=" ") for row in coordinate_matrix
-        ]
+    @property
+    def lattice(self) -> Lattice:
+        if self._lattice is None:
+            coordinate_matrix = self._lines[:3]
+            coordinate_matrix = [
+                np.fromstring(row, sep=" ") for row in coordinate_matrix
+            ]
+            positions = [" ".join(l.split()[:3]) for l in self._lines[6:]]
+            positions = [np.fromstring(p, sep=" ") for p in positions]
+            lattice = Lattice(coordinate_matrix=np.array(coordinate_matrix))
+            for p in positions:
+                lattice.add_atom(Atom(position=np.array(p)))
+            self._lattice = lattice
+        return self._lattice
 
-        vectors = lines[3:6]
-        vectors = [np.fromstring(vec, sep=" ") for vec in vectors]
+    @lattice.setter
+    def lattice(self, value: Lattice) -> None:
+        self._lattice = value
 
-        positions = [" ".join(l.split()[:3]) for l in lines[6:]]
-        positions = [np.fromstring(p, sep=" ") for p in positions]
+    @property
+    def probabilities(self) -> List[Dict[str, float]]:
+        if self._probabilities is None:
+            probabilities = [l.split()[3] for l in self._lines[6:]]
+            probabilities_split = [p.split(",") for p in probabilities]
+            formatted_probabilities = []
+            for probability in probabilities_split:
+                d = {}
+                for prob in probability:
+                    symbol, value = prob.split("=")
+                    d[symbol] = float(value)
+                formatted_probabilities.append(d)
+            self._probabilities = formatted_probabilities
+        return self._probabilities
 
-        self.lattice.coordinate_matrix = np.array(coordinate_matrix)
-        self.vectors = np.array(vectors)
-        for position in positions:
-            self.lattice.add_atom(Atom(position=np.array(position)))
+    @probabilities.setter
+    def probabilities(self, value: List[Dict[str, float]]) -> None:
+        self._probabilities = value
 
-        probabilities = [l.split()[3] for l in lines[6:]]  # no spaces
-        probabilities_split = [p.split(",") for p in probabilities]
-        formatted_probabilities = []
-        for probability in probabilities_split:
-            d = {}
-            for prob in probability:
-                symbol, value = prob.split("=")
-                d[symbol] = float(value)
-            formatted_probabilities.append(d)
-        self.probabilities = formatted_probabilities
+    @property
+    def vectors(self) -> np.ndarray:
+        if self._vectors is None:
+            vectors = self._lines[3:6]
+            self._vectors = np.array(
+                [np.fromstring(vec, sep=" ") for vec in vectors])
+        return self._vectors
+
+    @vectors.setter
+    def vectors(self, value: np.ndarray) -> None:
+        self._vectors = value
 
     def write(self, path: Optional[str] = None) -> None:
         """Writes a rndstr.in file.
@@ -236,11 +262,9 @@ class RndstrFile(object):
             for row in self.lattice.coordinate_matrix:
                 row = " ".join(row.astype(str))
                 f.write("{}\n".format(row))
-
             for row in self.vectors:
                 row = " ".join(row.astype(str))
                 f.write("{}\n".format(row))
-
             zipper = zip(self.lattice.positions, self.probabilities)
             for position, probability in zipper:
                 position_str = " ".join(position.astype(str))

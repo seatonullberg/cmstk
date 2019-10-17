@@ -16,17 +16,18 @@ class IncarFile(object):
         filepath: Filepath to an INCAR file.
         tags: TagCollection which can be accessed like a dict.
     """
+
     def __init__(self,
                  filepath: Optional[str] = None,
-                 tags: Optional[List[BaseTag]]= None
-                ) -> None:
+                 tags: Optional[List[BaseTag]] = None) -> None:
         if filepath is None:
             filepath = "INCAR"
         self.filepath = filepath
         self._tags = TagCollection(IncarTag, tags)
 
     @classmethod
-    def from_default(cls, setting_name: str,
+    def from_default(cls,
+                     setting_name: str,
                      filepath: Optional[str] = None,
                      json_path: Optional[str] = None):
         """Initializes from predefined settings.

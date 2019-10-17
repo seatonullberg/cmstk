@@ -19,6 +19,7 @@ class PotcarFile(object):
         - Note: length of `titles` will be greater than `filepaths` if reading
           from an already concatenated POTCAR.
     """
+
     def __init__(self, *filepaths: str) -> None:
         self.filepaths = filepaths
         self._titles: List[str] = []
