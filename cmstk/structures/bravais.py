@@ -3,7 +3,74 @@ from typing import List, Tuple
 
 _center_err = "Invalid center for {} lattice."
 _parameter_error = "Invalid lattice parameters for {} lattice."
-_basis_err = "Invalid basis for {} lattice."
+_basis_err = "Invalid basis for {} center."
+
+
+class LatticeBasis(object):
+    """Representation of a lattice basis set.
+
+    Notes:
+        This is a callable object. Calling the object returns the basis 
+        definition. This is because `basis()` looks nicer than `basis.basis`.
+    
+    Args:
+        symbols: IUPAC symbols to insert at each basis position.
+        center: The type of lattice center.
+
+    Attributes:
+        center: The type of lattice center.
+
+    Raises:
+        ValueError
+        - Unrecognized center.
+        - Invalid basis.
+    """
+    def __init__(self, symbols: List[str], center: str) -> None:
+        basis0 = np.array([0, 0, 0])
+        basis1 = np.array([0, 0,5, 0,5])
+        basis2 = np.array([0.5, 0, 0.5])
+        basis3 = np.array([0.5, 0.5, 0])
+        basis4 = np.array([0.5, 0.5, 0.5])
+        if center == "P":
+            if len(symbols) != 1:
+                raise ValueError(_basis_err.format(center))
+            basis = [
+                (symbols[0], basis0)
+            ]
+        elif center == "C":
+            if len(symbols) != 2:
+                raise ValueError(_basis_err.format(center))
+            basis = [
+                (symbols[0], basis0),
+                (symbols[1], basis3)
+            ]
+        elif center == "I":
+            if len(symbols) != 1:
+                raise ValueError(_basis_err.format(center))
+            basis = [
+                (symbols[0], basis0),
+                (symbols[1], basis4)
+            ]
+        elif center == "F":
+            if len(symbols) != 4:
+                raise ValueError(_basis_err.format(center))
+            basis = [
+                (symbols[0], basis0),
+                (symbols[1], basis1),
+                (symbols[2], basis2),
+                (symbols[3], basis3)
+            ]
+        else:
+            raise ValueError("Unrecognized center: `{}`.".format(center))
+        self._basis = basis
+        self._center = center
+
+    def __call__(self) -> List[Tuple[str, np.ndarray]]:
+        return self._basis
+
+    @property
+    def center(self) -> str:
+        return self._center
 
 
 class BaseBravais(object):
@@ -18,7 +85,6 @@ class BaseBravais(object):
         gamma: The gamma angle lattice parameter in degrees.
         basis: The crystallographic basis mapping symbols to their fractional 
         positions.
-        center: The centering of the lattice.
 
     Attributes:
         a: The a distance lattice parameter.
@@ -29,15 +95,9 @@ class BaseBravais(object):
         gamma: The gamma angle lattice parameter.
         basis: The crystallographic basis mapping symbols to their fractional 
         positions.
-        center: The centering of the lattice. 
-
-    Raises:
-        ValueError
-        - Invalid center.
     """
     def __init__(self, a: float, b: float, c: float, alpha: float, beta: float,
-                 gamma: float, basis: List[Tuple[str, np.ndarray]],
-                 center: str) -> None:
+                 gamma: float, basis: LatticeBasis) -> None:
         self._a = a
         self._b = b
         self._c = c
@@ -45,10 +105,6 @@ class BaseBravais(object):
         self._beta = beta
         self._gamma = gamma
         self._basis = basis
-        valid_centers = ["P", "C", "I", "F"]
-        if center not in valid_centers:
-            raise ValueError(_center_err.format("bravais"))
-        self._center = center
 
     @property
     def a(self) -> float:
@@ -75,7 +131,7 @@ class BaseBravais(object):
         return self._gamma
 
     @property
-    def basis(self) -> List[Tuple[str, np.ndarray]]:
+    def basis(self) -> LatticeBasis:
         return self._basis
 
     def volume(self):
@@ -98,8 +154,7 @@ class TriclinicBravais(BaseBravais):
         alpha: The alpha angle lattice parameter in degrees.
         beta: The beta angle lattice parameter in degrees.
         gamma: The gamma angle lattice parameter in degrees.
-        basis: The crystallographic basis mapping symbols to their fractional 
-        positions.
+        symbols: Symbols to insert at the basis point.
 
     Attributes:
         a: The a distance lattice parameter.
@@ -110,24 +165,20 @@ class TriclinicBravais(BaseBravais):
         gamma: The gamma angle lattice parameter.
         basis: The crystallographic basis mapping symbols to their fractional 
         positions.
-        center: The centering of the lattice.
 
     Raises:
         ValueError
         - Invalid lattice parameters.
-        - Invalid basis.
     """
     def __init__(self, a: float, b: float, c: float, alpha: float, beta: float,
-                 gamma: float, basis: List[Tuple[str, np.ndarray]]) -> None:
+                 gamma: float, symbols: List[str]) -> None:
         # check lattice parameters
         if not (a != b != c) or not (alpha != beta != gamma):
             raise ValueError(_parameter_error.format("triclinic"))
-        # check basis set
-        valid_basis = np.array([0, 0, 0])
-        if not len(basis) == 1 or not np.array_equal(basis[0][1], valid_basis):
-            raise ValueError(_basis_err.format("triclinic"))
+        # set basis set
         center = "P"
-        super().__init__(a, b, c, alpha, beta, gamma, basis, center)
+        basis = LatticeBasis(symbols, center)
+        super().__init__(a, b, c, alpha, beta, gamma, basis)
 
 
 class MonoclinicBravais(BaseBravais):
@@ -138,9 +189,8 @@ class MonoclinicBravais(BaseBravais):
         b: The b distance lattice parameter.
         c: The c distance lattice parameter.
         beta: The beta angle lattice parameter in degrees.
-        basis: The crystallographic basis mapping symbols to their fractional 
-        positions.
-        center: The centering of the lattice.
+        symbols: Symbols to insert at basis points.
+        center: The lattice center type.
 
     Attributes:
         a: The a distance lattice parameter.
@@ -151,47 +201,34 @@ class MonoclinicBravais(BaseBravais):
         gamma: The gamma angle lattice parameter.
         basis: The crystallographic basis mapping symbols to their fractional 
         positions.
-        center: The centering of the lattice.
 
     Raises:
         ValueError
         - Invalid lattice parameters.
-        - Invalid basis.
         - Invalid center.
     """
     def __init__(self, a: float, b: float, c: float, beta: float,
-                 basis: List[Tuple[str, np.ndarray]], center: str) -> None:
+                 symbols: List[str], center: str) -> None:
         # check lattice parameters
         if not (a != b != c) or beta == 90:
             raise ValueError(_parameter_error.format("monoclinic"))
         # check basis set and center
-        valid_basis0 = np.array([0, 0, 0])
-        valid_basis1 = np.array([0.5, 0.5, 0])
-        if center == "P":
-            if len(basis) != 1 or not np.array_equal(basis[0][1],
-                                                     valid_basis0):
-                raise ValueError(_basis_err.format("monoclinic"))
-        elif center == "C":
-            if len(basis) != 2 or not (
-                    np.array_equal(basis[0][1], valid_basis0)
-                    and np.array_equal(basis[1][1], valid_basis1)):
-                raise ValueError(_basis_err.format("monoclinic"))
-        else:
+        valid_centers = ["P", "C"]
+        if center not in valid_centers:
             raise ValueError(_center_err.format("monoclinic"))
-        alpha = 90
-        gamma = 90
-        super().__init__(a, b, c, alpha, beta, gamma, basis, center)
+        basis = LatticeBasis(symbols, center)
+        alpha, gamma = (90, 90)
+        super().__init__(a, b, c, alpha, beta, gamma, basis)
 
 
 class OrthorhombicBravais(BaseBravais):
-    """Representation of n orthorhombic lattice.
+    """Representation of an orthorhombic lattice.
 
     Args:
         a: The a distance lattice parameter.
         b: The b distance lattice parameter.
         c: The c distance lattice parameter.
-        basis: The crystallographic basis mapping symbols to their fractional 
-        positions.
+        symbols: The symbols to insert at basis points.
         center: The centering of the lattice.
 
     Attributes:
@@ -203,68 +240,164 @@ class OrthorhombicBravais(BaseBravais):
         gamma: The gamma angle lattice parameter.
         basis: The crystallographic basis mapping symbols to their fractional 
         positions.
-        center: The centering of the lattice.
 
     Raises:
         ValueError
         - Invalid lattice parameters.
-        - Invalid basis.
         - Invalid center.
     """
     def __init__(self, a: float, b: float, c: float,
-                 basis: List[Tuple[str, np.ndarray]], center: str) -> None:
+                 symbols: List[str], center: str) -> None:
         # check lattice parameters
         if not (a != b != c):
             raise ValueError(_parameter_error.format("orthorhombic"))
-        # check basis and center
-        valid_basis0 = np.array([0, 0, 0])
-        valid_basis1 = np.array([0.5, 0.5, 0])
-        valid_basis2 = np.array([0.5, 0.5, 0.5])
-        valid_basis3 = np.array([0.5, 0, 0.5])
-        valid_basis4 = np.array([0, 0.5, 0.5])
-        if center == "P":
-            if len(basis) != 1 or not np.array_equal(basis[0][1],
-                                                     valid_basis0):
-                raise ValueError(_basis_err.format("orthorhombic"))
-        elif center == "C":
-            if len(basis) != 2 or not (
-                    np.array_equal(basis[0][1], valid_basis0)
-                    and np.array_equal(basis[1][1], valid_basis1)):
-                raise ValueError(_basis_err.format("orthorhombic"))
-        elif center == "I":
-            if len(basis) != 2 or not (
-                    np.array_equal(basis[0][1], valid_basis0)
-                    and np.array_equal(basis[1][1], valid_basis2)):
-                raise ValueError(_basis_err.format("orthorhombic"))
-        elif center == "F":
-            if len(basis) != 4 or not (
-                    np.array_equal(basis[0][1], valid_basis0)
-                    and np.array_equal(basis[1][1], valid_basis1)
-                    and np.array_equal(basis[2][1], valid_basis3)
-                    and np.array_equal(basis[3][1], valid_basis4)):
-                raise ValueError(_basis_err.format("orthorhombic"))
-        else:
+        
+        valid_centers = ["P", "C", "I", "F"]
+        if center not in valid_centers:
             raise ValueError(_center_err.format("orthorhombic"))
+        basis = LatticeBasis(symbols, center)
+        alpha, beta, gamma = (90, 90, 90)
+        super().__init__(a, b, c, alpha, beta, gamma, basis)
 
 
-# TODO
 class TetragonalBravais(BaseBravais):
-    pass
+    """Representation of a tetragonal lattice.
+
+    Args:
+        a: The a distance lattice parameter.
+        c: The c distance lattice parameter.
+        symbols: IUPAC symbols to insert at lattice points.
+        center: The centering of the lattice.
+
+    Attributes:
+        a: The a distance lattice parameter.
+        b: The b distance lattice parameter.
+        c: The c distance lattice parameter.
+        alpha: The alpha angle lattice parameter.
+        beta: The beta angle lattice parameter.
+        gamma: The gamma angle lattice parameter.
+        basis: The crystallographic basis mapping symbols to their fractional 
+        positions.
+
+    Raises:
+        ValueError
+        - Invalid lattice parameters.
+        - Invalid center.
+    """
+    def __init__(self, a: float, c: float, basis: LatticeBasis, center: str) -> None:
+        # check lattice parameters
+        if a == c:
+            raise ValueError(_parameter_error.format("tetragonal"))
+        # check basis and center
+        valid_centers = ["P", "I"]:
+        if center not in valid_centers:
+            raise ValueError(_center_err.format("tetragonal"))
+        basis = LatticeBasis(symbols, center)
+        b = a
+        alpha, beta, gamma = (90, 90, 90)
+        super().__init__(a, b, c, alpha, beta, gamma, basis)
 
 
-# TODO
 class RhombohedralBravais(BaseBravais):
-    pass
+    """Representation of a rhombohedral lattice.
+
+    Args:
+        a: The a distance lattice parameter.
+        alpha: The alpha angle lattice parameter in degrees.
+        symbols: IUPAC symbols to insert at basis positions.
+        center: The centering of the lattice.
+
+    Attributes:
+        a: The a distance lattice parameter.
+        b: The b distance lattice parameter.
+        c: The c distance lattice parameter.
+        alpha: The alpha angle lattice parameter.
+        beta: The beta angle lattice parameter.
+        gamma: The gamma angle lattice parameter.
+        basis: The crystallographic basis mapping symbols to their fractional 
+        positions.
+
+    Raises:
+        ValueError
+        - Invalid lattice parameters.
+        - Invalid center.
+    """
+    def __init__(self, a: float, alpha: float, symbols: List[str], 
+                 center: str) -> None:
+        # check lattice parameters
+        if alpha == 90:
+            raise ValueError(_parameter_error.format("rhombohedral"))
+        center = "P"
+        basis = LatticeBasis(symbols, center)
+        b, c = (a, a)
+        beta, gamma = (alpha, alpha)
+        super().__init__(a, b, c, alpha, beta, gamma, basis)
 
 
-# TODO
 class HexagonalBravais(BaseBravais):
-    pass
+    """Representation of a hexagonal lattice.
+
+    Args:
+        a: The a distance lattice parameter.
+        c: The c distance lattice parameter.
+        symbols: IUPAC symbols to insert at basis positions.
+
+    Attributes:
+        a: The a distance lattice parameter.
+        b: The b distance lattice parameter.
+        c: The c distance lattice parameter.
+        alpha: The alpha angle lattice parameter.
+        beta: The beta angle lattice parameter.
+        gamma: The gamma angle lattice parameter.
+        basis: The crystallographic basis mapping symbols to their fractional 
+        positions.
+
+    Raises:
+        ValueError
+        - Invalid lattice parameters.
+    """
+    def __init__(self, a: float, c: float, symbols: List[str]) -> None:
+        # check lattice parameters
+        if a == c:
+            raise ValueError(_parameter_error.format("hexagonal"))
+        center = "P"
+        basis = LatticeBasis(symbols, center)
+        b = a
+        alpha, beta, gamma = (90, 90, 120)
+        super().__init__(a, b, c, alpha, beta, gamma, basis)
 
 
-# TODO
 class CubicBravais(BaseBravais):
-    pass
+    """Representation of a cubic lattice.
+
+    Args:
+        a: The a distance lattice parameter.
+        symbols: IUPAC symbols to insert at basis positions.
+        center: The lattice center type.
+
+    Attributes:
+        a: The a distance lattice parameter.
+        b: The b distance lattice parameter.
+        c: The c distance lattice parameter.
+        alpha: The alpha angle lattice parameter.
+        beta: The beta angle lattice parameter.
+        gamma: The gamma angle lattice parameter.
+        basis: The crystallographic basis mapping symbols to their fractional 
+        positions.
+
+    Raises:
+        ValueError
+        - Invalid center.
+    """
+    def __init__(self, a: float, symbols: List[str], center: str) -> None:
+        # check center
+        valid_centers = ["P", "C", "I", "F"]
+        if center not in valid_centers:
+            raise ValueError(_center_err.format("cubic"))
+        b, c = (a, a)
+        alpha, beta, gamma = (90, 90, 90)
+        basis = LatticeBasis(symbols, center)
+        super().__init__(a, b, c, alpha, beta, gamma, basis)
 
 
 # TODO
@@ -285,7 +418,6 @@ class Supercell(BaseBravais):
         gamma: The gamma angle lattice parameter.
         basis: The crystallographic basis mapping symbols to their fractional 
         positions.
-        center: The centering of the lattice.
         unit_cell: The unit cell to expand.
         orientation: Orientation direction applied to the cell.
         size: Number of unit cells to expand in each direction.
