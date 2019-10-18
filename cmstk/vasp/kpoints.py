@@ -1,12 +1,8 @@
-from typing import Optional, Sequence
+from typing import Optional, Tuple
 
 
 class KpointsFile(object):
     """File wrapper for a VASP KPOINTS file.
-    
-    Notes:
-        This wrapper only supports the `Monkhorst-Pack` style of mesh 
-        generation.
 
     Args:
         filepath: Filepath to a KPOINTS file.
@@ -29,8 +25,8 @@ class KpointsFile(object):
                  filepath: Optional[str] = None,
                  comment: Optional[str] = None,
                  n_kpoints: Optional[int] = None,
-                 mesh_shift: Optional[Sequence[int]] = None,
-                 mesh_size: Optional[Sequence[int]] = None,
+                 mesh_shift: Optional[Tuple[int, int, int]] = None,
+                 mesh_size: Optional[Tuple[int, int, int]] = None,
                  mesh_type: Optional[str] = None) -> None:
         if filepath is None:
             filepath = "KPOINTS"
@@ -64,8 +60,10 @@ class KpointsFile(object):
         self.comment = lines[0].strip()
         self.n_kpoints = int(lines[1])
         self.mesh_type = lines[2].strip()
-        self.mesh_size = tuple([int(l) for l in lines[3].split()])
-        self.mesh_shift = tuple([int(l) for l in lines[4].split()])
+        _sizes = lines[3].split()
+        self.mesh_size = (int(_sizes[0]), int(_sizes[1]), int(_sizes[2]))
+        _shifts = lines[4].split()
+        self.mesh_shift = (int(_shifts[0]), int(_shifts[1]), int(_shifts[2]))
 
     def write(self, path: Optional[str] = None) -> None:
         """Writes a KPOINTS file.

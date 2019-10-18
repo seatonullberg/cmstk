@@ -10,6 +10,40 @@ def test_atom_collection():
     collection = AtomCollection(atoms=[atom0])
     assert collection.n_atoms == 1
 
+def test_atom_collection_setters():
+    """Tests ability to set AtomCollection attributes."""
+    collection = AtomCollection()
+    atom0 = Atom(position=np.array([0, 0, 0]))
+    atom1 = Atom(position=np.array([1, 0, 0]))
+    collection.atoms = [atom0, atom1]
+    assert collection.n_atoms == 2
+    with pytest.raises(ValueError):
+        collection.charges = [0]
+    collection.charges = [1, 2]
+    assert collection.atoms[0].charge == 1
+    with pytest.raises(ValueError):
+        collection.magnetic_moments = [0]
+    collection.magnetic_moments = [1, 2]
+    assert collection.atoms[0].magnetic_moment == 1
+    with pytest.raises(ValueError):
+        collection.positions = [np.ndarray([0, 0, 0])]
+    collection.positions = [
+        np.array([1, 1, 1]),
+        np.array([2, 2, 2])
+    ]
+    assert np.array_equal(collection.atoms[0].position, np.array([1, 1, 1]))
+    with pytest.raises(ValueError):
+        collection.symbols = ["Fe"]
+    collection.symbols = ["Fe", "Cr"]
+    assert collection.atoms[0].symbol == "Fe"
+    with pytest.raises(ValueError):
+        collection.velocities = [np.array([0, 0, 0])]
+    collection.velocities = [
+        np.array([1, 1, 1]),
+        np.array([2, 2, 2])
+    ]
+    assert np.array_equal(collection.atoms[0].velocity, np.array([1, 1, 1]))
+
 
 def test_atom_collection_add_atom():
     """Tests behavior of the AtomCollection.add_atom() method."""
@@ -47,11 +81,11 @@ def test_atom_collection_sort_by_charge():
     atom2 = Atom(charge=2, position=np.array([2, 2, 2]))
     collection = AtomCollection([atom1, atom2, atom0])
     collection.sort_by_charge(hl=False)
-    charges = [c for c in collection.charges]
+    charges = collection.charges
     assert charges[0] == 0
     assert charges[2] == 2
     collection.sort_by_charge(hl=True)
-    charges = [c for c in collection.charges]
+    charges = collection.charges
     assert charges[0] == 2
     assert charges[2] == 0
 
@@ -63,11 +97,11 @@ def test_atom_collection_sort_by_magnetic_moment():
     atom2 = Atom(magnetic_moment=2, position=np.array([2, 2, 2]))
     collection = AtomCollection([atom1, atom2, atom0])
     collection.sort_by_magnetic_moment(hl=False)
-    moments = [m for m in collection.magnetic_moments]
+    moments = collection.magnetic_moments
     assert moments[0] == 0
     assert moments[2] == 2
     collection.sort_by_magnetic_moment(hl=True)
-    moments = [m for m in collection.magnetic_moments]
+    moments = collection.magnetic_moments
     assert moments[0] == 2
     assert moments[2] == 0
 
@@ -96,7 +130,7 @@ def test_atom_collection_sort_by_symbol():
     collection = AtomCollection([atom1, atom2, atom0])
     order = ["Fe", "Ni", "Cr"]
     collection.sort_by_symbol(order)
-    symbols = [s for s in collection.symbols]
+    symbols = collection.symbols
     assert symbols[0] == "Fe"
     assert symbols[2] == "Cr"
     order = ["Fe", "Ni", "Mg"]

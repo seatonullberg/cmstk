@@ -23,8 +23,8 @@ class Atom(object):
     """
 
     def __init__(self,
-                 charge: Optional[Number] = None,
-                 magnetic_moment: Optional[Number] = None,
+                 charge: Optional[float] = None,
+                 magnetic_moment: Optional[float] = None,
                  position: Optional[np.ndarray] = None,
                  symbol: Optional[str] = None,
                  velocity: Optional[np.ndarray] = None) -> None:
@@ -73,8 +73,7 @@ class AtomCollection(object):
         if atoms is None:
             atoms = []
         self._atoms: List[Atom] = []
-        for a in atoms:
-            self.add_atom(a)
+        self.atoms = atoms
 
     def add_atom(self, atom: Atom) -> None:
         """Adds an atom to the collection if its position is not occupied.
@@ -199,19 +198,44 @@ class AtomCollection(object):
         self._atoms.sort(key=lambda x: np.linalg.norm(x.velocity), reverse=hl)
 
     @property
-    def atoms(self) -> Generator[Atom, None, None]:
-        for a in self._atoms:
-            yield a
+    def atoms(self) -> List[Atom]:
+        return self._atoms
+
+    @atoms.setter
+    def atoms(self, value: List[Atom]) -> None:
+        self._atoms = []
+        for a in value:
+            self.add_atom(a)
 
     @property
-    def charges(self) -> Generator[Number, None, None]:
-        for a in self._atoms:
-            yield a.charge
+    def charges(self) -> List[float]:
+        return [a.charge for a in self._atoms]
+
+    @charges.setter
+    def charges(self, value: List[float]) -> None:
+        if len(value) != len(self._atoms):
+            err = "Number of charges must match number of atoms."
+            raise ValueError(err)
+        atoms = []
+        for a, c in zip(self._atoms, value):
+            a.charge = c
+            atoms.append(a)
+        self._atoms = atoms
 
     @property
-    def magnetic_moments(self) -> Generator[Number, None, None]:
-        for a in self._atoms:
-            yield a.magnetic_moment
+    def magnetic_moments(self) -> List[float]:
+        return [a.magnetic_moment for a in self._atoms]
+
+    @magnetic_moments.setter
+    def magnetic_moments(self, value: List[float]) -> None:
+        if len(value) != len(self._atoms):
+            err = "Number of magnetic_moments must match number of atoms."
+            raise ValueError(err)
+        atoms = []
+        for a, mm in zip(self._atoms, value):
+            a.magnetic_moment = mm
+            atoms.append(a)
+        self._atoms = atoms
 
     @property
     def n_atoms(self) -> int:
@@ -222,16 +246,46 @@ class AtomCollection(object):
         return len(set([s for s in self.symbols]))
 
     @property
-    def positions(self) -> Generator[np.ndarray, None, None]:
-        for a in self._atoms:
-            yield a.position
+    def positions(self) -> List[np.ndarray]:
+        return [a.position for a in self._atoms]
+
+    @positions.setter
+    def positions(self, value: List[np.ndarray]):
+        if len(value) != len(self._atoms):
+            err = "Number of positions must match number of atoms."
+            raise ValueError(err)
+        atoms = []
+        for a, p in zip(self._atoms, value):
+            a.position = p
+            atoms.append(a)
+        self._atoms = atoms
 
     @property
-    def symbols(self) -> Generator[str, None, None]:
-        for a in self._atoms:
-            yield a.symbol
+    def symbols(self) -> List[str]:
+        return [a.symbol for a in self._atoms]
+
+    @symbols.setter
+    def symbols(self, value: List[str]) -> None:
+        if len(value) != len(self._atoms):
+            err = "Number of symbols must match numbre of atoms."
+            raise ValueError(err)
+        atoms = []
+        for a, s in zip(self._atoms, value):
+            a.symbol = s
+            atoms.append(a)
+        self._atoms = atoms
 
     @property
-    def velocities(self) -> Generator[np.ndarray, None, None]:
-        for a in self._atoms:
-            yield a.velocity
+    def velocities(self) -> List[np.ndarray]:
+        return [a.velocity for a in self._atoms]
+
+    @velocities.setter
+    def velocities(self, value: List[np.ndarray]) -> None:
+        if len(value) != len(self._atoms):
+            err = "Number of velocities must match number of atoms."
+            raise ValueError(err)
+        atoms = []
+        for a, v in zip(self._atoms, value):
+            a.velocity = v
+            atoms.append(a)
+        self._atoms = atoms
