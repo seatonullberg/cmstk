@@ -284,12 +284,13 @@ class TetragonalBravais(BaseBravais):
         - Invalid lattice parameters.
         - Invalid center.
     """
-    def __init__(self, a: float, c: float, basis: LatticeBasis, center: str) -> None:
+    def __init__(self, a: float, c: float, basis: LatticeBasis,
+                 symbols: List[str], center: str) -> None:
         # check lattice parameters
         if a == c:
             raise ValueError(_parameter_error.format("tetragonal"))
         # check basis and center
-        valid_centers = ["P", "I"]:
+        valid_centers = ["P", "I"]
         if center not in valid_centers:
             raise ValueError(_center_err.format("tetragonal"))
         basis = LatticeBasis(symbols, center)

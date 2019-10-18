@@ -13,6 +13,9 @@ def test_bestcorr_file():
     assert bestcorr.objective_functions == [-1.099145]
     assert len(bestcorr.clusters) == 1
     assert len(bestcorr.clusters[0]) == 4
+    bestcorr.clear()
+    assert len(bestcorr.clusters) == 0
+    assert len(bestcorr.objective_functions) == 0
 
 
 def test_bestsqs_file():
@@ -28,6 +31,9 @@ def test_bestsqs_file():
     positions = [p for p in bestsqs.lattice.positions]
     assert len(positions) == 16
     assert bestsqs.lattice.n_atoms == 16
+    bestsqs.clear()
+    assert bestsqs.lattice.n_atoms == 0
+    assert len(bestsqs.vectors) == 0
 
 
 def test_rndstr_file():
@@ -52,3 +58,7 @@ def test_rndstr_file():
     assert np.array_equal(reader_positions, positions)
     assert rndstr_reader.probabilities == rndstr.probabilities
     os.remove("test.in")
+    rndstr.clear()
+    assert rndstr.lattice.n_atoms == 0
+    assert len(rndstr.probabilities) == 0
+    assert len(rndstr.vectors) == 0

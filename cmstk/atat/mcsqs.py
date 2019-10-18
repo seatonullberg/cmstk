@@ -1,11 +1,11 @@
 from cmstk.structures.atoms import Atom
 from cmstk.structures.crystals import Lattice
-from cmstk.utils import Number
+from cmstk.utils import Number, BaseFile
 import numpy as np
 from typing import Dict, List, Optional
 
 
-class BestcorrFile(object):
+class BestcorrFile(BaseFile):
     """File wrapper for a bestcorr.out output file.
     
     Notes:
@@ -27,24 +27,10 @@ class BestcorrFile(object):
     def __init__(self, filepath: Optional[str] = None) -> None:
         if filepath is None:
             filepath = "bestcorr.out"
-        self.filepath = filepath
-        self._lines: List[str] = []
         self._clusters: Optional[List[List[Dict[str, Number]]]] = None
         self._objective_functions: Optional[List[float]] = None
-
-    def read(self, path: Optional[str] = None) -> None:
-        """Reads a bestcorr.out file.
-        
-        Args:
-            path: The filepath to read from.
-        """
-        if path is None:
-            path = self.filepath
-        with open(path, "r") as f:
-            self._lines = [line.strip() for line in f.readlines()]
-        # reset the attributes
-        self._clusters = None
-        self._objective_functions = None
+        attrs = ["_clusters", "_objective_functions"]
+        super().__init__(attrs, filepath)
 
     @property
     def clusters(self) -> List[List[Dict[str, Number]]]:
@@ -80,7 +66,7 @@ class BestcorrFile(object):
         return self._objective_functions
 
 
-class BestsqsFile(object):
+class BestsqsFile(BaseFile):
     """File wrapper for a bestsqs.out output file.
     
     Notes:
@@ -104,24 +90,10 @@ class BestsqsFile(object):
     def __init__(self, filepath: Optional[str] = None) -> None:
         if filepath is None:
             filepath = "bestsqs.out"
-        self.filepath = filepath
-        self._lines: List[str] = []
         self._lattice: Optional[Lattice] = None
         self._vectors: Optional[np.ndarray] = None
-
-    def read(self, path: Optional[str] = None) -> None:
-        """Reads a bestsqs.out file.
-        
-        Args:
-            path: The filepath to read from.
-        """
-        if path is None:
-            path = self.filepath
-        with open(path, "r") as f:
-            self._lines = [line.strip() for line in f.readlines()]
-        # reset attributes
-        self._lattice = None
-        self._vectors = None
+        attrs = ["_lattice", "_vectors"]
+        super().__init__(attrs, filepath)
 
     @property
     def lattice(self) -> Lattice:
@@ -150,7 +122,7 @@ class BestsqsFile(object):
         return self._vectors
 
 
-class RndstrFile(object):
+class RndstrFile(BaseFile):
     """File wrapper for a rndstr.in input file.
     
     Notes:
@@ -181,24 +153,13 @@ class RndstrFile(object):
                  vectors: Optional[np.ndarray] = None) -> None:
         if filepath is None:
             filepath = "rndstr.in"
-        self.filepath = filepath
-        self._lines: List[str] = []
         self._lattice = lattice
         self._probabilities = probabilities
         if vectors is None:
             vectors = np.identity(3)
         self._vectors = vectors
-
-    def read(self, path: Optional[str] = None):
-        """Reads a rndstr.in file.
-
-        Args:
-            path: The filepath to read from.
-        """
-        if path is None:
-            path = self.filepath
-        with open(path, "r") as f:
-            self._lines = [line.strip() for line in f.readlines()]
+        attrs = ["_lattice", "_probabilities", "_vectors"]
+        super().__init__(attrs, filepath)
 
     @property
     def lattice(self) -> Lattice:
