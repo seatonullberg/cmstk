@@ -30,7 +30,7 @@ class Lattice(AtomCollection):
     def __init__(self,
                  atoms: Optional[List[Atom]] = None,
                  coordinate_matrix: Optional[np.ndarray] = None,
-                 tolerance: Optional[Number] = None) -> None:
+                 tolerance: float = 0.001) -> None:
         super().__init__(atoms, tolerance)
         if coordinate_matrix is None:
             coordinate_matrix = np.identity(3)

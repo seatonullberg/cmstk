@@ -228,6 +228,7 @@ class TagCollection(object):
 #   Base File Wrapper Type   #
 #============================#
 
+
 class BaseFile(object):
     """Generalized representation of a file wrapper.
     
@@ -253,7 +254,6 @@ class BaseFile(object):
             path = self.filepath
         with open(path, "r") as f:
             self._lines = [line.strip() for line in f.readlines()]
-        
 
     def clear(self) -> None:
         """Clears lines and attributes from memory"""

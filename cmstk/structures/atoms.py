@@ -23,23 +23,17 @@ class Atom(object):
     """
 
     def __init__(self,
-                 charge: Optional[float] = None,
-                 magnetic_moment: Optional[float] = None,
+                 charge: float = 0,
+                 magnetic_moment: float = 0,
                  position: Optional[np.ndarray] = None,
-                 symbol: Optional[str] = None,
+                 symbol: str = "",
                  velocity: Optional[np.ndarray] = None) -> None:
-        if charge is None:
-            charge = 0
         self.charge = charge
-        if magnetic_moment is None:
-            magnetic_moment = 0
         self.magnetic_moment = magnetic_moment
+        self.symbol = symbol
         if position is None:
             position = np.array([0, 0, 0])
         self.position = position
-        if symbol is None:
-            symbol = ""
-        self.symbol = symbol
         if velocity is None:
             velocity = np.array([0, 0, 0])
         self.velocity = velocity
@@ -66,9 +60,7 @@ class AtomCollection(object):
 
     def __init__(self,
                  atoms: Optional[List[Atom]] = None,
-                 tolerance: Optional[Number] = None) -> None:
-        if tolerance is None:
-            tolerance = 0
+                 tolerance: float = 0.001) -> None:
         self.tolerance = tolerance
         if atoms is None:
             atoms = []
@@ -123,39 +115,33 @@ class AtomCollection(object):
         del self._atoms[removal_index]
         return removed_atom
 
-    def sort_by_charge(self, hl: Optional[bool] = None) -> None:
+    def sort_by_charge(self, hl: bool = False) -> None:
         """Groups atoms by their electronic charges.
         
         Args:
             hl: Flag indicating high-to-low ordering.
         """
-        if hl is None:
-            hl = False
         self._atoms.sort(key=lambda x: x.charge, reverse=hl)
 
-    def sort_by_magnetic_moment(self, hl: Optional[bool] = None) -> None:
+    def sort_by_magnetic_moment(self, hl: bool = False) -> None:
         """Groups atoms by their magnetic moments.
         
         Args:
             hl: Flag indicate high-to-low ordering.
         """
-        if hl is None:
-            hl = False
         self._atoms.sort(key=lambda x: x.magnetic_moment, reverse=hl)
 
-    def sort_by_position(self, hl: Optional[bool] = None) -> None:
+    def sort_by_position(self, hl: bool = False) -> None:
         """Groups atoms by the magnitude of their positions.
         
         Args:
             hl: Flag indicate high-to-low ordering.
         """
-        if hl is None:
-            hl = False
         self._atoms.sort(key=lambda x: np.linalg.norm(x.position), reverse=hl)
 
-    def sort_by_symbol(self, order: Sequence[str]) -> None:
+    def sort_by_symbol(self, order: List[str]) -> None:
         """Groups atoms by their IUPAC chemical symbols in the given order.
-        
+
         Args:
             order: IUPAC chemical symbols in a desired sequence.
 
@@ -164,7 +150,6 @@ class AtomCollection(object):
             - `order` must be a unique sequence.
             - A symbol in the collection is not found in `order`.
             - A symbol in `order` is not found in the collection.
-            
         """
         if len(order) != len(set(order)):
             err = "`order` must be a unique sequence."
@@ -187,19 +172,29 @@ class AtomCollection(object):
                 raise ValueError(err)
         self._atoms = atoms
 
-    def sort_by_velocity(self, hl: Optional[bool] = None) -> None:
+    def sort_by_velocity(self, hl: bool = False) -> None:
         """Groups atoms by the magnitude of their velocities.
         
         Args:
             hl: Flag indicate high-to-low ordering.
         """
-        if hl is None:
-            hl = False
         self._atoms.sort(key=lambda x: np.linalg.norm(x.velocity), reverse=hl)
+
+    def translate(self, translation: np.ndarray) -> None:
+        """Translates all atoms in the collection by the `translation` vector.
+
+        Args:
+            translation: Translation vector.
+        """
+        atoms = []
+        for a in self.atoms:
+            a.position += translation
+            atoms.append(a)
+        self.atoms = atoms
 
     @property
     def atoms(self) -> List[Atom]:
-        return self._atoms
+        return copy.deepcopy(self._atoms)
 
     @atoms.setter
     def atoms(self, value: List[Atom]) -> None:
@@ -289,3 +284,7 @@ class AtomCollection(object):
             a.velocity = v
             atoms.append(a)
         self._atoms = atoms
+
+    def __iter__(self) -> Generator[Atom, None, None]:
+        for a in self._atoms:
+            yield a

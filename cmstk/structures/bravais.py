@@ -25,41 +25,30 @@ class LatticeBasis(object):
         - Unrecognized center.
         - Invalid basis.
     """
+
     def __init__(self, symbols: List[str], center: str) -> None:
         basis0 = np.array([0, 0, 0])
-        basis1 = np.array([0, 0,5, 0,5])
+        basis1 = np.array([0, 0, 5, 0, 5])
         basis2 = np.array([0.5, 0, 0.5])
         basis3 = np.array([0.5, 0.5, 0])
         basis4 = np.array([0.5, 0.5, 0.5])
         if center == "P":
             if len(symbols) != 1:
                 raise ValueError(_basis_err.format(center))
-            basis = [
-                (symbols[0], basis0)
-            ]
+            basis = [(symbols[0], basis0)]
         elif center == "C":
             if len(symbols) != 2:
                 raise ValueError(_basis_err.format(center))
-            basis = [
-                (symbols[0], basis0),
-                (symbols[1], basis3)
-            ]
+            basis = [(symbols[0], basis0), (symbols[1], basis3)]
         elif center == "I":
             if len(symbols) != 1:
                 raise ValueError(_basis_err.format(center))
-            basis = [
-                (symbols[0], basis0),
-                (symbols[1], basis4)
-            ]
+            basis = [(symbols[0], basis0), (symbols[1], basis4)]
         elif center == "F":
             if len(symbols) != 4:
                 raise ValueError(_basis_err.format(center))
-            basis = [
-                (symbols[0], basis0),
-                (symbols[1], basis1),
-                (symbols[2], basis2),
-                (symbols[3], basis3)
-            ]
+            basis = [(symbols[0], basis0), (symbols[1], basis1),
+                     (symbols[2], basis2), (symbols[3], basis3)]
         else:
             raise ValueError("Unrecognized center: `{}`.".format(center))
         self._basis = basis
@@ -96,6 +85,7 @@ class BaseBravais(object):
         basis: The crystallographic basis mapping symbols to their fractional 
         positions.
     """
+
     def __init__(self, a: float, b: float, c: float, alpha: float, beta: float,
                  gamma: float, basis: LatticeBasis) -> None:
         self._a = a
@@ -170,6 +160,7 @@ class TriclinicBravais(BaseBravais):
         ValueError
         - Invalid lattice parameters.
     """
+
     def __init__(self, a: float, b: float, c: float, alpha: float, beta: float,
                  gamma: float, symbols: List[str]) -> None:
         # check lattice parameters
@@ -207,6 +198,7 @@ class MonoclinicBravais(BaseBravais):
         - Invalid lattice parameters.
         - Invalid center.
     """
+
     def __init__(self, a: float, b: float, c: float, beta: float,
                  symbols: List[str], center: str) -> None:
         # check lattice parameters
@@ -246,12 +238,13 @@ class OrthorhombicBravais(BaseBravais):
         - Invalid lattice parameters.
         - Invalid center.
     """
-    def __init__(self, a: float, b: float, c: float,
-                 symbols: List[str], center: str) -> None:
+
+    def __init__(self, a: float, b: float, c: float, symbols: List[str],
+                 center: str) -> None:
         # check lattice parameters
         if not (a != b != c):
             raise ValueError(_parameter_error.format("orthorhombic"))
-        
+
         valid_centers = ["P", "C", "I", "F"]
         if center not in valid_centers:
             raise ValueError(_center_err.format("orthorhombic"))
@@ -284,6 +277,7 @@ class TetragonalBravais(BaseBravais):
         - Invalid lattice parameters.
         - Invalid center.
     """
+
     def __init__(self, a: float, c: float, basis: LatticeBasis,
                  symbols: List[str], center: str) -> None:
         # check lattice parameters
@@ -323,7 +317,8 @@ class RhombohedralBravais(BaseBravais):
         - Invalid lattice parameters.
         - Invalid center.
     """
-    def __init__(self, a: float, alpha: float, symbols: List[str], 
+
+    def __init__(self, a: float, alpha: float, symbols: List[str],
                  center: str) -> None:
         # check lattice parameters
         if alpha == 90:
@@ -357,6 +352,7 @@ class HexagonalBravais(BaseBravais):
         ValueError
         - Invalid lattice parameters.
     """
+
     def __init__(self, a: float, c: float, symbols: List[str]) -> None:
         # check lattice parameters
         if a == c:
@@ -390,6 +386,7 @@ class CubicBravais(BaseBravais):
         ValueError
         - Invalid center.
     """
+
     def __init__(self, a: float, symbols: List[str], center: str) -> None:
         # check center
         valid_centers = ["P", "C", "I", "F"]
@@ -423,6 +420,7 @@ class Supercell(BaseBravais):
         orientation: Orientation direction applied to the cell.
         size: Number of unit cells to expand in each direction.
     """
+
     def __init__(self, unit_cell: BaseBravais, orientation: np.ndarray,
                  size: Tuple[int, int, int]) -> None:
         pass

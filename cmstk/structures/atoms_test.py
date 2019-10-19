@@ -9,6 +9,11 @@ def test_atom_collection():
     atom0 = Atom(position=np.array([0, 0, 0]))
     collection = AtomCollection(atoms=[atom0])
     assert collection.n_atoms == 1
+    lst = list(collection)
+    assert len(lst) == 1
+    tup = tuple(collection)
+    assert len(tup) == 1
+
 
 def test_atom_collection_setters():
     """Tests ability to set AtomCollection attributes."""
@@ -27,10 +32,7 @@ def test_atom_collection_setters():
     assert collection.atoms[0].magnetic_moment == 1
     with pytest.raises(ValueError):
         collection.positions = [np.ndarray([0, 0, 0])]
-    collection.positions = [
-        np.array([1, 1, 1]),
-        np.array([2, 2, 2])
-    ]
+    collection.positions = [np.array([1, 1, 1]), np.array([2, 2, 2])]
     assert np.array_equal(collection.atoms[0].position, np.array([1, 1, 1]))
     with pytest.raises(ValueError):
         collection.symbols = ["Fe"]
@@ -38,10 +40,7 @@ def test_atom_collection_setters():
     assert collection.atoms[0].symbol == "Fe"
     with pytest.raises(ValueError):
         collection.velocities = [np.array([0, 0, 0])]
-    collection.velocities = [
-        np.array([1, 1, 1]),
-        np.array([2, 2, 2])
-    ]
+    collection.velocities = [np.array([1, 1, 1]), np.array([2, 2, 2])]
     assert np.array_equal(collection.atoms[0].velocity, np.array([1, 1, 1]))
 
 
@@ -144,7 +143,7 @@ def test_atom_collection_sort_by_symbol():
         collection.sort_by_symbol(order)
 
 
-def test_atom_sort_by_velocity():
+def test_atom_collection_sort_by_velocity():
     """Tests behavior of the AtomCollection.sort_by_velocity() method."""
     atom0 = Atom(velocity=np.array([0, 0, 0]), position=np.array([0, 0, 0]))
     atom1 = Atom(velocity=np.array([1, 1, 1]), position=np.array([1, 1, 1]))
@@ -158,3 +157,12 @@ def test_atom_sort_by_velocity():
     magnitudes = [np.linalg.norm(v) for v in collection.velocities]
     assert magnitudes[0] == 3.4641016151377544
     assert magnitudes[2] == 0
+
+
+def test_atom_collection_translate():
+    """Tests behavior of the AtomCollection.translate() method."""
+    atom0 = Atom(position=np.array([0.0, 0.0, 0.0]))
+    collection = AtomCollection(atoms=[atom0])
+    translation = np.array([0.5, 0.5, 0.5])
+    collection.translate(translation)
+    assert np.array_equal(collection.atoms[0].position, translation)
