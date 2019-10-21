@@ -1,15 +1,97 @@
 from cmstk.structures.atoms import AtomCollection
+import copy
 import numpy as np
 from typing import List, Optional
 
 
-# TODO
 class SimulationCell(object):
     """Representation of a collection of AtomCollections to be used in
-       any simulation environment.
-    """ 
-    def __init__(self, collections: Optional[List[AtomCollection]] = None,
-                 centroids: Optional[List[np.ndarray]] = None,
+      any simulation environment.
+   
+   Args:
+      collections: The AtomCollections to store in the cell.
+      coordinate_matrix: Length and angle parameters combined in a 3x3 matrix.
+      scaling_factor: Universal scaling constant (lattice constant).
+   """
+
+    def __init__(self,
+                 collections: Optional[List[AtomCollection]] = None,
                  coordinate_matrix: Optional[np.ndarray] = None,
-                 scaling_factor: float = 1.0) -> None:
-        pass
+                 scaling_factor: float = 1.0,
+                 tolerance: float = 0.001) -> None:
+        self._collections: List[AtomCollection] = []
+        self.collections = collections
+        if coordinate_matrix is None:
+            coordinate_matrix = np.identity(3)
+        self.coordinate_matrix = coordinate_matrix
+        self.scaling_factor = scaling_factor
+        self.tolerance = tolerance
+
+    def add_collection(self, collection: AtomCollection) -> None:
+        """Adds an AtomCollection to the cell if none of its atoms interfere with 
+         existing ones.
+      
+      Args:
+         collection: The AtomCollection to add.
+
+      Raises:
+         ValueError
+         - An atom exists within the tolerance radius.
+      """
+        existing_atoms = [a for c in self.collections for a in c.atoms]
+        for e_atom in existing_atoms:
+            for new_atom in collection.atoms:
+                distance = np.sum(
+                    np.sqrt((new_atom.position - e_atom.position)**2))
+                if distance < self.tolerance:
+                    err = "An atom exists within the tolerance radius ({}).".format(
+                        self.tolerance)
+                    raise ValueError(err)
+        self._collections.append(collection)
+
+    def remove_collection(self, index: int) -> AtomCollection:
+        """Removes an AtomCollection from the cell and returns it.
+      
+      Args:
+         index: List index of the collection in the cell.
+         - It is up to the user to track addition order.
+      
+      Raises:
+         ValueError:
+         - There are no collections in the cell.
+      """
+        if self.n_collections == 0:
+            err = "There are no collections in the cell."
+            raise ValueError(err)
+        # leave the raw index error in the event of an unchecked access
+        collection = copy.deepcopy(self.collections[index])
+        del self.collections[index]
+        return collection
+
+    @property
+    def collections(self) -> List[AtomCollection]:
+        return self._collections
+
+    @collections.setter
+    def collections(self, value: List[AtomCollection]) -> None:
+        self._collections = []
+        for v in value:
+            self.add_collection(v)
+
+    @property
+    def n_collections(self) -> int:
+        return len(self._collections)
+
+    @property
+    def surface_area(self) -> float:
+        x = self.coordinate_matrix[0] * self.scaling_factor
+        y = self.coordinate_matrix[1] * self.scaling_factor
+        magx = np.linalg.norm(x)
+        magy = np.linalg.norm(y)
+        ux = x / magx
+        uy = y / magy
+        theta = np.arccos(np.clip(np.dot(ux, uy), -1.0, 1.0))
+        return magx * magy * np.sin(theta)
+
+    # TODO: volume
+    # TODO: fractional positions
