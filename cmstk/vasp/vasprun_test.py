@@ -1,6 +1,5 @@
 from cmstk.utils import data_directory
 from cmstk.vasp.vasprun import VasprunFile
-import numpy as np
 import os
 
 

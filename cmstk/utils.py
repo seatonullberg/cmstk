@@ -1,14 +1,7 @@
 import importlib
 import inspect
-import json
 import os
-from typing import Any, Dict, List, Optional, Sequence, Union
-
-#====================#
-#    Type Aliases    #
-#====================#
-
-Number = Union[float, int]
+from typing import Any, Dict, List, Optional, Sequence
 
 #========================#
 #    Helper Functions    #
@@ -31,7 +24,7 @@ def data_directory() -> str:
     return os.path.join(path, "data")
 
 
-def within_one_percent(a: Number, b: Number) -> bool:
+def within_one_percent(a: float, b: float) -> bool:
     """Returns True if a is within 1% of b."""
     diff = abs(a - b)
     return abs(diff / b) < 0.01

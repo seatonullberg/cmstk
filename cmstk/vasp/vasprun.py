@@ -2,8 +2,7 @@
 # This file ignores all type hints because handling them while
 # parsing XML is a massive hassle
 import numpy as np
-import threading
-from typing import Optional, Tuple
+from typing import Optional
 import xml.etree.ElementTree as ET
 
 

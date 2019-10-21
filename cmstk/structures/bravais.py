@@ -8,16 +8,13 @@ _basis_err = "Invalid basis for {} center."
 
 class LatticeBasis(object):
     """Representation of a lattice basis set.
-
-    Notes:
-        This is a callable object. Calling the object returns the basis 
-        definition. This is because `basis()` looks nicer than `basis.basis`.
     
     Args:
         symbols: IUPAC symbols to insert at each basis position.
         center: The type of lattice center.
 
     Attributes:
+        basis: The mapping of symbols to their basis sites.
         center: The type of lattice center.
 
     Raises:
@@ -41,7 +38,7 @@ class LatticeBasis(object):
                 raise ValueError(_basis_err.format(center))
             basis = [(symbols[0], basis0), (symbols[1], basis3)]
         elif center == "I":
-            if len(symbols) != 1:
+            if len(symbols) != 2:
                 raise ValueError(_basis_err.format(center))
             basis = [(symbols[0], basis0), (symbols[1], basis4)]
         elif center == "F":
@@ -54,7 +51,8 @@ class LatticeBasis(object):
         self._basis = basis
         self._center = center
 
-    def __call__(self) -> List[Tuple[str, np.ndarray]]:
+    @property
+    def basis(self) -> List[Tuple[str, np.ndarray]]:
         return self._basis
 
     @property

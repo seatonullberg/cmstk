@@ -6,7 +6,7 @@ from cmstk.vasp.outcar import OutcarFile
 from cmstk.vasp.poscar import PoscarFile
 from cmstk.vasp.potcar import PotcarFile
 import os
-from typing import Any, Optional
+from typing import Optional
 
 
 class VaspCalculation(object):

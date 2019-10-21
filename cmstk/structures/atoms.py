@@ -1,7 +1,6 @@
-from cmstk.utils import Number
 import copy
 import numpy as np
-from typing import Generator, List, Optional, Sequence
+from typing import Generator, List, Optional
 
 
 class Atom(object):

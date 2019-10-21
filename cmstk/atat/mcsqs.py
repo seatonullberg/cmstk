@@ -1,6 +1,6 @@
 from cmstk.structures.atoms import Atom
 from cmstk.structures.crystals import Lattice
-from cmstk.utils import Number, BaseFile
+from cmstk.utils import BaseFile
 import numpy as np
 from typing import Dict, List, Optional
 
@@ -27,16 +27,16 @@ class BestcorrFile(BaseFile):
     def __init__(self, filepath: Optional[str] = None) -> None:
         if filepath is None:
             filepath = "bestcorr.out"
-        self._clusters: Optional[List[List[Dict[str, Number]]]] = None
+        self._clusters: Optional[List[List[Dict[str, float]]]] = None
         self._objective_functions: Optional[List[float]] = None
         attrs = ["_clusters", "_objective_functions"]
         super().__init__(attrs, filepath)
 
     @property
-    def clusters(self) -> List[List[Dict[str, Number]]]:
+    def clusters(self) -> List[List[Dict[str, float]]]:
         if self._clusters is None:
-            clusters: List[List[Dict[str, Number]]] = []
-            current_cluster: List[Dict[str, Number]] = []
+            clusters: List[List[Dict[str, float]]] = []
+            current_cluster: List[Dict[str, float]] = []
             for line in self._lines:
                 if line.startswith("Objective_function"):
                     clusters.append(current_cluster)

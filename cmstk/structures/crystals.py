@@ -1,5 +1,4 @@
 from cmstk.structures.atoms import Atom, AtomCollection
-from cmstk.utils import Number
 import numpy as np
 from typing import Generator, List, Optional
 

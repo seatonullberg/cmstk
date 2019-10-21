@@ -1,5 +1,5 @@
 import copy
-from typing import Dict, Generator, List, Optional, Sequence
+from typing import Dict, Generator, List, Optional
 
 
 class OutcarFile(object):

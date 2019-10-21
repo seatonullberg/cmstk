@@ -1,6 +1,5 @@
 from cmstk.atat.mcsqs import BestsqsFile
 from cmstk.vasp.poscar import PoscarFile
-from collections import OrderedDict
 import numpy as np
 from typing import List, Optional
 

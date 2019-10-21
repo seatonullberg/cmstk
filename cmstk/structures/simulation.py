@@ -6,13 +6,14 @@ from typing import List, Optional
 
 class SimulationCell(object):
     """Representation of a collection of AtomCollections to be used in
-      any simulation environment.
-   
-   Args:
-      collections: The AtomCollections to store in the cell.
-      coordinate_matrix: Length and angle parameters combined in a 3x3 matrix.
-      scaling_factor: Universal scaling constant (lattice constant).
-   """
+       any simulation environment.
+
+    Args:
+        collections: The AtomCollections to store in the cell.
+        coordinate_matrix: Length and angle parameters combined in a 3x3 matrix.
+        scaling_factor: Universal scaling constant (lattice constant).
+        tolerance: The radius in which to check for existing atoms.
+    """
 
     def __init__(self,
                  collections: Optional[List[AtomCollection]] = None,
@@ -20,6 +21,8 @@ class SimulationCell(object):
                  scaling_factor: float = 1.0,
                  tolerance: float = 0.001) -> None:
         self._collections: List[AtomCollection] = []
+        if collections is None:
+            collections = []
         self.collections = collections
         if coordinate_matrix is None:
             coordinate_matrix = np.identity(3)

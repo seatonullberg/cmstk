@@ -2,7 +2,7 @@ from cmstk.structures.atoms import Atom
 from cmstk.structures.crystals import Lattice
 from collections import OrderedDict
 import numpy as np
-from typing import Dict, Sequence, Optional
+from typing import Optional
 
 
 class PoscarFile(object):
