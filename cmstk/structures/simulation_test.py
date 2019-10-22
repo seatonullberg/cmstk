@@ -21,12 +21,13 @@ def test_simulation_cell():
         Atom(position=np.array([4, 4, 4]))
     ]
     collection2 = AtomCollection(atoms=atoms2)
-    cm = np.array([[2, 0, 0], [0, 2, 0], [0, 0, 2]])
+    cm = np.array([[2.0, 0, 0], [0, 2.0, 0], [0, 0, 2.0]])
     sf = 2.0
     cell = SimulationCell(collections=[collection0],
                           coordinate_matrix=cm,
                           scaling_factor=sf)
     assert cell.surface_area == 16.0
+    assert cell.volume == 63.99999999999998
     assert cell.n_collections == 1
     cell.add_collection(collection1)
     assert cell.n_collections == 2

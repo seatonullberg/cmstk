@@ -41,7 +41,7 @@ class SimulationCell(object):
          ValueError
          - An atom exists within the tolerance radius.
       """
-        existing_atoms = [a for c in self.collections for a in c.atoms]
+        existing_atoms = [a for c in self._collections for a in c.atoms]
         for e_atom in existing_atoms:
             for new_atom in collection.atoms:
                 distance = np.sum(
@@ -67,13 +67,13 @@ class SimulationCell(object):
             err = "There are no collections in the cell."
             raise ValueError(err)
         # leave the raw index error in the event of an unchecked access
-        collection = copy.deepcopy(self.collections[index])
-        del self.collections[index]
+        collection = copy.deepcopy(self._collections[index])
+        del self._collections[index]
         return collection
 
     @property
     def collections(self) -> List[AtomCollection]:
-        return self._collections
+        return copy.deepcopy(self._collections)
 
     @collections.setter
     def collections(self, value: List[AtomCollection]) -> None:
@@ -96,5 +96,9 @@ class SimulationCell(object):
         theta = np.arccos(np.clip(np.dot(ux, uy), -1.0, 1.0))
         return magx * magy * np.sin(theta)
 
-    # TODO: volume
+    @property
+    def volume(self) -> float:
+        scaled_matrix = self.coordinate_matrix * self.scaling_factor
+        return np.abs(np.linalg.det(scaled_matrix))
+
     # TODO: fractional positions
