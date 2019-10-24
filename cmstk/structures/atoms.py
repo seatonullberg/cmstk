@@ -5,7 +5,7 @@ from typing import Generator, List, Optional
 
 class Atom(object):
     """Representation of an Atom.
-    
+
     Args:
         charge: Electronic charge.
         magnetic_moment: Magnetic moment scalar.
@@ -40,7 +40,7 @@ class Atom(object):
 
 class AtomCollection(object):
     """A generic collection of atoms.
-    
+
     Args:
         atoms: The atoms in the collection.
         tolerance: The radius in which to check for atoms on add or remove.
@@ -126,7 +126,7 @@ class AtomCollection(object):
         """Groups atoms by their magnetic moments.
         
         Args:
-            hl: Flag indicate high-to-low ordering.
+            hl: Flag indicating high-to-low ordering.
         """
         self._atoms.sort(key=lambda x: x.magnetic_moment, reverse=hl)
 
@@ -134,7 +134,7 @@ class AtomCollection(object):
         """Groups atoms by the magnitude of their positions.
         
         Args:
-            hl: Flag indicate high-to-low ordering.
+            hl: Flag indicating high-to-low ordering.
         """
         self._atoms.sort(key=lambda x: np.linalg.norm(x.position), reverse=hl)
 
@@ -175,7 +175,7 @@ class AtomCollection(object):
         """Groups atoms by the magnitude of their velocities.
         
         Args:
-            hl: Flag indicate high-to-low ordering.
+            hl: Flag indicating high-to-low ordering.
         """
         self._atoms.sort(key=lambda x: np.linalg.norm(x.velocity), reverse=hl)
 

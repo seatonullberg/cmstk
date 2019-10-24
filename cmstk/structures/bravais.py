@@ -1,3 +1,4 @@
+from cmstk.structures.atoms import AtomCollection
 import numpy as np
 from typing import List, Tuple
 
@@ -25,7 +26,7 @@ class LatticeBasis(object):
 
     def __init__(self, symbols: List[str], center: str) -> None:
         basis0 = np.array([0, 0, 0])
-        basis1 = np.array([0, 0, 5, 0, 5])
+        basis1 = np.array([0, 0.5, 0.5])
         basis2 = np.array([0.5, 0, 0.5])
         basis3 = np.array([0.5, 0.5, 0])
         basis4 = np.array([0.5, 0.5, 0.5])
@@ -59,7 +60,7 @@ class LatticeBasis(object):
     def center(self) -> str:
         return self._center
 
-
+# TODO: inherit from AtomCollection
 class BaseBravais(object):
     """Generalized representation of a Bravais lattice.
 
@@ -121,15 +122,6 @@ class BaseBravais(object):
     @property
     def basis(self) -> LatticeBasis:
         return self._basis
-
-    def volume(self):
-        alpha = np.deg2rad(self.alpha)
-        beta = np.deg2rad(self.beta)
-        gamma = np.deg2rad(self.gamma)
-        return (self.a * self.b * self.c) * np.sqrt(
-            1 - (np.cos(alpha))**2 - (np.cos(beta))**2 - np.cos(gamma)**2 +\
-            2 * np.cos(alpha) * np.cos(beta) * np.cos(gamma)
-        )
 
 
 class TriclinicBravais(BaseBravais):
