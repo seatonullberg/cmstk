@@ -37,6 +37,29 @@ def coordinate_matrix(a: float,
     return cm
 
 
+def surface_area(a: float, b: float, c: float, alpha: float, beta: float, gamma: float, degrees: bool = True) -> float:
+    """Calculates the (a x b) surface area of an arbitrary lattice.
+    
+    Args:
+        a: The a distance lattice parameter.
+        b: The b distance lattice parameter.
+        c: The c distance lattice parameter.
+        alpha: The alpha angle lattice parameter.
+        beta: The beta angle lattice parameter.
+        gamma: The gamma angle lattice parameter.
+        degrees: Flag indicating that the angles are provided in degrees.
+    """
+    if degrees:
+        alpha = np.deg2rad(alpha)
+        beta = np.deg2rad(beta)
+        gamma = np.deg2rad(gamma)
+    cm = coordinate_matrix(a, b, c, alpha, beta, gamma, False)
+    x, y = cm[0], cm[1]
+    magx, magy = np.linalg.norm(x), np.linalg.norm(y)
+    ux, uy = (x / magx), (y / magy)
+    theta = np.arccos(np.clip(np.dot(ux, uy), -1.0, 1.0))
+    return magx * magy * np.sin(theta)
+
 def volume(a: float,
            b: float,
            c: float,

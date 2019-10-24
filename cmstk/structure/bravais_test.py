@@ -1,4 +1,8 @@
-from cmstk.structures.bravais import *
+from cmstk.structure.bravais import BaseBravais, TriclinicBravais
+from cmstk.structure.bravais import MonoclinicBravais, OrthorhombicBravais
+from cmstk.structure.bravais import TetragonalBravais, RhombohedralBravais
+from cmstk.structure.bravais import HexagonalBravais, CubicBravais
+from cmstk.structure.bravais import LatticeBasis
 import numpy as np
 
 
@@ -11,6 +15,8 @@ def test_base_bravais():
     assert np.array_equal(bravais.positions[0], np.array([0, 0, 0]))
     assert np.array_equal(bravais.positions[1], np.array([1.4, 1.4, 1.4]))
     assert bravais.volume == 21.951999999999995
+    cm = np.array([[2.8, 0, 0], [0, 2.8, 0], [0, 0, 2.8]])
+    assert np.array_equal(bravais.coordinate_matrix, cm)
 
 
 def test_triclinic_bravais():

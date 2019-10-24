@@ -1,6 +1,6 @@
 import pytest
 import numpy as np
-from cmstk.structures.atoms import Atom, AtomCollection
+from cmstk.structure.atom import Atom, AtomCollection
 
 
 def test_atom_collection():

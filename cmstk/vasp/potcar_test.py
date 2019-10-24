@@ -1,4 +1,4 @@
-from cmstk.utils import data_directory
+from cmstk.util import data_directory
 from cmstk.vasp.potcar import PotcarFile
 import os
 

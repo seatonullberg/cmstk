@@ -1,6 +1,6 @@
 from cmstk.hpc.base import BaseScript
 from cmstk.hpc.slurm_tags import SlurmTag
-from cmstk.utils import BaseTag, TagCollection
+from cmstk.util import BaseTag, TagCollection
 import json
 import os
 from typing import List, Optional

@@ -1,4 +1,4 @@
-from cmstk.structures.atoms import AtomCollection
+from cmstk.structure.atom import AtomCollection
 import copy
 import numpy as np
 from typing import List, Optional

@@ -1,6 +1,6 @@
 from cmstk.vasp.poscar import PoscarFile
-from cmstk.io.vasp.poscar import poscar_to_rndstr
-from cmstk.utils import data_directory
+from cmstk.synergy.vasp.poscar import poscar_to_rndstr
+from cmstk.util import data_directory
 import numpy as np
 import os
 

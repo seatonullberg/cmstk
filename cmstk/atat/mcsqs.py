@@ -1,6 +1,6 @@
-from cmstk.structures.atoms import Atom
-from cmstk.structures.crystals import Lattice
-from cmstk.utils import BaseFile
+from cmstk.structure.atom import Atom
+from cmstk.structure.crystals import Lattice
+from cmstk.util import BaseFile
 import numpy as np
 from typing import Dict, List, Optional
 

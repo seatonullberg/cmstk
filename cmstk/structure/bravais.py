@@ -1,5 +1,5 @@
-from cmstk.structures.atoms import Atom, AtomCollection
-from cmstk.structures.utils import coordinate_matrix, volume
+from cmstk.structure.atom import Atom, AtomCollection
+from cmstk.structure.util import coordinate_matrix, volume
 import numpy as np
 from typing import List, Tuple
 

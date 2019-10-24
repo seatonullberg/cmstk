@@ -1,4 +1,4 @@
-from cmstk.utils import BaseTag, TagCollection
+from cmstk.util import BaseTag, TagCollection
 from typing import List, Optional
 
 

@@ -1,5 +1,5 @@
-from cmstk.structures.atoms import Atom
-from cmstk.structures.crystals import Lattice
+from cmstk.structure.atom import Atom
+from cmstk.structure.crystals import Lattice
 import numpy as np
 
 

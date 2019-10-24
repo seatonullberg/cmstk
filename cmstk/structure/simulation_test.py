@@ -1,5 +1,5 @@
-from cmstk.structures.atoms import Atom, AtomCollection
-from cmstk.structures.simulation import SimulationCell
+from cmstk.structure.atom import Atom, AtomCollection
+from cmstk.structure.simulation import SimulationCell
 import numpy as np
 import pytest
 

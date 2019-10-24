@@ -1,5 +1,5 @@
 from cmstk.vasp.outcar import OutcarFile
-from cmstk.utils import data_directory
+from cmstk.util import data_directory
 import os
 
 

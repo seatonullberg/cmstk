@@ -1,4 +1,4 @@
-from cmstk.elements import PeriodicTable
+from cmstk.elemental import PeriodicTable
 
 
 def test_periodic_table():
