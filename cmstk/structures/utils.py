@@ -1,8 +1,12 @@
 import numpy as np
 
 
-def coordinate_matrix(a: float, b: float, c: float, 
-                      alpha: float, beta: float, gamma: float,
+def coordinate_matrix(a: float,
+                      b: float,
+                      c: float,
+                      alpha: float,
+                      beta: float,
+                      gamma: float,
                       degrees: bool = True) -> np.ndarray:
     """Calculates the coordinate matrix of an arbitrary lattice.
 
@@ -23,17 +27,22 @@ def coordinate_matrix(a: float, b: float, c: float,
         beta = np.deg2rad(beta)
         gamma = np.deg2rad(gamma)
     v = volume(a, b, c, alpha, beta, gamma, False)
-    cm = np.array([
-        [a, b*np.cos(gamma), c*np.cos(beta)],
-        [0, b*np.sin(gamma), c*(np.cos(alpha)-(np.cos(beta)*np.cos(gamma)))/np.sin(gamma)],
-        [0, 0, v/(a*b*np.sin(gamma))]
-    ])
-    cm = np.where(cm < 1e-15, 0, cm) # remove rounding errors
+    cm = np.array([[a, b * np.cos(gamma), c * np.cos(beta)],
+                   [
+                       0, b * np.sin(gamma),
+                       c * (np.cos(alpha) -
+                            (np.cos(beta) * np.cos(gamma))) / np.sin(gamma)
+                   ], [0, 0, v / (a * b * np.sin(gamma))]])
+    cm = np.where(cm < 1e-15, 0, cm)  # remove rounding errors
     return cm
 
 
-def volume(a: float, b: float, c: float, 
-           alpha: float, beta: float, gamma: float,
+def volume(a: float,
+           b: float,
+           c: float,
+           alpha: float,
+           beta: float,
+           gamma: float,
            degrees: bool = True) -> float:
     """Calculates the volume of an arbitrary lattice.
 
