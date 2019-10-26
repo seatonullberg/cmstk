@@ -3,6 +3,7 @@ from cmstk.structure.bravais import MonoclinicBravais, OrthorhombicBravais
 from cmstk.structure.bravais import TetragonalBravais, RhombohedralBravais
 from cmstk.structure.bravais import HexagonalBravais, CubicBravais
 from cmstk.structure.bravais import LatticeBasis, Supercell
+from cmstk.structure.util import orientation_110, orientation_111
 import numpy as np
 
 
@@ -109,3 +110,7 @@ def test_supercell():
     supercell.unit_cell = unit_cell
     assert supercell.n_atoms == 108
     assert supercell.surface_area == 3**2 * 2.8**2
+    supercell.orientation = orientation_110()
+    assert supercell.n_atoms == 108
+    supercell.orientation = orientation_111()
+    assert supercell.n_atoms == 108

@@ -91,9 +91,8 @@ class BaseBravais(AtomCollection):
         volume: Volume of the lattice.
     """
 
-    def __init__(self, a: float, b: float, c: float, 
-                 alpha: float, beta: float, gamma: float, 
-                 basis: LatticeBasis) -> None:
+    def __init__(self, a: float, b: float, c: float, alpha: float, beta: float,
+                 gamma: float, basis: LatticeBasis) -> None:
         self._a = a
         self._b = b
         self._c = c
@@ -143,7 +142,7 @@ class BaseBravais(AtomCollection):
 
     @property
     def surface_area(self) -> float:
-        return surface_area(self.a, self.b, self.c, self.alpha, self.beta, 
+        return surface_area(self.a, self.b, self.c, self.alpha, self.beta,
                             self.gamma, True)
 
     @property
@@ -169,9 +168,8 @@ class TriclinicBravais(BaseBravais):
         - Invalid lattice parameters.
     """
 
-    def __init__(self, a: float, b: float, c: float, 
-                 alpha: float, beta: float, gamma: float, 
-                 symbols: List[str]) -> None:
+    def __init__(self, a: float, b: float, c: float, alpha: float, beta: float,
+                 gamma: float, symbols: List[str]) -> None:
         # check lattice parameters
         if not (a != b != c) or not (alpha != beta != gamma):
             raise ValueError(_parameter_err.format("triclinic"))
@@ -364,19 +362,20 @@ class Supercell(AtomCollection):
         volume: Volume of the lattice.
     """
 
-    def __init__(self, unit_cell: BaseBravais, 
+    def __init__(self,
+                 unit_cell: BaseBravais,
                  orientation: Optional[np.ndarray] = None,
                  size: Optional[Tuple[int, int, int]] = None) -> None:
         self._unit_cell = unit_cell
         if orientation is None:
-            orientation = orientation_100()
+            cm = self._unit_cell.coordinate_matrix
+            a, b, c = self._unit_cell.a, self._unit_cell.b, self._unit_cell.c
+            orientation = cm / np.array([a, b, c])
         self._orientation = orientation
         if size is None:
             size = (1, 1, 1)
         self._size = size
-        atoms = self._build_atoms(self._unit_cell, 
-                                  self._orientation, 
-                                  self._size)
+        atoms = self._build_atoms(self._unit_cell, self._size)
         super().__init__(atoms)
 
     @property
@@ -386,7 +385,7 @@ class Supercell(AtomCollection):
     @unit_cell.setter
     def unit_cell(self, value: BaseBravais) -> None:
         self._unit_cell = value
-        self.atoms = self._build_atoms(value, self.orientation, self.size)
+        self.atoms = self._build_atoms(value, self.size)
 
     @property
     def orientation(self) -> np.ndarray:
@@ -395,7 +394,7 @@ class Supercell(AtomCollection):
     @orientation.setter
     def orientation(self, value: np.ndarray) -> None:
         self._orientation = value
-        self.atoms = self._build_atoms(self.unit_cell, value, self.size)
+        self.atoms = self._build_atoms(self.unit_cell, self.size)
 
     @property
     def size(self) -> Tuple[int, int, int]:
@@ -404,23 +403,24 @@ class Supercell(AtomCollection):
     @size.setter
     def size(self, value: Tuple[int, int, int]) -> None:
         self._size = value
-        self.atoms = self._build_atoms(self.unit_cell, self.orientation, value)
+        self.atoms = self._build_atoms(self.unit_cell, value)
 
     @property
     def coordinate_matrix(self) -> np.ndarray:
-        return self.unit_cell.coordinate_matrix * self.orientation * self.size
+        a, b, c = self._unit_cell.a, self._unit_cell.b, self._unit_cell.c
+        return self.orientation * self.size * np.array([a, b, c])
 
     @property
     def surface_area(self) -> float:
         factor = self.size[0] * self.size[1]
-        return self.unit_cell.surface_area * factor 
+        return self.unit_cell.surface_area * factor
 
     @property
     def volume(self) -> float:
         factor = self.size[0] * self.size[1] * self.size[2]
         return self.unit_cell.volume * factor
 
-    def _build_atoms(self, unit_cell: BaseBravais, orientation: np.ndarray, 
+    def _build_atoms(self, unit_cell: BaseBravais,
                      size: Tuple[int, int, int]) -> List[Atom]:
         atoms: List[Atom] = []
         mag = np.linalg.norm(self.coordinate_matrix, axis=0)
@@ -430,5 +430,5 @@ class Supercell(AtomCollection):
                     for s, p in self.unit_cell.basis.basis:
                         index = np.array([i, j, k])
                         position = (index + p) * mag
-                        atoms.append(Atom(symbol=s, position=position))        
+                        atoms.append(Atom(symbol=s, position=position))
         return atoms

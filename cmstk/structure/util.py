@@ -28,12 +28,11 @@ def coordinate_matrix(a: float,
         beta = np.deg2rad(beta)
         gamma = np.deg2rad(gamma)
     v = volume(a, b, c, alpha, beta, gamma, False)
+    # yapf: disable
     cm = np.array([[a, b * np.cos(gamma), c * np.cos(beta)],
-                   [
-                       0, b * np.sin(gamma),
-                       c * (np.cos(alpha) -
-                            (np.cos(beta) * np.cos(gamma))) / np.sin(gamma)
-                   ], [0, 0, v / (a * b * np.sin(gamma))]])
+                   [0, b * np.sin(gamma), c * (np.cos(alpha) - (np.cos(beta) * np.cos(gamma))) / np.sin(gamma)],
+                   [0, 0, v / (a * b * np.sin(gamma))]])
+    # yapf: enable
     cm = np.where(cm < 1e-15, 0, cm)  # remove rounding errors
     return cm
 
@@ -95,8 +94,8 @@ def volume(a: float,
         2 * np.cos(alpha) * np.cos(beta) * np.cos(gamma))
 
 
-def occupation_index(existing_positions: List[np.ndarray], 
-                     new_position: np.ndarray, 
+def occupation_index(existing_positions: List[np.ndarray],
+                     new_position: np.ndarray,
                      tolerance: float = 0.001) -> Optional[int]:
     """Returns the index of occupation if a given position is within range of 
        a list of existing positions.

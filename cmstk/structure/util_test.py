@@ -27,10 +27,7 @@ def test_volume():
 
 def test_position_is_occupied():
     """Tests behavior of the occupation_index() function."""
-    positions = [
-        np.array([0.0, 0.0, 0.0]),
-        np.array([1.0, 1.0, 1.0])
-    ]
+    positions = [np.array([0.0, 0.0, 0.0]), np.array([1.0, 1.0, 1.0])]
     new_pos = np.array([0.99, 0.99, 0.99])
     res = occupation_index(positions, new_pos, tolerance=0.1)
     assert res == 1
