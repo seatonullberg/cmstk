@@ -30,18 +30,6 @@ def within_one_percent(a: float, b: float) -> bool:
     return abs(diff / b) < 0.01
 
 
-def surface_directions_100():
-    return [[1, 0, 0], [0, 1, 0], [0, 0, 1]]
-
-
-def surface_directions_110():
-    return [[-1, 1, 0], [0, 0, 1], [1, 1, 0]]
-
-
-def surface_directions_111():
-    return [[1, -1, 0], [1, 1, -2], [1, 1, 1]]
-
-
 #==============================#
 #    Input Script Utilities    #
 #==============================#

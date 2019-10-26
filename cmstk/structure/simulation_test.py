@@ -26,8 +26,6 @@ def test_simulation_cell():
     cell = SimulationCell(collections=[collection0],
                           coordinate_matrix=cm,
                           scaling_factor=sf)
-    assert cell.surface_area == 16.0
-    assert cell.volume == 63.99999999999998
     assert cell.n_collections == 1
     cell.add_collection(collection1)
     assert cell.n_collections == 2

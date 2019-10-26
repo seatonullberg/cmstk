@@ -1,3 +1,4 @@
+from cmstk.structure.util import occupation_index
 import copy
 import numpy as np
 from typing import Generator, List, Optional
@@ -76,13 +77,12 @@ class AtomCollection(object):
             ValueError
             - An atom exists within the tolerance radius.
         """
-        for a in self.atoms:
-            distance = np.sum(np.sqrt((atom.position - a.position)**2))
-            if distance < self.tolerance:
-                err = "An atom exists within the tolerance radius ({}).".format(
-                    self.tolerance)
-                raise ValueError(err)
-        self._atoms.append(atom)
+        i = occupation_index(self.positions, atom.position, self.tolerance)
+        if i is None:
+            self._atoms.append(atom)
+        else:
+            err = "An atom exists within the tolerance radius."
+            raise ValueError(err)
 
     def remove_atom(self, position: np.ndarray) -> Atom:
         """Removes an atom from the collection if the position is occupied and 
@@ -99,19 +99,12 @@ class AtomCollection(object):
         if self.n_atoms == 0:
             err = "There are no atoms in the collection."
             raise ValueError(err)
-        removal_index = None
-        for i, a in enumerate(self.atoms):
-            existing_position = a.position
-            distance = np.sum(np.sqrt((position - existing_position)**2))
-            if distance < self.tolerance:
-                removal_index = i
-                break
-        if removal_index is None:
-            err = "No atoms exist within the tolerance radius ({}).".format(
-                self.tolerance)
+        i = occupation_index(self.positions, position, self.tolerance)
+        if i is None:
+            err = "No atoms exist within the tolerance radius."
             raise ValueError(err)
-        removed_atom = copy.deepcopy(self._atoms[removal_index])
-        del self._atoms[removal_index]
+        removed_atom = copy.deepcopy(self._atoms[i])
+        del self._atoms[i]
         return removed_atom
 
     def sort_by_charge(self, hl: bool = False) -> None:

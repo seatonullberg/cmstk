@@ -1,4 +1,5 @@
 import numpy as np
+from typing import List, Optional
 
 
 def coordinate_matrix(a: float,
@@ -37,7 +38,13 @@ def coordinate_matrix(a: float,
     return cm
 
 
-def surface_area(a: float, b: float, c: float, alpha: float, beta: float, gamma: float, degrees: bool = True) -> float:
+def surface_area(a: float,
+                 b: float,
+                 c: float,
+                 alpha: float,
+                 beta: float,
+                 gamma: float,
+                 degrees: bool = True) -> float:
     """Calculates the (a x b) surface area of an arbitrary lattice.
     
     Args:
@@ -59,6 +66,7 @@ def surface_area(a: float, b: float, c: float, alpha: float, beta: float, gamma:
     ux, uy = (x / magx), (y / magy)
     theta = np.arccos(np.clip(np.dot(ux, uy), -1.0, 1.0))
     return magx * magy * np.sin(theta)
+
 
 def volume(a: float,
            b: float,
@@ -85,3 +93,34 @@ def volume(a: float,
     return a * b * c * np.sqrt(
         1 - np.cos(alpha)**2 - np.cos(beta)**2 - np.cos(gamma)**2 +\
         2 * np.cos(alpha) * np.cos(beta) * np.cos(gamma))
+
+
+def occupation_index(existing_positions: List[np.ndarray], 
+                     new_position: np.ndarray, 
+                     tolerance: float = 0.001) -> Optional[int]:
+    """Returns the index of occupation if a given position is within range of 
+       a list of existing positions.
+
+    Args:
+        existing_positions: List of existing positions to compare to.
+        new_position: The position to check.
+        tolerance: The radius in which a position is considered occupied 
+                   relative to another position.
+    """
+    for i, ep in enumerate(existing_positions):
+        distance = np.sum(np.sqrt((new_position - ep)**2))
+        if distance < tolerance:
+            return i
+    return None
+
+
+def orientation_100():
+    return np.array([[1, 0, 0], [0, 1, 0], [0, 0, 1]])
+
+
+def orientation_110():
+    return np.array([[-1, 1, 0], [0, 0, 1], [1, 1, 0]])
+
+
+def orientation_111():
+    return np.array([[1, -1, 0], [1, 1, -2], [1, 1, 1]])

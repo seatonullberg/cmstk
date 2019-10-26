@@ -31,16 +31,16 @@ class SimulationCell(object):
         self.tolerance = tolerance
 
     def add_collection(self, collection: AtomCollection) -> None:
-        """Adds an AtomCollection to the cell if none of its atoms interfere with 
-         existing ones.
+        """Adds an AtomCollection to the cell if none of its atoms interfere 
+           with existing ones.
       
-      Args:
-         collection: The AtomCollection to add.
+        Args:
+            collection: The AtomCollection to add.
 
-      Raises:
-         ValueError
-         - An atom exists within the tolerance radius.
-      """
+        Raises:
+            ValueError
+            - An atom exists within the tolerance radius.
+        """
         existing_atoms = [a for c in self._collections for a in c.atoms]
         for e_atom in existing_atoms:
             for new_atom in collection.atoms:
@@ -55,14 +55,14 @@ class SimulationCell(object):
     def remove_collection(self, index: int) -> AtomCollection:
         """Removes an AtomCollection from the cell and returns it.
       
-      Args:
-         index: List index of the collection in the cell.
-         - It is up to the user to track addition order.
+        Args:
+            index: List index of the collection in the cell.
+            - It is up to the user to track addition order.
       
-      Raises:
-         ValueError:
-         - There are no collections in the cell.
-      """
+        Raises:
+            ValueError:
+            - There are no collections in the cell.
+        """
         if self.n_collections == 0:
             err = "There are no collections in the cell."
             raise ValueError(err)
@@ -84,21 +84,3 @@ class SimulationCell(object):
     @property
     def n_collections(self) -> int:
         return len(self._collections)
-
-    @property
-    def surface_area(self) -> float:
-        x = self.coordinate_matrix[0] * self.scaling_factor
-        y = self.coordinate_matrix[1] * self.scaling_factor
-        magx = np.linalg.norm(x)
-        magy = np.linalg.norm(y)
-        ux = x / magx
-        uy = y / magy
-        theta = np.arccos(np.clip(np.dot(ux, uy), -1.0, 1.0))
-        return magx * magy * np.sin(theta)
-
-    @property
-    def volume(self) -> float:
-        scaled_matrix = self.coordinate_matrix * self.scaling_factor
-        return np.abs(np.linalg.det(scaled_matrix))
-
-    # TODO: fractional positions

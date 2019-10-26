@@ -1,10 +1,11 @@
 from cmstk.structure.atom import Atom, AtomCollection
-from cmstk.structure.util import coordinate_matrix, volume
+from cmstk.structure.util import coordinate_matrix, surface_area, volume
+from cmstk.structure.util import orientation_100
 import numpy as np
-from typing import List, Tuple
+from typing import List, Tuple, Optional
 
 _center_err = "Invalid center for {} lattice."
-_parameter_error = "Invalid lattice parameters for {} lattice."
+_parameter_err = "Invalid lattice parameters for {} lattice."
 _basis_err = "Invalid basis for {} center."
 
 
@@ -63,7 +64,7 @@ class LatticeBasis(object):
 
 
 class BaseBravais(AtomCollection):
-    """Generalized representation of a Bravais lattice.
+    """Generalized representation of a Bravais lattice unit cell.
 
     Args:
         a: The a distance lattice parameter.
@@ -74,6 +75,7 @@ class BaseBravais(AtomCollection):
         gamma: The gamma angle lattice parameter in degrees.
         basis: The crystallographic basis mapping symbols to their fractional 
         positions.
+        size: Number of unit cells in each direction.
 
     Attributes:
         a: The a distance lattice parameter.
@@ -85,11 +87,13 @@ class BaseBravais(AtomCollection):
         basis: The crystallographic basis mapping symbols to their fractional 
         positions.
         coordinate_matrix: 3x3 matrix describing the lattice coordinate system.
+        surface_area: The a x b surface area of the lattice
         volume: Volume of the lattice.
     """
 
-    def __init__(self, a: float, b: float, c: float, alpha: float, beta: float,
-                 gamma: float, basis: LatticeBasis) -> None:
+    def __init__(self, a: float, b: float, c: float, 
+                 alpha: float, beta: float, gamma: float, 
+                 basis: LatticeBasis) -> None:
         self._a = a
         self._b = b
         self._c = c
@@ -98,8 +102,9 @@ class BaseBravais(AtomCollection):
         self._gamma = gamma
         self._basis = basis
         atoms: List[Atom] = []
+        mag = np.linalg.norm(self.coordinate_matrix, axis=0)
         for s, p in self._basis.basis:
-            p *= np.linalg.norm(self.coordinate_matrix, axis=0)  # not sure axis
+            p *= mag
             atoms.append(Atom(symbol=s, position=p))
         super().__init__(atoms)
 
@@ -137,6 +142,11 @@ class BaseBravais(AtomCollection):
                                  self.gamma, True)
 
     @property
+    def surface_area(self) -> float:
+        return surface_area(self.a, self.b, self.c, self.alpha, self.beta, 
+                            self.gamma, True)
+
+    @property
     def volume(self) -> float:
         return volume(self.a, self.b, self.c, self.alpha, self.beta, self.gamma,
                       True)
@@ -154,26 +164,17 @@ class TriclinicBravais(BaseBravais):
         gamma: The gamma angle lattice parameter in degrees.
         symbols: Symbols to insert at the basis point.
 
-    Attributes:
-        a: The a distance lattice parameter.
-        b: The b distance lattice parameter.
-        c: The c distance lattice parameter.
-        alpha: The alpha angle lattice parameter.
-        beta: The beta angle lattice parameter.
-        gamma: The gamma angle lattice parameter.
-        basis: The crystallographic basis mapping symbols to their fractional 
-        positions.
-
     Raises:
         ValueError
         - Invalid lattice parameters.
     """
 
-    def __init__(self, a: float, b: float, c: float, alpha: float, beta: float,
-                 gamma: float, symbols: List[str]) -> None:
+    def __init__(self, a: float, b: float, c: float, 
+                 alpha: float, beta: float, gamma: float, 
+                 symbols: List[str]) -> None:
         # check lattice parameters
         if not (a != b != c) or not (alpha != beta != gamma):
-            raise ValueError(_parameter_error.format("triclinic"))
+            raise ValueError(_parameter_err.format("triclinic"))
         # set basis set
         center = "P"
         basis = LatticeBasis(symbols, center)
@@ -191,16 +192,6 @@ class MonoclinicBravais(BaseBravais):
         symbols: Symbols to insert at basis points.
         center: The lattice center type.
 
-    Attributes:
-        a: The a distance lattice parameter.
-        b: The b distance lattice parameter.
-        c: The c distance lattice parameter.
-        alpha: The alpha angle lattice parameter.
-        beta: The beta angle lattice parameter.
-        gamma: The gamma angle lattice parameter.
-        basis: The crystallographic basis mapping symbols to their fractional 
-        positions.
-
     Raises:
         ValueError
         - Invalid lattice parameters.
@@ -211,7 +202,7 @@ class MonoclinicBravais(BaseBravais):
                  symbols: List[str], center: str) -> None:
         # check lattice parameters
         if not (a != b != c) or beta == 90:
-            raise ValueError(_parameter_error.format("monoclinic"))
+            raise ValueError(_parameter_err.format("monoclinic"))
         # check basis set and center
         valid_centers = ["P", "C"]
         if center not in valid_centers:
@@ -231,16 +222,6 @@ class OrthorhombicBravais(BaseBravais):
         symbols: The symbols to insert at basis points.
         center: The centering of the lattice.
 
-    Attributes:
-        a: The a distance lattice parameter.
-        b: The b distance lattice parameter.
-        c: The c distance lattice parameter.
-        alpha: The alpha angle lattice parameter.
-        beta: The beta angle lattice parameter.
-        gamma: The gamma angle lattice parameter.
-        basis: The crystallographic basis mapping symbols to their fractional 
-        positions.
-
     Raises:
         ValueError
         - Invalid lattice parameters.
@@ -251,7 +232,7 @@ class OrthorhombicBravais(BaseBravais):
                  center: str) -> None:
         # check lattice parameters
         if not (a != b != c):
-            raise ValueError(_parameter_error.format("orthorhombic"))
+            raise ValueError(_parameter_err.format("orthorhombic"))
 
         valid_centers = ["P", "C", "I", "F"]
         if center not in valid_centers:
@@ -270,16 +251,6 @@ class TetragonalBravais(BaseBravais):
         symbols: IUPAC symbols to insert at lattice points.
         center: The centering of the lattice.
 
-    Attributes:
-        a: The a distance lattice parameter.
-        b: The b distance lattice parameter.
-        c: The c distance lattice parameter.
-        alpha: The alpha angle lattice parameter.
-        beta: The beta angle lattice parameter.
-        gamma: The gamma angle lattice parameter.
-        basis: The crystallographic basis mapping symbols to their fractional 
-        positions.
-
     Raises:
         ValueError
         - Invalid lattice parameters.
@@ -290,7 +261,7 @@ class TetragonalBravais(BaseBravais):
                  center: str) -> None:
         # check lattice parameters
         if a == c:
-            raise ValueError(_parameter_error.format("tetragonal"))
+            raise ValueError(_parameter_err.format("tetragonal"))
         # check basis and center
         valid_centers = ["P", "I"]
         if center not in valid_centers:
@@ -310,16 +281,6 @@ class RhombohedralBravais(BaseBravais):
         symbols: IUPAC symbols to insert at basis positions.
         center: The centering of the lattice.
 
-    Attributes:
-        a: The a distance lattice parameter.
-        b: The b distance lattice parameter.
-        c: The c distance lattice parameter.
-        alpha: The alpha angle lattice parameter.
-        beta: The beta angle lattice parameter.
-        gamma: The gamma angle lattice parameter.
-        basis: The crystallographic basis mapping symbols to their fractional 
-        positions.
-
     Raises:
         ValueError
         - Invalid lattice parameters.
@@ -330,7 +291,7 @@ class RhombohedralBravais(BaseBravais):
                  center: str) -> None:
         # check lattice parameters
         if alpha == 90:
-            raise ValueError(_parameter_error.format("rhombohedral"))
+            raise ValueError(_parameter_err.format("rhombohedral"))
         center = "P"
         basis = LatticeBasis(symbols, center)
         b, c = a, a
@@ -346,16 +307,6 @@ class HexagonalBravais(BaseBravais):
         c: The c distance lattice parameter.
         symbols: IUPAC symbols to insert at basis positions.
 
-    Attributes:
-        a: The a distance lattice parameter.
-        b: The b distance lattice parameter.
-        c: The c distance lattice parameter.
-        alpha: The alpha angle lattice parameter.
-        beta: The beta angle lattice parameter.
-        gamma: The gamma angle lattice parameter.
-        basis: The crystallographic basis mapping symbols to their fractional 
-        positions.
-
     Raises:
         ValueError
         - Invalid lattice parameters.
@@ -364,7 +315,7 @@ class HexagonalBravais(BaseBravais):
     def __init__(self, a: float, c: float, symbols: List[str]) -> None:
         # check lattice parameters
         if a == c:
-            raise ValueError(_parameter_error.format("hexagonal"))
+            raise ValueError(_parameter_err.format("hexagonal"))
         center = "P"
         basis = LatticeBasis(symbols, center)
         b = a
@@ -379,16 +330,6 @@ class CubicBravais(BaseBravais):
         a: The a distance lattice parameter.
         symbols: IUPAC symbols to insert at basis positions.
         center: The lattice center type.
-
-    Attributes:
-        a: The a distance lattice parameter.
-        b: The b distance lattice parameter.
-        c: The c distance lattice parameter.
-        alpha: The alpha angle lattice parameter.
-        beta: The beta angle lattice parameter.
-        gamma: The gamma angle lattice parameter.
-        basis: The crystallographic basis mapping symbols to their fractional 
-        positions.
 
     Raises:
         ValueError
@@ -406,8 +347,7 @@ class CubicBravais(BaseBravais):
         super().__init__(a, b, c, alpha, beta, gamma, basis)
 
 
-# TODO
-class Supercell(BaseBravais):
+class Supercell(AtomCollection):
     """Representation of an expanded unit cell.
 
     Args:
@@ -416,19 +356,79 @@ class Supercell(BaseBravais):
         size: Number of unit cells to expand in each direction.
 
     Attributes:
-        a: The a distance lattice parameter.
-        b: The b distance lattice parameter.
-        c: The c distance lattice parameter.
-        alpha: The alpha angle lattice parameter.
-        beta: The beta angle lattice parameter.
-        gamma: The gamma angle lattice parameter.
-        basis: The crystallographic basis mapping symbols to their fractional 
-        positions.
         unit_cell: The original unit cell.
         orientation: Orientation direction applied to the cell.
         size: Number of unit cells to expand in each direction.
+        coordinate_matrix: 3x3 matrix describing the lattice coordinate system.
+        surface_area: The a x b surface area of the lattice
+        volume: Volume of the lattice.
     """
 
-    def __init__(self, unit_cell: BaseBravais, orientation: np.ndarray,
-                 size: Tuple[int, int, int]) -> None:
-        pass
+    def __init__(self, unit_cell: BaseBravais, 
+                 orientation: Optional[np.ndarray] = None,
+                 size: Optional[Tuple[int, int, int]] = None) -> None:
+        self._unit_cell = unit_cell
+        if orientation is None:
+            orientation = orientation_100()
+        self._orientation = orientation
+        if size is None:
+            size = (1, 1, 1)
+        self._size = size
+        atoms = self._build_atoms(self._unit_cell, 
+                                  self._orientation, 
+                                  self._size)
+        super().__init__(atoms)
+
+    @property
+    def unit_cell(self) -> BaseBravais:
+        return self._unit_cell
+
+    @unit_cell.setter
+    def unit_cell(self, value: BaseBravais) -> None:
+        self._unit_cell = value
+        self.atoms = self._build_atoms(value, self.orientation, self.size)
+
+    @property
+    def orientation(self) -> np.ndarray:
+        return self._orientation
+
+    @orientation.setter
+    def orientation(self, value: np.ndarray) -> None:
+        self._orientation = value
+        self.atoms = self._build_atoms(self.unit_cell, value, self.size)
+
+    @property
+    def size(self) -> Tuple[int, int, int]:
+        return self._size
+
+    @size.setter
+    def size(self, value: Tuple[int, int, int]) -> None:
+        self._size = value
+        self.atoms = self._build_atoms(self.unit_cell, self.orientation, value)
+
+    @property
+    def coordinate_matrix(self) -> np.ndarray:
+        return self.unit_cell.coordinate_matrix * self.orientation * self.size
+
+    @property
+    def surface_area(self) -> float:
+        factor = self.size[0] * self.size[1]
+        return self.unit_cell.surface_area * factor 
+
+    @property
+    def volume(self) -> float:
+        factor = self.size[0] * self.size[1] * self.size[2]
+        return self.unit_cell.volume * factor
+
+    def _build_atoms(self, unit_cell: BaseBravais, orientation: np.ndarray, 
+                     size: Tuple[int, int, int]) -> List[Atom]:
+        atoms: List[Atom] = []
+        mag = np.linalg.norm(self.coordinate_matrix, axis=0)
+        for i in range(size[0]):
+            for j in range(size[1]):
+                for k in range(size[2]):
+                    for s, p in self.unit_cell.basis.basis:
+                        index = np.array([i, j, k])
+                        position = (index + p) * mag
+                        atoms.append(Atom(symbol=s, position=position))        
+        return atoms

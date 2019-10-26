@@ -2,7 +2,7 @@ from cmstk.structure.bravais import BaseBravais, TriclinicBravais
 from cmstk.structure.bravais import MonoclinicBravais, OrthorhombicBravais
 from cmstk.structure.bravais import TetragonalBravais, RhombohedralBravais
 from cmstk.structure.bravais import HexagonalBravais, CubicBravais
-from cmstk.structure.bravais import LatticeBasis
+from cmstk.structure.bravais import LatticeBasis, Supercell
 import numpy as np
 
 
@@ -14,16 +14,17 @@ def test_base_bravais():
     assert bravais.n_symbols == 1
     assert np.array_equal(bravais.positions[0], np.array([0, 0, 0]))
     assert np.array_equal(bravais.positions[1], np.array([1.4, 1.4, 1.4]))
-    assert bravais.volume == 21.951999999999995
     cm = np.array([[2.8, 0, 0], [0, 2.8, 0], [0, 0, 2.8]])
     assert np.array_equal(bravais.coordinate_matrix, cm)
+    assert bravais.surface_area == 2.8**2
+    assert bravais.volume == 21.951999999999995
 
 
 def test_triclinic_bravais():
     """Tests initialization of a TriclinicBravais object."""
     a, b, c = 2.0, 3.0, 4.0
     alpha, beta, gamma = 60, 70, 120
-    symbols = ["X"]  # fake element
+    symbols = ["X"]
     triclinic = TriclinicBravais(a, b, c, alpha, beta, gamma, symbols)
     assert triclinic.n_atoms == 1
     assert triclinic.n_symbols == 1
@@ -88,3 +89,23 @@ def test_cubic_bravais():
     cubic = CubicBravais(a, symbols, center)
     assert cubic.n_atoms == 2
     assert cubic.n_symbols == 1
+
+
+def test_supercell():
+    """Tests initialization of a Supercell object."""
+    a = 2.7
+    symbols = ["Cr", "Cr"]
+    center = "I"
+    unit_cell = CubicBravais(a, symbols, center)
+    supercell = Supercell(unit_cell, size=(2, 2, 2))
+    assert supercell.n_atoms == 16
+    supercell.size = (3, 3, 3)
+    assert supercell.n_atoms == 54
+    assert supercell.volume == 3**3 * 2.7**3
+    a = 2.8
+    symbols = ["Fe", "Fe", "Fe", "Fe"]
+    center = "F"
+    unit_cell = CubicBravais(a, symbols, center)
+    supercell.unit_cell = unit_cell
+    assert supercell.n_atoms == 108
+    assert supercell.surface_area == 3**2 * 2.8**2
