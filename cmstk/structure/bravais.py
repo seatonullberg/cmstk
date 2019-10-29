@@ -1,8 +1,7 @@
 from cmstk.structure.atom import Atom, AtomCollection
 from cmstk.structure.util import coordinate_matrix, surface_area, volume
-from cmstk.structure.util import orientation_100
 import numpy as np
-from typing import List, Tuple, Optional
+from typing import List, Tuple
 
 _center_err = "Invalid center for {} lattice."
 _parameter_err = "Invalid lattice parameters for {} lattice."
@@ -75,7 +74,6 @@ class BaseBravais(AtomCollection):
         gamma: The gamma angle lattice parameter in degrees.
         basis: The crystallographic basis mapping symbols to their fractional 
         positions.
-        size: Number of unit cells in each direction.
 
     Attributes:
         a: The a distance lattice parameter.
@@ -343,92 +341,3 @@ class CubicBravais(BaseBravais):
         alpha, beta, gamma = 90, 90, 90
         basis = LatticeBasis(symbols, center)
         super().__init__(a, b, c, alpha, beta, gamma, basis)
-
-
-class Supercell(AtomCollection):
-    """Representation of an expanded unit cell.
-
-    Args:
-        unit_cell: The unit cell to expand.
-        orientation: Orientation direction applied to the cell.
-        size: Number of unit cells to expand in each direction.
-
-    Attributes:
-        unit_cell: The original unit cell.
-        orientation: Orientation direction applied to the cell.
-        size: Number of unit cells to expand in each direction.
-        coordinate_matrix: 3x3 matrix describing the lattice coordinate system.
-        surface_area: The a x b surface area of the lattice
-        volume: Volume of the lattice.
-    """
-
-    def __init__(self,
-                 unit_cell: BaseBravais,
-                 orientation: Optional[np.ndarray] = None,
-                 size: Optional[Tuple[int, int, int]] = None) -> None:
-        self._unit_cell = unit_cell
-        if orientation is None:
-            cm = self._unit_cell.coordinate_matrix
-            a, b, c = self._unit_cell.a, self._unit_cell.b, self._unit_cell.c
-            orientation = cm / np.array([a, b, c])
-        self._orientation = orientation
-        if size is None:
-            size = (1, 1, 1)
-        self._size = size
-        atoms = self._build_atoms(self._unit_cell, self._size)
-        super().__init__(atoms)
-
-    @property
-    def unit_cell(self) -> BaseBravais:
-        return self._unit_cell
-
-    @unit_cell.setter
-    def unit_cell(self, value: BaseBravais) -> None:
-        self._unit_cell = value
-        self.atoms = self._build_atoms(value, self.size)
-
-    @property
-    def orientation(self) -> np.ndarray:
-        return self._orientation
-
-    @orientation.setter
-    def orientation(self, value: np.ndarray) -> None:
-        self._orientation = value
-        self.atoms = self._build_atoms(self.unit_cell, self.size)
-
-    @property
-    def size(self) -> Tuple[int, int, int]:
-        return self._size
-
-    @size.setter
-    def size(self, value: Tuple[int, int, int]) -> None:
-        self._size = value
-        self.atoms = self._build_atoms(self.unit_cell, value)
-
-    @property
-    def coordinate_matrix(self) -> np.ndarray:
-        a, b, c = self._unit_cell.a, self._unit_cell.b, self._unit_cell.c
-        return self.orientation * self.size * np.array([a, b, c])
-
-    @property
-    def surface_area(self) -> float:
-        factor = self.size[0] * self.size[1]
-        return self.unit_cell.surface_area * factor
-
-    @property
-    def volume(self) -> float:
-        factor = self.size[0] * self.size[1] * self.size[2]
-        return self.unit_cell.volume * factor
-
-    def _build_atoms(self, unit_cell: BaseBravais,
-                     size: Tuple[int, int, int]) -> List[Atom]:
-        atoms: List[Atom] = []
-        mag = np.linalg.norm(self.coordinate_matrix, axis=0)
-        for i in range(size[0]):
-            for j in range(size[1]):
-                for k in range(size[2]):
-                    for s, p in self.unit_cell.basis.basis:
-                        index = np.array([i, j, k])
-                        position = (index + p) * mag
-                        atoms.append(Atom(symbol=s, position=position))
-        return atoms

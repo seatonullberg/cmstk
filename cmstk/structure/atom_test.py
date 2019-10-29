@@ -73,6 +73,26 @@ def test_atom_collection_remove_atom():
     assert collection.n_atoms == 0
 
 
+def test_atom_collection_concatenate():
+    """Tests behavior of the AtomCollection.concatenate() method."""
+    atoms0 = [
+        Atom(position=np.array([0.0, 0.0, 0.0])),
+        Atom(position=np.array([1.0, 1.0, 1.0]))
+    ]
+    atoms1 = [
+        Atom(position=np.array([0.0, 0.0, 0.0])),
+        Atom(position=np.array([2.0, 2.0, 2.0]))
+    ]
+    collection0 = AtomCollection(atoms0)
+    collection1 = AtomCollection(atoms1)
+    with pytest.raises(ValueError):
+        collection0.concatenate(collection1)
+    offset = np.array([2.0, 2.0, 2.0])
+    collection0.concatenate(collection1, offset)
+    assert collection0.n_atoms == 4
+    assert np.array_equal(collection1.atoms[0].position, np.array([0, 0, 0]))
+
+
 def test_atom_collection_sort_by_charge():
     """Tests behavior of the AtomCollection.sort_by_charge() method."""
     atom0 = Atom(charge=0, position=np.array([0, 0, 0]))

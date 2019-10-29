@@ -2,8 +2,7 @@ from cmstk.structure.bravais import BaseBravais, TriclinicBravais
 from cmstk.structure.bravais import MonoclinicBravais, OrthorhombicBravais
 from cmstk.structure.bravais import TetragonalBravais, RhombohedralBravais
 from cmstk.structure.bravais import HexagonalBravais, CubicBravais
-from cmstk.structure.bravais import LatticeBasis, Supercell
-from cmstk.structure.util import orientation_110, orientation_111
+from cmstk.structure.bravais import LatticeBasis
 import numpy as np
 
 
@@ -90,27 +89,3 @@ def test_cubic_bravais():
     cubic = CubicBravais(a, symbols, center)
     assert cubic.n_atoms == 2
     assert cubic.n_symbols == 1
-
-
-def test_supercell():
-    """Tests initialization of a Supercell object."""
-    a = 2.7
-    symbols = ["Cr", "Cr"]
-    center = "I"
-    unit_cell = CubicBravais(a, symbols, center)
-    supercell = Supercell(unit_cell, size=(2, 2, 2))
-    assert supercell.n_atoms == 16
-    supercell.size = (3, 3, 3)
-    assert supercell.n_atoms == 54
-    assert supercell.volume == 3**3 * 2.7**3
-    a = 2.8
-    symbols = ["Fe", "Fe", "Fe", "Fe"]
-    center = "F"
-    unit_cell = CubicBravais(a, symbols, center)
-    supercell.unit_cell = unit_cell
-    assert supercell.n_atoms == 108
-    assert supercell.surface_area == 3**2 * 2.8**2
-    supercell.orientation = orientation_110()
-    assert supercell.n_atoms == 108
-    supercell.orientation = orientation_111()
-    assert supercell.n_atoms == 108

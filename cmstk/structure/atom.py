@@ -1,4 +1,4 @@
-from cmstk.structure.util import occupation_index
+from cmstk.structure.util import position_index
 import copy
 import numpy as np
 from typing import Generator, List, Optional
@@ -77,7 +77,7 @@ class AtomCollection(object):
             ValueError
             - An atom exists within the tolerance radius.
         """
-        i = occupation_index(self.positions, atom.position, self.tolerance)
+        i = position_index(self.positions, atom.position, self.tolerance)
         if i is None:
             self._atoms.append(atom)
         else:
@@ -92,20 +92,40 @@ class AtomCollection(object):
             position: The position to remove an atom from.
 
         Raises:
-            ValueError:
-                There are no atoms in the collection.
-                No atoms exist within the tolerance radius.
+            ValueError
+            - There are no atoms in the collection.
+            - No atoms exist within the tolerance radius.
         """
         if self.n_atoms == 0:
             err = "There are no atoms in the collection."
             raise ValueError(err)
-        i = occupation_index(self.positions, position, self.tolerance)
+        i = position_index(self.positions, position, self.tolerance)
         if i is None:
             err = "No atoms exist within the tolerance radius."
             raise ValueError(err)
         removed_atom = copy.deepcopy(self._atoms[i])
         del self._atoms[i]
         return removed_atom
+
+    def concatenate(self,
+                    collection: 'AtomCollection',
+                    offset: Optional[np.ndarray] = None) -> None:
+        """Joins another AtomCollection with self.
+        
+        Notes:
+            The incoming collection is copied so that the offset is not applied 
+            to the original. 
+
+        Args:
+            collection: The collection to concatenate.
+            offset: Translation vector to apply to `collection` prior to 
+                    concatenation.
+        """
+        collection = copy.deepcopy(collection)
+        if offset is not None:
+            collection.translate(offset)
+        for atom in collection.atoms:
+            self.add_atom(atom)
 
     def sort_by_charge(self, hl: bool = False) -> None:
         """Groups atoms by their electronic charges.

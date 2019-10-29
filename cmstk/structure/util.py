@@ -94,11 +94,11 @@ def volume(a: float,
         2 * np.cos(alpha) * np.cos(beta) * np.cos(gamma))
 
 
-def occupation_index(existing_positions: List[np.ndarray],
-                     new_position: np.ndarray,
-                     tolerance: float = 0.001) -> Optional[int]:
-    """Returns the index of occupation if a given position is within range of 
-       a list of existing positions.
+def position_index(existing_positions: List[np.ndarray],
+                   new_position: np.ndarray,
+                   tolerance: float = 0.001) -> Optional[int]:
+    """Returns the index of a position if it is within range of an existing 
+       position.
 
     Args:
         existing_positions: List of existing positions to compare to.
