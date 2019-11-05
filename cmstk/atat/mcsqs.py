@@ -224,7 +224,8 @@ class RndstrFile(BaseFile):
             for row in self.vectors:
                 row = " ".join(row.astype(str))
                 f.write("{}\n".format(row))
-            zipper = zip(self.simulation_cell.collection.positions, self.probabilities)
+            zipper = zip(self.simulation_cell.collection.positions,
+                         self.probabilities)
             for position, probability in zipper:
                 position_str = " ".join(position.astype(str))
                 prob_str = ",".join(

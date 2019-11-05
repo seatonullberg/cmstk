@@ -13,8 +13,10 @@ def test_bestsqs_to_poscar():
     bestsqs.read()
     sym_order = ["Fe", "Cr"]
     poscar = bestsqs_to_poscar(bestsqs, sym_order)
-    poscar_positions = np.array([p for p in poscar.simulation_cell.collection.positions])
-    bestsqs_positions = np.array([p for p in bestsqs.simulation_cell.collection.positions])
+    poscar_positions = np.array(
+        [p for p in poscar.simulation_cell.collection.positions])
+    bestsqs_positions = np.array(
+        [p for p in bestsqs.simulation_cell.collection.positions])
     assert np.array_equal(poscar_positions, bestsqs_positions)
     assert np.array_equal(poscar.simulation_cell.coordinate_matrix,
                           bestsqs.simulation_cell.coordinate_matrix)

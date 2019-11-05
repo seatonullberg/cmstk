@@ -22,8 +22,10 @@ def test_poscar_file():
     assert poscar_reader.direct == poscar.direct
     assert np.array_equal(poscar_reader.simulation_cell.coordinate_matrix,
                           poscar.simulation_cell.coordinate_matrix)
-    reader_positions = np.array([p for p in poscar_reader.simulation_cell.collection.positions])
-    positions = np.array([p for p in poscar.simulation_cell.collection.positions])
+    reader_positions = np.array(
+        [p for p in poscar_reader.simulation_cell.collection.positions])
+    positions = np.array(
+        [p for p in poscar.simulation_cell.collection.positions])
     assert np.array_equal(reader_positions, positions)
     assert len(positions) > 0
     assert poscar_reader.n_atoms_per_symbol == poscar.n_atoms_per_symbol
@@ -51,8 +53,10 @@ def test_contcar_file():
     assert poscar_reader.direct == poscar.direct
     assert np.array_equal(poscar_reader.simulation_cell.coordinate_matrix,
                           poscar.simulation_cell.coordinate_matrix)
-    reader_positions = np.array([p for p in poscar_reader.simulation_cell.collection.positions])
-    positions = np.array([p for p in poscar.simulation_cell.collection.positions])
+    reader_positions = np.array(
+        [p for p in poscar_reader.simulation_cell.collection.positions])
+    positions = np.array(
+        [p for p in poscar.simulation_cell.collection.positions])
     assert np.array_equal(reader_positions, positions)
     assert len(positions) > 0
     assert poscar_reader.n_atoms_per_symbol == poscar.n_atoms_per_symbol

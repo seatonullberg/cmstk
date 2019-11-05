@@ -37,7 +37,8 @@ class PoscarFile(BaseFile):
         relaxations: Boolean matrix to indicate selective dymanics parameters.
     """
 
-    def __init__(self, filepath: Optional[str] = None,
+    def __init__(self,
+                 filepath: Optional[str] = None,
                  comment: Optional[str] = None,
                  direct: bool = False,
                  simulation_cell: Optional[SimulationCell] = None,
@@ -84,7 +85,8 @@ class PoscarFile(BaseFile):
             for row in self.simulation_cell.coordinate_matrix:
                 row = "{:.6f} {:.6f} {:.6f}".format(row[0], row[1], row[2])
                 f.write("\t{}\n".format(row))
-            f.write("\t{}\n".format(" ".join(map(str, self.n_atoms_per_symbol))))
+            f.write("\t{}\n".format(" ".join(map(str,
+                                                 self.n_atoms_per_symbol))))
             if len(self.relaxations) != 0:
                 f.write("Selective dynamics\n")
             if self.direct:
@@ -131,7 +133,7 @@ class PoscarFile(BaseFile):
             cm = self._lines[2:5]
             cm = [np.fromstring(row, sep=" ") for row in cm]
             start, end = self._position_section_line_numbers
-            positions = self._lines[start: end]
+            positions = self._lines[start:end]
             positions = [" ".join(p.split()[:3]) for p in positions]
             positions = [np.fromstring(p, sep=" ") for p in positions]
             atoms = []
@@ -141,7 +143,7 @@ class PoscarFile(BaseFile):
             simulation_cell = SimulationCell(collection, cm, sf)
             self._simulation_cell = simulation_cell
         return self._simulation_cell
-    
+
     @simulation_cell.setter
     def simulation_cell(self, value: SimulationCell) -> None:
         self._simulation_cell = value
@@ -150,10 +152,11 @@ class PoscarFile(BaseFile):
     def relaxations(self) -> List[np.ndarray]:
         if self._relaxations is None:
             start, end = self._position_section_line_numbers
-            relaxations = self._lines[start: end]
+            relaxations = self._lines[start:end]
             relaxations = [r.split()[3:] for r in relaxations]
             relaxations = [
-                np.array([True if rr == "T" else False for rr in r]) 
+                np.array([True if rr == "T" else False
+                          for rr in r])
                 for r in relaxations
             ]
             self._relaxations = relaxations

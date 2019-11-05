@@ -7,7 +7,8 @@ from typing import List, Optional
 def bestsqs_to_poscar(bestsqs: BestsqsFile,
                       symbol_order: List[str],
                       direct: bool = False,
-                      relaxations: Optional[List[np.ndarray]] = None) -> PoscarFile:
+                      relaxations: Optional[List[np.ndarray]] = None
+                     ) -> PoscarFile:
     """Converts a BestsqsFile object into a PoscarFile object.
     
     Args:
@@ -24,6 +25,8 @@ def bestsqs_to_poscar(bestsqs: BestsqsFile,
         err = "all members or `symbol_order` must be unique"
         raise ValueError(err)
     bestsqs.simulation_cell.collection.sort_by_symbol(symbol_order)
-    return PoscarFile(direct=direct,
-                      simulation_cell=bestsqs.simulation_cell,
-                      relaxations=relaxations,)
+    return PoscarFile(
+        direct=direct,
+        simulation_cell=bestsqs.simulation_cell,
+        relaxations=relaxations,
+    )
