@@ -1,4 +1,4 @@
-from cmstk.utils import BaseTag, TagCollection, within_one_percent, consecutive_percent_difference
+from cmstk.util import BaseTag, TagCollection, within_one_percent, consecutive_percent_difference
 import pytest
 
 

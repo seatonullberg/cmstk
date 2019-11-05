@@ -1,11 +1,11 @@
-from cmstk.structures.atoms import Atom
-from cmstk.structures.crystals import Lattice
-from cmstk.utils import Number
+from cmstk.structure.atom import Atom, AtomCollection
+from cmstk.structure.simulation import SimulationCell
+from cmstk.util import BaseFile
 import numpy as np
 from typing import Dict, List, Optional
 
 
-class BestcorrFile(object):
+class BestcorrFile(BaseFile):
     """File wrapper for a bestcorr.out output file.
     
     Notes:
@@ -27,30 +27,16 @@ class BestcorrFile(object):
     def __init__(self, filepath: Optional[str] = None) -> None:
         if filepath is None:
             filepath = "bestcorr.out"
-        self.filepath = filepath
-        self._lines: List[str] = []
-        self._clusters: Optional[List[List[Dict[str, Number]]]] = None
+        self._clusters: Optional[List[List[Dict[str, float]]]] = None
         self._objective_functions: Optional[List[float]] = None
-
-    def read(self, path: Optional[str] = None) -> None:
-        """Reads a bestcorr.out file.
-        
-        Args:
-            path: The filepath to read from.
-        """
-        if path is None:
-            path = self.filepath
-        with open(path, "r") as f:
-            self._lines = [line.strip() for line in f.readlines()]
-        # reset the attributes
-        self._clusters = None
-        self._objective_functions = None
+        attrs = ["_clusters", "_objective_functions"]
+        super().__init__(attrs, filepath)
 
     @property
-    def clusters(self) -> List[List[Dict[str, Number]]]:
+    def clusters(self) -> List[List[Dict[str, float]]]:
         if self._clusters is None:
-            clusters: List[List[Dict[str, Number]]] = []
-            current_cluster: List[Dict[str, Number]] = []
+            clusters: List[List[Dict[str, float]]] = []
+            current_cluster: List[Dict[str, float]] = []
             for line in self._lines:
                 if line.startswith("Objective_function"):
                     clusters.append(current_cluster)
@@ -80,7 +66,7 @@ class BestcorrFile(object):
         return self._objective_functions
 
 
-class BestsqsFile(object):
+class BestsqsFile(BaseFile):
     """File wrapper for a bestsqs.out output file.
     
     Notes:
@@ -92,54 +78,38 @@ class BestsqsFile(object):
     
     Args:
         filepath: Filepath to a bestsqs.out file.
-        lattice: Underlying lattice structure data.
-        vectors: Lattice vectors.
 
     Attributes:
         filepath: Filepath to a bestsqs.out file.
-        lattice: Underlying lattice structure data.
+        simulation_cell: Underlying simulation cell structure data.
         vectors: Lattice vectors.
     """
 
     def __init__(self, filepath: Optional[str] = None) -> None:
         if filepath is None:
             filepath = "bestsqs.out"
-        self.filepath = filepath
-        self._lines: List[str] = []
-        self._lattice: Optional[Lattice] = None
+        self._simulation_cell: Optional[SimulationCell] = None
         self._vectors: Optional[np.ndarray] = None
-
-    def read(self, path: Optional[str] = None) -> None:
-        """Reads a bestsqs.out file.
-        
-        Args:
-            path: The filepath to read from.
-        """
-        if path is None:
-            path = self.filepath
-        with open(path, "r") as f:
-            self._lines = [line.strip() for line in f.readlines()]
-        # reset attributes
-        self._lattice = None
-        self._vectors = None
+        attrs = ["_simulation_cell", "_vectors"]
+        super().__init__(attrs, filepath)
 
     @property
-    def lattice(self) -> Lattice:
-        if self._lattice is None:
-            coordinate_matrix = self._lines[:3]
-            coordinate_matrix = [
-                np.fromstring(row, sep=" ") for row in coordinate_matrix
-            ]
+    def simulation_cell(self) -> SimulationCell:
+        if self._simulation_cell is None:
+            cm = self._lines[:3]
+            cm = [np.fromstring(row, sep=" ") for row in cm]
             positions = self._lines[6:]
             positions = [" ".join(p.split()[:3]) for p in positions]
-            positions = [np.fromstring(p, sep=" ") for p in positions]
+            positions_arr = [np.fromstring(p, sep=" ") for p in positions]
             symbols = self._lines[6:]
             symbols = [s.split()[-1] for s in symbols]
-            lattice = Lattice(coordinate_matrix=np.array(coordinate_matrix))
-            for p, s in zip(positions, symbols):
-                lattice.add_atom(Atom(position=np.array(p), symbol=s))
-            self._lattice = lattice
-        return self._lattice
+            atoms = []
+            for p, s in zip(positions_arr, symbols):
+                atoms.append(Atom(position=p, symbol=s))
+            collection = AtomCollection(atoms)
+            simulation_cell = SimulationCell(collection, np.array(cm))
+            self._simulation_cell = simulation_cell
+        return self._simulation_cell
 
     @property
     def vectors(self) -> np.ndarray:
@@ -150,7 +120,7 @@ class BestsqsFile(object):
         return self._vectors
 
 
-class RndstrFile(object):
+class RndstrFile(BaseFile):
     """File wrapper for a rndstr.in input file.
     
     Notes:
@@ -163,61 +133,50 @@ class RndstrFile(object):
 
     Args:
         filepath: Filepath to a rndstr.in file.
-        lattice: The lattice structure to represent.
+        simulation_cell: The simulation cell structure to represent.
         probabilities: Probability of occupation by any symbols at each site.
         vectors: Lattice vectors.
 
     Attributes:
         filepath: Filepath to a rndstr.in file.
-        lattice: The lattice structure being represented.
+        simulation_cell: The simulation cell structure being represented.
         probabilities: Probability of occupation by any symbols at each site.
         vectors: Lattice vectors.
     """
 
     def __init__(self,
                  filepath: Optional[str] = None,
-                 lattice: Optional[Lattice] = None,
+                 simulation_cell: Optional[SimulationCell] = None,
                  probabilities: Optional[List[Dict[str, float]]] = None,
                  vectors: Optional[np.ndarray] = None) -> None:
         if filepath is None:
             filepath = "rndstr.in"
-        self.filepath = filepath
-        self._lines: List[str] = []
-        self._lattice = lattice
+        self._simulation_cell = simulation_cell
         self._probabilities = probabilities
         if vectors is None:
             vectors = np.identity(3)
         self._vectors = vectors
-
-    def read(self, path: Optional[str] = None):
-        """Reads a rndstr.in file.
-
-        Args:
-            path: The filepath to read from.
-        """
-        if path is None:
-            path = self.filepath
-        with open(path, "r") as f:
-            self._lines = [line.strip() for line in f.readlines()]
+        attrs = ["_simulation_cell", "_probabilities", "_vectors"]
+        super().__init__(attrs, filepath)
 
     @property
-    def lattice(self) -> Lattice:
-        if self._lattice is None:
-            coordinate_matrix = self._lines[:3]
-            coordinate_matrix = [
-                np.fromstring(row, sep=" ") for row in coordinate_matrix
-            ]
+    def simulation_cell(self) -> SimulationCell:
+        if self._simulation_cell is None:
+            cm = self._lines[:3]
+            cm = [np.fromstring(row, sep=" ") for row in cm]
             positions = [" ".join(l.split()[:3]) for l in self._lines[6:]]
-            positions = [np.fromstring(p, sep=" ") for p in positions]
-            lattice = Lattice(coordinate_matrix=np.array(coordinate_matrix))
-            for p in positions:
-                lattice.add_atom(Atom(position=np.array(p)))
-            self._lattice = lattice
-        return self._lattice
+            positions_arr = [np.fromstring(p, sep=" ") for p in positions]
+            atoms = []
+            for p in positions_arr:
+                atoms.append(Atom(position=p))
+            collection = AtomCollection(atoms)
+            simulation_cell = SimulationCell(collection, np.array(cm))
+            self._simulation_cell = simulation_cell
+        return self._simulation_cell
 
-    @lattice.setter
-    def lattice(self, value: Lattice) -> None:
-        self._lattice = value
+    @simulation_cell.setter
+    def simulation_cell(self, value: SimulationCell) -> None:
+        self._simulation_cell = value
 
     @property
     def probabilities(self) -> List[Dict[str, float]]:
@@ -259,13 +218,14 @@ class RndstrFile(object):
         if path is None:
             path = self.filepath
         with open(path, "w") as f:
-            for row in self.lattice.coordinate_matrix:
+            for row in self.simulation_cell.coordinate_matrix:
                 row = " ".join(row.astype(str))
                 f.write("{}\n".format(row))
             for row in self.vectors:
                 row = " ".join(row.astype(str))
                 f.write("{}\n".format(row))
-            zipper = zip(self.lattice.positions, self.probabilities)
+            zipper = zip(self.simulation_cell.collection.positions,
+                         self.probabilities)
             for position, probability in zipper:
                 position_str = " ".join(position.astype(str))
                 prob_str = ",".join(

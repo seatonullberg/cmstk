@@ -2,6 +2,6 @@
 
 cmstk_dir="$(pwd)"
 
-yapf -r -i --style="google" -p "$cmstk_dir/cmstk/" 
+yapf --in-place --recursive --parallel --style="google" "$cmstk_dir/cmstk/"
 
 exit 0

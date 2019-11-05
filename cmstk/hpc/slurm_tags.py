@@ -1,4 +1,4 @@
-from cmstk.utils import BaseTag
+from cmstk.util import BaseTag
 import datetime
 import math
 from typing import Any, Optional, Sequence, Tuple

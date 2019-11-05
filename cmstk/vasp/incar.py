@@ -1,4 +1,4 @@
-from cmstk.utils import BaseTag, TagCollection
+from cmstk.util import BaseTag, TagCollection
 from cmstk.vasp.incar_tags import IncarTag
 import json
 import os

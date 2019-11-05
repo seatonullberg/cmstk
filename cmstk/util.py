@@ -1,14 +1,7 @@
 import importlib
 import inspect
-import json
 import os
-from typing import Any, Dict, List, Optional, Sequence, Union
-
-#====================#
-#    Type Aliases    #
-#====================#
-
-Number = Union[float, int]
+from typing import Any, Dict, List, Optional, Sequence
 
 #========================#
 #    Helper Functions    #
@@ -31,22 +24,10 @@ def data_directory() -> str:
     return os.path.join(path, "data")
 
 
-def within_one_percent(a: Number, b: Number) -> bool:
+def within_one_percent(a: float, b: float) -> bool:
     """Returns True if a is within 1% of b."""
     diff = abs(a - b)
     return abs(diff / b) < 0.01
-
-
-def surface_directions_100():
-    return [[1, 0, 0], [0, 1, 0], [0, 0, 1]]
-
-
-def surface_directions_110():
-    return [[-1, 1, 0], [0, 0, 1], [1, 1, 0]]
-
-
-def surface_directions_111():
-    return [[1, -1, 0], [1, 1, -2], [1, 1, 1]]
 
 
 #==============================#
@@ -222,3 +203,41 @@ class TagCollection(object):
 
     def __len__(self):
         return self._tags.__len__()
+
+
+#============================#
+#   Base File Wrapper Type   #
+#============================#
+
+
+class BaseFile(object):
+    """Generalized representation of a file wrapper.
+    
+    Args:
+        attrs: The accessible attributes.
+        filepath: The name of the file.
+    """
+
+    def __init__(self, attrs: List[str], filepath: str) -> None:
+        self._attrs = attrs
+        self.filepath = filepath
+        self._lines: List[str] = []
+
+    def read(self, path: Optional[str] = None) -> None:
+        """Reads all lines of a file into memory.
+        
+        Args:
+            path: The path to the file to read from.
+            - overrides self.filepath
+        """
+        self.clear()
+        if path is None:
+            path = self.filepath
+        with open(path, "r") as f:
+            self._lines = [line.strip() for line in f.readlines()]
+
+    def clear(self) -> None:
+        """Clears lines and attributes from memory"""
+        self._lines = []
+        for attr in self._attrs:
+            setattr(self, attr, None)

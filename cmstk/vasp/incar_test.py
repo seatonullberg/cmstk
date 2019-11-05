@@ -1,4 +1,4 @@
-from cmstk.utils import data_directory, TagCollection, BaseTag
+from cmstk.util import data_directory, TagCollection, BaseTag
 from cmstk.vasp.incar import IncarFile
 from cmstk.vasp.incar_tags import SystemTag, IncarTag
 import copy

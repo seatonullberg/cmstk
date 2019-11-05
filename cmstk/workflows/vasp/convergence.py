@@ -1,12 +1,8 @@
-from cmstk.vasp.incar import IncarFile
 from cmstk.vasp.incar_tags import EncutTag
-from cmstk.vasp.kpoints import KpointsFile
-from cmstk.vasp.poscar import PoscarFile
-from cmstk.vasp.potcar import PotcarFile
 from cmstk.workflows.vasp.base import VaspCalculation
 import copy
 import os
-from typing import Any, List, Optional, Tuple
+from typing import List, Tuple
 
 
 def converge_encut(calculation: VaspCalculation, encut_values: List[int],

@@ -1,4 +1,4 @@
-from cmstk.utils import data_directory, BaseTag, TagCollection
+from cmstk.util import data_directory, BaseTag, TagCollection
 from cmstk.hpc.slurm import SlurmScript
 from cmstk.hpc.slurm_tags import JobNameTag, SlurmTag
 import copy
