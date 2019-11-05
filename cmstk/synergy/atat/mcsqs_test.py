@@ -11,16 +11,15 @@ def test_bestsqs_to_poscar():
                         "Fe75Cr25_BCC_bulk.bestsqs.out")
     bestsqs = BestsqsFile(filepath=path)
     bestsqs.read()
-    scale = 1.0
     sym_order = ["Fe", "Cr"]
-    poscar = bestsqs_to_poscar(bestsqs, scale, sym_order)
-    poscar_positions = np.array([p for p in poscar.lattice.positions])
-    bestsqs_positions = np.array([p for p in bestsqs.lattice.positions])
+    poscar = bestsqs_to_poscar(bestsqs, sym_order)
+    poscar_positions = np.array([p for p in poscar.simulation_cell.collection.positions])
+    bestsqs_positions = np.array([p for p in bestsqs.simulation_cell.collection.positions])
     assert np.array_equal(poscar_positions, bestsqs_positions)
-    assert np.array_equal(poscar.lattice.coordinate_matrix,
-                          bestsqs.lattice.coordinate_matrix)
-    assert poscar.n_atoms_per_symbol["Fe"] == 12
-    assert poscar.n_atoms_per_symbol["Cr"] == 4
+    assert np.array_equal(poscar.simulation_cell.coordinate_matrix,
+                          bestsqs.simulation_cell.coordinate_matrix)
+    assert poscar.n_atoms_per_symbol[0] == 12
+    assert poscar.n_atoms_per_symbol[1] == 4
     poscar.write("test.poscar")
     assert os.path.exists("test.poscar")
     os.remove("test.poscar")

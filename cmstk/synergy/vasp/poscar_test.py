@@ -13,16 +13,16 @@ def test_poscar_to_rndstr():
     probabilities = [{
         "Fe": 0.75,
         "Cr": 0.25
-    } for _ in range(poscar.lattice.n_atoms)]
+    } for _ in range(poscar.simulation_cell.collection.n_atoms)]
     vectors = np.array([[1.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 1.0]])
     rndstr = poscar_to_rndstr(poscar=poscar,
                               probabilities=probabilities,
                               vectors=vectors)
-    poscar_positions = np.array([p for p in poscar.lattice.positions])
-    rndstr_positions = np.array([p for p in rndstr.lattice.positions])
+    poscar_positions = np.array([p for p in poscar.simulation_cell.collection.positions])
+    rndstr_positions = np.array([p for p in rndstr.simulation_cell.collection.positions])
     assert np.array_equal(poscar_positions, rndstr_positions)
-    assert np.array_equal(poscar.lattice.coordinate_matrix,
-                          rndstr.lattice.coordinate_matrix)
+    assert np.array_equal(poscar.simulation_cell.coordinate_matrix,
+                          rndstr.simulation_cell.coordinate_matrix)
     rndstr.write("test.rndstr")
     assert os.path.exists("test.rndstr")
     os.remove("test.rndstr")
