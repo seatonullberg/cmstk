@@ -2,6 +2,35 @@ import numpy as np
 from typing import List, Optional
 
 
+def metric_tensor(a: float, 
+                  b: float, 
+                  c: float, 
+                  alpha: float, 
+                  beta: float, 
+                  gamma: float, 
+                  degrees: bool = True) -> np.ndarray:
+    """Calculates the metric tensor of an arbitrary lattice.
+    
+    Args:
+        a: The a distance lattice parameter.
+        b: The b distance lattice parameter.
+        c: The c distance lattice parameter.
+        alpha: The alpha angle lattice parameter.
+        beta: The beta angle lattice parameter.
+        gamma: The gamma angle lattice parameter.
+        degrees: Flag indicating that the angles are provided in degrees.
+    """
+    if degrees:
+        alpha = np.deg2rad(alpha)
+        beta = np.deg2rad(beta)
+        gamma = np.deg2rad(gamma)
+    return np.array([
+        [a**2, a*b*np.cos(gamma), a*c*np.cos(beta)],
+        [b*a*np.cos(gamma), b**2, b*c*np.cos(alpha)],
+        [c*a*np.cos(beta), c*b*np.cos(alpha), c**2]
+    ])
+
+
 def coordinate_matrix(a: float,
                       b: float,
                       c: float,
@@ -89,9 +118,8 @@ def volume(a: float,
         alpha = np.deg2rad(alpha)
         beta = np.deg2rad(beta)
         gamma = np.deg2rad(gamma)
-    return a * b * c * np.sqrt(
-        1 - np.cos(alpha)**2 - np.cos(beta)**2 - np.cos(gamma)**2 +\
-        2 * np.cos(alpha) * np.cos(beta) * np.cos(gamma))
+    mt = metric_tensor(a, b, c, alpha, beta, gamma, False)
+    return np.sqrt(np.linalg.det(mt))
 
 
 def position_index(existing_positions: List[np.ndarray],

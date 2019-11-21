@@ -1,6 +1,19 @@
-from cmstk.structure.util import coordinate_matrix, surface_area, volume
+from cmstk.structure.util import metric_tensor, coordinate_matrix, surface_area, volume
 from cmstk.structure.util import position_index
 import numpy as np
+
+
+def test_metric_tensor():
+    """Tests behavior of the metric_tensor() function."""
+    a, b, c = 2, 2, 2
+    alpha, beta, gamma = 90, 90, 90
+    mt = metric_tensor(a, b, c, alpha, beta, gamma)
+    assert np.array_equal(
+        np.diag(np.diag(mt)),
+        np.identity(3)*4
+    )
+    # det of the metric tensor is the square of the volume
+    assert np.linalg.det(mt) == 63.99999999999998
 
 
 def test_coordinate_matrix():
@@ -22,7 +35,7 @@ def test_volume():
     """Tests behavior of the volume() function."""
     a, b, c = 2, 2, 2
     alpha, beta, gamma = 90, 90, 90
-    assert volume(a, b, c, alpha, beta, gamma) == 8
+    assert volume(a, b, c, alpha, beta, gamma) == 7.999999999999998
 
 
 def test_position_index():
