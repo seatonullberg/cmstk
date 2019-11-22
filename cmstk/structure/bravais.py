@@ -1,7 +1,7 @@
 from cmstk.structure.atom import Atom, AtomCollection
-from cmstk.structure.util import coordinate_matrix, surface_area, volume
+from cmstk.structure.util import inverse_transform_matrix, transform_matrix, surface_area, volume
 import numpy as np
-from typing import List, Tuple
+from typing import List, Optional, Tuple
 
 _center_err = "Invalid center for {} lattice."
 _parameter_err = "Invalid lattice parameters for {} lattice."
@@ -10,44 +10,47 @@ _basis_err = "Invalid basis for {} center."
 
 class LatticeBasis(object):
     """Representation of a lattice basis set.
-    
+
     Args:
-        symbols: IUPAC symbols to insert at each basis position.
-        center: The type of lattice center.
+        symbols (List[str]): IUPAC symbols to insert at each basis position.
+        center (str): The type of lattice center.
 
     Attributes:
-        basis: The mapping of symbols to their basis sites.
-        center: The type of lattice center.
+        basis (List[Tuple[str, np.ndarray]]): The mapping of symbols to their
+            basis sites.
+        center (str): The type of lattice center.
 
     Raises:
-        ValueError
-        - Unrecognized center.
-        - Invalid basis.
+        ValueError: If `center` is unrecognized.
+        ValueError: If number of symbols does not match basis definition.
     """
 
     def __init__(self, symbols: List[str], center: str) -> None:
-        basis0 = np.array([0.0, 0.0, 0.0])
-        basis1 = np.array([0.0, 0.5, 0.5])
-        basis2 = np.array([0.5, 0.0, 0.5])
-        basis3 = np.array([0.5, 0.5, 0.0])
-        basis4 = np.array([0.5, 0.5, 0.5])
+        pt0 = np.array([0.0, 0.0, 0.0]) # corner
+        pt1 = np.array([0.0, 0.5, 0.5]) # left/right face
+        pt2 = np.array([0.5, 0.0, 0.5]) # back/front face
+        pt3 = np.array([0.5, 0.5, 0.0]) # bottom/top face
+        pt4 = np.array([0.5, 0.5, 0.5]) # center
+        # verify that the correct number of symbols exist for the given center
         if center == "P":
             if len(symbols) != 1:
                 raise ValueError(_basis_err.format(center))
-            basis = [(symbols[0], basis0)]
+            basis = [(symbols[0], pt0)]
         elif center == "C":
             if len(symbols) != 2:
                 raise ValueError(_basis_err.format(center))
-            basis = [(symbols[0], basis0), (symbols[1], basis3)]
+            basis = [(symbols[0], pt0), (symbols[1], pt3)]
         elif center == "I":
             if len(symbols) != 2:
                 raise ValueError(_basis_err.format(center))
-            basis = [(symbols[0], basis0), (symbols[1], basis4)]
+            basis = [(symbols[0], pt0), (symbols[1], pt4)]
         elif center == "F":
             if len(symbols) != 4:
                 raise ValueError(_basis_err.format(center))
-            basis = [(symbols[0], basis0), (symbols[1], basis1),
-                     (symbols[2], basis2), (symbols[3], basis3)]
+            basis = [(symbols[0], pt0),
+                     (symbols[1], pt1),
+                     (symbols[2], pt2),
+                     (symbols[3], pt3)]
         else:
             raise ValueError("Unrecognized center: `{}`.".format(center))
         self._basis = basis
@@ -72,8 +75,11 @@ class BaseBravais(AtomCollection):
         alpha: The alpha angle lattice parameter in degrees.
         beta: The beta angle lattice parameter in degrees.
         gamma: The gamma angle lattice parameter in degrees.
-        basis: The crystallographic basis mapping symbols to their fractional 
-        positions.
+        x: The orientation of the 'a' lattice vector.
+        y: The orientation of the 'b' lattice vector.
+        z: The orientation of the 'c' lattice vector.
+        basis: The crystallographic basis mapping symbols to their fractional
+            positions.
 
     Attributes:
         a: The a distance lattice parameter.
@@ -82,15 +88,22 @@ class BaseBravais(AtomCollection):
         alpha: The alpha angle lattice parameter.
         beta: The beta angle lattice parameter.
         gamma: The gamma angle lattice parameter.
-        basis: The crystallographic basis mapping symbols to their fractional 
-        positions.
+        x: The orientation of the 'a' lattice vector.
+        y: The orientation of the 'b' lattice vector.
+        z: The orientation of the 'c' lattice vector.
+        basis: The crystallographic basis mapping symbols to their fractional
+            positions.
         coordinate_matrix: 3x3 matrix describing the lattice coordinate system.
         surface_area: The a x b surface area of the lattice
         volume: Volume of the lattice.
     """
 
-    def __init__(self, a: float, b: float, c: float, alpha: float, beta: float,
-                 gamma: float, basis: LatticeBasis) -> None:
+    def __init__(self, a: float, b: float, c: float,
+                 alpha: float, beta: float, gamma: float,
+                 basis: LatticeBasis,
+                 orientation: Optional[np.ndarray] = None,
+                 repeat_units: Optional[Tuple[int, int, int]] = None) -> None:
+        # process lattice parameters
         self._a = a
         self._b = b
         self._c = c
@@ -98,12 +111,20 @@ class BaseBravais(AtomCollection):
         self._beta = beta
         self._gamma = gamma
         self._basis = basis
-        atoms: List[Atom] = []
-        mag = np.linalg.norm(self.coordinate_matrix, axis=0)
-        for s, p in self._basis.basis:
-            p *= mag
-            atoms.append(Atom(symbol=s, position=p))
-        super().__init__(atoms)
+        # process orientation vectors
+        if orientation is None:
+            orientation = np.identity(3)
+        self._orientation = orientation
+        # process repeat size
+        if repeat_units is None:
+            repeat_units = (1, 1, 1)
+        self._repeat_units = repeat_units
+        # TODO: use a `natural_basis` as a default lattice basis depends
+        # on crystal type
+        # process lattice vectors
+        self._lattice_vectors = self._reset_lattice_vectors()
+        # construct atoms
+        super().__init__(self._place_atoms())
 
     @property
     def a(self) -> float:
@@ -130,13 +151,38 @@ class BaseBravais(AtomCollection):
         return self._gamma
 
     @property
+    def orientation(self) -> np.ndarray:
+        return self._orientation
+
+    @property
+    def x_vector(self) -> np.ndarray:
+        return self._x_vector
+
+    @property
+    def y_vector(self) -> np.ndarray:
+        return self._y_vector
+
+    @property
+    def z_vector(self) -> np.ndarray:
+        return self._z_vector
+
+    @property
+    def repeat_units(self) -> Tuple[int, int, int]:
+        return self._repeat_units
+
+    @property
     def basis(self) -> LatticeBasis:
         return self._basis
 
     @property
-    def coordinate_matrix(self) -> np.ndarray:
-        return coordinate_matrix(self.a, self.b, self.c, self.alpha, self.beta,
-                                 self.gamma, True)
+    def transform_matrix(self) -> np.ndarray:
+        return transform_matrix(self.a, self.b, self.c, self.alpha,
+                                self.beta, self.gamma, True)
+
+    @property
+    def inverse_transform_matrix(self) -> np.ndarray:
+        return inverse_transform_matrix(self.a, self.b, self.c, self.alpha,
+                                        self.beta, self.gamma, True)
 
     @property
     def surface_area(self) -> float:
@@ -147,6 +193,50 @@ class BaseBravais(AtomCollection):
     def volume(self) -> float:
         return volume(self.a, self.b, self.c, self.alpha, self.beta, self.gamma,
                       True)
+
+    def reorient(self, orientation: np.ndarray) -> None:
+        self._orientation = x_orientation
+        self._reset_lattice_vectors()
+        self.atoms = self._place_atoms()
+
+    def repeat(self, repeat_units: Tuple[int, int, int]) -> None:
+        self._repeat_units = repeat_units
+        self._reset_lattice_vectors()
+        self.atoms = self._place_atoms()
+
+    # TODO
+    def _reset_lattice_vectors(self) -> None:
+        mag = np.linalg.norm(self.orientation)
+        #ident = np.identity(3)
+        #self._x_vector = mag_x * ident[0] * self.a * self.repeat_units[0]
+        #self._y_vector = mag_y * ident[1] * self.b * self.repeat_units[1]
+        #self._z_vector = mag_z * ident[2] * self.c * self.repeat_units[2]
+
+    # TODO
+    def _place_atoms(self) -> List[Atom]:
+        fc_transform = self.inverse_transform_matrix
+        cf_transform = self.transform_matrix
+        x_steps = np.linalg.norm(self.x_vector) // self.a
+        y_steps = np.linalg.norm(self.y_vector) // self.b
+        z_steps = np.linalg.norm(self.z_vector) // self.c
+        for i in range(x_steps):
+            for j in range(y_steps):
+                for k in range(z_steps):
+                    for sym, frac_pos in self.basis.basis:
+
+
+
+        atoms: List[Atom] = []
+        for i in range(self.repeat_units[0]):
+            for j in range(self.repeat_units[1]):
+                for k in range(self.repeat_units[2]):
+                    for sym, frac_pos in self.basis.basis:
+                        cart_pos = fc_transform * frac_pos
+                        offset = cart_pos * np.array([i, j, k])
+                        cart_pos += offset
+                        frac_pos = cf_transform * cart_pos
+                        atoms.append(Atom(symbol=sym, position=frac_pos))
+        return atoms
 
 
 class TriclinicBravais(BaseBravais):
