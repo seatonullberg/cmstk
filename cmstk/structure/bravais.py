@@ -1,5 +1,5 @@
 from cmstk.structure.atom import Atom, AtomCollection
-from cmstk.structure.util import inverse_transform_matrix, transform_matrix, surface_area, volume
+from cmstk.structure.util import inverse_transform_matrix, transform_matrix, volume, metric_tensor
 import numpy as np
 from typing import List, Optional, Tuple
 
@@ -101,6 +101,7 @@ class BaseBravais(AtomCollection):
     def __init__(self, a: float, b: float, c: float,
                  alpha: float, beta: float, gamma: float,
                  basis: LatticeBasis,
+                 default_orientation: np.ndarray,
                  orientation: Optional[np.ndarray] = None,
                  repeat_units: Optional[Tuple[int, int, int]] = None) -> None:
         # process lattice parameters
@@ -112,6 +113,7 @@ class BaseBravais(AtomCollection):
         self._gamma = gamma
         self._basis = basis
         # process orientation vectors
+        self._default_orientation = default_orientation
         if orientation is None:
             orientation = np.identity(3)
         self._orientation = orientation
@@ -119,10 +121,9 @@ class BaseBravais(AtomCollection):
         if repeat_units is None:
             repeat_units = (1, 1, 1)
         self._repeat_units = repeat_units
-        # TODO: use a `natural_basis` as a default lattice basis depends
-        # on crystal type
         # process lattice vectors
-        self._lattice_vectors = self._reset_lattice_vectors()
+        self._lattice_vectors = np.array([])
+        self._reset_lattice_vectors()
         # construct atoms
         super().__init__(self._place_atoms())
 
@@ -155,16 +156,12 @@ class BaseBravais(AtomCollection):
         return self._orientation
 
     @property
-    def x_vector(self) -> np.ndarray:
-        return self._x_vector
+    def default_orientation(self) -> np.ndarray:
+        return self._default_orientation
 
     @property
-    def y_vector(self) -> np.ndarray:
-        return self._y_vector
-
-    @property
-    def z_vector(self) -> np.ndarray:
-        return self._z_vector
+    def lattice_vectors(self) -> np.ndarray:
+        return self._lattice_vectors
 
     @property
     def repeat_units(self) -> Tuple[int, int, int]:
@@ -185,9 +182,14 @@ class BaseBravais(AtomCollection):
                                         self.beta, self.gamma, True)
 
     @property
-    def surface_area(self) -> float:
-        return surface_area(self.a, self.b, self.c, self.alpha, self.beta,
-                            self.gamma, True)
+    def metric_tensor(self) -> np.ndarray:
+        return metric_tensor(self.a, self.b, self.c, self.alpha, self.beta, 
+                             self.gamma, True)
+
+    # @property
+    # def surface_area(self) -> float:
+    #     return surface_area(self.a, self.b, self.c, self.alpha, self.beta,
+    #                         self.gamma, True)
 
     @property
     def volume(self) -> float:
@@ -195,7 +197,7 @@ class BaseBravais(AtomCollection):
                       True)
 
     def reorient(self, orientation: np.ndarray) -> None:
-        self._orientation = x_orientation
+        self._orientation = orientation
         self._reset_lattice_vectors()
         self.atoms = self._place_atoms()
 
@@ -204,38 +206,26 @@ class BaseBravais(AtomCollection):
         self._reset_lattice_vectors()
         self.atoms = self._place_atoms()
 
-    # TODO
     def _reset_lattice_vectors(self) -> None:
-        mag = np.linalg.norm(self.orientation)
-        #ident = np.identity(3)
-        #self._x_vector = mag_x * ident[0] * self.a * self.repeat_units[0]
-        #self._y_vector = mag_y * ident[1] * self.b * self.repeat_units[1]
-        #self._z_vector = mag_z * ident[2] * self.c * self.repeat_units[2]
+        orientation_mag = np.linalg.norm(self.orientation, axis=1)
+        lattice_parameters = np.array([self.a, self.b, self.c])
+        repeat_units = np.array(self.repeat_units)
+        self._lattice_vectors = orientation_mag * self.default_orientation
+        self._lattice_vectors *= lattice_parameters * repeat_units
 
-    # TODO
     def _place_atoms(self) -> List[Atom]:
-        fc_transform = self.inverse_transform_matrix
-        cf_transform = self.transform_matrix
-        x_steps = np.linalg.norm(self.x_vector) // self.a
-        y_steps = np.linalg.norm(self.y_vector) // self.b
-        z_steps = np.linalg.norm(self.z_vector) // self.c
-        for i in range(x_steps):
-            for j in range(y_steps):
-                for k in range(z_steps):
-                    for sym, frac_pos in self.basis.basis:
-
-
-
+        lattice_parameters = np.array([self.a, self.b, self.c])
+        # metric tensor for lattice vector magnitudes???
+        unit_cells_per_vector = (self.lattice_vectors // lattice_parameters).astype(int, copy=False)
         atoms: List[Atom] = []
-        for i in range(self.repeat_units[0]):
-            for j in range(self.repeat_units[1]):
-                for k in range(self.repeat_units[2]):
-                    for sym, frac_pos in self.basis.basis:
-                        cart_pos = fc_transform * frac_pos
-                        offset = cart_pos * np.array([i, j, k])
-                        cart_pos += offset
-                        frac_pos = cf_transform * cart_pos
-                        atoms.append(Atom(symbol=sym, position=frac_pos))
+        for i in range(unit_cells_per_vector[0]):
+            for j in range(unit_cells_per_vector[1]):
+                for k in range(unit_cells_per_vector[2]):
+                    for sym, basis_pt in self.basis.basis:
+                        step = np.array([i, j, k])
+                        offset = step * lattice_parameters
+                        pos = (basis_pt * lattice_parameters) + offset
+                        atoms.append(Atom(position=pos, symbol=sym))
         return atoms
 
 
@@ -264,7 +254,8 @@ class TriclinicBravais(BaseBravais):
         # set basis set
         center = "P"
         basis = LatticeBasis(symbols, center)
-        super().__init__(a, b, c, alpha, beta, gamma, basis)
+        default_orientation = np.identity(3) # TODO: this is wrong
+        super().__init__(a, b, c, alpha, beta, gamma, basis, default_orientation)
 
 
 class MonoclinicBravais(BaseBravais):
@@ -295,7 +286,8 @@ class MonoclinicBravais(BaseBravais):
             raise ValueError(_center_err.format("monoclinic"))
         basis = LatticeBasis(symbols, center)
         alpha, gamma = 90, 90
-        super().__init__(a, b, c, alpha, beta, gamma, basis)
+        default_orientation = np.identity(3) # TODO: this is wrong
+        super().__init__(a, b, c, alpha, beta, gamma, basis, default_orientation)
 
 
 class OrthorhombicBravais(BaseBravais):
@@ -325,7 +317,8 @@ class OrthorhombicBravais(BaseBravais):
             raise ValueError(_center_err.format("orthorhombic"))
         basis = LatticeBasis(symbols, center)
         alpha, beta, gamma = 90, 90, 90
-        super().__init__(a, b, c, alpha, beta, gamma, basis)
+        default_orientation = np.identity(3)
+        super().__init__(a, b, c, alpha, beta, gamma, basis, default_orientation)
 
 
 class TetragonalBravais(BaseBravais):
@@ -355,7 +348,8 @@ class TetragonalBravais(BaseBravais):
         basis = LatticeBasis(symbols, center)
         b = a
         alpha, beta, gamma = 90, 90, 90
-        super().__init__(a, b, c, alpha, beta, gamma, basis)
+        default_orientation = np.identity(3)
+        super().__init__(a, b, c, alpha, beta, gamma, basis, default_orientation)
 
 
 class RhombohedralBravais(BaseBravais):
@@ -382,7 +376,8 @@ class RhombohedralBravais(BaseBravais):
         basis = LatticeBasis(symbols, center)
         b, c = a, a
         beta, gamma = alpha, alpha
-        super().__init__(a, b, c, alpha, beta, gamma, basis)
+        default_orientation = np.identity(3) # TODO: this is wrong
+        super().__init__(a, b, c, alpha, beta, gamma, basis, default_orientation)
 
 
 class HexagonalBravais(BaseBravais):
@@ -406,7 +401,8 @@ class HexagonalBravais(BaseBravais):
         basis = LatticeBasis(symbols, center)
         b = a
         alpha, beta, gamma = 90, 90, 120
-        super().__init__(a, b, c, alpha, beta, gamma, basis)
+        default_orientation = np.identity(3) # TODO: this is wrong
+        super().__init__(a, b, c, alpha, beta, gamma, basis, default_orientation)
 
 
 class CubicBravais(BaseBravais):
@@ -430,4 +426,5 @@ class CubicBravais(BaseBravais):
         b, c = a, a
         alpha, beta, gamma = 90, 90, 90
         basis = LatticeBasis(symbols, center)
-        super().__init__(a, b, c, alpha, beta, gamma, basis)
+        default_orientation = np.identity(3)
+        super().__init__(a, b, c, alpha, beta, gamma, basis, default_orientation)

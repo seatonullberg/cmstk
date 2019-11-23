@@ -1,35 +1,129 @@
-from cmstk.structure.util import metric_tensor, coordinate_matrix, surface_area, volume
-from cmstk.structure.util import position_index
+from cmstk.structure.util import metric_tensor, inverse_transform_matrix, volume
+from cmstk.structure.util import transform_matrix, position_index
 import numpy as np
 
 
-def test_metric_tensor():
-    """Tests behavior of the metric_tensor() function."""
-    a, b, c = 2, 2, 2
+def test_metric_tensor_triclinic():
+    vectors = np.array([[1, 0, 0], [0, 1, 0], [0, 0, 1]])
+    # parameters of Microcline
+    # https://www.mindat.org/min-2704.html
+    a, b, c = 8.5784, 12.96, 7.2112
+    alpha, beta, gamma = 90.3, 116.05, 89
+    mt = metric_tensor(a, b, c, alpha, beta, gamma)
+    for i, v in enumerate(vectors):
+        res = np.matmul(v, mt)
+        res = np.matmul(res, v)
+        if i == 0:
+            assert res == 73.58894656000001
+        elif i == 1:
+            assert res == 167.96160000000003
+        elif i == 2:
+            assert res == 52.00140544
+    assert np.sqrt(np.linalg.det(mt)) == 720.155418738299
+
+
+def test_metric_tensor_monoclinic():
+    vectors = np.array([[1, 0, 0], [0, 1, 0], [0, 0, 1]])
+    # parameters of Orthoclase
+    # https://www.mindat.org/min-3026.html
+    a, b, c = 8.5632, 12.963, 7.299
+    alpha, beta, gamma = 90, 116.073, 90
+    mt = metric_tensor(a, b, c, alpha, beta, gamma)
+    for i, v in enumerate(vectors):
+        res = np.matmul(v, mt)
+        res = np.matmul(res, v)
+        if i == 0:
+            assert res == 73.32839424000001
+        elif i == 1:
+            assert res == 168.03936899999997
+        elif i == 2:
+            assert res == 53.275401
+    assert np.sqrt(np.linalg.det(mt)) == 727.7711663710654
+
+
+def test_metric_tensor_orthorhombic():
+    vectors = np.array([[1, 0, 0], [0, 1, 0], [0, 0, 1]])
+    # parameters of Aragonite
+    # https://www.mindat.org/min-307.html
+    a, b, c = 4.9611, 7.9672, 5.7407
     alpha, beta, gamma = 90, 90, 90
     mt = metric_tensor(a, b, c, alpha, beta, gamma)
-    assert np.array_equal(
-        np.diag(np.diag(mt)),
-        np.identity(3)*4
-    )
-    # det of the metric tensor is the square of the volume
-    assert np.linalg.det(mt) == 63.99999999999998
+    for i, v in enumerate(vectors):
+        res = np.matmul(v, mt)
+        res = np.matmul(res, v)
+        if i == 0:
+            assert res == 24.61251321
+        elif i == 1:
+            assert res == 63.47627584
+        elif i == 2:
+            assert res == 32.95563649
+    assert np.sqrt(np.linalg.det(mt)) == 226.90734403394399
 
 
-def test_coordinate_matrix():
-    """Tests behavior of the coordinate_matrix() function."""
-    a, b, c = 1, 1, 1
+def test_metric_tensor_tetragonal():
+    vectors = np.array([[1, 0, 0], [0, 1, 0], [0, 0, 1]])
+    # parameters of Wulfenite
+    # https://www.mindat.org/min-4322.html
+    a, b, c = 5.433, 5.433, 12.11
     alpha, beta, gamma = 90, 90, 90
-    cm = coordinate_matrix(a, b, c, alpha, beta, gamma)
-    assert np.array_equal(cm, np.identity(3))
+    mt = metric_tensor(a, b, c, alpha, beta, gamma)
+    for i, v in enumerate(vectors):
+        res = np.matmul(v, mt)
+        res = np.matmul(res, v)
+        if i == 0 or i == 1:
+            assert res == 29.517488999999998
+        if i == 2:
+            assert res == 146.6521
+    assert np.sqrt(np.linalg.det(mt)) == 357.4567917899999
 
 
-def test_surface_area():
-    """Tests behavior of the surface_area() function."""
-    a, b, c = 2, 2, 2
+def test_metric_tensor_rhombohedral():
+    vectors = np.array([[1, 0, 0], [0, 1, 0], [0, 0, 1]])
+    # parameters of Dolomite
+    # https://www.mindat.org/min-1304.html
+    a, b, c = 4.8012, 4.8012, 16.002
+    alpha, beta, gamma = 71, 71, 71
+    mt = metric_tensor(a, b, c, alpha, beta, gamma)
+    for i, v in enumerate(vectors):
+        res = np.matmul(v, mt)
+        res = np.matmul(res, v)
+        if i == 0 or i == 1:
+            assert res == 23.05152144
+        elif i == 2:
+            assert res == 256.06400399999995
+    assert np.sqrt(np.linalg.det(mt)) == 319.6711133169219
+
+
+def test_metric_tensor_hexagonal():
+    vectors = np.array([[1, 0, 0], [0, 1, 0], [0, 0, 1]])
+    # parameters of Titanium HCP
+    # https://periodictable.com/Elements/022/data.html
+    a, b, c = 2.9508, 2.9508, 4.6855
+    alpha, beta, gamma = 90, 90, 120
+    mt = metric_tensor(a, b, c, alpha, beta, gamma)
+    for i, v in enumerate(vectors):
+        res = np.matmul(v, mt)
+        res = np.matmul(res, v)
+        if i == 0 or i == 1:
+            assert res == 8.707220640000001
+        elif i == 2:
+            assert res == 21.953910250000003
+    assert np.sqrt(np.linalg.det(mt)) == 35.33182929487848
+
+
+def test_metric_tensor_cubic():
+    vectors = np.array([[1, 0, 0], [0, 1, 0], [0, 0, 1]])
+    # parameters of Iron BCC
+    # https://periodictable.com/Elements/026/data.html
+    a, b, c = 2.8665, 2.8665, 2.8665
     alpha, beta, gamma = 90, 90, 90
-    assert surface_area(a, b, c, alpha, beta, gamma) == 4
-
+    mt = metric_tensor(a, b, c, alpha, beta, gamma)
+    for v in vectors:
+        res = np.matmul(v, mt)
+        res = np.matmul(res, v)
+        assert res == 8.21682225
+    assert np.sqrt(np.linalg.det(mt)) == 23.553520979625002
+    
 
 def test_volume():
     """Tests behavior of the volume() function."""

@@ -72,10 +72,11 @@ def inverse_transform_matrix(a: float,
     term_12 /= np.sin(gamma)
     term_22 = v / a * b * np.sin(gamma)
     return np.array([
-        [term_00, term_01, term_12],
+        [term_00, term_01, term_02],
         [0,       term_11, term_12],
         [0,       0,       term_22]
     ])
+
 
 def transform_matrix(a: float,
                      b: float,
@@ -127,36 +128,6 @@ def transform_matrix(a: float,
         [0,       0,       term_22]
     ])
     # yapf: enable
-
-# TODO: use metric tensor transform
-def surface_area(a: float,
-                 b: float,
-                 c: float,
-                 alpha: float,
-                 beta: float,
-                 gamma: float,
-                 degrees: bool = True) -> float:
-    """Calculates the (a x b) surface area of an arbitrary lattice.
-
-    Args:
-        a: The a distance lattice parameter.
-        b: The b distance lattice parameter.
-        c: The c distance lattice parameter.
-        alpha: The alpha angle lattice parameter.
-        beta: The beta angle lattice parameter.
-        gamma: The gamma angle lattice parameter.
-        degrees: Flag indicating that the angles are provided in degrees.
-    """
-    if degrees:
-        alpha = np.deg2rad(alpha)
-        beta = np.deg2rad(beta)
-        gamma = np.deg2rad(gamma)
-    cm = coordinate_matrix(a, b, c, alpha, beta, gamma, False)
-    x, y = cm[0], cm[1]
-    magx, magy = np.linalg.norm(x), np.linalg.norm(y)
-    ux, uy = (x / magx), (y / magy)
-    theta = np.arccos(np.clip(np.dot(ux, uy), -1.0, 1.0))
-    return magx * magy * np.sin(theta)
 
 
 def volume(a: float,

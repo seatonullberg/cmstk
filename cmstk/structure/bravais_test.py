@@ -9,7 +9,7 @@ import numpy as np
 def test_base_bravais():
     """Tests initialization of a BaseBravais object."""
     basis = LatticeBasis(["Fe", "Fe"], "I")
-    bravais = BaseBravais(2.8, 2.8, 2.8, 90, 90, 90, basis)
+    bravais = BaseBravais(2.8, 2.8, 2.8, 90, 90, 90, basis, np.identity(3))
     assert bravais.n_atoms == 2
     assert bravais.n_symbols == 1
     assert np.array_equal(bravais.positions[0], np.array([0, 0, 0]))
@@ -18,7 +18,7 @@ def test_base_bravais():
         np.array([1.4, 1.4, 1.3999999999999995])
     )
     cm = np.array([[2.8, 0, 0], [0, 2.8, 0], [0, 0, 2.799999999999999]])
-    assert np.array_equal(bravais.coordinate_matrix, cm)
+    assert np.array_equal(bravais.default_orientation, np.identity(3))
     assert bravais.surface_area == 2.8**2
     assert bravais.volume == 21.951999999999988
 
