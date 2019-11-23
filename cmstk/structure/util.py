@@ -70,7 +70,7 @@ def inverse_transform_matrix(a: float,
     term_11 = b * np.sin(gamma)
     term_12 = c * (np.cos(alpha) - np.cos(beta) * np.cos(gamma))
     term_12 /= np.sin(gamma)
-    term_22 = v / a * b * np.sin(gamma)
+    term_22 = v / (a * b * np.sin(gamma))
     return np.array([
         [term_00, term_01, term_02],
         [0,       term_11, term_12],
