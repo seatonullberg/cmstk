@@ -14,19 +14,17 @@ def test_base_bravais():
     assert bravais.n_symbols == 1
     assert np.array_equal(bravais.positions[0], np.array([0, 0, 0]))
     assert np.array_equal(
-        bravais.positions[1], 
-        np.array([1.4, 1.4, 1.3999999999999995])
+        bravais.positions[1],
+        np.array([1.4, 1.4, 1.4])
     )
-    cm = np.array([[2.8, 0, 0], [0, 2.8, 0], [0, 0, 2.799999999999999]])
-    assert np.array_equal(bravais.default_orientation, np.identity(3))
-    assert bravais.surface_area == 2.8**2
-    assert bravais.volume == 21.951999999999988
 
 
 def test_triclinic_bravais():
     """Tests initialization of a TriclinicBravais object."""
-    a, b, c = 2.0, 3.0, 4.0
-    alpha, beta, gamma = 60, 70, 120
+    # parameters of Microcline
+    # https://www.mindat.org/min-2704.html
+    a, b, c = 8.5784, 12.96, 7.2112
+    alpha, beta, gamma = 90.3, 116.05, 89
     symbols = ["X"]
     triclinic = TriclinicBravais(a, b, c, alpha, beta, gamma, symbols)
     assert triclinic.n_atoms == 1
@@ -35,8 +33,10 @@ def test_triclinic_bravais():
 
 def test_monoclinic_bravais():
     """Tests initialization of a MonoclinicBravais object."""
-    a, b, c = 2.0, 3.0, 4.0
-    beta = 60
+    # parameters of Orthoclase
+    # https://www.mindat.org/min-3026.html
+    a, b, c = 8.5632, 12.963, 7.299
+    beta = 116.073
     symbols = ["X", "Y"]
     center = "C"
     monoclinic = MonoclinicBravais(a, b, c, beta, symbols, center)
@@ -46,7 +46,9 @@ def test_monoclinic_bravais():
 
 def test_orthorhombic_bravais():
     """Tests initialization of an OrthorhombicBravais object."""
-    a, b, c = 2.0, 3.0, 4.0
+    # parameters of Aragonite
+    # https://www.mindat.org/min-307.html
+    a, b, c = 4.9611, 7.9672, 5.7407
     symbols = ["W", "X", "Y", "Z"]
     center = "F"
     orthorhombic = OrthorhombicBravais(a, b, c, symbols, center)
@@ -56,7 +58,9 @@ def test_orthorhombic_bravais():
 
 def test_tetragonal_bravais():
     """Tests initialization of a TetragonalBravais object."""
-    a, c = 2.0, 4.0
+    # parameters of Wulfenite
+    # https://www.mindat.org/min-4322.html
+    a, c = 5.433, 12.11
     symbols = ["X"]
     center = "P"
     tetragonal = TetragonalBravais(a, c, symbols, center)
@@ -66,8 +70,10 @@ def test_tetragonal_bravais():
 
 def test_rhombohedral_bravais():
     """Tests initialization of a RhombohedralBravais object."""
-    a = 2.0
-    alpha = 60
+    # parameters of Dolomite
+    # https://www.mindat.org/min-1304.html
+    a = 4.8012
+    alpha = 71
     symbols = ["X"]
     center = "P"
     rhombohedral = RhombohedralBravais(a, alpha, symbols, center)
@@ -77,7 +83,9 @@ def test_rhombohedral_bravais():
 
 def test_hexagonal_bravais():
     """Tests initialization of a HexagonalBravais object."""
-    a, c, = 2.0, 4.0
+    # parameters of Titanium HCP
+    # https://periodictable.com/Elements/022/data.html
+    a, c = 2.9508, 4.6855
     symbols = ["X"]
     hexagonal = HexagonalBravais(a, c, symbols)
     assert hexagonal.n_atoms == 1
@@ -86,8 +94,10 @@ def test_hexagonal_bravais():
 
 def test_cubic_bravais():
     """Tests initialization of a CubicBravais object."""
-    a = 2.7
-    symbols = ["Cr", "Cr"]
+    # parameters of Iron BCC
+    # https://periodictable.com/Elements/026/data.html
+    a = 2.8665
+    symbols = ["Fe", "Fe"]
     center = "I"
     cubic = CubicBravais(a, symbols, center)
     assert cubic.n_atoms == 2
