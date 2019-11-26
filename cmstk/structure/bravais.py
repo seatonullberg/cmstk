@@ -1,5 +1,6 @@
 from cmstk.structure.atom import Atom, AtomCollection
-from cmstk.structure.util import inverse_transform_matrix, transform_matrix, volume, metric_tensor
+from cmstk.structure.util import inverse_transform_matrix, transform_matrix
+from cmstk.structure.util import volume, metric_tensor
 import numpy as np
 from typing import List, Optional, Tuple
 
@@ -212,7 +213,8 @@ class BaseBravais(AtomCollection):
     def _place_atoms(self) -> List[Atom]:
         lattice_parameters = np.array([self.a, self.b, self.c])
         lattice_vector_mags = np.linalg.norm(self.lattice_vectors, axis=1)
-        unit_cells_per_vector = (lattice_vector_mags // lattice_parameters).astype(int, copy=False)
+        unit_cells_per_vector = np.rint(
+            (lattice_vector_mags / lattice_parameters)).astype(int, copy=False)
         atoms: List[Atom] = []
         for i in range(unit_cells_per_vector[0]):
             for j in range(unit_cells_per_vector[1]):
