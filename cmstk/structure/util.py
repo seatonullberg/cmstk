@@ -31,13 +31,13 @@ def metric_tensor(a: float,
     ])
 
 
-def inverse_transform_matrix(a: float,
-                             b: float,
-                             c: float,
-                             alpha: float,
-                             beta: float,
-                             gamma: float,
-                             degrees: bool = True) -> np.ndarray:
+def fractional_cartesian_matrix(a: float,
+                                b: float,
+                                c: float,
+                                alpha: float,
+                                beta: float,
+                                gamma: float,
+                                degrees: bool = True) -> np.ndarray:
     """Returns the Fractional to Cartesian coordinate transform matrix for an
        arbitrary lattice.
 
@@ -78,13 +78,13 @@ def inverse_transform_matrix(a: float,
     ])
 
 
-def transform_matrix(a: float,
-                     b: float,
-                     c: float,
-                     alpha: float,
-                     beta: float,
-                     gamma: float,
-                     degrees: bool = True) -> np.ndarray:
+def cartesian_fractional_matrix(a: float,
+                                b: float,
+                                c: float,
+                                alpha: float,
+                                beta: float,
+                                gamma: float,
+                                degrees: bool = True) -> np.ndarray:
     """Returns the Cartesian to Fractional coordinate transform matrix for an
        arbitrary lattice.
 

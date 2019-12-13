@@ -1,5 +1,6 @@
-from cmstk.structure.util import metric_tensor, inverse_transform_matrix, volume
-from cmstk.structure.util import transform_matrix, position_index
+from cmstk.structure.util import metric_tensor, cartesian_fractional_matrix
+from cmstk.structure.util import fractional_cartesian_matrix, position_index
+from cmstk.structure.util import volume
 import numpy as np
 
 
@@ -125,27 +126,27 @@ def test_metric_tensor_cubic():
     assert np.sqrt(np.linalg.det(mt)) == 23.553520979625002
 
 
-def test_transform_matrix():
+def test_cartesian_fractional_matrix():
     cartesian_point = np.array([2.0, 3.0, 4.0])
     fractional_point = np.array(
         [0.4999999999999999, 0.7499999999999999, 1.0000000000000004]
     )
     a, b, c = 4, 4, 4
     alpha, beta, gamma = 90, 90, 90
-    tm = transform_matrix(a, b, c, alpha, beta, gamma)
-    res = np.matmul(tm, cartesian_point)
+    cf = cartesian_fractional_matrix(a, b, c, alpha, beta, gamma)
+    res = np.matmul(cf, cartesian_point)
     assert np.array_equal(res, fractional_point)
 
 
-def test_inverse_transform_matrix():
+def test_fractional_cartesian_matrix():
     cartesian_point = np.array([2.0, 3.0, 4.0])
     fractional_point = np.array(
         [0.4999999999999999, 0.7499999999999999, 1.0000000000000004]
     )
     a, b, c = 4, 4, 4
     alpha, beta, gamma = 90, 90, 90
-    itm = inverse_transform_matrix(a, b, c, alpha, beta, gamma)
-    res = np.matmul(itm, fractional_point)
+    fc = fractional_cartesian_matrix(a, b, c, alpha, beta, gamma)
+    res = np.matmul(fc, fractional_point)
     assert np.array_equal(res, cartesian_point)
 
 
