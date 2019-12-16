@@ -18,7 +18,7 @@ class Element(object):
     """
 
     def __init__(self, covalent_radius: float, number: int, radius: float,
-        symbol: str, unit_cell: BaseBravais, weight: float) -> None:
+                 symbol: str, unit_cell: BaseBravais, weight: float) -> None:
         self._covalent_radius = covalent_radius
         self._number = number
         self._radius = radius
@@ -52,6 +52,7 @@ class Element(object):
 
 
 class Aluminum(Element):
+
     def __init__(self) -> None:
         unit_cell = CubicBravais(4.0495, ["Al"], "F")
         super().__init__(1.21, 13, 1.18, "Al", unit_cell, 26.982)

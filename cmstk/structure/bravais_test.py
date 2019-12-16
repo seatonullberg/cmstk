@@ -15,13 +15,8 @@ def test_base_bravais():
     assert bravais.n_symbols == 1
     assert np.array_equal(bravais.orientation, np.identity(3))
     assert bravais.repeat_units == (1, 1, 1)
-    assert np.array_equal(
-        bravais.positions[0],
-        np.array([0, 0, 0]))
-    assert np.array_equal(
-        bravais.positions[1],
-        np.array([1.4, 1.4, 1.4])
-    )
+    assert np.array_equal(bravais.positions[0], np.array([0, 0, 0]))
+    assert np.array_equal(bravais.positions[1], np.array([1.4, 1.4, 1.4]))
 
 
 def test_triclinic_bravais():
@@ -38,7 +33,6 @@ def test_triclinic_bravais():
         triclinic.reorient(np.identity(3))
     with pytest.raises(NotImplementedError):
         triclinic.repeat((1, 2, 3))
-
 
 
 def test_monoclinic_bravais():
@@ -70,7 +64,7 @@ def test_orthorhombic_bravais():
     assert orthorhombic.n_symbols == 4
     orthorhombic.repeat((1, 2, 3))
     assert orthorhombic.n_atoms == 24
-    raise NotImplementedError() # TODO: test orientation
+    raise NotImplementedError()  # TODO: test orientation
 
 
 def test_tetragonal_bravais():
@@ -85,7 +79,7 @@ def test_tetragonal_bravais():
     assert tetragonal.n_symbols == 1
     tetragonal.repeat((1, 2, 3))
     assert tetragonal.n_atoms == 6
-    raise NotImplementedError() # TODO: test orientation
+    raise NotImplementedError()  # TODO: test orientation
 
 
 def test_rhombohedral_bravais():
@@ -132,4 +126,4 @@ def test_cubic_bravais():
     assert cubic.n_symbols == 1
     cubic.repeat((1, 2, 3))
     assert cubic.n_atoms == 12
-    raise NotImplementedError() # TODO: test orientation
+    raise NotImplementedError()  # TODO: test orientation

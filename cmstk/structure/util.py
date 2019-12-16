@@ -24,11 +24,9 @@ def metric_tensor(a: float,
         alpha = np.deg2rad(alpha)
         beta = np.deg2rad(beta)
         gamma = np.deg2rad(gamma)
-    return np.array([
-        [a**2, a*b*np.cos(gamma), a*c*np.cos(beta)],
-        [b*a*np.cos(gamma), b**2, b*c*np.cos(alpha)],
-        [c*a*np.cos(beta), c*b*np.cos(alpha), c**2]
-    ])
+    return np.array([[a**2, a * b * np.cos(gamma), a * c * np.cos(beta)],
+                     [b * a * np.cos(gamma), b**2, b * c * np.cos(alpha)],
+                     [c * a * np.cos(beta), c * b * np.cos(alpha), c**2]])
 
 
 def fractional_cartesian_matrix(a: float,
@@ -71,11 +69,8 @@ def fractional_cartesian_matrix(a: float,
     term_12 = c * (np.cos(alpha) - np.cos(beta) * np.cos(gamma))
     term_12 /= np.sin(gamma)
     term_22 = v / (a * b * np.sin(gamma))
-    return np.array([
-        [term_00, term_01, term_02],
-        [0,       term_11, term_12],
-        [0,       0,       term_22]
-    ])
+    return np.array([[term_00, term_01, term_02], [0, term_11, term_12],
+                     [0, 0, term_22]])
 
 
 def cartesian_fractional_matrix(a: float,

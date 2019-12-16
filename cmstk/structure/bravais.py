@@ -13,17 +13,18 @@ _center_err = "Invalid center for {} lattice."
 _parameter_err = "Invalid lattice parameters for {} lattice."
 _basis_err = "Invalid basis for {} center."
 
-_pt0 = np.array([0.0, 0.0, 0.0]) # corner
-_pt1 = np.array([0.0, 0.5, 0.5]) # left/right face
-_pt2 = np.array([0.5, 0.0, 0.5]) # back/front face
-_pt3 = np.array([0.5, 0.5, 0.0]) # bottom/top face
-_pt4 = np.array([0.5, 0.5, 0.5]) # center
+_pt0 = np.array([0.0, 0.0, 0.0])  # corner
+_pt1 = np.array([0.0, 0.5, 0.5])  # left/right face
+_pt2 = np.array([0.5, 0.0, 0.5])  # back/front face
+_pt3 = np.array([0.5, 0.5, 0.0])  # bottom/top face
+_pt4 = np.array([0.5, 0.5, 0.5])  # center
 
 LatticeBasis = List[Tuple[str, np.ndarray]]
 
 #================================#
 #   Lattice Basis Constructors   #
 #================================#
+
 
 def base_centered_basis(symbols: List[str]) -> LatticeBasis:
     """Returns a `C` centered basis representation.
@@ -35,6 +36,7 @@ def base_centered_basis(symbols: List[str]) -> LatticeBasis:
         raise ValueError(_basis_err.format("base"))
     return [(symbols[0], _pt0), (symbols[1], _pt3)]
 
+
 def body_centered_basis(symbols: List[str]) -> LatticeBasis:
     """Returns an `I` centered basis representation.
 
@@ -45,6 +47,7 @@ def body_centered_basis(symbols: List[str]) -> LatticeBasis:
         raise ValueError(_basis_err.format("body"))
     return [(symbols[0], _pt0), (symbols[1], _pt4)]
 
+
 def face_centered_basis(symbols: List[str]) -> LatticeBasis:
     """Returns a `F` centered basis representation.
 
@@ -53,10 +56,9 @@ def face_centered_basis(symbols: List[str]) -> LatticeBasis:
     """
     if len(symbols) != 4:
         raise ValueError(_basis_err.format("face"))
-    return [(symbols[0], _pt0),
-            (symbols[1], _pt1),
-            (symbols[2], _pt2),
+    return [(symbols[0], _pt0), (symbols[1], _pt1), (symbols[2], _pt2),
             (symbols[3], _pt3)]
+
 
 def primitive_basis(symbols: List[str]) -> LatticeBasis:
     """Returns a `P` centered basis representation.
@@ -68,9 +70,11 @@ def primitive_basis(symbols: List[str]) -> LatticeBasis:
         raise ValueError(_basis_err.format("primitive"))
     return [(symbols[0], _pt0)]
 
+
 #=====================================#
 #   Bravais Lattice Representations   #
 #=====================================#
+
 
 class BaseBravais(AtomCollection):
     """Generalized representation of a Bravais lattice.
@@ -112,8 +116,13 @@ class BaseBravais(AtomCollection):
         volume: The volume of the lattice.
     """
 
-    def __init__(self, a: float, b: float, c: float,
-                 alpha: float, beta: float, gamma: float,
+    def __init__(self,
+                 a: float,
+                 b: float,
+                 c: float,
+                 alpha: float,
+                 beta: float,
+                 gamma: float,
                  basis: LatticeBasis,
                  orientation: Optional[np.ndarray] = None,
                  repeat_units: Optional[Tuple[int, int, int]] = None) -> None:
@@ -213,7 +222,7 @@ class BaseBravais(AtomCollection):
         vectors = np.matmul(self.orientation, self.metric_tensor)
         vectors = np.sqrt(np.matmul(vectors, self.orientation))
         vectors *= np.array(self.repeat_units)
-        vectors = np.nan_to_num(x=vectors, copy=False) # TODO: replace this
+        vectors = np.nan_to_num(x=vectors, copy=False)  # TODO: replace this
         self._lattice_vectors = vectors
 
     def _place_atoms(self) -> List[Atom]:

@@ -129,8 +129,7 @@ def test_metric_tensor_cubic():
 def test_cartesian_fractional_matrix():
     cartesian_point = np.array([2.0, 3.0, 4.0])
     fractional_point = np.array(
-        [0.4999999999999999, 0.7499999999999999, 1.0000000000000004]
-    )
+        [0.4999999999999999, 0.7499999999999999, 1.0000000000000004])
     a, b, c = 4, 4, 4
     alpha, beta, gamma = 90, 90, 90
     cf = cartesian_fractional_matrix(a, b, c, alpha, beta, gamma)
@@ -141,8 +140,7 @@ def test_cartesian_fractional_matrix():
 def test_fractional_cartesian_matrix():
     cartesian_point = np.array([2.0, 3.0, 4.0])
     fractional_point = np.array(
-        [0.4999999999999999, 0.7499999999999999, 1.0000000000000004]
-    )
+        [0.4999999999999999, 0.7499999999999999, 1.0000000000000004])
     a, b, c = 4, 4, 4
     alpha, beta, gamma = 90, 90, 90
     fc = fractional_cartesian_matrix(a, b, c, alpha, beta, gamma)
