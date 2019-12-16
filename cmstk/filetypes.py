@@ -25,7 +25,7 @@ class BaseFile(object):
 
     def unload(self) -> None:
         """Unload the underlying file from memory."""
-        for attrs in self._attrs:
+        for attr in self._attrs:
             setattr(self, attr, None)
 
     def __enter__(self):
@@ -50,7 +50,7 @@ class JsonFile(BaseFile):
         self._json_data = Optional[Dict[str, Any]]
         super().__init__(filepath)
 
-    def load(self, path: Optional[str]) -> None:
+    def load(self, path: Optional[str] = None) -> None:
         if path is None:
             path = self.filepath
         with open(path, "r") as f:
@@ -74,9 +74,9 @@ class TextFile(BaseFile):
 
     def __init__(self, filepath: str) -> None:
         self._lines: Optional[List[str]] = None
-        super().__init__(fielpath)
+        super().__init__(filepath)
 
-    def load(self, path: Optional[str]) -> None:
+    def load(self, path: Optional[str] = None) -> None:
         if path is None:
             path = self.filepath
         with open(path, "r") as f:
@@ -102,7 +102,7 @@ class XmlFile(BaseFile):
         self._root: Optional[Element]
         super().__init__(filepath)
 
-    def load(self, path: Optional[str]) -> None:
+    def load(self, path: Optional[str] = None) -> None:
         if path is None:
             path = self.filepath
         self._root = ET.parse(path).getroot()

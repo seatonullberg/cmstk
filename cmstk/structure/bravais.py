@@ -209,14 +209,16 @@ class BaseBravais(AtomCollection):
                       True)
 
     def reorient(self, orientation: np.ndarray) -> None:
-        self._orientation = orientation
-        self._reset_lattice_vectors()
-        self.atoms = self._place_atoms()
+        raise NotImplementedError()
+        #self._orientation = orientation
+        #self._reset_lattice_vectors()
+        #self.atoms = self._place_atoms()
 
     def repeat(self, repeat_units: Tuple[int, int, int]) -> None:
-        self._repeat_units = repeat_units
-        self._reset_lattice_vectors()
-        self.atoms = self._place_atoms()
+        raise NotImplementedError()
+        #self._repeat_units = repeat_units
+        #self._reset_lattice_vectors()
+        #self.atoms = self._place_atoms()
 
     def _reset_lattice_vectors(self) -> None:
         vectors = np.matmul(self.orientation, self.metric_tensor)
@@ -268,12 +270,6 @@ class TriclinicBravais(BaseBravais):
         basis = primitive_basis(symbols)
         super().__init__(a, b, c, alpha, beta, gamma, basis)
 
-    def reorient(self, orientation: np.ndarray) -> None:
-        raise NotImplementedError()
-
-    def repeat(self, repeat_units: Tuple[int, int, int]) -> None:
-        raise NotImplementedError()
-
 
 class MonoclinicBravais(BaseBravais):
     """Representation of a monoclinic lattice.
@@ -306,12 +302,6 @@ class MonoclinicBravais(BaseBravais):
             raise ValueError(_center_err.format("monoclinic"))
         alpha, gamma = 90, 90
         super().__init__(a, b, c, alpha, beta, gamma, basis)
-
-    def reorient(self, orientation: np.ndarray) -> None:
-        raise NotImplementedError()
-
-    def repeat(self, repeat_units: Tuple[int, int, int]) -> None:
-        raise NotImplementedError()
 
 
 class OrthorhombicBravais(BaseBravais):
@@ -407,12 +397,6 @@ class RhombohedralBravais(BaseBravais):
         beta, gamma = alpha, alpha
         super().__init__(a, b, c, alpha, beta, gamma, basis)
 
-    def reorient(self, orientation: np.ndarray) -> None:
-        raise NotImplementedError()
-
-    def repeat(self, repeat_units: Tuple[int, int, int]) -> None:
-        raise NotImplementedError()
-
 
 class HexagonalBravais(BaseBravais):
     """Representation of a hexagonal lattice.
@@ -435,12 +419,6 @@ class HexagonalBravais(BaseBravais):
         b = a
         alpha, beta, gamma = 90, 90, 120
         super().__init__(a, b, c, alpha, beta, gamma, basis)
-
-    def reorient(self, orientation: np.ndarray) -> None:
-        raise NotImplementedError()
-
-    def repeat(self, repeat_units: Tuple[int, int, int]) -> None:
-        raise NotImplementedError()
 
 
 class CubicBravais(BaseBravais):

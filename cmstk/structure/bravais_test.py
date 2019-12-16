@@ -62,9 +62,10 @@ def test_orthorhombic_bravais():
     orthorhombic = OrthorhombicBravais(a, b, c, symbols, center)
     assert orthorhombic.n_atoms == 4
     assert orthorhombic.n_symbols == 4
-    orthorhombic.repeat((1, 2, 3))
-    assert orthorhombic.n_atoms == 24
-    raise NotImplementedError()  # TODO: test orientation
+    with pytest.raises(NotImplementedError):
+        orthorhombic.reorient(np.identity(3))
+    with pytest.raises(NotImplementedError):
+        orthorhombic.repeat((1, 2, 3))
 
 
 def test_tetragonal_bravais():
@@ -77,9 +78,10 @@ def test_tetragonal_bravais():
     tetragonal = TetragonalBravais(a, c, symbols, center)
     assert tetragonal.n_atoms == 1
     assert tetragonal.n_symbols == 1
-    tetragonal.repeat((1, 2, 3))
-    assert tetragonal.n_atoms == 6
-    raise NotImplementedError()  # TODO: test orientation
+    with pytest.raises(NotImplementedError):
+        tetragonal.reorient(np.identity(3))
+    with pytest.raises(NotImplementedError):
+        tetragonal.repeat((1, 2, 3))
 
 
 def test_rhombohedral_bravais():
@@ -124,6 +126,7 @@ def test_cubic_bravais():
     cubic = CubicBravais(a, symbols, center)
     assert cubic.n_atoms == 2
     assert cubic.n_symbols == 1
-    cubic.repeat((1, 2, 3))
-    assert cubic.n_atoms == 12
-    raise NotImplementedError()  # TODO: test orientation
+    with pytest.raises(NotImplementedError):
+        cubic.reorient(np.identity(3))
+    with pytest.raises(NotImplementedError):
+        cubic.repeat((1, 2, 3))
