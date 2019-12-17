@@ -16,12 +16,10 @@ class BaseFile(object):
         self._attrs = [k for k in self.__dict__ if k[0] == "_"]
 
     def load(self, path: Optional[str] = None) -> None:
-        """Load the underlying file into memory.
-        
-        Note:
-            This must be overridden by the child.
-        """
-        raise NotImplementedError()
+        """Load the underlying file into memory."""
+        raise NotImplementedError(
+            "`load` should be overridden by the child object"
+        )
 
     def unload(self) -> None:
         """Unload the underlying file from memory."""
@@ -31,7 +29,7 @@ class BaseFile(object):
     def __enter__(self):
         self.load()
 
-    def __exit__(self):
+    def __exit__(self, exc_type, exc_value, traceback):
         self.unload()
 
 
@@ -47,7 +45,7 @@ class JsonFile(BaseFile):
     """
 
     def __init__(self, filepath: str) -> None:
-        self._json_data = Optional[Dict[str, Any]]
+        self._json_data: Optional[Dict[str, Any]] = None
         super().__init__(filepath)
 
     def load(self, path: Optional[str] = None) -> None:
@@ -57,7 +55,9 @@ class JsonFile(BaseFile):
             self._json_data = json.load(f)
 
     @property
-    def json_data(self) -> Optional[Dict[str, Any]]:
+    def json_data(self) -> Dict[str, Any]:
+        if self._json_data is None:
+            raise RuntimeError("file not loaded")
         return self._json_data
 
 
@@ -83,7 +83,9 @@ class TextFile(BaseFile):
             self._lines = f.readlines()
 
     @property
-    def lines(self) -> Optional[List[str]]:
+    def lines(self) -> List[str]:
+        if self._lines is None:
+            raise RuntimeError("file not loaded")
         return self._lines
 
 
@@ -99,7 +101,7 @@ class XmlFile(BaseFile):
     """
 
     def __init__(self, filepath: str) -> None:
-        self._root: Optional[Element]
+        self._root: Optional[Element] = None
         super().__init__(filepath)
 
     def load(self, path: Optional[str] = None) -> None:
@@ -108,5 +110,7 @@ class XmlFile(BaseFile):
         self._root = ET.parse(path).getroot()
 
     @property
-    def root(self) -> Optional[Element]:
+    def root(self) -> Element:
+        if self._root is None:
+            raise RuntimeError("file not loaded")
         return self._root
