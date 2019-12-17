@@ -1,9 +1,9 @@
-from cmstk.util import BaseFile
+from cmstk.filetypes import TextFile
 import copy
 from typing import Dict, List, Optional
 
 
-class OutcarFile(BaseFile):
+class OutcarFile(TextFile):
     """File wrapper for a VASP OUTCAR file.
 
     Args:
@@ -18,9 +18,8 @@ class OutcarFile(BaseFile):
     def __init__(self, filepath: Optional[str] = None) -> None:
         if filepath is None:
             filepath = "OUTCAR"
-        self._free_energy: List[Dict[str, float]] = []
-        attrs = ["_free_energy"]
-        super().__init__(attrs, filepath)
+        self._free_energy: Optional[List[Dict[str, float]]] = None
+        super().__init__(filepath)
 
     @property
     def free_energy(self) -> List[Dict[str, float]]:
@@ -28,7 +27,7 @@ class OutcarFile(BaseFile):
             result: List[Dict[str, float]] = []
             d: Dict[str, float] = {}
             read = lambda x: float(x.split("=")[-1].strip())
-            for line in self._lines:
+            for line in self.lines:
                 if "alpha Z" in line and "PSCENC" in line:
                     d["PSCENC"] = read(line)
                 if "Ewald energy" in line and "TEWEN" in line:
@@ -54,7 +53,3 @@ class OutcarFile(BaseFile):
                     result.append(copy.deepcopy(d))
             self._free_energy = result
         return self._free_energy
-
-    # TODO
-    def magnetization(self):
-        raise NotImplementedError()

@@ -69,7 +69,7 @@ class TextFile(BaseFile):
 
     Attributes:
         filepath: The path to the underlying file.
-        lines: The lines of the text file.
+        lines: The stripped lines of the text file.
     """
 
     def __init__(self, filepath: str) -> None:
@@ -80,7 +80,7 @@ class TextFile(BaseFile):
         if path is None:
             path = self.filepath
         with open(path, "r") as f:
-            self._lines = f.readlines()
+            self._lines = [line.strip() for line in f.readlines()]
 
     @property
     def lines(self) -> List[str]:

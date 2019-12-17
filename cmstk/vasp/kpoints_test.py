@@ -7,7 +7,7 @@ def test_kpoints_file():
     """Tests the initialization of a vasp.KpointsFile object."""
     path = os.path.join(data_directory(), "vasp", "Fe75Cr25_BCC_bulk.kpoints")
     kpoints = KpointsFile(path)
-    kpoints.read()
+    kpoints.load()
 
     kpoints_writer = KpointsFile("test.kpoints")
     kpoints_writer.comment = kpoints.comment
@@ -18,10 +18,10 @@ def test_kpoints_file():
     kpoints_writer.write()
 
     kpoints_reader = KpointsFile("test.kpoints")
-    kpoints_reader.read()
-    assert kpoints_reader.comment == kpoints.comment
-    assert kpoints_reader.n_kpoints == kpoints.n_kpoints
-    assert kpoints_reader.mesh_type == kpoints.mesh_type
-    assert kpoints_reader.mesh_size == kpoints.mesh_size
-    assert kpoints_reader.mesh_shift == kpoints.mesh_shift
+    with kpoints_reader:
+        assert kpoints_reader.comment == kpoints.comment
+        assert kpoints_reader.n_kpoints == kpoints.n_kpoints
+        assert kpoints_reader.mesh_type == kpoints.mesh_type
+        assert kpoints_reader.mesh_size == kpoints.mesh_size
+        assert kpoints_reader.mesh_shift == kpoints.mesh_shift
     os.remove("test.kpoints")

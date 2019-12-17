@@ -24,9 +24,11 @@ def bestsqs_to_poscar(bestsqs: BestsqsFile,
     if len(symbol_order) != len(set(symbol_order)):
         err = "all members or `symbol_order` must be unique"
         raise ValueError(err)
-    bestsqs.simulation_cell.collection.sort_by_symbol(symbol_order)
+    with bestsqs:
+        bestsqs.simulation_cell.collection.sort_by_symbol(symbol_order)
+        sim_cell = bestsqs.simulation_cell
     return PoscarFile(
         direct=direct,
-        simulation_cell=bestsqs.simulation_cell,
+        simulation_cell=sim_cell,
         relaxations=relaxations,
     )

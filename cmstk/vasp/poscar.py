@@ -1,12 +1,12 @@
+from cmstk.filetypes import TextFile
 from cmstk.structure.atom import Atom, AtomCollection
 from cmstk.structure.simulation import SimulationCell
-from cmstk.util import BaseFile
 from collections import OrderedDict
 import numpy as np
 from typing import Dict, List, Optional, Tuple
 
 
-class PoscarFile(BaseFile):
+class PoscarFile(TextFile):
     """File wrapper for a VASP POSCAR file.
     
     Notes:
@@ -50,10 +50,8 @@ class PoscarFile(BaseFile):
             comment = "# painstakingly crafted by cmstk :)"
         self._comment = comment
         self._direct = direct
-        if simulation_cell is None:
-            simulation_cell = SimulationCell()
         self._simulation_cell = simulation_cell
-        if n_atoms_per_symbol is None:
+        if n_atoms_per_symbol is None and simulation_cell is not None:
             symbol_count_map: Dict[str, int] = OrderedDict()
             for sym in self.simulation_cell.collection.symbols:
                 if sym in symbol_count_map:
@@ -62,14 +60,8 @@ class PoscarFile(BaseFile):
                     symbol_count_map[sym] = 1
             n_atoms_per_symbol = list(symbol_count_map.values())
         self._n_atoms_per_symbol = n_atoms_per_symbol
-        if relaxations is None:
-            relaxations = []
         self._relaxations = relaxations
-        attrs = [
-            "_comment", "_direct", "_simulation_cell", "_n_atoms_per_symbol",
-            "_relaxations"
-        ]
-        super().__init__(attrs, filepath)
+        super().__init__(filepath)
 
     def write(self, path: Optional[str] = None) -> None:
         """Writes a POSCAR file.
@@ -105,7 +97,7 @@ class PoscarFile(BaseFile):
     @property
     def comment(self) -> str:
         if self._comment is None:
-            self._comment = self._lines[0]
+            self._comment = self.lines[0]
         return self._comment
 
     @comment.setter
@@ -116,7 +108,7 @@ class PoscarFile(BaseFile):
     def direct(self) -> bool:
         if self._direct is None:
             coord_sys_index = self._coordinate_system_line_number
-            if self._lines[coord_sys_index][0] in ["C", "c", "K", "k"]:
+            if self.lines[coord_sys_index][0] in ["C", "c", "K", "k"]:
                 self._direct = False
             else:
                 self._direct = True
@@ -129,18 +121,18 @@ class PoscarFile(BaseFile):
     @property
     def simulation_cell(self) -> SimulationCell:
         if self._simulation_cell is None:
-            sf = float(self._lines[1])
-            cm = self._lines[2:5]
-            cm = [np.fromstring(row, sep=" ") for row in cm]
+            sf = float(self.lines[1])
+            cm = self.lines[2:5]
+            cm_arr = np.array([np.fromstring(row, sep=" ") for row in cm])
             start, end = self._position_section_line_numbers
-            positions = self._lines[start:end]
+            positions = self.lines[start:end]
             positions = [" ".join(p.split()[:3]) for p in positions]
-            positions = [np.fromstring(p, sep=" ") for p in positions]
+            arr_positions = [np.fromstring(p, sep=" ") for p in positions]
             atoms = []
-            for p in positions:
+            for p in arr_positions:
                 atoms.append(Atom(position=p))
             collection = AtomCollection(atoms)
-            simulation_cell = SimulationCell(collection, cm, sf)
+            simulation_cell = SimulationCell(collection, cm_arr, sf)
             self._simulation_cell = simulation_cell
         return self._simulation_cell
 
@@ -152,14 +144,14 @@ class PoscarFile(BaseFile):
     def relaxations(self) -> List[np.ndarray]:
         if self._relaxations is None:
             start, end = self._position_section_line_numbers
-            relaxations = self._lines[start:end]
-            relaxations = [r.split()[3:] for r in relaxations]
-            relaxations = [
+            relaxations = self.lines[start:end]
+            relaxations_lst = [r.split()[3:] for r in relaxations]
+            relaxations_arr = [
                 np.array([True if rr == "T" else False
                           for rr in r])
-                for r in relaxations
+                for r in relaxations_lst
             ]
-            self._relaxations = relaxations
+            self._relaxations = relaxations_arr
         return self._relaxations
 
     @relaxations.setter
@@ -172,7 +164,7 @@ class PoscarFile(BaseFile):
     @property
     def n_atoms_per_symbol(self) -> List[int]:
         if self._n_atoms_per_symbol is None:
-            naps = [int(s) for s in self._lines[5].split()]
+            naps = [int(s) for s in self.lines[5].split()]
             self._n_atoms_per_symbol = naps
         return self._n_atoms_per_symbol
 
@@ -185,7 +177,7 @@ class PoscarFile(BaseFile):
 
     @property
     def _coordinate_system_line_number(self) -> int:
-        if self._lines[6][0] in ["S", "s"]:
+        if self.lines[6][0] in ["S", "s"]:
             return 7
         else:
             return 6

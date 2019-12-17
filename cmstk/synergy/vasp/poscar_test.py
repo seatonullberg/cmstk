@@ -9,7 +9,7 @@ def test_poscar_to_rndstr():
     """Tests the conversion of a PoscarFile object to a RndstrFile object."""
     path = os.path.join(data_directory(), "vasp", "Fe75Cr25_BCC_bulk.poscar")
     poscar = PoscarFile(filepath=path)
-    poscar.read()
+    poscar.load()
     probabilities = [{
         "Fe": 0.75,
         "Cr": 0.25

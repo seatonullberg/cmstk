@@ -8,7 +8,7 @@ def test_poscar_file():
     """Tests the initialization of a vasp.PoscarFile object."""
     path = os.path.join(data_directory(), "vasp", "Fe75Cr25_BCC_bulk.poscar")
     poscar = PoscarFile(path)
-    poscar.read()
+    poscar.load()
     poscar_writer = PoscarFile(filepath="test.poscar",
                                comment=poscar.comment,
                                direct=poscar.direct,
@@ -17,7 +17,7 @@ def test_poscar_file():
                                relaxations=poscar.relaxations)
     poscar_writer.write()
     poscar_reader = PoscarFile("test.poscar")
-    poscar_reader.read()
+    poscar_reader.load()
     assert poscar_reader.comment == poscar.comment
     assert poscar_reader.direct == poscar.direct
     assert np.array_equal(poscar_reader.simulation_cell.coordinate_matrix,
@@ -39,7 +39,7 @@ def test_contcar_file():
     """Tests the initialization of a vasp.PoscarFile object from a CONTCAR file."""
     path = os.path.join(data_directory(), "vasp", "Fe75Cr25_BCC_bulk.contcar")
     poscar = PoscarFile(path)
-    poscar.read()
+    poscar.load()
     poscar_writer = PoscarFile(filepath="test.contcar",
                                comment=poscar.comment,
                                direct=poscar.direct,
@@ -48,7 +48,7 @@ def test_contcar_file():
                                relaxations=poscar.relaxations)
     poscar_writer.write()
     poscar_reader = PoscarFile("test.contcar")
-    poscar_reader.read()
+    poscar_reader.load()
     assert poscar_reader.comment == poscar.comment
     assert poscar_reader.direct == poscar.direct
     assert np.array_equal(poscar_reader.simulation_cell.coordinate_matrix,
