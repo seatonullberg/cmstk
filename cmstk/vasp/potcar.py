@@ -1,66 +1,51 @@
+from cmstk.filetypes import TextFile
 from typing import List, Optional
 
 
-class PotcarFile(object):
+class PotcarFile(TextFile):
     """File wrapper for a VASP POTCAR file.
 
     Notes:
         POTCAR files are copyright protected. For testing purposes, the data 
         files are heavily redacted such that only header sections are visible.
-    
+
     Args:
-        filepaths: Filepaths to any number of POTCAR files.
+        filepath: Filepath to a POTCAR file.
 
     Attributes:
-        filepaths: Filepaths to any number of POTCAR files.
-
-    Properties:
-        titles: The `TITEL` tag value of each included POTCAR
-        - Note: length of `titles` will be greater than `filepaths` if reading
-          from an already concatenated POTCAR.
+        filepath: Filepath to a POTCAR file.
+        titles: The `TITEL` tag values.
     """
 
-    def __init__(self, *filepaths: str) -> None:
-        self.filepaths = filepaths
-        self._titles: List[str] = []
+    def __init__(self, filepath: Optional[str] = None) -> None:
+        if filepath is None:
+            filepath = "POTCAR"
+        self._titles: Optional[List[str]] = None
+        super().__init__(filepath)
 
     @property
     def titles(self) -> List[str]:
-        return self._titles
-
-    def read(self, *paths: str) -> None:
-        """Reads one or many POTCAR files.
-
-        Args:
-            paths: The filepaths to read
-        """
-        self._titles = []  # reset the existing titles each read
-        if len(paths) == 0:
-            paths = self.filepaths
-        else:
-            self.filepaths = paths
-        for path in paths:
-            with open(path, "r") as f:
-                lines = f.readlines()
-            for line in lines:
+        if self._titles is None:
+            titles = []
+            for line in self.lines:
                 if "TITEL" in line:
                     title = line.split("=")[-1].strip()
-                    self._titles.append(title)
+                    titles.append(title)
+            self._titles = titles
+        return self._titles
 
-    def write(self, path: Optional[str] = None) -> None:
-        """Writes a POTCAR file.
+    def concatenate(self, path: str) -> None:
+        with open(path, "r") as f:
+            new_lines = [
+                line.strip() for line in f.readlines() if len(line.strip()) > 0
+            ]
+        # not ideal
+        self._lines += new_lines # not ideal
+        self._titles = None
 
-        Args:
-            path: The filepath to write to.
-        """
+    def write(self, path: Optional[str]) -> None:
         if path is None:
-            write_path = "POTCAR"
-        else:
-            write_path = path
-        potcars_in = []
-        for read_path in self.filepaths:
-            with open(read_path, "r") as f:
-                potcars_in.append(f.read())
-        potcar_out = "".join(potcars_in)
-        with open(write_path, "w") as f:
-            f.write(potcar_out)
+            path = self.filepath
+        with open(path, "w") as f:
+            for line in self.lines:
+                f.write("{}\n".format(line))
