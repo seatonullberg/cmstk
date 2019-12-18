@@ -9,12 +9,12 @@ def test_setfl_file():
     path = os.path.join(data_directory(), "potentials",
                         "Bonny-Fe-Ni-Cr-2011.eam.alloy")
     setfl = SetflFile(path)
-    setfl.read()
-    assert setfl.comments == [
+    setfl.load()
+    assert setfl.comments == (
         "Source: G. Bonny et al., Modelling Simul. Mater. Sci. Eng. 19 (2011) 085008",
         "Potential to model dislocatons: WP2-2 of PERFORM60",
         "Contact information: gbonny@sckcen.be"
-    ]
+    )
     assert setfl.symbols == ["Fe", "Ni", "Cr"]
     assert setfl.symbol_pairs == [
         "FeFe", "FeNi", "FeCr", "NiNi", "NiCr", "CrCr"
@@ -33,7 +33,6 @@ def test_setfl_file():
     setfl_writer = SetflFile("test.eam.alloy")
     setfl_writer.comments = setfl.comments
     setfl_writer.symbols = setfl.symbols
-    setfl_writer.symbol_pairs = setfl.symbol_pairs
     setfl_writer.symbol_descriptors = setfl.symbol_descriptors
     setfl_writer.n_rho = setfl.n_rho
     setfl_writer.d_rho = setfl.d_rho
@@ -46,7 +45,7 @@ def test_setfl_file():
     setfl_writer.write()
 
     setfl_reader = SetflFile("test.eam.alloy")
-    setfl_reader.read()
+    setfl_reader.load()
     assert setfl_reader.comments == setfl.comments
     assert setfl_reader.symbols == setfl.symbols
     assert setfl_reader.symbol_pairs == setfl.symbol_pairs
