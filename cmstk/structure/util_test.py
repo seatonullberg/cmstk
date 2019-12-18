@@ -1,6 +1,7 @@
 from cmstk.structure.util import metric_tensor, cartesian_fractional_matrix
 from cmstk.structure.util import fractional_cartesian_matrix, position_index
 from cmstk.structure.util import volume
+from cmstk.util import within_one_percent
 import numpy as np
 
 
@@ -15,12 +16,13 @@ def test_metric_tensor_triclinic():
         res = np.matmul(v, mt)
         res = np.matmul(res, v)
         if i == 0:
-            assert res == 73.58894656000001
+            assert within_one_percent(res, 73.59)
         elif i == 1:
-            assert res == 167.96160000000003
+            assert within_one_percent(res, 167.96)
         elif i == 2:
-            assert res == 52.00140544
-    assert np.sqrt(np.linalg.det(mt)) == 720.155418738299
+            assert within_one_percent(res, 52)
+    v = np.sqrt(np.linalg.det(mt))
+    assert within_one_percent(v, 720.16)
 
 
 def test_metric_tensor_monoclinic():
@@ -34,12 +36,13 @@ def test_metric_tensor_monoclinic():
         res = np.matmul(v, mt)
         res = np.matmul(res, v)
         if i == 0:
-            assert res == 73.32839424000001
+            assert within_one_percent(res, 73.33)
         elif i == 1:
-            assert res == 168.03936899999997
+            assert within_one_percent(res, 168.04)
         elif i == 2:
-            assert res == 53.275401
-    assert np.sqrt(np.linalg.det(mt)) == 727.7711663710654
+            assert within_one_percent(res, 53.28)
+    v = np.sqrt(np.linalg.det(mt))
+    assert within_one_percent(v, 727.77)
 
 
 def test_metric_tensor_orthorhombic():
@@ -53,12 +56,13 @@ def test_metric_tensor_orthorhombic():
         res = np.matmul(v, mt)
         res = np.matmul(res, v)
         if i == 0:
-            assert res == 24.61251321
+            assert within_one_percent(res, 24.61)
         elif i == 1:
-            assert res == 63.47627584
+            assert within_one_percent(res, 63.48)
         elif i == 2:
-            assert res == 32.95563649
-    assert np.sqrt(np.linalg.det(mt)) == 226.90734403394399
+            assert within_one_percent(res, 32.96)
+    v = np.sqrt(np.linalg.det(mt))
+    assert within_one_percent(v, 226.91)
 
 
 def test_metric_tensor_tetragonal():
@@ -72,10 +76,11 @@ def test_metric_tensor_tetragonal():
         res = np.matmul(v, mt)
         res = np.matmul(res, v)
         if i == 0 or i == 1:
-            assert res == 29.517488999999998
+            assert within_one_percent(res, 29.52)
         if i == 2:
-            assert res == 146.6521
-    assert np.sqrt(np.linalg.det(mt)) == 357.4567917899999
+            assert within_one_percent(res, 146.65)
+    v = np.sqrt(np.linalg.det(mt))
+    assert within_one_percent(v, 357.46)
 
 
 def test_metric_tensor_rhombohedral():
@@ -89,10 +94,11 @@ def test_metric_tensor_rhombohedral():
         res = np.matmul(v, mt)
         res = np.matmul(res, v)
         if i == 0 or i == 1:
-            assert res == 23.05152144
+            assert within_one_percent(res, 23.05)
         elif i == 2:
-            assert res == 256.06400399999995
-    assert np.sqrt(np.linalg.det(mt)) == 319.6711133169219
+            assert within_one_percent(res, 256.06)
+    v = np.sqrt(np.linalg.det(mt))
+    assert within_one_percent(v, 319.67)
 
 
 def test_metric_tensor_hexagonal():
@@ -106,10 +112,11 @@ def test_metric_tensor_hexagonal():
         res = np.matmul(v, mt)
         res = np.matmul(res, v)
         if i == 0 or i == 1:
-            assert res == 8.707220640000001
+            assert within_one_percent(res, 8.71)
         elif i == 2:
-            assert res == 21.953910250000003
-    assert np.sqrt(np.linalg.det(mt)) == 35.33182929487848
+            assert within_one_percent(res, 21.95)
+    v = np.sqrt(np.linalg.det(mt))
+    assert within_one_percent(v, 35.33)
 
 
 def test_metric_tensor_cubic():
@@ -122,8 +129,9 @@ def test_metric_tensor_cubic():
     for v in vectors:
         res = np.matmul(v, mt)
         res = np.matmul(res, v)
-        assert res == 8.21682225
-    assert np.sqrt(np.linalg.det(mt)) == 23.553520979625002
+        assert within_one_percent(res, 8.22)
+    v = np.sqrt(np.linalg.det(mt))
+    assert within_one_percent(v, 23.55)
 
 
 def test_cartesian_fractional_matrix():
@@ -152,7 +160,8 @@ def test_volume():
     """Tests behavior of the volume() function."""
     a, b, c = 2, 2, 2
     alpha, beta, gamma = 90, 90, 90
-    assert volume(a, b, c, alpha, beta, gamma) == 7.999999999999998
+    v = volume(a, b, c, alpha, beta, gamma)
+    assert within_one_percent(v, 8)
 
 
 def test_position_index():
