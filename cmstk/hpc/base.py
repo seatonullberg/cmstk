@@ -1,16 +1,17 @@
-from cmstk.util import BaseTag, TagCollection
+from cmstk.filetypes import TextFile
+from cmstk.util import Tag
 from typing import List, Optional
 
 
-class BaseScript(object):
-    """Generalized representation of a job submission script for high 
+class BaseScript(TextFile):
+    """Generalized representation of a job submission script for high
        performance computing job managers.
 
     Args:
         filepath: Filepath to a script.
-        cmds: Commands to be executed.
-        common_class: The `common_class` parameter for TagCollection.
         exec_cmd: The shell command used to execute the script.
+        prefix: The str indicating a line is a tag.
+        cmds: Commands to be executed.
         tags: Tags used to configure the job manager.
 
     Attributes:
@@ -20,45 +21,47 @@ class BaseScript(object):
         tags: Tags used to configure the job manager.
     """
 
-    def __init__(self, filepath: str, cmds: List[str], common_class: type,
-                 exec_cmd: str, tags: List[BaseTag]) -> None:
-        self.filepath = filepath
+    def __init__(self, filepath: str, exec_cmd: str, prefix: str,
+                 cmds: Optional[List[str]], tags: Optional[List[Tag]]) -> None:
+        self.exec_cmd = exec_cmd
+        self.prefix = prefix
         self._cmds = cmds
-        self._common_class = common_class
-        self._tags = TagCollection(self._common_class, tags)
-        self._exec_cmd = exec_cmd
+        self._tags = tags
+        super().__init__(filepath)
 
-    # TODO implement a classmethod to load from_default
+    @property
+    def cmds(self) -> List[str]:
+        if self._cmds is None:
+            self._cmds = [
+                line for line in self.lines[1:] # skip the shebang
+                if not line.startswith(self.prefix)
+            ]
+        return self._cmds
 
-    # read does not have a generic implementation
+    @cmds.setter
+    def cmds(self, v: List[str]) -> None:
+        self._cmds = v
+
+    @property
+    def tags(self) -> List[Tag]:
+        if self._tags is None:
+            self._tags = []
+            for line in self.lines:
+                if line.startswith(self.prefix):
+                    self._tags.append(Tag.from_str(line))
+        return self._tags
+
+    @tags.setter
+    def tags(self, v: List[Tag]) -> None:
+        self._tags = v
 
     def write(self, path: Optional[str] = None) -> None:
         if path is None:
             path = self.filepath
         with open(path, "w") as f:
             f.write("#!/bin/bash\n")
-            for tag in self.tags.values():
-                f.write(tag.write())
+            for tag in self.tags:
+                f.write("{}\n".format(tag.to_str()))
             f.write("\n")
             for cmd in self.cmds:
                 f.write("{}\n".format(cmd))
-
-    @property
-    def cmds(self) -> List[str]:
-        return self._cmds
-
-    @property
-    def exec_cmd(self) -> str:
-        return self._exec_cmd
-
-    @property
-    def tags(self) -> TagCollection:
-        return self._tags
-
-    @tags.setter
-    def tags(self, value: TagCollection) -> None:
-        if value.common_class is self._common_class:
-            self._tags = value
-        else:
-            err = "`value.common class` must be {}.".format(self._common_class)
-            raise TypeError(err)

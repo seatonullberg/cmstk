@@ -6,7 +6,7 @@ from xml.etree.ElementTree import Element
 
 class BaseFile(object):
     """Abstract base class for file wrappers.
-    
+
     Args:
         filepath: The path to the underlying file.
     """
@@ -35,7 +35,7 @@ class BaseFile(object):
 
 class JsonFile(BaseFile):
     """Generalized representation of a JSON file.
-    
+
     Args:
         filepath: The path to the underlying file.
 
@@ -63,7 +63,7 @@ class JsonFile(BaseFile):
 
 class TextFile(BaseFile):
     """Generalized representation of a basic text file.
-    
+
     Args:
         filepath: The path to the underlying file.
 
@@ -80,7 +80,11 @@ class TextFile(BaseFile):
         if path is None:
             path = self.filepath
         with open(path, "r") as f:
-            self._lines = [line.strip() for line in f.readlines()]
+            # remove whitespace and skip empty lines
+            self._lines = [
+                line.strip() for line in f.readlines()
+                if len(line.strip()) > 0
+            ]
 
     @property
     def lines(self) -> List[str]:
@@ -91,7 +95,7 @@ class TextFile(BaseFile):
 
 class XmlFile(BaseFile):
     """Generalized representation of an XML file.
-    
+
     Args:
         filepath: The path to the underlying file.
 
