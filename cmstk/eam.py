@@ -41,7 +41,7 @@ class SetflFile(TextFile):
         if filepath is None:
             filepath = "eam.alloy"
         self._comments: Optional[Tuple[str, str, str]] = None
-        self._symbols: Optional[List[str]] = None 
+        self._symbols: Optional[List[str]] = None
         self._symbol_pairs: Optional[List[str]] = None
         self._symbol_descriptors: Optional[Dict[str, str]] = None
         self._n_rho: Optional[int] = None
@@ -49,19 +49,16 @@ class SetflFile(TextFile):
         self._n_r: Optional[int] = None
         self._d_r: Optional[float] = None
         self._cutoff: Optional[float] = None
-        self._embedding_function: Dict[str, List[float]] = None
-        self._density_function: Dict[str, List[float]] = None
-        self._pair_function: Dict[str, List[float]] = None
+        self._embedding_function: Optional[Dict[str, List[float]]] = None
+        self._density_function: Optional[Dict[str, List[float]]] = None
+        self._pair_function: Optional[Dict[str, List[float]]] = None
         super().__init__(filepath)
-
 
     @property
     def comments(self) -> Tuple[str, str, str]:
         if self._comments is None:
-            self._comments = (
-                self.lines[0].strip(),
-                self.lines[1].strip(),
-                self.lines[2].strip())
+            self._comments = (self.lines[0].strip(), self.lines[1].strip(),
+                              self.lines[2].strip())
         return self._comments
 
     @comments.setter
@@ -93,7 +90,7 @@ class SetflFile(TextFile):
     def symbol_descriptors(self) -> Dict[str, str]:
         if self._symbol_descriptors is None:
             self._read_body()
-        return self._symbol_descriptors
+        return self._symbol_descriptors # type: ignore
 
     @symbol_descriptors.setter
     def symbol_descriptors(self, value: Dict[str, str]) -> None:
@@ -153,7 +150,7 @@ class SetflFile(TextFile):
     def embedding_function(self) -> Dict[str, List[float]]:
         if self._embedding_function is None:
             self._read_body()
-        return self._embedding_function
+        return self._embedding_function # type: ignore
 
     @embedding_function.setter
     def embedding_function(self, value: Dict[str, List[float]]) -> None:
@@ -163,7 +160,7 @@ class SetflFile(TextFile):
     def density_function(self) -> Dict[str, List[float]]:
         if self._density_function is None:
             self._read_body()
-        return self._density_function
+        return self._density_function # type: ignore
 
     @density_function.setter
     def density_function(self, value: Dict[str, List[float]]) -> None:
@@ -173,7 +170,7 @@ class SetflFile(TextFile):
     def pair_function(self) -> Dict[str, List[float]]:
         if self._pair_function is None:
             self._read_body()
-        return self._pair_function
+        return self._pair_function # type: ignore
 
     @pair_function.setter
     def pair_function(self, value: Dict[str, List[float]]) -> None:

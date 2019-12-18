@@ -40,7 +40,7 @@ class PotcarFile(TextFile):
                 line.strip() for line in f.readlines() if len(line.strip()) > 0
             ]
         # not ideal
-        self._lines += new_lines # not ideal
+        self._lines += new_lines # type: ignore
         self._titles = None
 
     def write(self, path: Optional[str]) -> None:

@@ -56,6 +56,6 @@ class OszicarFile(TextFile):
                 if seg == symbol:
                     # append the next segment
                     # because it is symbol's value
-                    values.append(float(segments[i+1]))
+                    values.append(float(segments[i + 1]))
                     break
         return values

@@ -13,8 +13,7 @@ def test_setfl_file():
     assert setfl.comments == (
         "Source: G. Bonny et al., Modelling Simul. Mater. Sci. Eng. 19 (2011) 085008",
         "Potential to model dislocatons: WP2-2 of PERFORM60",
-        "Contact information: gbonny@sckcen.be"
-    )
+        "Contact information: gbonny@sckcen.be")
     assert setfl.symbols == ["Fe", "Ni", "Cr"]
     assert setfl.symbol_pairs == [
         "FeFe", "FeNi", "FeCr", "NiNi", "NiCr", "CrCr"

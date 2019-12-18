@@ -139,8 +139,8 @@ class VasprunFile(XmlFile):
                                 if text is None:
                                     err = _bad_xml_err.format("array")
                                     raise ValueError(err)
-                                eigenvectors[i, j, k, l,
-                                             m] = float(text.split()[m])
+                                eigenvectors[i, j, k, l, m] = float(
+                                    text.split()[m])
             self._eigenvectors = eigenvectors
         return self._eigenvectors
 

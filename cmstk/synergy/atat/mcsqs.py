@@ -4,11 +4,11 @@ import numpy as np
 from typing import List, Optional
 
 
-def bestsqs_to_poscar(
-        bestsqs: BestsqsFile,
-        symbol_order: List[str],
-        direct: bool = False,
-        relaxations: Optional[List[np.ndarray]] = None) -> PoscarFile:
+def bestsqs_to_poscar(bestsqs: BestsqsFile,
+                      symbol_order: List[str],
+                      direct: bool = False,
+                      relaxations: Optional[List[np.ndarray]] = None
+                     ) -> PoscarFile:
     """Converts a BestsqsFile object into a PoscarFile object.
 
     Args:
