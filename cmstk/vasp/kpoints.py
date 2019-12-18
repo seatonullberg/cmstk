@@ -1,8 +1,8 @@
-from cmstk.util import BaseFile
+from cmstk.filetypes import TextFile
 from typing import Optional, Tuple
 
 
-class KpointsFile(BaseFile):
+class KpointsFile(TextFile):
     """File wrapper for a VASP KPOINTS file.
 
     Args:
@@ -46,15 +46,12 @@ class KpointsFile(BaseFile):
         if mesh_type is None:
             mesh_type = "Monkhorst-Pack"
         self._mesh_type = mesh_type
-        attrs = [
-            "_comment", "_n_kpoints", "_mesh_shift", "_mesh_size", "_mesh_type"
-        ]
-        super().__init__(attrs, filepath)
+        super().__init__(filepath)
 
     @property
     def comment(self) -> str:
         if self._comment is None:
-            self._comment = self._lines[0]
+            self._comment = self.lines[0]
         return self._comment
 
     @comment.setter
@@ -64,7 +61,7 @@ class KpointsFile(BaseFile):
     @property
     def n_kpoints(self) -> int:
         if self._n_kpoints is None:
-            self._n_kpoints = int(self._lines[1])
+            self._n_kpoints = int(self.lines[1])
         return self._n_kpoints
 
     @n_kpoints.setter
@@ -74,7 +71,7 @@ class KpointsFile(BaseFile):
     @property
     def mesh_shift(self) -> Tuple[int, int, int]:
         if self._mesh_shift is None:
-            shift = self._lines[4].split()
+            shift = self.lines[4].split()
             self._mesh_shift = tuple(map(int, [shift[0], shift[1], shift[2]]))
         return self._mesh_shift
 
@@ -85,7 +82,7 @@ class KpointsFile(BaseFile):
     @property
     def mesh_size(self) -> Tuple[int, int, int]:
         if self._mesh_size is None:
-            size = self._lines[3].split()
+            size = self.lines[3].split()
             self._mesh_size = tuple(map(int, [size[0], size[1], size[2]]))
         return self._mesh_size
 
@@ -96,7 +93,7 @@ class KpointsFile(BaseFile):
     @property
     def mesh_type(self) -> str:
         if self._mesh_type is None:
-            self._mesh_type = self._lines[2]
+            self._mesh_type = self.lines[2]
         return self._mesh_type
 
     @mesh_type.setter

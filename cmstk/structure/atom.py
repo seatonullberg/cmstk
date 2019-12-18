@@ -38,6 +38,13 @@ class Atom(object):
             velocity = np.array([0, 0, 0])
         self.velocity = velocity
 
+    def __str__(self) -> str:
+        return ("Atom: charge={}, magnetic_moment={}, position={}, "
+                "symbol={}, velocity={}").format(self.charge,
+                                                 self.magnetic_moment,
+                                                 self.position, self.symbol,
+                                                 self.velocity)
+
 
 class AtomCollection(object):
     """A generic collection of atoms.
@@ -85,9 +92,9 @@ class AtomCollection(object):
             raise ValueError(err)
 
     def remove_atom(self, position: np.ndarray) -> Atom:
-        """Removes an atom from the collection if the position is occupied and 
+        """Removes an atom from the collection if the position is occupied and
            returns it
-        
+
         Args:
             position: The position to remove an atom from.
 
@@ -111,14 +118,14 @@ class AtomCollection(object):
                     collection: 'AtomCollection',
                     offset: Optional[np.ndarray] = None) -> None:
         """Joins another AtomCollection with self.
-        
+
         Notes:
-            The incoming collection is copied so that the offset is not applied 
-            to the original. 
+            The incoming collection is copied so that the offset is not applied
+            to the original.
 
         Args:
             collection: The collection to concatenate.
-            offset: Translation vector to apply to `collection` prior to 
+            offset: Translation vector to apply to `collection` prior to
                     concatenation.
         """
         collection = copy.deepcopy(collection)
@@ -129,7 +136,7 @@ class AtomCollection(object):
 
     def sort_by_charge(self, hl: bool = False) -> None:
         """Groups atoms by their electronic charges.
-        
+
         Args:
             hl: Flag indicating high-to-low ordering.
         """
@@ -137,7 +144,7 @@ class AtomCollection(object):
 
     def sort_by_magnetic_moment(self, hl: bool = False) -> None:
         """Groups atoms by their magnetic moments.
-        
+
         Args:
             hl: Flag indicating high-to-low ordering.
         """
@@ -145,7 +152,7 @@ class AtomCollection(object):
 
     def sort_by_position(self, hl: bool = False) -> None:
         """Groups atoms by the magnitude of their positions.
-        
+
         Args:
             hl: Flag indicating high-to-low ordering.
         """
@@ -186,7 +193,7 @@ class AtomCollection(object):
 
     def sort_by_velocity(self, hl: bool = False) -> None:
         """Groups atoms by the magnitude of their velocities.
-        
+
         Args:
             hl: Flag indicating high-to-low ordering.
         """
@@ -274,7 +281,7 @@ class AtomCollection(object):
     @symbols.setter
     def symbols(self, value: List[str]) -> None:
         if len(value) != len(self._atoms):
-            err = "Number of symbols must match numbre of atoms."
+            err = "Number of symbols must match number of atoms."
             raise ValueError(err)
         atoms = []
         for a, s in zip(self._atoms, value):

@@ -10,13 +10,13 @@ def bestsqs_to_poscar(bestsqs: BestsqsFile,
                       relaxations: Optional[List[np.ndarray]] = None
                      ) -> PoscarFile:
     """Converts a BestsqsFile object into a PoscarFile object.
-    
+
     Args:
         bestsqs: File object to convert.
         symbol_order: The order in which symbols should be arranged.
         direct: Specifies a direct (fractional) coordinate system.
         relaxations: Selective dynamics parameters of each atom in the lattice.
-    
+
     Raise:
         ValueError:
         - all members of `symbol_order` must be unique
@@ -24,9 +24,11 @@ def bestsqs_to_poscar(bestsqs: BestsqsFile,
     if len(symbol_order) != len(set(symbol_order)):
         err = "all members or `symbol_order` must be unique"
         raise ValueError(err)
-    bestsqs.simulation_cell.collection.sort_by_symbol(symbol_order)
+    with bestsqs:
+        bestsqs.simulation_cell.sort_by_symbol(symbol_order)
+        sim_cell = bestsqs.simulation_cell
     return PoscarFile(
         direct=direct,
-        simulation_cell=bestsqs.simulation_cell,
+        simulation_cell=sim_cell,
         relaxations=relaxations,
     )

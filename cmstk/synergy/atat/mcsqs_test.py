@@ -9,19 +9,15 @@ def test_bestsqs_to_poscar():
     """Tests the conversion of a BestsqsFile object to a PoscarFile object."""
     path = os.path.join(data_directory(), "atat",
                         "Fe75Cr25_BCC_bulk.bestsqs.out")
-    bestsqs = BestsqsFile(filepath=path)
-    bestsqs.read()
     sym_order = ["Fe", "Cr"]
+    bestsqs = BestsqsFile(filepath=path)
+    with bestsqs:
+        bestsqs_cm = bestsqs.simulation_cell.coordinate_matrix
+        bestsqs_n_atoms = bestsqs.simulation_cell.n_atoms
     poscar = bestsqs_to_poscar(bestsqs, sym_order)
-    poscar_positions = np.array(
-        [p for p in poscar.simulation_cell.collection.positions])
-    bestsqs_positions = np.array(
-        [p for p in bestsqs.simulation_cell.collection.positions])
-    assert np.array_equal(poscar_positions, bestsqs_positions)
-    assert np.array_equal(poscar.simulation_cell.coordinate_matrix,
-                          bestsqs.simulation_cell.coordinate_matrix)
+    poscar_n_atoms = poscar.simulation_cell.n_atoms
+    poscar_cm = poscar.simulation_cell.coordinate_matrix
+    assert bestsqs_n_atoms == poscar_n_atoms != 0
+    assert np.array_equal(bestsqs_cm, poscar_cm)
     assert poscar.n_atoms_per_symbol[0] == 12
     assert poscar.n_atoms_per_symbol[1] == 4
-    poscar.write("test.poscar")
-    assert os.path.exists("test.poscar")
-    os.remove("test.poscar")

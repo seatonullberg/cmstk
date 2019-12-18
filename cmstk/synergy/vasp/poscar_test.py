@@ -9,19 +9,17 @@ def test_poscar_to_rndstr():
     """Tests the conversion of a PoscarFile object to a RndstrFile object."""
     path = os.path.join(data_directory(), "vasp", "Fe75Cr25_BCC_bulk.poscar")
     poscar = PoscarFile(filepath=path)
-    poscar.read()
+    poscar.load()
     probabilities = [{
         "Fe": 0.75,
         "Cr": 0.25
-    } for _ in range(poscar.simulation_cell.collection.n_atoms)]
+    } for _ in range(poscar.simulation_cell.n_atoms)]
     vectors = np.array([[1.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 1.0]])
     rndstr = poscar_to_rndstr(poscar=poscar,
                               probabilities=probabilities,
                               vectors=vectors)
-    poscar_positions = np.array(
-        [p for p in poscar.simulation_cell.collection.positions])
-    rndstr_positions = np.array(
-        [p for p in rndstr.simulation_cell.collection.positions])
+    poscar_positions = np.array([p for p in poscar.simulation_cell.positions])
+    rndstr_positions = np.array([p for p in rndstr.simulation_cell.positions])
     assert np.array_equal(poscar_positions, rndstr_positions)
     assert np.array_equal(poscar.simulation_cell.coordinate_matrix,
                           rndstr.simulation_cell.coordinate_matrix)

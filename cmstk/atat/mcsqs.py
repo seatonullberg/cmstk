@@ -1,13 +1,13 @@
-from cmstk.structure.atom import Atom, AtomCollection
+from cmstk.structure.atom import Atom
 from cmstk.structure.simulation import SimulationCell
-from cmstk.util import BaseFile
+from cmstk.filetypes import TextFile
 import numpy as np
 from typing import Dict, List, Optional
 
 
-class BestcorrFile(BaseFile):
+class BestcorrFile(TextFile):
     """File wrapper for a bestcorr.out output file.
-    
+
     Notes:
         This is a read-only wrapper.
 
@@ -29,15 +29,14 @@ class BestcorrFile(BaseFile):
             filepath = "bestcorr.out"
         self._clusters: Optional[List[List[Dict[str, float]]]] = None
         self._objective_functions: Optional[List[float]] = None
-        attrs = ["_clusters", "_objective_functions"]
-        super().__init__(attrs, filepath)
+        super().__init__(filepath)
 
     @property
     def clusters(self) -> List[List[Dict[str, float]]]:
         if self._clusters is None:
             clusters: List[List[Dict[str, float]]] = []
             current_cluster: List[Dict[str, float]] = []
-            for line in self._lines:
+            for line in self.lines:
                 if line.startswith("Objective_function"):
                     clusters.append(current_cluster)
                     current_cluster = []
@@ -58,7 +57,7 @@ class BestcorrFile(BaseFile):
     def objective_functions(self) -> List[float]:
         if self._objective_functions is None:
             objective_functions: List[float] = []
-            for line in self._lines:
+            for line in self.lines:
                 if line.startswith("Objective_function"):
                     value = float(line.split("=")[1])
                     objective_functions.append(value)
@@ -66,16 +65,16 @@ class BestcorrFile(BaseFile):
         return self._objective_functions
 
 
-class BestsqsFile(BaseFile):
+class BestsqsFile(TextFile):
     """File wrapper for a bestsqs.out output file.
-    
+
     Notes:
         This is a read-only wrapper.
 
         File specification:
         https://www.brown.edu/Departments/Engineering/Labs/avdw/atat/manual/node47.html
 
-    
+
     Args:
         filepath: Filepath to a bestsqs.out file.
 
@@ -90,42 +89,40 @@ class BestsqsFile(BaseFile):
             filepath = "bestsqs.out"
         self._simulation_cell: Optional[SimulationCell] = None
         self._vectors: Optional[np.ndarray] = None
-        attrs = ["_simulation_cell", "_vectors"]
-        super().__init__(attrs, filepath)
+        super().__init__(filepath)
 
     @property
     def simulation_cell(self) -> SimulationCell:
         if self._simulation_cell is None:
-            cm = self._lines[:3]
+            cm = self.lines[:3]
             cm = [np.fromstring(row, sep=" ") for row in cm]
-            positions = self._lines[6:]
+            positions = self.lines[6:]
             positions = [" ".join(p.split()[:3]) for p in positions]
             positions_arr = [np.fromstring(p, sep=" ") for p in positions]
-            symbols = self._lines[6:]
+            symbols = self.lines[6:]
             symbols = [s.split()[-1] for s in symbols]
             atoms = []
             for p, s in zip(positions_arr, symbols):
                 atoms.append(Atom(position=p, symbol=s))
-            collection = AtomCollection(atoms)
-            simulation_cell = SimulationCell(collection, np.array(cm))
+            simulation_cell = SimulationCell(atoms, np.array(cm))
             self._simulation_cell = simulation_cell
         return self._simulation_cell
 
     @property
     def vectors(self) -> np.ndarray:
         if self._vectors is None:
-            vectors = self._lines[3:6]
+            vectors = self.lines[3:6]
             self._vectors = np.array(
                 [np.fromstring(vec, sep=" ") for vec in vectors])
         return self._vectors
 
 
-class RndstrFile(BaseFile):
+class RndstrFile(TextFile):
     """File wrapper for a rndstr.in input file.
-    
+
     Notes:
         This implementation only supports the [ax, ay, az...] tilt angle format.
-        Any files formatted differently will be read improperly and may fail 
+        Any files formatted differently will be read improperly and may fail
         silently!
 
         File specification:
@@ -156,21 +153,19 @@ class RndstrFile(BaseFile):
         if vectors is None:
             vectors = np.identity(3)
         self._vectors = vectors
-        attrs = ["_simulation_cell", "_probabilities", "_vectors"]
-        super().__init__(attrs, filepath)
+        super().__init__(filepath)
 
     @property
     def simulation_cell(self) -> SimulationCell:
         if self._simulation_cell is None:
-            cm = self._lines[:3]
+            cm = self.lines[:3]
             cm = [np.fromstring(row, sep=" ") for row in cm]
-            positions = [" ".join(l.split()[:3]) for l in self._lines[6:]]
+            positions = [" ".join(l.split()[:3]) for l in self.lines[6:]]
             positions_arr = [np.fromstring(p, sep=" ") for p in positions]
             atoms = []
             for p in positions_arr:
                 atoms.append(Atom(position=p))
-            collection = AtomCollection(atoms)
-            simulation_cell = SimulationCell(collection, np.array(cm))
+            simulation_cell = SimulationCell(atoms, np.array(cm))
             self._simulation_cell = simulation_cell
         return self._simulation_cell
 
@@ -181,7 +176,7 @@ class RndstrFile(BaseFile):
     @property
     def probabilities(self) -> List[Dict[str, float]]:
         if self._probabilities is None:
-            probabilities = [l.split()[3] for l in self._lines[6:]]
+            probabilities = [l.split()[3] for l in self.lines[6:]]
             probabilities_split = [p.split(",") for p in probabilities]
             formatted_probabilities = []
             for probability in probabilities_split:
@@ -200,7 +195,7 @@ class RndstrFile(BaseFile):
     @property
     def vectors(self) -> np.ndarray:
         if self._vectors is None:
-            vectors = self._lines[3:6]
+            vectors = self.lines[3:6]
             self._vectors = np.array(
                 [np.fromstring(vec, sep=" ") for vec in vectors])
         return self._vectors
@@ -211,7 +206,7 @@ class RndstrFile(BaseFile):
 
     def write(self, path: Optional[str] = None) -> None:
         """Writes a rndstr.in file.
-        
+
         Args:
             path: The filepath to write to.
         """
@@ -224,8 +219,7 @@ class RndstrFile(BaseFile):
             for row in self.vectors:
                 row = " ".join(row.astype(str))
                 f.write("{}\n".format(row))
-            zipper = zip(self.simulation_cell.collection.positions,
-                         self.probabilities)
+            zipper = zip(self.simulation_cell.positions, self.probabilities)
             for position, probability in zipper:
                 position_str = " ".join(position.astype(str))
                 prob_str = ",".join(
