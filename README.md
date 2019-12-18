@@ -36,3 +36,7 @@ TODO
 * Visualization tools for common tasks
 
 * High-level automated workflows using the low-level file wrappers
+
+* LAMMPS interface
+
+* GULP interface
