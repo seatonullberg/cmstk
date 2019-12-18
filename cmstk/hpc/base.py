@@ -39,8 +39,8 @@ class BaseScript(TextFile):
         return self._cmds
 
     @cmds.setter
-    def cmds(self, v: List[str]) -> None:
-        self._cmds = v
+    def cmds(self, value: List[str]) -> None:
+        self._cmds = value
 
     @property
     def tags(self) -> List[Tag]:
@@ -52,8 +52,8 @@ class BaseScript(TextFile):
         return self._tags
 
     @tags.setter
-    def tags(self, v: List[Tag]) -> None:
-        self._tags = v
+    def tags(self, value: List[Tag]) -> None:
+        self._tags = value
 
     def write(self, path: Optional[str] = None) -> None:
         if path is None:
