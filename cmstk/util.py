@@ -74,11 +74,12 @@ class Tag(object):
             prefix = ""
         name = name_section.replace(prefix, "").strip()
         value_section = s.split("=")[1]
-        if len(value_section.split()) > 1:
+        if "#" in value_section:
+            value = value_section.split("#")[0].strip()
             comment = value_section.split("#")[1].strip()
         else:
+            value = value_section.strip()
             comment = "no comment specified"
-        value = value_section.split("#")[0].strip()
         return Tag(name, comment, prefix, value)
 
     @property

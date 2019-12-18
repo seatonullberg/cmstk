@@ -25,21 +25,11 @@ def test_slurm_script():
     assert script_tags["--output"].value == "job.out"
     assert script_tags["--error"].value == "job.err"
     assert len(script.cmds) == 3
-
-    script_writer = copy.deepcopy(script)
-    job_name_tag = slurm.job_name_tag(value="test")
-    script_writer.tags.append(job_name_tag)
-    script_writer.write("test.slurm")
+    script.write("test.slurm")
 
     script_reader = slurm.SlurmScript(filepath="test.slurm")
     script_reader.load()
     script_reader_tags = {tag.name: tag for tag in script_reader.tags}
-    assert script_reader_tags["--job-name"].comment == "name of the job"
     for key in script_tags:
-        if key == "--job-name":
-            assert script_reader_tags[key].value == "test"
-        elif key == "--time":
-            assert script_reader_tags[key].value == "48:24:12"
-        else:
-            assert script_tags[key].value == script_reader_tags[key].value
+        assert script_tags[key].value == script_reader_tags[key].value
     os.remove("test.slurm")
