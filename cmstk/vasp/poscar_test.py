@@ -12,6 +12,7 @@ def test_poscar_file():
     poscar_writer = PoscarFile(filepath="test.poscar",
                                comment=poscar.comment,
                                direct=poscar.direct,
+                               scaling_factor=poscar.scaling_factor,
                                simulation_cell=poscar.simulation_cell,
                                n_atoms_per_symbol=poscar.n_atoms_per_symbol,
                                relaxations=poscar.relaxations)
@@ -23,14 +24,13 @@ def test_poscar_file():
     assert np.array_equal(poscar_reader.simulation_cell.coordinate_matrix,
                           poscar.simulation_cell.coordinate_matrix)
     reader_positions = np.array(
-        [p for p in poscar_reader.simulation_cell.collection.positions])
-    positions = np.array(
-        [p for p in poscar.simulation_cell.collection.positions])
+        [p for p in poscar_reader.simulation_cell.positions])
+    positions = np.array([p for p in poscar.simulation_cell.positions])
     assert np.array_equal(reader_positions, positions)
     assert len(positions) > 0
     assert poscar_reader.n_atoms_per_symbol == poscar.n_atoms_per_symbol
     assert np.array_equal(poscar_reader.relaxations, poscar.relaxations)
-    assert poscar_reader.simulation_cell.scaling_factor == poscar.simulation_cell.scaling_factor
+    assert poscar_reader.scaling_factor == poscar.scaling_factor
     assert os.path.exists("test.poscar")
     os.remove("test.poscar")
 
@@ -43,6 +43,7 @@ def test_contcar_file():
     poscar_writer = PoscarFile(filepath="test.contcar",
                                comment=poscar.comment,
                                direct=poscar.direct,
+                               scaling_factor=poscar.scaling_factor,
                                simulation_cell=poscar.simulation_cell,
                                n_atoms_per_symbol=poscar.n_atoms_per_symbol,
                                relaxations=poscar.relaxations)
@@ -54,13 +55,12 @@ def test_contcar_file():
     assert np.array_equal(poscar_reader.simulation_cell.coordinate_matrix,
                           poscar.simulation_cell.coordinate_matrix)
     reader_positions = np.array(
-        [p for p in poscar_reader.simulation_cell.collection.positions])
-    positions = np.array(
-        [p for p in poscar.simulation_cell.collection.positions])
+        [p for p in poscar_reader.simulation_cell.positions])
+    positions = np.array([p for p in poscar.simulation_cell.positions])
     assert np.array_equal(reader_positions, positions)
     assert len(positions) > 0
     assert poscar_reader.n_atoms_per_symbol == poscar.n_atoms_per_symbol
     assert np.array_equal(poscar_reader.relaxations, poscar.relaxations)
-    assert poscar_reader.simulation_cell.scaling_factor == poscar.simulation_cell.scaling_factor
+    assert poscar_reader.scaling_factor == poscar.scaling_factor
     assert os.path.exists("test.contcar")
     os.remove("test.contcar")

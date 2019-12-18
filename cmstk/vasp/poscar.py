@@ -1,5 +1,5 @@
 from cmstk.filetypes import TextFile
-from cmstk.structure.atom import Atom, AtomCollection
+from cmstk.structure.atom import Atom
 from cmstk.structure.simulation import SimulationCell
 from collections import OrderedDict
 import numpy as np
@@ -8,16 +8,16 @@ from typing import Dict, List, Optional, Tuple
 
 class PoscarFile(TextFile):
     """File wrapper for a VASP POSCAR file.
-    
+
     Notes:
         This wrapper is compatible with both POSCAR and CONTCAR files
         because they are exactly the same with the exception of velocities
         being reported in the CONTCAR. However, I have chosen to ignore the
         velocities section because never once have I seen an example where it
-        was used for anything or even an example where the result was anything 
-        except an array of zeros. If this feature is critically important to 
+        was used for anything or even an example where the result was anything
+        except an array of zeros. If this feature is critically important to
         you, fork it and fix it :)
-    
+
     Args:
         filepath: Filepath to a POSCAR file.
         comment: Comment line at the top of the file.
@@ -41,6 +41,7 @@ class PoscarFile(TextFile):
                  filepath: Optional[str] = None,
                  comment: Optional[str] = None,
                  direct: bool = False,
+                 scaling_factor: Optional[float] = None,
                  simulation_cell: Optional[SimulationCell] = None,
                  n_atoms_per_symbol: Optional[List[int]] = None,
                  relaxations: Optional[List[np.ndarray]] = None) -> None:
@@ -50,10 +51,11 @@ class PoscarFile(TextFile):
             comment = "# painstakingly crafted by cmstk :)"
         self._comment = comment
         self._direct = direct
+        self._scaling_factor = scaling_factor
         self._simulation_cell = simulation_cell
         if n_atoms_per_symbol is None and simulation_cell is not None:
             symbol_count_map: Dict[str, int] = OrderedDict()
-            for sym in self.simulation_cell.collection.symbols:
+            for sym in self.simulation_cell.symbols:
                 if sym in symbol_count_map:
                     symbol_count_map[sym] += 1
                 else:
@@ -65,7 +67,7 @@ class PoscarFile(TextFile):
 
     def write(self, path: Optional[str] = None) -> None:
         """Writes a POSCAR file.
-        
+
         Args:
             path: Filepath to write to.
         """
@@ -73,7 +75,7 @@ class PoscarFile(TextFile):
             path = self.filepath
         with open(path, "w") as f:
             f.write("{}\n".format(self.comment))
-            f.write("\t{}\n".format(self.simulation_cell.scaling_factor))
+            f.write("\t{}\n".format(self.scaling_factor))
             for row in self.simulation_cell.coordinate_matrix:
                 row = "{:.6f} {:.6f} {:.6f}".format(row[0], row[1], row[2])
                 f.write("\t{}\n".format(row))
@@ -85,7 +87,7 @@ class PoscarFile(TextFile):
                 f.write("Direct\n")
             else:
                 f.write("Cartesian\n")
-            for i, p in enumerate(self.simulation_cell.collection.positions):
+            for i, p in enumerate(self.simulation_cell.positions):
                 p_row = "{:.6f} {:.6f} {:.6f}".format(p[0], p[1], p[2])
                 if len(self.relaxations) != 0:
                     r = [("T" if x else "F") for x in self.relaxations[i]]
@@ -119,9 +121,18 @@ class PoscarFile(TextFile):
         self._direct = value
 
     @property
+    def scaling_factor(self) -> float:
+        if self._scaling_factor is None:
+            self._scaling_factor = float(self.lines[1])
+        return self._scaling_factor
+
+    @scaling_factor.setter
+    def scaling_factor(self, value: float) -> None:
+        self._scaling_factor = value
+
+    @property
     def simulation_cell(self) -> SimulationCell:
         if self._simulation_cell is None:
-            sf = float(self.lines[1])
             cm = self.lines[2:5]
             cm_arr = np.array([np.fromstring(row, sep=" ") for row in cm])
             start, end = self._position_section_line_numbers
@@ -131,8 +142,7 @@ class PoscarFile(TextFile):
             atoms = []
             for p in arr_positions:
                 atoms.append(Atom(position=p))
-            collection = AtomCollection(atoms)
-            simulation_cell = SimulationCell(collection, cm_arr, sf)
+            simulation_cell = SimulationCell(atoms, cm_arr)
             self._simulation_cell = simulation_cell
         return self._simulation_cell
 
@@ -156,7 +166,7 @@ class PoscarFile(TextFile):
 
     @relaxations.setter
     def relaxations(self, value: List[np.ndarray]) -> None:
-        if len(value) != self.simulation_cell.collection.n_atoms:
+        if len(value) != self.simulation_cell.n_atoms:
             err = "relaxations length must match number of atoms."
             raise ValueError(err)
         self._relaxations = value
@@ -170,7 +180,7 @@ class PoscarFile(TextFile):
 
     @n_atoms_per_symbol.setter
     def n_atoms_per_symbol(self, value: List[int]) -> None:
-        if len(value) != self.simulation_cell.collection.n_symbols:
+        if len(value) != self.simulation_cell.n_symbols:
             err = "Number of symbols must match existing value."
             raise ValueError(err)
         self._n_atoms_per_symbol = value

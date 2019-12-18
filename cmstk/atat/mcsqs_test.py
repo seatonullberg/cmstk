@@ -25,8 +25,8 @@ def test_bestsqs_file():
         assert np.array_equal(bestsqs.simulation_cell.coordinate_matrix, cm)
         lattice_vectors = np.array([[0, 0, -1], [0, -1, 0], [-1, 0, 0]])
         assert np.array_equal(bestsqs.vectors, lattice_vectors)
-        assert len(bestsqs.simulation_cell.collection.positions) == 16
-        assert bestsqs.simulation_cell.collection.n_atoms == 16
+        assert len(bestsqs.simulation_cell.positions) == 16
+        assert bestsqs.simulation_cell.n_atoms == 16
 
 
 def test_rndstr_file():
@@ -46,8 +46,8 @@ def test_rndstr_file():
         assert np.array_equal(rndstr_reader.simulation_cell.coordinate_matrix,
                               rndstr.simulation_cell.coordinate_matrix)
         assert np.array_equal(rndstr_reader.vectors, rndstr.vectors)
-        reader_positions = rndstr_reader.simulation_cell.collection.positions
-        positions = rndstr.simulation_cell.collection.positions
+        reader_positions = rndstr_reader.simulation_cell.positions
+        positions = rndstr.simulation_cell.positions
         assert np.array_equal(reader_positions, positions)
         assert rndstr_reader.probabilities == rndstr.probabilities
     os.remove("test.in")

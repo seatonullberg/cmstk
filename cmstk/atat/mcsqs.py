@@ -1,4 +1,4 @@
-from cmstk.structure.atom import Atom, AtomCollection
+from cmstk.structure.atom import Atom
 from cmstk.structure.simulation import SimulationCell
 from cmstk.filetypes import TextFile
 import numpy as np
@@ -7,7 +7,7 @@ from typing import Dict, List, Optional
 
 class BestcorrFile(TextFile):
     """File wrapper for a bestcorr.out output file.
-    
+
     Notes:
         This is a read-only wrapper.
 
@@ -67,14 +67,14 @@ class BestcorrFile(TextFile):
 
 class BestsqsFile(TextFile):
     """File wrapper for a bestsqs.out output file.
-    
+
     Notes:
         This is a read-only wrapper.
 
         File specification:
         https://www.brown.edu/Departments/Engineering/Labs/avdw/atat/manual/node47.html
 
-    
+
     Args:
         filepath: Filepath to a bestsqs.out file.
 
@@ -104,8 +104,7 @@ class BestsqsFile(TextFile):
             atoms = []
             for p, s in zip(positions_arr, symbols):
                 atoms.append(Atom(position=p, symbol=s))
-            collection = AtomCollection(atoms)
-            simulation_cell = SimulationCell(collection, np.array(cm))
+            simulation_cell = SimulationCell(atoms, np.array(cm))
             self._simulation_cell = simulation_cell
         return self._simulation_cell
 
@@ -120,10 +119,10 @@ class BestsqsFile(TextFile):
 
 class RndstrFile(TextFile):
     """File wrapper for a rndstr.in input file.
-    
+
     Notes:
         This implementation only supports the [ax, ay, az...] tilt angle format.
-        Any files formatted differently will be read improperly and may fail 
+        Any files formatted differently will be read improperly and may fail
         silently!
 
         File specification:
@@ -166,8 +165,7 @@ class RndstrFile(TextFile):
             atoms = []
             for p in positions_arr:
                 atoms.append(Atom(position=p))
-            collection = AtomCollection(atoms)
-            simulation_cell = SimulationCell(collection, np.array(cm))
+            simulation_cell = SimulationCell(atoms, np.array(cm))
             self._simulation_cell = simulation_cell
         return self._simulation_cell
 
@@ -208,7 +206,7 @@ class RndstrFile(TextFile):
 
     def write(self, path: Optional[str] = None) -> None:
         """Writes a rndstr.in file.
-        
+
         Args:
             path: The filepath to write to.
         """
@@ -221,8 +219,7 @@ class RndstrFile(TextFile):
             for row in self.vectors:
                 row = " ".join(row.astype(str))
                 f.write("{}\n".format(row))
-            zipper = zip(self.simulation_cell.collection.positions,
-                         self.probabilities)
+            zipper = zip(self.simulation_cell.positions, self.probabilities)
             for position, probability in zipper:
                 position_str = " ".join(position.astype(str))
                 prob_str = ",".join(

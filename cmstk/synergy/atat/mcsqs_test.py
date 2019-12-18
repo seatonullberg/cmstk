@@ -13,9 +13,9 @@ def test_bestsqs_to_poscar():
     bestsqs = BestsqsFile(filepath=path)
     with bestsqs:
         bestsqs_cm = bestsqs.simulation_cell.coordinate_matrix
-        bestsqs_n_atoms = bestsqs.simulation_cell.collection.n_atoms
+        bestsqs_n_atoms = bestsqs.simulation_cell.n_atoms
     poscar = bestsqs_to_poscar(bestsqs, sym_order)
-    poscar_n_atoms = poscar.simulation_cell.collection.n_atoms
+    poscar_n_atoms = poscar.simulation_cell.n_atoms
     poscar_cm = poscar.simulation_cell.coordinate_matrix
     assert bestsqs_n_atoms == poscar_n_atoms != 0
     assert np.array_equal(bestsqs_cm, poscar_cm)
