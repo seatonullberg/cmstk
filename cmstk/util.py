@@ -1,5 +1,5 @@
 import os
-from typing import Any, Dict, List, Optional, Sequence
+from typing import Any, List, Optional, Sequence
 
 
 def consecutive_percent_difference(x: Sequence) -> List:
@@ -100,4 +100,5 @@ class Tag(object):
 
     def to_str(self) -> str:
         """Writes the tag info into a string."""
-        return "{} {} = {} # {}".format(self.prefix, self.name, self.value, self.comment).strip()
+        return "{} {} = {} # {}".format(self.prefix, self.name, self.value,
+                                        self.comment).strip()

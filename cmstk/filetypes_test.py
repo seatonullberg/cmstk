@@ -8,7 +8,8 @@ def test_base_file():
     bf = BaseFile(filepath)
     assert bf.filepath == filepath
     with pytest.raises(NotImplementedError):
-        bf.load() 
+        bf.load()
+
 
 def test_json_file():
     filepath = "test.json"
@@ -30,6 +31,7 @@ def test_json_file():
         _ = new_jf.json_data
     os.remove(filepath)
 
+
 def test_text_file():
     filepath = "test.txt"
     content = "test"
@@ -49,6 +51,7 @@ def test_text_file():
     with pytest.raises(RuntimeError):
         _ = new_tf.lines
     os.remove(filepath)
+
 
 def test_xml_file():
     filepath = "test.xml"

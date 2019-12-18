@@ -30,8 +30,11 @@ class SlurmScript(BaseScript):
 
 
 def account_tag(value: Any = None) -> Tag:
-    return Tag(name="--account", comment="user account name",
-               prefix="#SBATCH", value=value)
+    return Tag(name="--account",
+               comment="user account name",
+               prefix="#SBATCH",
+               value=value)
+
 
 def distribution_tag(value: Any = None) -> Tag:
     return Tag(name="--distribution",
@@ -39,38 +42,65 @@ def distribution_tag(value: Any = None) -> Tag:
                prefix="#SBATCH",
                value=value)
 
+
 def error_tag(value: Any = None) -> Tag:
-    return Tag(name="--error", comment="filename to write stderr to",
-               prefix="#SBATCH", value=value)
+    return Tag(name="--error",
+               comment="filename to write stderr to",
+               prefix="#SBATCH",
+               value=value)
+
 
 def job_name_tag(value: Any = None) -> Tag:
-    return Tag(name="--job-name", comment="name of the job",
-               prefix="#SBATCH", value=value)
+    return Tag(name="--job-name",
+               comment="name of the job",
+               prefix="#SBATCH",
+               value=value)
+
 
 def mail_type_tag(value: Any = None) -> Tag:
-    return Tag(name="--mail-type", comment="email event triggers",
-               prefix="#SBATCH", value=value)
+    return Tag(name="--mail-type",
+               comment="email event triggers",
+               prefix="#SBATCH",
+               value=value)
+
 
 def mail_user_tag(value: Any = None) -> Tag:
-    return Tag(name="--mail-user", comment="user email address",
-               prefix="#SBATCH", value=value)
+    return Tag(name="--mail-user",
+               comment="user email address",
+               prefix="#SBATCH",
+               value=value)
+
 
 def mem_per_cpu_tag(value: Any = None) -> Tag:
-    return Tag(name="--mem-per-cpu", comment="memory to assign to each CPU",
-               prefix="#SBATCH", value=value)
+    return Tag(name="--mem-per-cpu",
+               comment="memory to assign to each CPU",
+               prefix="#SBATCH",
+               value=value)
+
 
 def ntasks_tag(value: Any = None) -> Tag:
-    return Tag(name="--ntasks", comment="number of tasks to run",
-               prefix="#SBATCH", value=value)
+    return Tag(name="--ntasks",
+               comment="number of tasks to run",
+               prefix="#SBATCH",
+               value=value)
+
 
 def output_tag(value: Any = None) -> Tag:
-    return Tag(name="--output", comment="filename ot write stdout to",
-               prefix="#SBATCH", value=value)
+    return Tag(name="--output",
+               comment="filename ot write stdout to",
+               prefix="#SBATCH",
+               value=value)
+
 
 def qos_tag(value: Any = None) -> Tag:
-    return Tag(name="--qos", comment="QOS account name",
-               prefix="#SBATCH", value=value)
+    return Tag(name="--qos",
+               comment="QOS account name",
+               prefix="#SBATCH",
+               value=value)
+
 
 def time_tag(value: Any = None) -> Tag:
-    return Tag(name="--time", comment="max duration of the job",
-               prefix="#SBATCH", value=value)
+    return Tag(name="--time",
+               comment="max duration of the job",
+               prefix="#SBATCH",
+               value=value)

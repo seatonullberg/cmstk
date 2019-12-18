@@ -1,9 +1,6 @@
 from cmstk.util import data_directory
 from cmstk.vasp import incar
-import copy
-import numpy as np
 import os
-import pytest
 
 
 def test_incar_file():

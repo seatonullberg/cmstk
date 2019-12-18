@@ -1,5 +1,4 @@
 from cmstk.util import within_one_percent, consecutive_percent_difference
-import pytest
 
 
 def test_consecutive_percent_difference():

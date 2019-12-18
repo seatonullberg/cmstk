@@ -37,11 +37,13 @@ class Aluminum(Element):
         unit_cell = CubicBravais(4.0495, ["Al", "Al", "Al", "Al"], "F")
         super().__init__(1.21, 13, 1.18, "Al", unit_cell, 26.982)
 
+
 class Chromium(Element):
 
     def __init__(self) -> None:
         unit_cell = CubicBravais(2.91, ["Cr", "Cr"], "I")
         super().__init__(1.39, 24, 1.66, "Cr", unit_cell, 51.9961)
+
 
 class Iron(Element):
 

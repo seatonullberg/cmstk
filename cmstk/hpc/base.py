@@ -33,7 +33,7 @@ class BaseScript(TextFile):
     def cmds(self) -> List[str]:
         if self._cmds is None:
             self._cmds = [
-                line for line in self.lines[1:] # skip the shebang
+                line for line in self.lines[1:]  # skip the shebang
                 if not line.startswith(self.prefix)
             ]
         return self._cmds

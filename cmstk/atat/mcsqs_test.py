@@ -44,7 +44,7 @@ def test_rndstr_file():
     rndstr_reader = RndstrFile(filepath="test.in")
     with rndstr_reader:
         assert np.array_equal(rndstr_reader.simulation_cell.coordinate_matrix,
-                            rndstr.simulation_cell.coordinate_matrix)
+                              rndstr.simulation_cell.coordinate_matrix)
         assert np.array_equal(rndstr_reader.vectors, rndstr.vectors)
         reader_positions = rndstr_reader.simulation_cell.collection.positions
         positions = rndstr.simulation_cell.collection.positions

@@ -18,8 +18,7 @@ class BaseFile(object):
     def load(self, path: Optional[str] = None) -> None:
         """Load the underlying file into memory."""
         raise NotImplementedError(
-            "`load` should be overridden by the child object"
-        )
+            "`load` should be overridden by the child object")
 
     def unload(self) -> None:
         """Unload the underlying file from memory."""
@@ -82,8 +81,7 @@ class TextFile(BaseFile):
         with open(path, "r") as f:
             # remove whitespace and skip empty lines
             self._lines = [
-                line.strip() for line in f.readlines()
-                if len(line.strip()) > 0
+                line.strip() for line in f.readlines() if len(line.strip()) > 0
             ]
 
     @property

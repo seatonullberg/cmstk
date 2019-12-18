@@ -2,7 +2,6 @@ from cmstk.filetypes import XmlFile
 import numpy as np
 from typing import Optional
 
-
 _bad_xml_err = "Unable to find or parse section `{}`."
 
 
@@ -33,7 +32,6 @@ class VasprunFile(XmlFile):
         self._eigenvectors: Optional[np.ndarray] = None
         self._fermi_energy: Optional[float] = None
         super().__init__(filepath)
-
 
     @property
     def density_of_states(self) -> np.ndarray:
@@ -141,7 +139,8 @@ class VasprunFile(XmlFile):
                                 if text is None:
                                     err = _bad_xml_err.format("array")
                                     raise ValueError(err)
-                                eigenvectors[i, j, k, l, m] = float(text.split()[m])
+                                eigenvectors[i, j, k, l,
+                                             m] = float(text.split()[m])
             self._eigenvectors = eigenvectors
         return self._eigenvectors
 

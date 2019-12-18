@@ -1,8 +1,6 @@
 from cmstk.util import data_directory
 from cmstk.hpc import slurm
-import copy
 import os
-import pytest
 
 
 def test_slurm_script():
