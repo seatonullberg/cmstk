@@ -1,4 +1,5 @@
 from cmstk.filetypes import TextFile
+from cmstk.notifiers import BaseNotifier
 from cmstk.util import Tag
 from typing import List, Optional
 
@@ -65,3 +66,18 @@ class BaseScript(TextFile):
             f.write("\n")
             for cmd in self.cmds:
                 f.write("{}\n".format(cmd))
+
+class BaseJob(object):
+    """Representation of an HPC job.
+
+    Args:
+        notifiers: Notifier objects to monitor for success or failure.
+        submission_script: The job submission script.
+        working_directory: The directory to work in.
+    """
+
+    def __init__(self,
+                 notifiers: List[BaseNotifier],
+                 submission_script: BaseScript,
+                 working_directory: str) -> None:
+        pass
