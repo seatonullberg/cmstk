@@ -13,6 +13,7 @@ class BaseNotifier(object):
         triggers_failure: List of strings indicating failure to complete.
         triggers_success: List of strings indicating successful completion.
     """
+
     def __init__(self,
                  source: Queue,
                  delay: Optional[datetime.timedelta] = None,
@@ -30,6 +31,7 @@ class FileNotifier(BaseNotifier):
         triggers_failure: List of strings indicating failure to complete.
         triggers_success: List of strings indicating successful completion.
     """
+
     def __init__(self,
                  filepath: str,
                  delay: Optional[datetime.timedelta] = None,
