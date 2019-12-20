@@ -1,6 +1,5 @@
 from cmstk.filetypes import TextFile
-from cmstk.notifiers import BaseNotifier
-from cmstk.util import Tag
+from cmstk.util import FileNotifier, Tag
 from typing import List, Optional
 
 
@@ -73,11 +72,10 @@ class BaseJob(object):
     Args:
         notifiers: Notifier objects to monitor for success or failure.
         submission_script: The job submission script.
-        working_directory: The directory to work in.
     """
 
     def __init__(self,
-                 notifiers: List[BaseNotifier],
-                 submission_script: BaseScript,
-                 working_directory: str) -> None:
-        pass
+                 notifiers: List[FileNotifier],
+                 submission_script: BaseScript) -> None:
+        self.notifiers = notifiers
+        self.submission_script = submission_script
