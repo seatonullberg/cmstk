@@ -26,8 +26,8 @@ def within_one_percent(a: float, b: float) -> bool:
     return abs(diff / b) < 0.01
 
 
-class FileNotifier(object):
-    """Notifier which monitors a file for changes.
+class BaseFileNotifier(object):
+    """Generic notifier which monitors a file for changes.
     
     Args:
         filepath: Path to a file to monitor.
@@ -76,26 +76,28 @@ class FileNotifier(object):
                     raise RuntimeError()
 
 
-class Tag(object):
-    """Representation of a tag/flag/variable for a generic input script.
+class BaseTag(object):
+    """Generic representation of a tag/flag/variable for a generic input script.
 
     Args:
-        name: The tag's name.
         comment: Description of the tag's purpose.
-        prefix: Marker indicating a line should be treated as a tag.
+        name: The tag's name.
         value: The value of the tag.
 
     Attributes:
-        name The tag's name
         comment: Description of the tag's purpose.
-        prefix: Marker indicating a line should be treated as a tag.
+        comment_prefix: Marker indicating a comment will follow.
+        name: The tag's name.
+        name_prefix: Marker indicating a name will follow.
         value: The value of the tag.
     """
 
+    _comment_prefix: str = "#"
+    _name_prefix: str = ""
+
     def __init__(self,
-                 name: Optional[str] = None,
                  comment: Optional[str] = None,
-                 prefix: Optional[str] = None,
+                 name: Optional[str] = None,
                  value: Any = None) -> None:
         if name is None:
             name = ""
@@ -103,54 +105,53 @@ class Tag(object):
         if comment is None:
             comment = "no comment specified"
         self._comment = comment
-        if prefix is None:
-            prefix = ""
-        self._prefix = prefix
         self._value = value
 
     @classmethod
-    def from_str(cls, s: str) -> 'Tag':
+    def from_str(cls, s: str) -> 'BaseTag':
         """Parses tag info from a string into a Tag object.
 
         Notes:
             The string should have the form:
-            <prefix> <name> = <value> # <comment>
+            <name_prefix> <name> = <value> <comment_prefix> <comment>
 
         Args:
             s: The string to parse.
         """
         name_section = s.split("=")[0]
-        if len(name_section.split()) > 1:
-            prefix = name_section.split()[0].strip()
-        else:
-            prefix = ""
-        name = name_section.replace(prefix, "").strip()
+        name = name_section.replace(cls._name_prefix, "").strip()
         value_section = s.split("=")[1]
-        if "#" in value_section:
-            value = value_section.split("#")[0].strip()
-            comment = value_section.split("#")[1].strip()
+
+        if cls._comment_prefix in value_section:
+            value = value_section.split(cls._comment_prefix)[0].strip()
+            comment = value_section.split(cls._comment_prefix)[1].strip()
         else:
             value = value_section.strip()
             comment = "no comment specified"
-        return Tag(name, comment, prefix, value)
+        return cls(comment, name, value)
+
+    @property
+    def comment(self) -> str:
+        return self._comment
+
+    @comment.setter
+    def comment(self, value: str) -> None:
+        self._comment = value
 
     @property
     def name(self) -> str:
         return self._name
 
     @property
-    def comment(self) -> str:
-        return self._comment
-
-    @property
-    def prefix(self) -> str:
-        return self._prefix
-
-    @property
     def value(self) -> Any:
         return self._value
 
+    @value.setter
+    def value(self, v: Any) -> None:
+        self._value = v
+
     def to_str(self) -> str:
         """Writes the tag info into a string."""
-        return "{} {} = {} # {}".format(self.prefix, self.name, self.value,
-                                        self.comment).strip()
+        return "{} {} = {} {} {}".format(self._name_prefix, self._name, 
+                                         self._value, self._comment_prefix, 
+                                         self._comment).strip()

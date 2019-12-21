@@ -1,16 +1,15 @@
 from cmstk.filetypes import TextFile
-from cmstk.util import FileNotifier, Tag
+from cmstk.util import BaseFileNotifier, BaseTag
 from typing import List, Optional
 
 
-class BaseScript(TextFile):
+class SubmissionScript(TextFile):
     """Generalized representation of a job submission script for high
        performance computing job managers.
 
     Args:
         filepath: Filepath to a script.
         exec_cmd: The shell command used to execute the script.
-        prefix: The str indicating a line is a tag.
         cmds: Commands to be executed.
         tags: Tags used to configure the job manager.
 
@@ -21,10 +20,9 @@ class BaseScript(TextFile):
         tags: Tags used to configure the job manager.
     """
 
-    def __init__(self, filepath: str, exec_cmd: str, prefix: str,
-                 cmds: Optional[List[str]], tags: Optional[List[Tag]]) -> None:
+    def __init__(self, filepath: str, exec_cmd: str,
+                 cmds: Optional[List[str]], tags: Optional[List[BaseTag]]) -> None:
         self.exec_cmd = exec_cmd
-        self.prefix = prefix
         self._cmds = cmds
         self._tags = tags
         super().__init__(filepath)
@@ -43,7 +41,7 @@ class BaseScript(TextFile):
         self._cmds = value
 
     @property
-    def tags(self) -> List[Tag]:
+    def tags(self) -> List[BaseTag]:
         if self._tags is None:
             self._tags = []
             for line in self.lines:
@@ -52,7 +50,7 @@ class BaseScript(TextFile):
         return self._tags
 
     @tags.setter
-    def tags(self, value: List[Tag]) -> None:
+    def tags(self, value: List[BaseTag]) -> None:
         self._tags = value
 
     def write(self, path: Optional[str] = None) -> None:
@@ -75,7 +73,7 @@ class BaseJob(object):
     """
 
     def __init__(self,
-                 notifiers: List[FileNotifier],
-                 submission_script: BaseScript) -> None:
+                 notifiers: List[BaseFileNotifier],
+                 submission_script: SubmissionScript) -> None:
         self.notifiers = notifiers
         self.submission_script = submission_script
