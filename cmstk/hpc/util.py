@@ -10,6 +10,7 @@ class SubmissionScript(TextFile):
     Args:
         filepath: Filepath to a script.
         exec_cmd: The shell command used to execute the script.
+        tag_type: The type of tag object to store.
         cmds: Commands to be executed.
         tags: Tags used to configure the job manager.
 
@@ -20,9 +21,14 @@ class SubmissionScript(TextFile):
         tags: Tags used to configure the job manager.
     """
 
-    def __init__(self, filepath: str, exec_cmd: str,
-                 cmds: Optional[List[str]], tags: Optional[List[BaseTag]]) -> None:
+    def __init__(self,
+                 filepath: str,
+                 exec_cmd: str,
+                 tag_type: type,
+                 cmds: Optional[List[str]] = None,
+                 tags: Optional[List[BaseTag]] = None) -> None:
         self.exec_cmd = exec_cmd
+        self._tag_type = tag_type
         self._cmds = cmds
         self._tags = tags
         super().__init__(filepath)
@@ -32,7 +38,7 @@ class SubmissionScript(TextFile):
         if self._cmds is None:
             self._cmds = [
                 line for line in self.lines[1:]  # skip the shebang
-                if not line.startswith(self.prefix)
+                if not line.startswith(self._tag_type._name_prefix)
             ]
         return self._cmds
 
@@ -43,10 +49,11 @@ class SubmissionScript(TextFile):
     @property
     def tags(self) -> List[BaseTag]:
         if self._tags is None:
-            self._tags = []
-            for line in self.lines:
-                if line.startswith(self.prefix):
-                    self._tags.append(Tag.from_str(line))
+            self._tags = [
+                self._tag_type.from_str(line)
+                for line in self.lines
+                if line.startswith(self._tag_type._name_prefix)
+            ]
         return self._tags
 
     @tags.setter
@@ -64,6 +71,7 @@ class SubmissionScript(TextFile):
             for cmd in self.cmds:
                 f.write("{}\n".format(cmd))
 
+
 class BaseJob(object):
     """Representation of an HPC job.
 
@@ -72,8 +80,7 @@ class BaseJob(object):
         submission_script: The job submission script.
     """
 
-    def __init__(self,
-                 notifiers: List[BaseFileNotifier],
+    def __init__(self, notifiers: List[BaseFileNotifier],
                  submission_script: SubmissionScript) -> None:
         self.notifiers = notifiers
         self.submission_script = submission_script

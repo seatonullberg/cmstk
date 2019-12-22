@@ -50,7 +50,7 @@ class BaseFileNotifier(object):
         self.delay = delay
         if failure_triggers is None:
             failure_triggers = []
-        self.failure_triggers = []
+        self.failure_triggers = failure_triggers
         if success_triggers is None:
             success_triggers = []
         self.success_triggers = success_triggers
@@ -59,7 +59,7 @@ class BaseFileNotifier(object):
     def run(self) -> None:
         """Monitors a file until it contains a failure trigger, success trigger,
         or reaches the maximum time limit."""
-        start = datetime.datetime.now() 
+        start = datetime.datetime.now()
         while True:
             time.sleep(self.delay.total_seconds())
             with open(self.filepath, "r") as f:
@@ -118,6 +118,8 @@ class BaseTag(object):
         Args:
             s: The string to parse.
         """
+        if cls._name_prefix not in s:
+            raise RuntimeError()  # raise error when line is not a tag
         name_section = s.split("=")[0]
         name = name_section.replace(cls._name_prefix, "").strip()
         value_section = s.split("=")[1]
@@ -152,6 +154,6 @@ class BaseTag(object):
 
     def to_str(self) -> str:
         """Writes the tag info into a string."""
-        return "{} {} = {} {} {}".format(self._name_prefix, self._name, 
-                                         self._value, self._comment_prefix, 
+        return "{} {} = {} {} {}".format(self._name_prefix, self._name,
+                                         self._value, self._comment_prefix,
                                          self._comment).strip()

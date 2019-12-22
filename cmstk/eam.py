@@ -90,7 +90,7 @@ class SetflFile(TextFile):
     def symbol_descriptors(self) -> Dict[str, str]:
         if self._symbol_descriptors is None:
             self._read_body()
-        return self._symbol_descriptors # type: ignore
+        return self._symbol_descriptors  # type: ignore
 
     @symbol_descriptors.setter
     def symbol_descriptors(self, value: Dict[str, str]) -> None:
@@ -150,7 +150,7 @@ class SetflFile(TextFile):
     def embedding_function(self) -> Dict[str, List[float]]:
         if self._embedding_function is None:
             self._read_body()
-        return self._embedding_function # type: ignore
+        return self._embedding_function  # type: ignore
 
     @embedding_function.setter
     def embedding_function(self, value: Dict[str, List[float]]) -> None:
@@ -160,7 +160,7 @@ class SetflFile(TextFile):
     def density_function(self) -> Dict[str, List[float]]:
         if self._density_function is None:
             self._read_body()
-        return self._density_function # type: ignore
+        return self._density_function  # type: ignore
 
     @density_function.setter
     def density_function(self, value: Dict[str, List[float]]) -> None:
@@ -170,7 +170,7 @@ class SetflFile(TextFile):
     def pair_function(self) -> Dict[str, List[float]]:
         if self._pair_function is None:
             self._read_body()
-        return self._pair_function # type: ignore
+        return self._pair_function  # type: ignore
 
     @pair_function.setter
     def pair_function(self, value: Dict[str, List[float]]) -> None:

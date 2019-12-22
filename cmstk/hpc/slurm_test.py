@@ -8,7 +8,6 @@ def test_slurm_script():
     path = os.path.join(data_directory(), "hpc", "Fe_BCC.slurm")
     script = slurm.SlurmScript(filepath=path)
     assert script.exec_cmd == "sbatch"
-    assert script.prefix == "#SBATCH"
     script.load()
     script_tags = {tag.name: tag for tag in script.tags}
     assert script_tags["--job-name"].value == "FeBCC"

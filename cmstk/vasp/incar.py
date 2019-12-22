@@ -59,7 +59,7 @@ class IncarFile(TextFile):
         if self._tags is None:
             self._tags = []
             for line in self.lines:
-                self._tags.append(IncarTag.from_str(line))
+                self._tags.append(IncarTag.from_str(line))  # type: ignore
         return self._tags
 
     @tags.setter
@@ -88,28 +88,22 @@ class AminTag(IncarTag):
 class AmixTag(IncarTag):
 
     def __init__(self, value: Any = None) -> None:
-        super().__init__(
-            "AMIX",
-            "Linear mixing parameter",
-            value)
+        super().__init__("AMIX", "Linear mixing parameter", value)
 
 
 class AmixMagTag(IncarTag):
 
     def __init__(self, value: Any = None) -> None:
-        super().__init__(
-            "AMIX_MAG",
-            "Linear mixing parameter for magnetization density",
-            value)
+        super().__init__("AMIX_MAG",
+                         "Linear mixing parameter for magnetization density",
+                         value)
 
 
 class BmixTag(IncarTag):
 
     def __init__(self, value: Any = None) -> None:
-        super().__init__(
-            "BMIX",
-            "Cutoff wave vector for Kerker's mixing scheme",
-            value)
+        super().__init__("BMIX",
+                         "Cutoff wave vector for Kerker's mixing scheme", value)
 
 
 class BmixMagTag(IncarTag):
@@ -125,8 +119,7 @@ class EdiffTag(IncarTag):
 
     def __init__(self, value: Any = None) -> None:
         super().__init__(
-            "EDIFF",
-            "The global break condition for the electronic SC-loop",
+            "EDIFF", "The global break condition for the electronic SC-loop",
             value)
 
 
@@ -142,27 +135,23 @@ class EdiffgTag(IncarTag):
 class EncutTag(IncarTag):
 
     def __init__(self, value: Any = None) -> None:
-        super().__init__(
-            "ENCUT",
-            "Cutoff energy for the planewave basis set in eV",
-            value)
+        super().__init__("ENCUT",
+                         "Cutoff energy for the planewave basis set in eV",
+                         value)
 
 
 class IbrionTag(IncarTag):
 
     def __init__(self, value: Any = None) -> None:
-        super().__init__(
-            "IBRION",
-            "Determines how the ions are updated and moved",
-            value)
+        super().__init__("IBRION",
+                         "Determines how the ions are updated and moved", value)
 
 
 class IchargTag(IncarTag):
 
     def __init__(self, value: Any = None) -> None:
         super().__init__(
-            "ICHARG",
-            "Determines construction of the initial charge density",
+            "ICHARG", "Determines construction of the initial charge density",
             value)
 
 
@@ -187,28 +176,21 @@ class IsmearTag(IncarTag):
 class IspinTag(IncarTag):
 
     def __init__(self, value: Any = None) -> None:
-        super().__init__(
-            "ISPIN",
-            "Specifies spin polarization",
-            value)
+        super().__init__("ISPIN", "Specifies spin polarization", value)
 
 
 class IstartTag(IncarTag):
 
     def __init__(self, value: Any = None) -> None:
-        super().__init__(
-            "ISTART",
-            "Determines whether or not to read the WAVECAR file",
-            value)
+        super().__init__("ISTART",
+                         "Determines whether or not to read the WAVECAR file",
+                         value)
 
 
 class IsymTag(IncarTag):
 
     def __init__(self, value: Any = None) -> None:
-        super().__init__(
-            "ISYM",
-            "Determines how symmetry is treated",
-            value)
+        super().__init__("ISYM", "Determines how symmetry is treated", value)
 
 
 class LchargTag(IncarTag):
@@ -216,16 +198,14 @@ class LchargTag(IncarTag):
     def __init__(self, value: Any = None) -> None:
         super().__init__(
             "LCHARG",
-            "Determines whether or not a CHARGCAR/CHG file is written",
-            value)
+            "Determines whether or not a CHARGCAR/CHG file is written", value)
 
 
 class LorbitTag(IncarTag):
 
     def __init__(self, value: Any = None) -> None:
         super().__init__(
-            "LORBIT",
-            "Determines whether PROCAR or PROUT files are written",
+            "LORBIT", "Determines whether PROCAR or PROUT files are written",
             value)
 
 
@@ -241,100 +221,81 @@ class LrealTag(IncarTag):
 class LvtotTag(IncarTag):
 
     def __init__(self, value: Any = None) -> None:
-        super().__init__(
-            "LVTOT",
-            "Determines whether or not a LOCPOT file is written",
-            value)
+        super().__init__("LVTOT",
+                         "Determines whether or not a LOCPOT file is written",
+                         value)
 
 
 class LwaveTag(IncarTag):
 
     def __init__(self, value: Any = None) -> None:
-        super().__init__(
-            "LWAVE",
-            "Determines whether or not a WAVECAR file is written",
-            value)
+        super().__init__("LWAVE",
+                         "Determines whether or not a WAVECAR file is written",
+                         value)
 
 
 class MagmomTag(IncarTag):
 
     def __init__(self, value: Any = None) -> None:
-        super().__init__(
-            "MAGMOM",
-            "Specifies the initial magnetic moment for each atom",
-            value)
+        super().__init__("MAGMOM",
+                         "Specifies the initial magnetic moment for each atom",
+                         value)
 
 
 class NcoreTag(IncarTag):
 
     def __init__(self, value: Any = None) -> None:
-        super().__init__(
-            "NCORE",
-            "Determines the number of compute nodes per orbital",
-            value)
+        super().__init__("NCORE",
+                         "Determines the number of compute nodes per orbital",
+                         value)
 
 
 class NelmTag(IncarTag):
 
     def __init__(self, value: Any = None) -> None:
-        super().__init__(
-            "NELM",
-            "The maximum number of electronic SC steps",
-            value)
+        super().__init__("NELM", "The maximum number of electronic SC steps",
+                         value)
 
 
 class NelminTag(IncarTag):
 
     def __init__(self, value: Any = None) -> None:
         super().__init__(
-            "NELMIN",
-            "Specifies the minimum number of electronic SCF steps",
+            "NELMIN", "Specifies the minimum number of electronic SCF steps",
             value)
 
 
 class NparTag(IncarTag):
 
     def __init__(self, value: Any = None) -> None:
-        super().__init__(
-            "NPAR",
-            "Determines the number of bands treated in parallel",
-            value)
+        super().__init__("NPAR",
+                         "Determines the number of bands treated in parallel",
+                         value)
 
 
 class NswTag(IncarTag):
 
     def __init__(self, value: Any = None) -> None:
-        super().__init__(
-            "NSW",
-            "Maximum number of ionic steps",
-            value)
+        super().__init__("NSW", "Maximum number of ionic steps", value)
 
 
 class PotimTag(IncarTag):
 
     def __init__(self, value: Any = None) -> None:
-        super().__init__(
-            "POTIM",
-            "Specifies the time step or step width scaling",
-            value)
+        super().__init__("POTIM",
+                         "Specifies the time step or step width scaling", value)
 
 
 class PrecTag(IncarTag):
 
     def __init__(self, value: Any = None) -> None:
-        super().__init__(
-            "PREC",
-            "Determines the precision mode",
-            value)
+        super().__init__("PREC", "Determines the precision mode", value)
 
 
 class SigmaTag(IncarTag):
 
     def __init__(self, value: Any = None) -> None:
-        super().__init__(
-            "SIGMA",
-            "The width of the smearing in eV",
-            value)
+        super().__init__("SIGMA", "The width of the smearing in eV", value)
 
 
 class SymprecTag(IncarTag):
@@ -342,14 +303,10 @@ class SymprecTag(IncarTag):
     def __init__(self, value: Any = None) -> None:
         super().__init__(
             "SYMPREC",
-            "Determines accuracy with which positions must be specified",
-            value)
+            "Determines accuracy with which positions must be specified", value)
 
 
 class SystemTag(IncarTag):
 
     def __init__(self, value: Any = None) -> None:
-        super().__init__(
-            "SYSTEM",
-            "Description of the simulation",
-            value)
+        super().__init__("SYSTEM", "Description of the simulation", value)
