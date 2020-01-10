@@ -34,4 +34,4 @@ class DataFile(TextFile):
         return self._simulation_cell
 
     @simulation_cell.setter
-    def simulation_cell(self, atoms, bonds, angles, dihedrals, impropers)
+    def simulation_cell(self, atoms, bonds, angles, dihedrals, impropers):
