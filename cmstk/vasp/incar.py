@@ -5,12 +5,12 @@ from typing import Any, List, Optional
 
 class IncarTag(BaseTag):
     """Tag preconfigured for INCAR files.
-    
+
     Args:
         name: The tag's name.
         comment: Description of the tag's purpose.
         value: The value of the tag.
-    
+
     Attributes:
         name: The tag's name.
         comment: Description of the tag's purpose.
@@ -18,7 +18,6 @@ class IncarTag(BaseTag):
     """
 
     _comment_prefix = "!"
-    _name_prefix = ""
 
     def __init__(self,
                  name: Optional[str] = None,
@@ -59,7 +58,7 @@ class IncarFile(TextFile):
         if self._tags is None:
             self._tags = []
             for line in self.lines:
-                self._tags.append(IncarTag.from_str(line))  # type: ignore
+                self._tags.append(IncarTag.from_str(line)) # type: ignore
         return self._tags
 
     @tags.setter

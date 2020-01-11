@@ -6,7 +6,7 @@ import os
 def test_slurm_script():
     """Tests initialization of a SlurmScript object."""
     path = os.path.join(data_directory(), "hpc", "Fe_BCC.slurm")
-    script = slurm.SlurmScript(filepath=path)
+    script = slurm.SlurmSubmissionScript(filepath=path)
     assert script.exec_cmd == "sbatch"
     script.load()
     script_tags = {tag.name: tag for tag in script.tags}
@@ -24,7 +24,7 @@ def test_slurm_script():
     assert len(script.cmds) == 3
     script.write("test.slurm")
 
-    script_reader = slurm.SlurmScript(filepath="test.slurm")
+    script_reader = slurm.SlurmSubmissionScript(filepath="test.slurm")
     script_reader.load()
     script_reader_tags = {tag.name: tag for tag in script_reader.tags}
     for key in script_tags:

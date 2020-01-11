@@ -1,6 +1,4 @@
-import datetime
 import os
-import time
 from typing import Any, List, Optional, Sequence
 
 
@@ -26,56 +24,6 @@ def within_one_percent(a: float, b: float) -> bool:
     return abs(diff / b) < 0.01
 
 
-class BaseFileNotifier(object):
-    """Generic notifier which monitors a file for changes.
-    
-    Args:
-        filepath: Path to a file to monitor.
-        delay: The time to wait between polls.
-        failure_triggers: List of strings which indicate failure.
-        success_triggers: List of strings which indicate success.
-        time_limit: The maximum amount of time to wait before raising an 
-            exception.
-    """
-
-    def __init__(self,
-                 filepath: str,
-                 delay: Optional[datetime.timedelta] = None,
-                 failure_triggers: Optional[List[str]] = None,
-                 success_triggers: Optional[List[str]] = None,
-                 time_limit: Optional[datetime.timedelta] = None) -> None:
-        self.filepath = filepath
-        if delay is None:
-            delay = datetime.timedelta(minutes=15)
-        self.delay = delay
-        if failure_triggers is None:
-            failure_triggers = []
-        self.failure_triggers = failure_triggers
-        if success_triggers is None:
-            success_triggers = []
-        self.success_triggers = success_triggers
-        self.time_limit = time_limit
-
-    def run(self) -> None:
-        """Monitors a file until it contains a failure trigger, success trigger,
-        or reaches the maximum time limit."""
-        start = datetime.datetime.now()
-        while True:
-            time.sleep(self.delay.total_seconds())
-            with open(self.filepath, "r") as f:
-                content = f.read()
-            for ft in self.failure_triggers:
-                if ft in content:
-                    raise RuntimeError()
-            for st in self.success_triggers:
-                if st in content:
-                    return
-            if self.time_limit is not None:
-                elapsed_time = datetime.datetime.now() - start
-                if elapsed_time > self.time_limit:
-                    raise RuntimeError()
-
-
 class BaseTag(object):
     """Generic representation of a tag/flag/variable for a generic input script.
 
@@ -92,7 +40,7 @@ class BaseTag(object):
         value: The value of the tag.
     """
 
-    _comment_prefix: str = "#"
+    _comment_prefix: str = ""
     _name_prefix: str = ""
 
     def __init__(self,
@@ -154,6 +102,6 @@ class BaseTag(object):
 
     def to_str(self) -> str:
         """Writes the tag info into a string."""
-        return "{} {} = {} {} {}".format(self._name_prefix, self._name,
-                                         self._value, self._comment_prefix,
-                                         self._comment).strip()
+        return "{} {} = {} {} {}".format(self._name_prefix, self.name,
+                                         self.value, self._comment_prefix,
+                                         self.comment).strip()

@@ -1,11 +1,11 @@
-from cmstk.hpc.util import SubmissionScript
+from cmstk.hpc.util import BaseSubmissionScript
 from cmstk.util import BaseTag
 from typing import Any, List, Optional
 
 
 class SlurmTag(BaseTag):
     """Tag preconfigured for SLURM inputs.
-    
+
     Args:
         name: The tag's name.
         comment: Description of the tag's purpose.
@@ -27,7 +27,7 @@ class SlurmTag(BaseTag):
         super().__init__(name, comment, value)
 
 
-class SlurmScript(SubmissionScript):
+class SlurmSubmissionScript(BaseSubmissionScript):
     """File wrapper for a SLURM submission script.
 
     Args:
@@ -42,15 +42,16 @@ class SlurmScript(SubmissionScript):
         tags: TagCollection which can be accessed like a dict.
     """
 
+    _exec_cmd = "sbatch"
+    _tag_type = SlurmTag
+
     def __init__(self,
                  filepath: Optional[str] = None,
                  cmds: Optional[List[str]] = None,
                  tags: Optional[List[SlurmTag]] = None) -> None:
         if filepath is None:
             filepath = "runjob.slurm"
-        exec_cmd = "sbatch"
-        tag_type = SlurmTag
-        super().__init__(filepath, exec_cmd, tag_type, cmds, tags)
+        super().__init__(filepath, cmds, tags)
 
 
 class AccountTag(SlurmTag):

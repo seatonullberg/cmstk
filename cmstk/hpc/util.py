@@ -1,16 +1,14 @@
 from cmstk.filetypes import TextFile
-from cmstk.util import BaseFileNotifier, BaseTag
+from cmstk.util import BaseTag
 from typing import List, Optional
 
 
-class SubmissionScript(TextFile):
+class BaseSubmissionScript(TextFile):
     """Generalized representation of a job submission script for high
        performance computing job managers.
 
     Args:
         filepath: Filepath to a script.
-        exec_cmd: The shell command used to execute the script.
-        tag_type: The type of tag object to store.
         cmds: Commands to be executed.
         tags: Tags used to configure the job manager.
 
@@ -21,14 +19,13 @@ class SubmissionScript(TextFile):
         tags: Tags used to configure the job manager.
     """
 
+    _exec_cmd = ""
+    _tag_type = BaseTag
+
     def __init__(self,
                  filepath: str,
-                 exec_cmd: str,
-                 tag_type: type,
                  cmds: Optional[List[str]] = None,
                  tags: Optional[List[BaseTag]] = None) -> None:
-        self.exec_cmd = exec_cmd
-        self._tag_type = tag_type
         self._cmds = cmds
         self._tags = tags
         super().__init__(filepath)
@@ -45,6 +42,10 @@ class SubmissionScript(TextFile):
     @cmds.setter
     def cmds(self, value: List[str]) -> None:
         self._cmds = value
+
+    @property
+    def exec_cmd(self) -> str:
+        return self._exec_cmd
 
     @property
     def tags(self) -> List[BaseTag]:
@@ -70,17 +71,3 @@ class SubmissionScript(TextFile):
             f.write("\n")
             for cmd in self.cmds:
                 f.write("{}\n".format(cmd))
-
-
-class BaseJob(object):
-    """Representation of an HPC job.
-
-    Args:
-        notifiers: Notifier objects to monitor for success or failure.
-        submission_script: The job submission script.
-    """
-
-    def __init__(self, notifiers: List[BaseFileNotifier],
-                 submission_script: SubmissionScript) -> None:
-        self.notifiers = notifiers
-        self.submission_script = submission_script
