@@ -1,74 +1,81 @@
-from cmstk.vasp.incar_tags import EncutTag
-from cmstk.workflows.vasp.base import VaspCalculation
-import copy
+from cmstk.vasp.incar import IncarFile, EncutTag
+from cmstk.vasp.kpoints import KpointsFile
+from cmstk.vasp.poscar import PoscarFile
+from cmstk.vasp.potcar import PotcarFile
+from cmstk.hpc.util import BaseSubmissionScript
+from cmstk.workflows.vasp.util import start_calculation, write_input_files
 import os
-from typing import List, Tuple
+from typing import List, Optional, Tuple
 
 
-def converge_encut(calculation: VaspCalculation, encut_values: List[int],
-                   working_directory: str) -> None:
-    """Runs an ENCUT convergence calculation.
+def converge_encut(
+    encut_values: List[int],
+    incar: IncarFile,
+    kpoints: KpointsFile,
+    poscar: PoscarFile,
+    potcar: PotcarFile,
+    submission_script: BaseSubmissionScript,
+    calc_dir: Optional[str] = None,
+) -> None:
+    """Starts an ENCUT convergence calculation.
 
     Args:
-        calculation: The VaspCalculation object to clone and converge.
         encut_values: The ENCUT values to test.
-        working_directory: Path to the working directory.
+        incar: The vasp INCAR file.
+        kpoints: The vasp KPOINTS file.
+        poscar: The vasp POSCAR file.
+        potcar: The vasp POTCAR file.
+        submission_script: The hpc submission script.
+        calc_dir: The directory in which to execute the calculation.
     """
-    # This needs work
-    d = {encut: copy.deepcopy(calculation) for encut in encut_values}
-    # setup directories
-    for encut, calc in d.items():
+    if calc_dir is None:
+        calc_dir = os.getcwd()
+    for encut in encut_values:
+        new_tags = []
+        has_encut = False
+        for tag in incar.tags:
+            if tag.name == "ENCUT":
+                has_encut = True
+                tag.value = encut
+            new_tags.append(tag)
+        if not has_encut:
+            new_tags.append(EncutTag(encut))
+        incar.tags = new_tags
         dirname = "{}eV".format(encut)
-        calc_dir = os.path.join(working_directory, dirname)
-        if not os.path.exists(calc_dir):
-            os.makedirs(calc_dir)
-        calc.calculation_directory = calc_dir
-        if calc.incar is None:
-            err = "Missing required input file (INCAR)."
-            raise ValueError(err)
-        if "ENCUT" in calc.incar.tags:
-            calc.incar.tags["ENCUT"] = encut
-        else:
-            calc.incar.tags.insert(EncutTag(encut))
-        calc.write()
-        os.chdir(calc_dir)
-        if calc.submission_script is None:
-            err = "Missing required input file (submission script)."
-            raise ValueError(err)
-        path = os.path.join(calc_dir, "runjob.sh")
-        cmd = "{} {}".format(calc.submission_script.exec_cmd, path)
-        os.system(cmd)
+        path = os.path.join(calc_dir, dirname)
+        if not os.path.exists(path):
+            os.makedirs(path)
+        write_input_files(path, incar, kpoints, poscar, potcar, submission_script)
+        start_calculation(path, submission_script)
 
 
-def converge_kpoints(calculation: VaspCalculation,
-                     kpoint_sizes: List[Tuple[int, int, int]],
-                     working_directory: str) -> None:
-    """Runs a KPOINTS convergence calculation.
-    
+def converge_kpoints(
+    kpoint_sizes: List[Tuple[int, int, int]],
+    incar: IncarFile,
+    kpoints: KpointsFile,
+    poscar: PoscarFile,
+    potcar: PotcarFile,
+    submission_script: BaseSubmissionScript,
+    calc_dir: Optional[str] = None,
+) -> None:
+    """Starts a KPOINTS convergence calculation.
+
     Args:
-        calculation: The VaspCalculation object to clone and converge.
-        kpoint_sizes: The KPOINTS mesh sizes to test.
-        working_directory: Path to the working directory.
+        kpoint_sizes: The KPOINT mesh sizes to test.
+        incar: The vasp INCAR file.
+        kpoints: The vasp KPOINTS file.
+        poscar: The vasp POSCAR file.
+        potcar: The vasp POTCAR file.
+        submission_script: The hpc submission script.
+        calc_dir: The directory in which to execute the calculation.
     """
-    d = {
-        kpoint_size: copy.deepcopy(calculation) for kpoint_size in kpoint_sizes
-    }
-    # setup directories
-    for kpoint_size, calc in d.items():
-        dirname = "{}x{}x{}".format(*kpoint_size)
-        calc_dir = os.path.join(working_directory, dirname)
-        if not os.path.exists(calc_dir):
-            os.makedirs(calc_dir)
-        calc.calculation_directory = calc_dir
-        if calc.kpoints is None:
-            err = "Missing required input file (KPOINTS)."
-            raise ValueError(err)
-        calc.kpoints.mesh_size = kpoint_size
-        calc.write()
-        os.chdir(calc_dir)
-        if calc.submission_script is None:
-            err = "Missing required input file (submission script)."
-            raise ValueError(err)
-        path = os.path.join(calc_dir, "runjob.sh")
-        cmd = "{} {}".format(calc.submission_script.exec_cmd, path)
-        os.system(cmd)
+    if calc_dir is None:
+        calc_dir = os.getcwd()
+    for ks in kpoint_sizes:
+        kpoints.mesh_size = ks
+        dirname = "{}x{}x{}".format(*ks)
+        path = os.path.join(calc_dir, dirname)
+        if not os.path.exists(path):
+            os.makedirs(path)
+        write_input_files(path, incar, kpoints, poscar, potcar, submission_script)
+        start_calculation(path, submission_script)
