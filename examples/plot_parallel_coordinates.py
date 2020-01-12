@@ -1,7 +1,4 @@
-
-# DEPRECATED
-
-from cmstk.visualization.multivariate import ParallelCoordinatesPlot
+from cmstk.visualization.multivariate import parallel_coordinates_plot
 import numpy as np
 import os
 from datetime import datetime
@@ -11,39 +8,26 @@ if __name__ == "__main__":
     print("Generating parallel coordinates plot...")
     start = datetime.now()
 
-    # generate random data
+    # prepare plot data
     orange_data = np.random.normal(size=(25, 5))
     blue_data = np.random.normal(size=(25, 5))
     green_data = np.random.normal(size=(25, 5))
-
-    # specify custom setting values
-    title = "Test Title"
+    data = [orange_data, blue_data, green_data]
+    colors = ["#f47a42", "#4268f4", "#28a83f"]
+    labels = ["orange", "blue", "green"]
     xlabels = ["x0", "x1", "x2", "x3", "x4"]
-    ylabel = "Cost"
-    
-    # init the plotting object
-    pcp = ParallelCoordinatesPlot(ncols=len(xlabels), xlabels=xlabels)
-
-    # add each dataset as a separate group
-    pcp.add_data(data=orange_data, color="#f47a42", label="orange")
-    pcp.add_data(data=blue_data, color="#4268f4", label="blue")
-    pcp.add_data(data=green_data, color="#28a83f", label="green")
-
-    # custom viewport
-    for i, ax in enumerate(pcp.axes):
+    fig, axes = parallel_coordinates_plot(data, colors, labels, xlabels)
+    # customize the plot
+    title = "Test Title"
+    ylabel = "Test Y Label"
+    for i, ax in enumerate(axes):
         ax.set_ylim((-3, 3))
-
-    # custom y label
-    pcp.axes[0].set_ylabel(ylabel)
-
-    # custom title
-    pcp.fig.suptitle(title)
-
+    fig.suptitle(title)
+    axes[0].set_ylabel(ylabel)
     # generate the plot
-    pcp.make()
-    filename = "parallel_coordinates.png"
     print("Writing parallel coordinates plot to file...")
-    pcp.fig.savefig(filename, bbox_inches="tight")
+    filename = "parallel_coordinates.png"
+    fig.savefig(filename, bbox_inches="tight")
 
     end = datetime.now()
     total_time = (end-start).total_seconds()

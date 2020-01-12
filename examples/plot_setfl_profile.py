@@ -1,40 +1,31 @@
-
-# DEPRECATED
-
 from cmstk.eam import SetflFile
-from cmstk.visualization.potential import SetflProfilePlot
+from cmstk.util import data_directory
+from cmstk.visualization.potential import setfl_profile_plot
 import os
 from datetime import datetime
 
-# Use the following paper which corresponds to the Zhou-Pd-H-2008.eam.alloy file to validate plotting is accurate
+# The following paper corresponds with Zhou-Pd-H-2008.eam.alloy
 # https://pdfs.semanticscholar.org/b9c1/bcf83327f17942946b41381f9e72e5b77618.pdf
 
 if __name__ == "__main__":
     print("Generating setfl plot...")
     start = datetime.now()
 
-    path = os.path.abspath(__file__)
-    path = os.path.dirname(path)
-    path = os.path.dirname(path)
-    path = os.path.join(path, "data", "potentials", 
-                        "Zhou-Pd-H-2008.eam.alloy")
+    # load plotting data
+    path = os.path.join(data_directory(), "potentials", "Zhou-Pd-H-2008.eam.alloy")
     setfl = SetflFile(path)
-    setfl.read()
-    setfl_plot = SetflProfilePlot(setfl)
-    
-    # viewport customization
-    custom = {"embedding_xlim": (0.0, 50.0),
-              "embedding_ylim": (-4.0, 12.0),
-              "density_xlim": (0.0, 5.0),
-              "density_ylim": (0.0, 5.0),
-              "pair_xlim": (1.0, 5.0),
-              "pair_ylim": (-1.0, 1.0)}
+    setfl.load()
+    fig, axes = setfl_profile_plot(setfl)
 
-    setfl_plot = SetflProfilePlot(setfl)
-    setfl_plot.custom = custom
+    # customize the plot
+    axes[0].set_xlim((0.0, 50.0))
+    axes[0].set_ylim((-4.0, 12.0))
+    axes[1].set_xlim((0.0, 5.0))
+    axes[1].set_ylim((0.0, 5.0))
+    axes[2].set_xlim((1.0, 5.0))
+    axes[2].set_ylim((-1.0, 1.0))
     filename = "Zhou-Pd-H-2008.eam.png"
-    setfl_plot.make()
-    setfl_plot.fig.savefig(filename)
+    fig.savefig(filename)
 
     end = datetime.now()
     total_time = (end-start).total_seconds()
