@@ -1,9 +1,33 @@
-from cmstk.hpc.base import BaseScript
-from cmstk.util import Tag
+from cmstk.hpc.util import BaseSubmissionScript
+from cmstk.util import BaseTag
 from typing import Any, List, Optional
 
 
-class SlurmScript(BaseScript):
+class SlurmTag(BaseTag):
+    """Tag preconfigured for SLURM inputs.
+
+    Args:
+        name: The tag's name.
+        comment: Description of the tag's purpose.
+        value: The value of the tag.
+
+    Attributes:
+        name: The tag's name.
+        comment: Description of the tag's purpose.
+        value: The value of the tag.
+    """
+
+    _comment_prefix = "#"
+    _name_prefix = "#SBATCH"
+
+    def __init__(self,
+                 name: Optional[str] = None,
+                 comment: Optional[str] = None,
+                 value: Any = None) -> None:
+        super().__init__(name, comment, value)
+
+
+class SlurmSubmissionScript(BaseSubmissionScript):
     """File wrapper for a SLURM submission script.
 
     Args:
@@ -18,89 +42,80 @@ class SlurmScript(BaseScript):
         tags: TagCollection which can be accessed like a dict.
     """
 
+    _exec_cmd = "sbatch"
+    _tag_type = SlurmTag
+
     def __init__(self,
                  filepath: Optional[str] = None,
                  cmds: Optional[List[str]] = None,
-                 tags: Optional[List[Tag]] = None) -> None:
+                 tags: Optional[List[SlurmTag]] = None) -> None:
         if filepath is None:
             filepath = "runjob.slurm"
-        exec_cmd = "sbatch"
-        prefix = "#SBATCH"
-        super().__init__(filepath, exec_cmd, prefix, cmds, tags)
+        super().__init__(filepath, cmds, tags)
 
 
-def account_tag(value: Any = None) -> Tag:
-    return Tag(name="--account",
-               comment="user account name",
-               prefix="#SBATCH",
-               value=value)
+class AccountTag(SlurmTag):
+
+    def __init__(self, value: Any = None) -> None:
+        super().__init__("--account", "user account name", value)
 
 
-def distribution_tag(value: Any = None) -> Tag:
-    return Tag(name="--distribution",
-               comment="distribution method for remote processes",
-               prefix="#SBATCH",
-               value=value)
+class DistributionTag(SlurmTag):
+
+    def __init__(self, value: Any = None) -> None:
+        super().__init__("--distribution",
+                         "distribution method for remote processes", value)
 
 
-def error_tag(value: Any = None) -> Tag:
-    return Tag(name="--error",
-               comment="filename to write stderr to",
-               prefix="#SBATCH",
-               value=value)
+class ErrorTag(SlurmTag):
+
+    def __init__(self, value: Any = None) -> None:
+        super().__init__("--error", "filename to write stderr to", value)
 
 
-def job_name_tag(value: Any = None) -> Tag:
-    return Tag(name="--job-name",
-               comment="name of the job",
-               prefix="#SBATCH",
-               value=value)
+class JobNameTag(SlurmTag):
+
+    def __init__(self, value: Any = None) -> None:
+        super().__init__("--job-name", "name of the job", value)
 
 
-def mail_type_tag(value: Any = None) -> Tag:
-    return Tag(name="--mail-type",
-               comment="email event triggers",
-               prefix="#SBATCH",
-               value=value)
+class MailTypeTag(SlurmTag):
+
+    def __init__(self, value: Any = None) -> None:
+        super().__init__("--mail-type", "email event triggers", value)
 
 
-def mail_user_tag(value: Any = None) -> Tag:
-    return Tag(name="--mail-user",
-               comment="user email address",
-               prefix="#SBATCH",
-               value=value)
+class MailUserTag(SlurmTag):
+
+    def __init__(self, value: Any = None) -> None:
+        super().__init__("--mail-user", "user email address", value)
 
 
-def mem_per_cpu_tag(value: Any = None) -> Tag:
-    return Tag(name="--mem-per-cpu",
-               comment="memory to assign to each CPU",
-               prefix="#SBATCH",
-               value=value)
+class MemPerCpuTag(SlurmTag):
+
+    def __init__(self, value: Any = None) -> None:
+        super().__init__("--mem-per-cpu", "memory to assign to each CPU", value)
 
 
-def ntasks_tag(value: Any = None) -> Tag:
-    return Tag(name="--ntasks",
-               comment="number of tasks to run",
-               prefix="#SBATCH",
-               value=value)
+class NtasksTag(SlurmTag):
+
+    def __init__(self, value: Any = None) -> None:
+        super().__init__("--ntasks", "number of tasks to run", value)
 
 
-def output_tag(value: Any = None) -> Tag:
-    return Tag(name="--output",
-               comment="filename ot write stdout to",
-               prefix="#SBATCH",
-               value=value)
+class OutputTag(SlurmTag):
+
+    def __init__(self, value: Any = None) -> None:
+        super().__init__("--output", "filename to write stdout to", value)
 
 
-def qos_tag(value: Any = None) -> Tag:
-    return Tag(name="--qos",
-               comment="QOS account name",
-               prefix="#SBATCH",
-               value=value)
+class QosTag(SlurmTag):
+
+    def __init__(self, value: Any = None) -> None:
+        super().__init__("--qos", "QOS account name", value)
 
 
-def time_tag(value: Any = None) -> Tag:
-    return Tag(name="--time",
-               comment="max duration of the job",
-               prefix="#SBATCH",
-               value=value)
+class TimeTag(SlurmTag):
+
+    def __init__(self, value: Any = None) -> None:
+        super().__init__("--time", "max duration of the job", value)

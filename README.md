@@ -1,35 +1,41 @@
 
 # Computational Materials Science Tool Kit
 
-## Introduction
-
 The goal of this project is to provide a robust and user-friendly interface for
 a wide range of materials science related programs in order to accelerate the
 pace of computational research.
 
 ## Features
 
-* **ATAT** - Automated Theoretic Toolkit Interface
-  * File wrapper objects for the `mcsqs` package including `bestcorr.out`, `bestsqs.out`, and `rndstr.in`
+* Interface with well-established programs to build custom automation routines with minimal overhead
 
-* **HPC** - High Performance Computing Interface
-  * File wrapper object for the `slurm` job management input script
+  * **ATAT** - Automated Theoretic Alloy Toolkit
 
-* **VASP** - Vienna Ab-Initio Simulation Package Interface
-  * File wrapper objects for the most common input/output files including `INCAR`, `KPOINTS`, `OSZICAR`, `OUTCAR`, `POSCAR`, `POTCAR`, and `vasprun.xml`
+    * File wrapper objects for the `mcsqs` package including `bestcorr.out`, `bestsqs.out`, and `rndstr.in`
 
-* Atomic Structure Generation and Modification
-  * Convenient objects to handle collections of atoms as well as construction and manipulation of the Bravais lattices
+  * **VASP** - Vienna Ab Initio Simulation Package
 
-  * Elemental data objects
+    * File wrapper objects for inputs and outputs including `INCAR`, `KPOINTS`, `OSZICAR`, `OUTCAR`, `POSCAR`, `POTCAR`, and `vasprun.xml`
+
+* Submit and manage jobs on high performance computer clusters
+
+  * File wrapper object for `slurm` batch scripts
+
+  * Handle 'success' and 'failure' events automatically with built-in notifier objects
+
+* Generate and modify atomic structures conveniently in code
+
+  * Flexible wrappers for collections of atoms
+
+  * Rigid constructors for Bravais lattices
+
+  * Generic simulation cells enable rapid conversion between different formats
+
+  * Elemental data objects for convenient access to atomic properties
 
 * EAM potential file format (setfl) parser
 
-## Design Philosophy
-
-TODO
-
-## Under Development
+## TODO
 
 * Reorientation and resizing of the Bravais lattices
 

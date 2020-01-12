@@ -10,6 +10,7 @@ class Atom(object):
     Args:
         charge: Electronic charge.
         magnetic_moment: Magnetic moment scalar.
+        mass: Atomic mass.
         position: Position in space.
         symbol: IUPAC chemical symbol.
         velocity: Velocity vector.
@@ -17,6 +18,7 @@ class Atom(object):
     Attributes:
         charge: Electronic charge.
         magnetic_moment: Magnetic moment scalar.
+        mass: Atomic mass.
         position: Position in space.
         symbol: IUPAC chemical symbol.
         velocity: Velocity vector.
@@ -25,11 +27,13 @@ class Atom(object):
     def __init__(self,
                  charge: float = 0,
                  magnetic_moment: float = 0,
+                 mass: float = 0,
                  position: Optional[np.ndarray] = None,
                  symbol: str = "",
                  velocity: Optional[np.ndarray] = None) -> None:
         self.charge = charge
         self.magnetic_moment = magnetic_moment
+        self.mass = mass
         self.symbol = symbol
         if position is None:
             position = np.array([0, 0, 0])
@@ -39,9 +43,10 @@ class Atom(object):
         self.velocity = velocity
 
     def __str__(self) -> str:
-        return ("Atom: charge={}, magnetic_moment={}, position={}, "
+        return ("Atom: charge={}, magnetic_moment={}, mass={}, position={}, "
                 "symbol={}, velocity={}").format(self.charge,
                                                  self.magnetic_moment,
+                                                 self.mass,
                                                  self.position, self.symbol,
                                                  self.velocity)
 
@@ -57,6 +62,7 @@ class AtomCollection(object):
         atoms: The atoms in the collection.
         charges: Electronic charge of each atom.
         magnetic_moments: Magnetic moment of each atom.
+        masses: Atomic masses of each atom.
         n_atoms: Number of atoms in the collection.
         n_symbols: Number of symbols in the collection.
         positions: Position in space of each atom.
@@ -149,6 +155,14 @@ class AtomCollection(object):
             hl: Flag indicating high-to-low ordering.
         """
         self._atoms.sort(key=lambda x: x.magnetic_moment, reverse=hl)
+
+    def sort_by_mass(self, hl: bool = False) -> None:
+        """Groups atoms by their masses.
+
+        Args:
+            hl: Flag indicating high-to-low ordering.
+        """
+        self._atoms.sort(key=lambda x: x.mass, reverse=hl)
 
     def sort_by_position(self, hl: bool = False) -> None:
         """Groups atoms by the magnitude of their positions.
@@ -248,6 +262,21 @@ class AtomCollection(object):
         atoms = []
         for a, mm in zip(self._atoms, value):
             a.magnetic_moment = mm
+            atoms.append(a)
+        self._atoms = atoms
+
+    @property
+    def masses(self) -> List[float]:
+        return [a.mass for a in self._atoms]
+
+    @masses.setter
+    def masses(self, value: List[float]) -> None:
+        if len(value) != len(self._atoms):
+            err = "Number of masses must match number of atoms."
+            raise ValueError(err)
+        atoms = []
+        for a, m in zip(self._atoms, value):
+            a.mass = m
             atoms.append(a)
         self._atoms = atoms
 

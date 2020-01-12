@@ -1,6 +1,29 @@
 from cmstk.filetypes import TextFile
-from cmstk.util import Tag
+from cmstk.util import BaseTag
 from typing import Any, List, Optional
+
+
+class IncarTag(BaseTag):
+    """Tag preconfigured for INCAR files.
+
+    Args:
+        name: The tag's name.
+        comment: Description of the tag's purpose.
+        value: The value of the tag.
+
+    Attributes:
+        name: The tag's name.
+        comment: Description of the tag's purpose.
+        value: The value of the tag.
+    """
+
+    _comment_prefix = "!"
+
+    def __init__(self,
+                 name: Optional[str] = None,
+                 comment: Optional[str] = None,
+                 value: Any = None) -> None:
+        super().__init__(name, comment, value)
 
 
 class IncarFile(TextFile):
@@ -17,7 +40,7 @@ class IncarFile(TextFile):
 
     def __init__(self,
                  filepath: Optional[str] = None,
-                 tags: Optional[List[Tag]] = None) -> None:
+                 tags: Optional[List[IncarTag]] = None) -> None:
         if filepath is None:
             filepath = "INCAR"
         self.filepath = filepath
@@ -31,217 +54,258 @@ class IncarFile(TextFile):
                 f.write("{}\n".format(tag.to_str()))
 
     @property
-    def tags(self) -> List[Tag]:
+    def tags(self) -> List[IncarTag]:
         if self._tags is None:
             self._tags = []
             for line in self.lines:
-                self._tags.append(Tag.from_str(line))
+                self._tags.append(IncarTag.from_str(line)) # type: ignore
         return self._tags
 
     @tags.setter
-    def tags(self, value: List[Tag]) -> None:
+    def tags(self, value: List[IncarTag]) -> None:
         self._tags = value
 
 
-def algo_tag(value: Any = None) -> Tag:
-    return Tag(
-        name="ALGO",
-        comment=
-        "Determines the electronic minimization algorithm and/or GW calculation type.",
-        value=value)
+class AlgoTag(IncarTag):
+
+    def __init__(self, value: Any = None) -> None:
+        super().__init__(
+            "ALGO",
+            "Determines the electronic minimization algorithm and/or GW calculation type",
+            value)
 
 
-def amin_tag(value: Any = None) -> Tag:
-    return Tag(
-        name="AMIN",
-        comment=
-        "Minimal mixing parameter in Kerker's initial approximation to the charge dielectric function used in the Broyden/Pulay mixing scheme.",
-        value=value)
+class AminTag(IncarTag):
+
+    def __init__(self, value: Any = None) -> None:
+        super().__init__(
+            "AMIN",
+            "Minimal mixing parameter in Kerker's initial approximation to the charge dielectric function used in the Broyden/Pulay mixing scheme",
+            value)
 
 
-def amix_tag(value: Any = None) -> Tag:
-    return Tag(name="AMIX", comment="Linear mixing parameter.", value=value)
+class AmixTag(IncarTag):
+
+    def __init__(self, value: Any = None) -> None:
+        super().__init__("AMIX", "Linear mixing parameter", value)
 
 
-def amix_mag_tag(value: Any = None) -> Tag:
-    return Tag(name="AMIX_MAG",
-               comment="Linear mixing parameter for magnetization density.",
-               value=value)
+class AmixMagTag(IncarTag):
+
+    def __init__(self, value: Any = None) -> None:
+        super().__init__("AMIX_MAG",
+                         "Linear mixing parameter for magnetization density",
+                         value)
 
 
-def bmix_mag(value: Any = None) -> Tag:
-    return Tag(name="BMIX",
-               comment="Cutoff wave vector for Kerker mixing scheme.",
-               value=value)
+class BmixTag(IncarTag):
+
+    def __init__(self, value: Any = None) -> None:
+        super().__init__("BMIX",
+                         "Cutoff wave vector for Kerker's mixing scheme", value)
 
 
-def bmix_mag_tag(value: Any = None) -> Tag:
-    return Tag(
-        name="BMIX_MAG",
-        comment=
-        "Cutoff wave vector for Kerker mixing scheme for the magnetization density.",
-        value=value)
+class BmixMagTag(IncarTag):
+
+    def __init__(self, value: Any = None) -> None:
+        super().__init__(
+            "BMIX_MAG",
+            "Cutoff wave vector for Kerker mixing scheme for the magnetization density",
+            value)
 
 
-def ediff_tag(value: Any = None) -> Tag:
-    return Tag(name="EDIFF",
-               comment="The global break condition for the electronic SC-loop",
-               value=value)
+class EdiffTag(IncarTag):
+
+    def __init__(self, value: Any = None) -> None:
+        super().__init__(
+            "EDIFF", "The global break condition for the electronic SC-loop",
+            value)
 
 
-def ediffg_tag(value: Any = None) -> Tag:
-    return Tag(
-        name="EDIFFG",
-        comment="Determines the break condition for the ionic relaxation loop.",
-        value=value)
+class EdiffgTag(IncarTag):
+
+    def __init__(self, value: Any = None) -> None:
+        super().__init__(
+            "EDIFFG",
+            "Determines the break condition for the ionic relaxation loop",
+            value)
 
 
-def encut_tag(value: Any = None) -> Tag:
-    return Tag(name="ENCUT",
-               comment="Cutoff energy for the planewave basis set in eV.",
-               value=value)
+class EncutTag(IncarTag):
+
+    def __init__(self, value: Any = None) -> None:
+        super().__init__("ENCUT",
+                         "Cutoff energy for the planewave basis set in eV",
+                         value)
 
 
-def ibrion_tag(value: Any = None) -> Tag:
-    return Tag(name="IBRION",
-               comment="Determines how the ions are updated and moved.",
-               value=value)
+class IbrionTag(IncarTag):
+
+    def __init__(self, value: Any = None) -> None:
+        super().__init__("IBRION",
+                         "Determines how the ions are updated and moved", value)
 
 
-def icharg_tag(value: Any = None) -> Tag:
-    return Tag(name="ICHARG",
-               comment="Determines construction of the initial charge density.",
-               value=value)
+class IchargTag(IncarTag):
+
+    def __init__(self, value: Any = None) -> None:
+        super().__init__(
+            "ICHARG", "Determines construction of the initial charge density",
+            value)
 
 
-def isif_tag(value: Any = None) -> Tag:
-    return Tag(
-        name="ISIF",
-        comment=
-        "Determines whether the stress tensor is calculated and which degrees of freedom are allowed to change.",
-        value=value)
+class IsifTag(IncarTag):
+
+    def __init__(self, value: Any = None) -> None:
+        super().__init__(
+            "ISIF",
+            "Determines whether the stress tensor is calculated and which degrees of freedom are allowed to change",
+            value)
 
 
-def ismear_tag(value: Any = None) -> Tag:
-    return Tag(
-        name="ISMEAR",
-        comment="Determines how partial occupancies are set for each orbital.",
-        value=value)
+class IsmearTag(IncarTag):
+
+    def __init__(self, value: Any = None) -> None:
+        super().__init__(
+            "ISMEAR",
+            "Determines how partial occupancies are set for each orbital",
+            value)
 
 
-def ispin_tag(value: Any = None) -> Tag:
-    return Tag(name="ISPIN",
-               comment="Specifies spin polarization.",
-               value=value)
+class IspinTag(IncarTag):
+
+    def __init__(self, value: Any = None) -> None:
+        super().__init__("ISPIN", "Specifies spin polarization", value)
 
 
-def istart_tag(value: Any = None) -> Tag:
-    return Tag(name="ISTART",
-               comment="Determines whether or not to read the WAVECAR file.",
-               value=value)
+class IstartTag(IncarTag):
+
+    def __init__(self, value: Any = None) -> None:
+        super().__init__("ISTART",
+                         "Determines whether or not to read the WAVECAR file",
+                         value)
 
 
-def isym_tag(value: Any = None) -> Tag:
-    return Tag(name="ISYM",
-               comment="Determines how symmetry is treated.",
-               value=value)
+class IsymTag(IncarTag):
+
+    def __init__(self, value: Any = None) -> None:
+        super().__init__("ISYM", "Determines how symmetry is treated", value)
 
 
-def lcharg_tag(value: Any = None) -> Tag:
-    return Tag(
-        name="LCHARG",
-        comment="Determines whether or not a CHARGCAR/CHG file is writen.",
-        value=value)
+class LchargTag(IncarTag):
+
+    def __init__(self, value: Any = None) -> None:
+        super().__init__(
+            "LCHARG",
+            "Determines whether or not a CHARGCAR/CHG file is written", value)
 
 
-def lorbit_tag(value: Any = None) -> Tag:
-    return Tag(name="LORBIT",
-               comment="Determines whether PROCAR or PROOUT files are written.",
-               value=value)
+class LorbitTag(IncarTag):
+
+    def __init__(self, value: Any = None) -> None:
+        super().__init__(
+            "LORBIT", "Determines whether PROCAR or PROUT files are written",
+            value)
 
 
-def lreal_tag(value: Any = None) -> Tag:
-    return Tag(
-        name="LREAL",
-        comment=
-        "Determines whether the projection operators are evaluated in real space or reciprocal space.",
-        value=value)
+class LrealTag(IncarTag):
+
+    def __init__(self, value: Any = None) -> None:
+        super().__init__(
+            "LREAL",
+            "Determines whether the projection operators are evaluated in real space or reciprocal space",
+            value)
 
 
-def lvtot_tag(value: Any = None) -> Tag:
-    return Tag(name="LVTOT",
-               comment="Determines whether or not a LOCPOT file is written.",
-               value=value)
+class LvtotTag(IncarTag):
+
+    def __init__(self, value: Any = None) -> None:
+        super().__init__("LVTOT",
+                         "Determines whether or not a LOCPOT file is written",
+                         value)
 
 
-def lwave_tag(value: Any = None) -> Tag:
-    return Tag(name="LWAVE",
-               comment="Determines whether or not a WAVECAR file is written.",
-               value=value)
+class LwaveTag(IncarTag):
+
+    def __init__(self, value: Any = None) -> None:
+        super().__init__("LWAVE",
+                         "Determines whether or not a WAVECAR file is written",
+                         value)
 
 
-def magmom_tag(value: Any = None) -> Tag:
-    return Tag(name="MAGMOM",
-               comment="Specifies the initial magnetic moment for each atom.",
-               value=value)
+class MagmomTag(IncarTag):
+
+    def __init__(self, value: Any = None) -> None:
+        super().__init__("MAGMOM",
+                         "Specifies the initial magnetic moment for each atom",
+                         value)
 
 
-def ncore_tag(value: Any = None) -> Tag:
-    return Tag(name="NCORE",
-               comment="Determines the number of compute nodes per orbital.",
-               value=value)
+class NcoreTag(IncarTag):
+
+    def __init__(self, value: Any = None) -> None:
+        super().__init__("NCORE",
+                         "Determines the number of compute nodes per orbital",
+                         value)
 
 
-def nelm_tag(value: Any = None) -> Tag:
-    return Tag(name="NELM",
-               comment="The maximum number of electronic SC steps.",
-               value=value)
+class NelmTag(IncarTag):
+
+    def __init__(self, value: Any = None) -> None:
+        super().__init__("NELM", "The maximum number of electronic SC steps",
+                         value)
 
 
-def nelmin_tag(value: Any = None) -> Tag:
-    return Tag(name="NELMIN",
-               comment="Specifies the minimum number of electronic SCF steps.",
-               value=value)
+class NelminTag(IncarTag):
+
+    def __init__(self, value: Any = None) -> None:
+        super().__init__(
+            "NELMIN", "Specifies the minimum number of electronic SCF steps",
+            value)
 
 
-def npar_tag(value: Any = None) -> Tag:
-    return Tag(name="NPAR",
-               comment="Determines the number of bands treated in parallel.",
-               value=value)
+class NparTag(IncarTag):
+
+    def __init__(self, value: Any = None) -> None:
+        super().__init__("NPAR",
+                         "Determines the number of bands treated in parallel",
+                         value)
 
 
-def nsw_tag(value: Any = None) -> Tag:
-    return Tag(name="NSW",
-               comment="Maxuimum number of ionic steps.",
-               value=value)
+class NswTag(IncarTag):
+
+    def __init__(self, value: Any = None) -> None:
+        super().__init__("NSW", "Maximum number of ionic steps", value)
 
 
-def potim_tag(value: Any = None) -> Tag:
-    return Tag(name="POTIM",
-               comment="Specifies the time step or step width scaling.",
-               value=value)
+class PotimTag(IncarTag):
+
+    def __init__(self, value: Any = None) -> None:
+        super().__init__("POTIM",
+                         "Specifies the time step or step width scaling", value)
 
 
-def prec_tag(value: Any = None) -> Tag:
-    return Tag(name="PREC",
-               comment="Determines the precision mode.",
-               value=value)
+class PrecTag(IncarTag):
+
+    def __init__(self, value: Any = None) -> None:
+        super().__init__("PREC", "Determines the precision mode", value)
 
 
-def sigma_tag(value: Any = None) -> Tag:
-    return Tag(name="SIGMA",
-               comment="The width of the smearing in eV.",
-               value=value)
+class SigmaTag(IncarTag):
+
+    def __init__(self, value: Any = None) -> None:
+        super().__init__("SIGMA", "The width of the smearing in eV", value)
 
 
-def symprec_tag(value: Any = None) -> Tag:
-    return Tag(
-        name="SYMPREC",
-        comment="Determines accuracy with which positions must be specified.",
-        value=value)
+class SymprecTag(IncarTag):
+
+    def __init__(self, value: Any = None) -> None:
+        super().__init__(
+            "SYMPREC",
+            "Determines accuracy with which positions must be specified", value)
 
 
-def system_tag(value: Any = None) -> Tag:
-    return Tag(name="SYSTEM",
-               comment="Description of the simulation.",
-               value=value)
+class SystemTag(IncarTag):
+
+    def __init__(self, value: Any = None) -> None:
+        super().__init__("SYSTEM", "Description of the simulation", value)

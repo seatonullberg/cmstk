@@ -124,6 +124,20 @@ def test_atom_collection_sort_by_magnetic_moment():
     assert moments[0] == 2
     assert moments[2] == 0
 
+def test_atom_collection_sort_by_mass():
+    """Tests behavior of the AtomCollection.sort_by_mass() method."""
+    atom0 = Atom(mass=0, position=np.array([0, 0, 0]))
+    atom1 = Atom(mass=1, position=np.array([1, 1, 1]))
+    atom2 = Atom(mass=2, position=np.array([2, 2, 2]))
+    collection = AtomCollection([atom1, atom0, atom2])
+    collection.sort_by_mass(hl=False)
+    masses = collection.masses
+    assert masses[0] == 0
+    assert masses[2] == 2
+    collection.sort_by_mass(hl=True)
+    masses = collection.masses
+    assert masses[0] == 2
+    assert masses[2] == 0
 
 def test_atom_collection_sort_by_position():
     """Tests behavior of the AtomCollection.sort_by_position() method."""

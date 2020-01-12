@@ -11,3 +11,4 @@
 *.incar filter=lfs diff=lfs merge=lfs -text
 *.slurm filter=lfs diff=lfs merge=lfs -text
 *.contcar filter=lfs diff=lfs merge=lfs -text
+*.xyz filter=lfs diff=lfs merge=lfs -text
