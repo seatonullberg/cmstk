@@ -1,6 +1,6 @@
 import matplotlib.pyplot as plt
 from cmstk.eam import SetflFile
-from typing import List, Optional, Tuple
+from typing import Tuple
 
 
 def setfl_profile_plot(setfl: SetflFile) -> Tuple[plt.Figure, plt.Axes]:

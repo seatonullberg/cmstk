@@ -19,7 +19,7 @@ def parallel_coordinates_plot(
         xlabels: Labels to populate the x axis with
     """
     if xlabels is None:
-        xlabels = [str(i) for i in range(data)]
+        xlabels = [str(i) for i in range(len(data))]
     if len(data) != len(colors) != len(labels) != len(xlabels):
         err = "size of all inputs must match"
         raise ValueError(err)
