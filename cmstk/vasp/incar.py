@@ -17,13 +17,31 @@ class IncarTag(BaseTag):
         value: The value of the tag.
     """
 
-    _comment_prefix = "!"
-
     def __init__(self,
                  name: Optional[str] = None,
                  comment: Optional[str] = None,
                  value: Any = None) -> None:
         super().__init__(name, comment, value)
+
+    @classmethod
+    def from_str(cls, s: str) -> 'IncarTag':
+        # expected format: {name} = {value} # {comment}
+        parts = s.split("=")
+        name = parts[0].strip()
+        if "#" in parts[1]:
+            value = parts[1].split("#")[0].strip()
+            comment = parts[1].split("#")[1].strip()
+        else:
+            value = parts[1].strip()
+            comment = ""
+        return cls(name, comment, value)
+
+    def __str__(self) -> str:
+        if type(self.value) is bool:
+            value = ".TRUE." if self.value else ".FALSE."
+        else:
+            value = self.value
+        return "{} = {}\t# {}".format(self.name, value, self.comment)
 
 
 class IncarFile(TextFile):
@@ -51,14 +69,14 @@ class IncarFile(TextFile):
             path = self.filepath
         with open(path, "w") as f:
             for tag in self.tags:
-                f.write("{}\n".format(tag.to_str()))
+                f.write("{}\n".format(str(tag)))
 
     @property
     def tags(self) -> List[IncarTag]:
         if self._tags is None:
             self._tags = []
             for line in self.lines:
-                self._tags.append(IncarTag.from_str(line)) # type: ignore
+                self._tags.append(IncarTag.from_str(line))
         return self._tags
 
     @tags.setter

@@ -34,74 +34,26 @@ class BaseTag(object):
 
     Attributes:
         comment: Description of the tag's purpose.
-        comment_prefix: Marker indicating a comment will follow.
         name: The tag's name.
-        name_prefix: Marker indicating a name will follow.
         value: The value of the tag.
     """
 
-    _comment_prefix: str = ""
-    _name_prefix: str = ""
-
     def __init__(self,
-                 comment: Optional[str] = None,
                  name: Optional[str] = None,
+                 comment: Optional[str] = None,
                  value: Any = None) -> None:
         if name is None:
             name = ""
-        self._name = name
+        self.name: str = name
         if comment is None:
             comment = "no comment specified"
-        self._comment = comment
-        self._value = value
+        self.comment: str = comment
+        self.value = value
 
     @classmethod
     def from_str(cls, s: str) -> 'BaseTag':
-        """Parses tag info from a string into a Tag object.
+        """Initializes a BaseTag object by parsing info directly from a string."""
+        raise NotImplementedError
 
-        Notes:
-            The string should have the form:
-            <name_prefix> <name> = <value> <comment_prefix> <comment>
-
-        Args:
-            s: The string to parse.
-        """
-        if cls._name_prefix not in s:
-            raise RuntimeError()  # raise error when line is not a tag
-        name_section = s.split("=")[0]
-        name = name_section.replace(cls._name_prefix, "").strip()
-        value_section = s.split("=")[1]
-
-        if cls._comment_prefix in value_section:
-            value = value_section.split(cls._comment_prefix)[0].strip()
-            comment = value_section.split(cls._comment_prefix)[1].strip()
-        else:
-            value = value_section.strip()
-            comment = "no comment specified"
-        return cls(comment, name, value)
-
-    @property
-    def comment(self) -> str:
-        return self._comment
-
-    @comment.setter
-    def comment(self, value: str) -> None:
-        self._comment = value
-
-    @property
-    def name(self) -> str:
-        return self._name
-
-    @property
-    def value(self) -> Any:
-        return self._value
-
-    @value.setter
-    def value(self, v: Any) -> None:
-        self._value = v
-
-    def to_str(self) -> str:
-        """Writes the tag info into a string."""
-        return "{} {} = {} {} {}".format(self._name_prefix, self.name,
-                                         self.value, self._comment_prefix,
-                                         self.comment).strip()
+    def __str__(self) -> str:
+        raise NotImplementedError

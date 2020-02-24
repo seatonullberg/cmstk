@@ -336,3 +336,9 @@ class AtomCollection(object):
     def __iter__(self) -> Generator[Atom, None, None]:
         for a in self._atoms:
             yield a
+
+    def __getitem__(self, key: int) -> Atom:
+        return self._atoms[key]
+
+    def __delitem__(self, key: int) -> None:
+        del self._atoms[key]

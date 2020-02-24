@@ -11,33 +11,29 @@ class BaseSubmissionScript(TextFile):
         filepath: Filepath to a script.
         cmds: Commands to be executed.
         tags: Tags used to configure the job manager.
+        shebang: The shell specific shebang symbol.
 
     Attributes:
         filepath: Filepath to a script.
         cmds: Commands to be executed.
         exec_cmd: The shell command used to execute the script.
         tags: Tags used to configure the job manager.
+        shebang: The shell specific shebang symbol.
     """
-
-    _exec_cmd = ""
-    _tag_type = BaseTag
 
     def __init__(self,
                  filepath: str,
                  cmds: Optional[List[str]] = None,
-                 tags: Optional[List[BaseTag]] = None) -> None:
+                 tags: Optional[List[BaseTag]] = None,
+                 shebang: Optional[str] = None) -> None:
         self._cmds = cmds
         self._tags = tags
+        self._shebang = shebang
         super().__init__(filepath)
 
     @property
     def cmds(self) -> List[str]:
-        if self._cmds is None:
-            self._cmds = [
-                line for line in self.lines[1:]  # skip the shebang
-                if not line.startswith(self._tag_type._name_prefix)
-            ]
-        return self._cmds
+        raise NotImplementedError
 
     @cmds.setter
     def cmds(self, value: List[str]) -> None:
@@ -45,29 +41,33 @@ class BaseSubmissionScript(TextFile):
 
     @property
     def exec_cmd(self) -> str:
-        return self._exec_cmd
+        raise NotImplementedError
 
     @property
     def tags(self) -> List[BaseTag]:
-        if self._tags is None:
-            self._tags = [
-                self._tag_type.from_str(line)
-                for line in self.lines
-                if line.startswith(self._tag_type._name_prefix)
-            ]
-        return self._tags
+        raise NotImplementedError
 
     @tags.setter
     def tags(self, value: List[BaseTag]) -> None:
         self._tags = value
 
+    @property
+    def shebang(self) -> str:
+        if self._shebang is None:
+            self._shebang = self.lines[0].strip()
+        return self._shebang
+
+    @shebang.setter
+    def shebang(self, value: str) -> None:
+        self._shebang = value
+
     def write(self, path: Optional[str] = None) -> None:
         if path is None:
             path = self.filepath
         with open(path, "w") as f:
-            f.write("#!/bin/bash\n")
+            f.write("{}\n".format(self.shebang))
             for tag in self.tags:
-                f.write("{}\n".format(tag.to_str()))
+                f.write("{}\n".format(str(tag)))
             f.write("\n")
             for cmd in self.cmds:
                 f.write("{}\n".format(cmd))
