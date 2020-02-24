@@ -1,6 +1,5 @@
 from cmstk.filetypes import TextFile
-from cmstk.util import BaseTag
-from typing import List, Optional
+from typing import Any, List, Optional
 
 
 class BaseSubmissionScript(TextFile):
@@ -24,7 +23,7 @@ class BaseSubmissionScript(TextFile):
     def __init__(self,
                  filepath: str,
                  cmds: Optional[List[str]] = None,
-                 tags: Optional[List[BaseTag]] = None,
+                 tags: Optional[List[Any]] = None,
                  shebang: Optional[str] = None) -> None:
         self._cmds = cmds
         self._tags = tags
@@ -44,11 +43,11 @@ class BaseSubmissionScript(TextFile):
         raise NotImplementedError
 
     @property
-    def tags(self) -> List[BaseTag]:
+    def tags(self) -> List[Any]:
         raise NotImplementedError
 
     @tags.setter
-    def tags(self, value: List[BaseTag]) -> None:
+    def tags(self, value: List[Any]) -> None:
         self._tags = value
 
     @property

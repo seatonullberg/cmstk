@@ -40,7 +40,7 @@ class IncarTag(BaseTag):
         if type(self.value) is bool:
             value = ".TRUE." if self.value else ".FALSE."
         else:
-            value = self.value
+            value = str(self.value)
         return "{} = {}\t# {}".format(self.name, value, self.comment)
 
 
