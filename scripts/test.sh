@@ -17,6 +17,7 @@ pytest "$cmstk_dir/cmstk/" --ignore="$cmstk_dir/cmstk/lammps"  # lammps package 
 
 # cleanup
 echo -e "\u001b[33m[cmstk] removing generated files...\u001b[0m"
-bash "$cmstk_dir/sbin/cleanup.sh"
+bash "$cmstk_dir/scripts/cleanup.sh"
 echo -e "\u001b[33m[cmstk] test complete.\u001b[0m"
+
 exit 0

@@ -23,7 +23,6 @@ class BestcorrFile(TextFile):
         filepath: Filepath to a bestcorr.out file.
         objective_functions: Value of the objective function at each iteration.
     """
-
     def __init__(self, filepath: Optional[str] = None) -> None:
         if filepath is None:
             filepath = "bestcorr.out"
@@ -83,7 +82,6 @@ class BestsqsFile(TextFile):
         simulation_cell: Underlying simulation cell structure data.
         vectors: Lattice vectors.
     """
-
     def __init__(self, filepath: Optional[str] = None) -> None:
         if filepath is None:
             filepath = "bestsqs.out"
@@ -140,7 +138,6 @@ class RndstrFile(TextFile):
         probabilities: Probability of occupation by any symbols at each site.
         vectors: Lattice vectors.
     """
-
     def __init__(self,
                  filepath: Optional[str] = None,
                  simulation_cell: Optional[SimulationCell] = None,

@@ -3,7 +3,6 @@ import numpy as np
 import os
 from datetime import datetime
 
-
 if __name__ == "__main__":
     print("Generating parallel coordinates plot...")
     start = datetime.now()
@@ -30,7 +29,7 @@ if __name__ == "__main__":
     fig.savefig(filename, bbox_inches="tight")
 
     end = datetime.now()
-    total_time = (end-start).total_seconds()
+    total_time = (end - start).total_seconds()
     size = os.path.getsize(filename)
     print("Total time: {} seconds".format(total_time))
     print("Generated {} ({} bytes)".format(filename, size))

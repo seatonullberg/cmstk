@@ -3,6 +3,7 @@ from cmstk.util import data_directory
 import numpy as np
 import os
 
+
 def test_xyz_file():
     """Test the initialization of a XyzFile."""
     path = os.path.join(data_directory(), "test.xyz")

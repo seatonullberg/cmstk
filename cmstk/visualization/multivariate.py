@@ -5,10 +5,10 @@ from typing import Any, List, Optional, Tuple
 
 
 def parallel_coordinates_plot(
-    data: List[np.ndarray],
-    colors: List[Any],
-    labels: List[str],
-    xlabels: Optional[List[str]] = None,
+        data: List[np.ndarray],
+        colors: List[Any],
+        labels: List[str],
+        xlabels: Optional[List[str]] = None,
 ) -> Tuple[plt.Figure, plt.Axes]:
     """Prepares a plot displaying multidimensional coordinates along a continuous axis.
 

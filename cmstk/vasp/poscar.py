@@ -36,7 +36,6 @@ class PoscarFile(TextFile):
         - Presented in the order that they appear in the POTCAR.
         relaxations: Boolean matrix to indicate selective dymanics parameters.
     """
-
     def __init__(self,
                  filepath: Optional[str] = None,
                  comment: Optional[str] = None,
@@ -157,8 +156,7 @@ class PoscarFile(TextFile):
             relaxations = self.lines[start:end]
             relaxations_lst = [r.split()[3:] for r in relaxations]
             relaxations_arr = [
-                np.array([True if rr == "T" else False
-                          for rr in r])
+                np.array([True if rr == "T" else False for rr in r])
                 for r in relaxations_lst
             ]
             self._relaxations = relaxations_arr

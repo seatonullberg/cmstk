@@ -19,7 +19,6 @@ class BaseSubmissionScript(TextFile):
         tags: Tags used to configure the job manager.
         shebang: The shell specific shebang symbol.
     """
-
     def __init__(self,
                  filepath: str,
                  cmds: Optional[List[str]] = None,

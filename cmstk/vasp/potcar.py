@@ -16,7 +16,6 @@ class PotcarFile(TextFile):
         filepath: Filepath to a POTCAR file.
         titles: The `TITEL` tag values.
     """
-
     def __init__(self, filepath: Optional[str] = None) -> None:
         if filepath is None:
             filepath = "POTCAR"

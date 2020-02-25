@@ -12,7 +12,6 @@ class SimulationCell(AtomCollection):
             bounding box.
         tolerance: The radius in which to check for atoms on add or remove.
     """
-
     def __init__(self,
                  atoms: Optional[List[Atom]] = None,
                  coordinate_matrix: Optional[np.ndarray] = None,

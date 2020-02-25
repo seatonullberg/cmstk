@@ -9,13 +9,13 @@ from typing import List, Optional, Tuple
 
 
 def converge_encut(
-    encut_values: List[int],
-    incar: IncarFile,
-    kpoints: KpointsFile,
-    poscar: PoscarFile,
-    potcar: PotcarFile,
-    submission_script: BaseSubmissionScript,
-    calc_dir: Optional[str] = None,
+        encut_values: List[int],
+        incar: IncarFile,
+        kpoints: KpointsFile,
+        poscar: PoscarFile,
+        potcar: PotcarFile,
+        submission_script: BaseSubmissionScript,
+        calc_dir: Optional[str] = None,
 ) -> None:
     """Starts an ENCUT convergence calculation.
 
@@ -45,18 +45,19 @@ def converge_encut(
         path = os.path.join(calc_dir, dirname)
         if not os.path.exists(path):
             os.makedirs(path)
-        write_input_files(path, incar, kpoints, poscar, potcar, submission_script)
+        write_input_files(path, incar, kpoints, poscar, potcar,
+                          submission_script)
         start_calculation(path, submission_script)
 
 
 def converge_kpoints(
-    kpoint_sizes: List[Tuple[int, int, int]],
-    incar: IncarFile,
-    kpoints: KpointsFile,
-    poscar: PoscarFile,
-    potcar: PotcarFile,
-    submission_script: BaseSubmissionScript,
-    calc_dir: Optional[str] = None,
+        kpoint_sizes: List[Tuple[int, int, int]],
+        incar: IncarFile,
+        kpoints: KpointsFile,
+        poscar: PoscarFile,
+        potcar: PotcarFile,
+        submission_script: BaseSubmissionScript,
+        calc_dir: Optional[str] = None,
 ) -> None:
     """Starts a KPOINTS convergence calculation.
 
@@ -77,5 +78,6 @@ def converge_kpoints(
         path = os.path.join(calc_dir, dirname)
         if not os.path.exists(path):
             os.makedirs(path)
-        write_input_files(path, incar, kpoints, poscar, potcar, submission_script)
+        write_input_files(path, incar, kpoints, poscar, potcar,
+                          submission_script)
         start_calculation(path, submission_script)

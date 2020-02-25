@@ -21,8 +21,10 @@ class XyzFile(TextFile):
         comment: The comment line.
         atom_collection: The underlying collection of atoms.
     """
-
-    def __init__(self, filepath: Optional[str] = None, comment: Optional[str] = None, atom_collection: Optional[AtomCollection] = None) -> None:
+    def __init__(self,
+                 filepath: Optional[str] = None,
+                 comment: Optional[str] = None,
+                 atom_collection: Optional[AtomCollection] = None) -> None:
         if filepath is None:
             filepath = "structure.xyz"
         self._comment = comment
@@ -46,7 +48,10 @@ class XyzFile(TextFile):
             for line in self.lines[2:]:
                 parts = line.split()
                 symbol = parts[0]
-                position = np.array([float(parts[1]), float(parts[2]), float(parts[3])])
+                position = np.array(
+                    [float(parts[1]),
+                     float(parts[2]),
+                     float(parts[3])])
                 atoms.append(Atom(symbol=symbol, position=position))
             self._atom_collection = AtomCollection(atoms=atoms)
         return self._atom_collection
@@ -67,5 +72,6 @@ class XyzFile(TextFile):
             f.write("{}\n".format(n_atoms))
             f.write("{}\n".format(comment))
             for a in self.atom_collection.atoms:
-                s = "{} {} {} {}\n".format(a.symbol, a.position[0], a.position[1], a.position[2])
+                s = "{} {} {} {}\n".format(a.symbol, a.position[0],
+                                           a.position[1], a.position[2])
                 f.write(s)

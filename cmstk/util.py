@@ -37,7 +37,6 @@ class BaseTag(object):
         name: The tag's name.
         value: The value of the tag.
     """
-
     def __init__(self,
                  name: Optional[str] = None,
                  comment: Optional[str] = None,

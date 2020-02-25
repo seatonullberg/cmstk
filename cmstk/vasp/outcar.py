@@ -14,7 +14,6 @@ class OutcarFile(TextFile):
         free_energy: Components of the free energy of the system after each 
         ionic step.
     """
-
     def __init__(self, filepath: Optional[str] = None) -> None:
         if filepath is None:
             filepath = "OUTCAR"

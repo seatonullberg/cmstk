@@ -7,16 +7,16 @@ import os
 
 
 def write_input_files(
-    path: str,
-    incar: IncarFile,
-    kpoints: KpointsFile,
-    poscar: PoscarFile,
-    potcar: PotcarFile,
-    submission_script: BaseSubmissionScript,
+        path: str,
+        incar: IncarFile,
+        kpoints: KpointsFile,
+        poscar: PoscarFile,
+        potcar: PotcarFile,
+        submission_script: BaseSubmissionScript,
 ) -> None:
     for f in [incar, kpoints, poscar, potcar, submission_script]:
         filepath = os.path.join(path, f.filepath)
-        f.write(filepath) # type: ignore
+        f.write(filepath)  # type: ignore
 
 
 def start_calculation(path: str,

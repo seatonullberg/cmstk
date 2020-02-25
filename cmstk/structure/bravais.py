@@ -115,7 +115,6 @@ class BaseBravais(AtomCollection):
             properties.
         volume: The volume of the lattice.
     """
-
     def __init__(self,
                  a: float,
                  b: float,
@@ -205,8 +204,8 @@ class BaseBravais(AtomCollection):
 
     @property
     def volume(self) -> float:
-        return volume(self.a, self.b, self.c, self.alpha, self.beta, self.gamma,
-                      True)
+        return volume(self.a, self.b, self.c, self.alpha, self.beta,
+                      self.gamma, True)
 
     def reorient(self, orientation: np.ndarray) -> None:
         raise NotImplementedError()
@@ -260,7 +259,6 @@ class TriclinicBravais(BaseBravais):
         ValueError
         - Invalid lattice parameters.
     """
-
     def __init__(self, a: float, b: float, c: float, alpha: float, beta: float,
                  gamma: float, symbols: List[str]) -> None:
         # check lattice parameters
@@ -287,7 +285,6 @@ class MonoclinicBravais(BaseBravais):
         - Invalid lattice parameters.
         - Invalid center.
     """
-
     def __init__(self, a: float, b: float, c: float, beta: float,
                  symbols: List[str], center: str) -> None:
         # check lattice parameters
@@ -319,7 +316,6 @@ class OrthorhombicBravais(BaseBravais):
         - Invalid lattice parameters.
         - Invalid center.
     """
-
     def __init__(self, a: float, b: float, c: float, symbols: List[str],
                  center: str) -> None:
         # check lattice parameters
@@ -354,7 +350,6 @@ class TetragonalBravais(BaseBravais):
         - Invalid lattice parameters.
         - Invalid center.
     """
-
     def __init__(self, a: float, c: float, symbols: List[str],
                  center: str) -> None:
         # check lattice parameters
@@ -386,7 +381,6 @@ class RhombohedralBravais(BaseBravais):
         - Invalid lattice parameters.
         - Invalid center.
     """
-
     def __init__(self, a: float, alpha: float, symbols: List[str],
                  center: str) -> None:
         # check lattice parameters
@@ -410,7 +404,6 @@ class HexagonalBravais(BaseBravais):
         ValueError
         - Invalid lattice parameters.
     """
-
     def __init__(self, a: float, c: float, symbols: List[str]) -> None:
         # check lattice parameters
         if a == c:
@@ -433,7 +426,6 @@ class CubicBravais(BaseBravais):
         ValueError
         - Invalid center.
     """
-
     def __init__(self, a: float, symbols: List[str], center: str) -> None:
         # check center
         if center == "P":

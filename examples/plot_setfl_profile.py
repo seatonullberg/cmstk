@@ -12,7 +12,8 @@ if __name__ == "__main__":
     start = datetime.now()
 
     # load plotting data
-    path = os.path.join(data_directory(), "potentials", "Zhou-Pd-H-2008.eam.alloy")
+    path = os.path.join(data_directory(), "potentials",
+                        "Zhou-Pd-H-2008.eam.alloy")
     setfl = SetflFile(path)
     setfl.load()
     fig, axes = setfl_profile_plot(setfl)
@@ -28,7 +29,7 @@ if __name__ == "__main__":
     fig.savefig(filename)
 
     end = datetime.now()
-    total_time = (end-start).total_seconds()
+    total_time = (end - start).total_seconds()
     size = os.path.getsize(filename)
     print("Total time: {} seconds".format(total_time))
     print("Generated {} ({} bytes)".format(filename, size))

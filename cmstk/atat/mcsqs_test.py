@@ -31,7 +31,8 @@ def test_bestsqs_file():
 
 def test_rndstr_file():
     """Tests the initialization of a RndstrFile object."""
-    path = os.path.join(data_directory(), "atat", "Fe75Cr25_BCC_bulk.rndstr.in")
+    path = os.path.join(data_directory(), "atat",
+                        "Fe75Cr25_BCC_bulk.rndstr.in")
     rndstr = RndstrFile(filepath=path)
     rndstr.load()
 

@@ -17,7 +17,6 @@ class OszicarFile(TextFile):
         magnetization: Magnetization at each ionic step.
         total_free_energy: Total free energy at each ionic step.
      """
-
     def __init__(self, filepath: Optional[str] = None) -> None:
         if filepath is None:
             filepath = "OSZICAR"

@@ -10,7 +10,6 @@ class BaseFile(object):
     Args:
         filepath: The path to the underlying file.
     """
-
     def __init__(self, filepath: str) -> None:
         self.filepath = filepath
         self._attrs = [k for k in self.__dict__ if k[0] == "_"]
@@ -42,7 +41,6 @@ class JsonFile(BaseFile):
         filepath: The path to the underlying file.
         json_data: The json data decoded as a dict.
     """
-
     def __init__(self, filepath: str) -> None:
         self._json_data: Optional[Dict[str, Any]] = None
         super().__init__(filepath)
@@ -70,7 +68,6 @@ class TextFile(BaseFile):
         filepath: The path to the underlying file.
         lines: The stripped lines of the text file.
     """
-
     def __init__(self, filepath: str) -> None:
         self._lines: Optional[List[str]] = None
         super().__init__(filepath)
@@ -101,7 +98,6 @@ class XmlFile(BaseFile):
         filepath: The path to the underlying file.
         root: The root element of the XML tree.
     """
-
     def __init__(self, filepath: str) -> None:
         self._root: Optional[Element] = None
         super().__init__(filepath)
