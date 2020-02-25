@@ -4,7 +4,7 @@ from cmstk.visualization.potential import setfl_profile_plot
 import os
 from datetime import datetime
 
-# The following paper corresponds with Zhou-Pd-H-2008.eam.alloy
+# This example reproduces Fig. 2 from the following paper:
 # https://pdfs.semanticscholar.org/b9c1/bcf83327f17942946b41381f9e72e5b77618.pdf
 
 if __name__ == "__main__":
