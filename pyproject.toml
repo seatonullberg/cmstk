@@ -2,8 +2,15 @@
 name = "cmstk"
 version = "0.1.0"
 description = "Computational Materials Science Tool Kit"
-authors = ["Seaton Ullberg"]
+authors = ["Seaton Ullberg <seatonullberg@gmail.com>"]
 license = "MIT"
+readme = "README.md"
+repository = "https://github.com/seatonullberg/cmstk"
+keywords = ["materials-science"]
+classifiers = [
+    "Programming Language :: Python :: 3.7", 
+    "License :: OSI Approved :: MIT License"
+]
 
 [tool.poetry.dependencies]
 python = "^3.7.6"

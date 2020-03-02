@@ -11,12 +11,8 @@ format:
 	@poetry run yapf --in-place --recursive --parallel $(CMSTK_DIR)
 
 test:
-	@# static type checking
 	@export MYPYPATH=$(MYPY_DIR);\
 		poetry run mypy --config-file=$(MYPY_DIR)/mypy.ini $(CMSTK_DIR)/cmstk/
-	@# linting
 	@poetry run pyflakes $(CMSTK_DIR)/cmstk
-	@# unit testing
 	@poetry run pytest $(CMSTK_DIR)/cmstk/ --ignore=$(CMSTK_DIR)/cmstk/lammps
-	@# cleanup
 	@make clean
